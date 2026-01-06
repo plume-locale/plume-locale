@@ -127,14 +127,17 @@
                                     <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
                                         <button class="btn btn-small" onclick="restoreVersion(${version.id})" 
                                                 style="background: var(--accent-gold); color: white; border: none;">
-                                            ? Restaurer
+                                            <i data-lucide="undo" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> 
+                                            Restaurer
                                         </button>
                                         <button class="btn btn-small" onclick="compareVersion(${version.id})">
-                                            <i data-lucide="git-compare" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Comparer
+                                            <i data-lucide="git-compare" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>
+                                            Comparer
                                         </button>
                                         <button class="btn btn-small" onclick="deleteVersion(${version.id})" 
                                                 style="background: var(--accent-red); color: white; border: none;">
-                                            ??? Supprimer
+                                            <i data-lucide="trash-2" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> 
+                                            Supprimer
                                         </button>
                                     </div>
                                 </div>
