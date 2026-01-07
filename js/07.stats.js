@@ -176,20 +176,21 @@
         }
 
         function renderSceneElements(actId, chapterId, scene) {
-            if (!scene.linkedElements || scene.linkedElements.length === 0) {
-                return '<span style="font-size: 0.8rem; color: var(--text-muted); font-style: italic;">Aucun élément lié</span>';
-            }
+            //if (!scene.linkedElements || scene.linkedElements.length === 0) {
+            //    return '<span style="font-size: 0.8rem; color: var(--text-muted); font-style: italic;">Aucun élément lié</span>';
+            //}
 
-            return scene.linkedElements.map(elemId => {
-                const element = project.world.find(e => e.id === elemId);
-                if (!element) return '';
-                return `
-                    <span class="link-badge" onclick="event.stopPropagation(); switchView('world'); openWorldDetail(${elemId});">
-                        ${element.name}
-                        <span class="link-badge-remove" onclick="event.stopPropagation(); toggleElementInScene(${actId}, ${chapterId}, ${scene.id}, ${elemId}); openScene(${actId}, ${chapterId}, ${scene.id});">×</span>
-                    </span>
-                `;
-            }).join('');
+            //return scene.linkedElements.map(elemId => {
+            //    const element = project.world.find(e => e.id === elemId);
+            //    if (!element) return '';
+            //    return `
+            //        <span class="link-badge" onclick="event.stopPropagation(); switchView('world'); openWorldDetail(${elemId});">
+            //            ${element.name}
+            //            <span class="link-badge-remove" onclick="event.stopPropagation(); toggleElementInScene(${actId}, ${chapterId}, ${scene.id}, ${elemId}); openScene(${actId}, ${chapterId}, ${scene.id});">×</span>
+            //       </span>
+            //    `;
+            //}).join('');
+            return '';
         }
 
         function renderSceneMetroEvents(sceneId) {
@@ -223,10 +224,11 @@
             document.getElementById('referencesModalContent').innerHTML = `
                 <div class="tag-selector">
                     ${project.characters.map(char => {
-                        const isLinked = scene.linkedCharacters && scene.linkedCharacters.includes(char.id);
+                        // Utiliser la nouvelle structure confirmedPresentCharacters pour l'état visuel de la modale
+                        const isLinked = scene.confirmedPresentCharacters && scene.confirmedPresentCharacters.includes(char.id);
                         return `
                             <div class="tag-option ${isLinked ? 'selected' : ''}" 
-                                 onclick="toggleCharacterInScene(${actId}, ${chapterId}, ${sceneId}, ${char.id}); this.classList.toggle('selected');">
+                                 onclick="toggleCharacterLinkerAction(${char.id}); this.classList.toggle('selected');">
                                 ${char.name}
                             </div>
                         `;
@@ -435,21 +437,20 @@
                             <button class="toolbar-btn" onclick="toggleRevisionMode()" title="Mode Révision (Ctrl+R)" id="toolbarRevisionBtn" style="color: var(--accent-gold); font-weight: 600;">✏️ RÉVISION</button>
                         </div>
                     </div>
+                    
                     <div class="links-panel-sticky" id="linksPanel">
                         <div style="display: flex; gap: 2rem; align-items: start;">
                             <div style="flex: 1;">
                                 <div style="font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-muted);"><i data-lucide="users" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Personnages</div>
                                 <div class="quick-links">
                                     ${renderSceneCharacters(act.id, chapter.id, scene)}
-                                    <button class="btn btn-small" onclick="openCharacterLinker(${act.id}, ${chapter.id}, ${scene.id})" style="font-size: 0.75rem; padding: 0.3rem 0.6rem;">+ Lier</button>
-                                </div>
+                                    </div>
                             </div>
                             <div style="flex: 1;">
                                 <div style="font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-muted);"><i data-lucide="globe" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Lieux/Éléments</div>
                                 <div class="quick-links">
                                     ${renderSceneElements(act.id, chapter.id, scene)}
-                                    <button class="btn btn-small" onclick="openElementLinker(${act.id}, ${chapter.id}, ${scene.id})" style="font-size: 0.75rem; padding: 0.3rem 0.6rem;">+ Lier</button>
-                                </div>
+                                    </div>
                             </div>
                             <div style="flex: 1;">
                                 <div style="font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-muted);"><i data-lucide="train-track" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Timeline</div>

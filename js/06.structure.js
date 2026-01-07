@@ -967,9 +967,21 @@
                     renderSplitPanelViewContent(splitActivePanel);
                     saveSplitViewState();
                 }
+                
+                // CORRECTION SPLIT VIEW : Après le rendu, on rafraîchit les liens pour la scène active
+                // Nous appelons les fonctions directement car les IDs globaux sont désormais corrects.
+                autoDetectLinks();
+                refreshLinksPanel();
+
             } else {
                 // Normal mode
                 renderEditor(act, chapter, scene);
+
+                // CORRECTION NORMAL MODE : APRES le rendu de l'éditeur
+                // 1. Déclenche l'analyse pour mettre à jour les suggestions
+                autoDetectLinks(); 
+                // 2. Affiche le panneau des liens avec les 3 listes
+                refreshLinksPanel(); 
             }
             
             // Update scene versions sidebar

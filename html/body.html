@@ -21,6 +21,10 @@
                 <span class="mobile-nav-item-icon"><i data-lucide="trending-up"></i></span>
                 <span>Intrigue</span>
             </button>
+            <button class="mobile-nav-item" onclick="switchViewMobile('arcs')" data-view="arcs">
+                <span class="mobile-nav-item-icon"><i data-lucide="git-commit-horizontal"></i></span>
+                <span>Arcs Narratifs</span>
+            </button>
             <button class="mobile-nav-item" onclick="switchViewMobile('storygrid')" data-view="plot">
                 <span class="mobile-nav-item-icon"><i data-lucide="grid-3x3"></i></span>
                 <span>Storygrid</span>
@@ -45,10 +49,7 @@
                 <span class="mobile-nav-item-icon"><i data-lucide="sticky-note"></i></span>
                 <span>Notes</span>
             </button>
-            <button class="mobile-nav-item" onclick="switchViewMobile('arcs')" data-view="arcs">
-                <span class="mobile-nav-item-icon"><i data-lucide="git-commit-horizontal"></i></span>
-                <span>Arcs Narratifs</span>
-            </button>
+
         </div>
 
         <div class="mobile-nav-section">
@@ -153,6 +154,10 @@
                         <span class="nav-btn-icon"><i data-lucide="trending-up"></i></span>
                         <span class="nav-btn-text">Intrigue</span>
                     </button>
+                    <button class="nav-btn" onclick="switchView('arcs')" id="header-tab-arcs">
+                        <span class="nav-btn-icon"><i data-lucide="git-commit-horizontal"></i></span>
+                        <span class="nav-btn-text">Arcs</span>
+                    </button>
                     <button class="nav-btn" onclick="switchView('storygrid')" id="header-tab-plot">
                         <span class="nav-btn-icon"><i data-lucide="grid-3x3"></i></span>
                         <span class="nav-btn-text">StoryGrid</span>
@@ -173,10 +178,7 @@
                         <span class="nav-btn-icon"><i data-lucide="book-open"></i></span>
                         <span class="nav-btn-text">Codex</span>
                     </button>
-                    <button class="nav-btn" onclick="switchView('arcs')" id="header-tab-arcs">
-                        <span class="nav-btn-icon"><i data-lucide="git-commit-horizontal"></i></span>
-                        <span class="nav-btn-text">Arcs</span>
-                    </button>
+
                     <button class="nav-btn" onclick="switchView('notes')" id="header-tab-notes">
                         <span class="nav-btn-icon"><i data-lucide="sticky-note"></i></span>
                         <span class="nav-btn-text">Notes</span>
@@ -479,6 +481,9 @@
             </div>
         </div>
         </div><!-- Fin app-content -->
+
+            <!-- Focus Mode Toggle Button -->
+        <button class="focus-toggle-btn" onclick="toggleFocusPanel()">⚙️ Paramètres Focus</button>
         
         <!-- Focus Mode Panel (inside app-container for fullscreen) -->
         <div class="focus-mode-panel" id="focusPanel">

@@ -321,38 +321,42 @@
             }
         }
 
+        /**
+         * Ajoute ou retire un élément (Lieu/Objet) d'une scène.
+         * NOTE : Cette fonction se trouve généralement dans 04.modals.js ou 07.stats.js
+         */
         function toggleElementInScene(sceneActId, sceneChapterId, sceneId, elementId) {
             const act = project.acts.find(a => a.id === sceneActId);
+            if (!act) return;
             const chapter = act.chapters.find(c => c.id === sceneChapterId);
+            if (!chapter) return;
             const scene = chapter.scenes.find(s => s.id === sceneId);
+            if (!scene) return;
 
             if (!scene.linkedElements) scene.linkedElements = [];
 
             const index = scene.linkedElements.indexOf(elementId);
+            let hasChanged = false; // Drapeau pour s'assurer qu'un changement a eu lieu
+
             if (index > -1) {
+                // L'élément est déjà lié, on le retire (Délier)
                 scene.linkedElements.splice(index, 1);
+                hasChanged = true;
             } else {
+                // L'élément n'est pas lié, on l'ajoute (Lier)
                 scene.linkedElements.push(elementId);
+                hasChanged = true;
             }
 
-            saveProject();
-            
-            // Rafraîchir le panneau de liens dans l'éditeur si la scène est ouverte
-            if (currentSceneId === sceneId && currentActId === sceneActId && currentChapterId === sceneChapterId) {
-                const linksPanel = document.getElementById('linksPanel');
-                if (linksPanel) {
-                    // Trouver le deuxième div flex (celui des lieux)
-                    const flexDivs = linksPanel.querySelectorAll('[style*="flex: 1"]');
-                    if (flexDivs.length >= 2) {
-                        const locationDiv = flexDivs[1];
-                        const quickLinks = locationDiv.querySelector('.quick-links');
-                        if (quickLinks) {
-                            quickLinks.innerHTML = `
-                                ${renderSceneElements(sceneActId, sceneChapterId, scene)}
-                                <button class="btn btn-small" onclick="openElementLinker(${sceneActId}, ${sceneChapterId}, ${sceneId})" style="font-size: 0.75rem; padding: 0.3rem 0.6rem;">+ Lier</button>
-                            `;
-                        }
-                    }
+            if (hasChanged) {
+                // 1. Sauvegarder les changements
+                saveProject();
+
+                // 2. Si la scène est ouverte, on rafraîchit l'affichage complet du panneau des liens
+                if (currentSceneId === sceneId && currentActId === sceneActId && currentChapterId === sceneChapterId) {
+                    
+                    // APPEL CLÉ : Rafraîchit l'ensemble des trois colonnes (persos, lieux, timeline)
+                    refreshLinksPanel(); 
                 }
             }
         }
