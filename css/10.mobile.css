@@ -1741,7 +1741,7 @@
 
             /* Toolbar toujours visible */
             .editor-toolbar {
-                display: flex !important;
+                /*display: flex !important;*/
                 max-height: none !important;
                 flex-wrap: wrap !important;
             }
