@@ -187,6 +187,20 @@
                         <div class="cork-board-title">
                             <i data-lucide="list" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Vue Structure Organisée
                         </div>
+                        
+                        <div style="display: flex; align-items: center; gap: 1rem; margin-left: auto; margin-right: 1rem;">
+                            <label style="font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.5rem;">
+                                <i data-lucide="zoom-in" style="width:16px;height:16px;"></i>
+                                <input type="range" 
+                                       min="150" 
+                                       max="800" 
+                                       value="300" 
+                                       step="10"
+                                       style="width: 120px; cursor: pointer;"
+                                       oninput="updateCorkGridSize(this.value)"
+                                       title="Ajuster la largeur des colonnes">
+                            </label>
+                        </div>
                         <div style="display: flex; gap: 0.5rem;">
                             <button class="btn btn-primary" onclick="closeCorkBoardView()">← Retour</button>
                         </div>
@@ -636,7 +650,15 @@
             showNotification('✓ Scènes réorganisées');
         }
         
-        
+        // Fonction pour redimensionner les colonnes dynamiquement
+        function updateCorkGridSize(value) {
+            // On applique la variable à la racine du document pour qu'elle soit accessible partout
+            document.documentElement.style.setProperty('--chapter-card-width', value + 'px');
+            
+            // Optionnel : Mettre à jour un label si vous en ajoutez un pour afficher la taille
+            const label = document.getElementById('gridSizeLabel');
+            if (label) label.textContent = value + 'px';
+        }
         // ============================================
         // FIN CORK BOARD
         // ============================================

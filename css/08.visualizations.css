@@ -267,8 +267,10 @@
         
         .structured-chapters-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            /* On remplace 300px par la variable, avec une valeur par défaut de 300px */
+            grid-template-columns: repeat(auto-fill, minmax(var(--chapter-card-width, 300px), 1fr));
             gap: 1rem;
+            transition: all 0.3s ease; /* Ajoute une fluidité lors du redimensionnement */
         }
         
         .structured-chapter-container {
