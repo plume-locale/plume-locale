@@ -26,6 +26,18 @@
             <button class="nav-btn" data-view="notes">
                 <i data-lucide="sticky-note"></i> Notes
             </button>
+            <button class="nav-btn" data-view="scenes">
+                <i data-lucide="file-text"></i> Scènes
+            </button>
+            <button class="nav-btn" data-view="structure">
+                <i data-lucide="book-open"></i> Structure
+            </button>
+            <button class="nav-btn" data-view="arc-board">
+                <i data-lucide="git-branch"></i> Arcs
+            </button>
+            <button class="nav-btn" data-view="story-grid">
+                <i data-lucide="table"></i> Grille
+            </button>
         </nav>
     </header>
 
@@ -43,6 +55,26 @@
 
         <!-- Notes View -->
         <div id="notes-view" data-view="notes" class="view-container">
+            <div class="loading">Chargement...</div>
+        </div>
+
+        <!-- Scenes View -->
+        <div id="scenes-view" data-view="scenes" class="view-container">
+            <div class="loading">Chargement...</div>
+        </div>
+
+        <!-- Structure View -->
+        <div id="structure-view" data-view="structure" class="view-container">
+            <div class="loading">Chargement...</div>
+        </div>
+
+        <!-- Arc Board View -->
+        <div id="arc-board-view" data-view="arc-board" class="view-container">
+            <div class="loading">Chargement...</div>
+        </div>
+
+        <!-- Story Grid View -->
+        <div id="story-grid-view" data-view="story-grid" class="view-container">
             <div class="loading">Chargement...</div>
         </div>
     </main>
@@ -110,6 +142,22 @@
     <script src="js/06-views/notes/notes.handlers.js"></script>
     <script src="js/06-views/notes/notes.view.js"></script>
 
+    <script src="js/06-views/scenes/scenes.render.js"></script>
+    <script src="js/06-views/scenes/scenes.handlers.js"></script>
+    <script src="js/06-views/scenes/scenes.view.js"></script>
+
+    <script src="js/06-views/structure/structure.render.js"></script>
+    <script src="js/06-views/structure/structure.handlers.js"></script>
+    <script src="js/06-views/structure/structure.view.js"></script>
+
+    <script src="js/06-views/arc-board/arc-board.render.js"></script>
+    <script src="js/06-views/arc-board/arc-board.handlers.js"></script>
+    <script src="js/06-views/arc-board/arc-board.view.js"></script>
+
+    <script src="js/06-views/story-grid/story-grid.render.js"></script>
+    <script src="js/06-views/story-grid/story-grid.handlers.js"></script>
+    <script src="js/06-views/story-grid/story-grid.view.js"></script>
+
     <!-- Scripts - App (last) -->
     <script src="js/00-core/00.app.js"></script>
 
@@ -136,6 +184,10 @@
                 Router.register('characters', CharactersView);
                 Router.register('locations', LocationsView);
                 Router.register('notes', NotesView);
+                Router.register('scenes', ScenesView);
+                Router.register('structure', StructureView);
+                Router.register('arc-board', ArcBoardView);
+                Router.register('story-grid', StoryGridView);
                 updateStatus('Vues enregistrées');
 
                 // 4. Initialiser la vue par défaut
@@ -227,6 +279,80 @@
                     tags: ['chapitre-1', 'intrigue'],
                     pinned: true,
                     archived: false,
+                    createdAt: Date.now(),
+                    updatedAt: Date.now()
+                }
+            ];
+
+            // Ajouter une structure narrative (acts > chapters > scenes)
+            demoProject.acts = [
+                {
+                    id: Date.now(),
+                    title: 'Acte I - La Découverte',
+                    chapters: [
+                        {
+                            id: Date.now() + 1,
+                            title: 'Chapitre 1 - Le Commencement',
+                            scenes: [
+                                {
+                                    id: Date.now() + 2,
+                                    title: 'La Bibliothèque',
+                                    content: 'Alice fouillait dans les vieux rayons de la bibliothèque...',
+                                    summary: 'Alice découvre une carte mystérieuse',
+                                    status: 'draft',
+                                    tension: 6,
+                                    characters: [],
+                                    locations: [],
+                                    tags: ['découverte'],
+                                    notes: '',
+                                    createdAt: Date.now(),
+                                    updatedAt: Date.now()
+                                },
+                                {
+                                    id: Date.now() + 3,
+                                    title: 'La Rencontre',
+                                    content: 'Marc apparut soudainement dans la pénombre...',
+                                    summary: 'Première rencontre avec Marc',
+                                    status: 'revision',
+                                    tension: 8,
+                                    characters: [],
+                                    locations: [],
+                                    tags: ['rencontre', 'tension'],
+                                    notes: '',
+                                    createdAt: Date.now(),
+                                    updatedAt: Date.now()
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ];
+
+            // Ajouter des arcs narratifs
+            demoProject.arcs = [
+                {
+                    id: Date.now(),
+                    title: 'La Quête de la Carte',
+                    description: 'Alice cherche à déchiffrer la carte et découvrir ses secrets',
+                    category: 'plot',
+                    color: '#3498db',
+                    status: 'in-progress',
+                    priority: 'high',
+                    scenes: [Date.now() + 2, Date.now() + 3],
+                    milestones: [],
+                    createdAt: Date.now(),
+                    updatedAt: Date.now()
+                },
+                {
+                    id: Date.now() + 1,
+                    title: 'Évolution d\'Alice',
+                    description: 'Le parcours de transformation d\'Alice',
+                    category: 'character',
+                    color: '#e74c3c',
+                    status: 'planned',
+                    priority: 'medium',
+                    scenes: [],
+                    milestones: [],
                     createdAt: Date.now(),
                     updatedAt: Date.now()
                 }
