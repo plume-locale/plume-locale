@@ -146,8 +146,22 @@ const App = (function() {
             console.log('[App] ✓ Registered ScenesView');
         }
 
+        if (window.StructureView) {
+            Router.register('structure', StructureView);
+            console.log('[App] ✓ Registered StructureView');
+        }
+
+        if (window.ArcBoardView) {
+            Router.register('arc-board', ArcBoardView);
+            console.log('[App] ✓ Registered ArcBoardView');
+        }
+
+        if (window.StoryGridView) {
+            Router.register('story-grid', StoryGridView);
+            console.log('[App] ✓ Registered StoryGridView');
+        }
+
         // TODO: Enregistrer les autres vues au fur et à mesure de la migration
-        // Router.register('structure', StructureView);
         // Router.register('timeline', TimelineView);
         // Router.register('corkboard', CorkboardView);
         // etc.
