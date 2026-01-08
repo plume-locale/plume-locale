@@ -141,6 +141,11 @@ const App = (function() {
             console.log('[App] ✓ Registered NotesView');
         }
 
+        if (window.ScenesView) {
+            Router.register('scenes', ScenesView);
+            console.log('[App] ✓ Registered ScenesView');
+        }
+
         // TODO: Enregistrer les autres vues au fur et à mesure de la migration
         // Router.register('structure', StructureView);
         // Router.register('timeline', TimelineView);
