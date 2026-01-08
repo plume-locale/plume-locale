@@ -131,10 +131,20 @@ const App = (function() {
             console.log('[App] ✓ Registered CharactersView');
         }
 
+        if (window.LocationsView) {
+            Router.register('locations', LocationsView);
+            console.log('[App] ✓ Registered LocationsView');
+        }
+
+        if (window.NotesView) {
+            Router.register('notes', NotesView);
+            console.log('[App] ✓ Registered NotesView');
+        }
+
         // TODO: Enregistrer les autres vues au fur et à mesure de la migration
         // Router.register('structure', StructureView);
-        // Router.register('locations', LocationsView);
         // Router.register('timeline', TimelineView);
+        // Router.register('corkboard', CorkboardView);
         // etc.
 
         console.log('[App] ✓ Views registered');
