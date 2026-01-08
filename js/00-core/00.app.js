@@ -125,8 +125,17 @@ const App = (function() {
      * @private
      */
     function _registerViews() {
-        // Les vues seront enregistrées progressivement lors de la migration
-        // Pour l'instant, on prépare juste le système
+        // Enregistrer les vues disponibles
+        if (window.CharactersView) {
+            Router.register('characters', CharactersView);
+            console.log('[App] ✓ Registered CharactersView');
+        }
+
+        // TODO: Enregistrer les autres vues au fur et à mesure de la migration
+        // Router.register('structure', StructureView);
+        // Router.register('locations', LocationsView);
+        // Router.register('timeline', TimelineView);
+        // etc.
 
         console.log('[App] ✓ Views registered');
     }
