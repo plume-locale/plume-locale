@@ -39,6 +39,7 @@ JS_V2_ORDER = [
     'js/02-utils/date.js',
     'js/02-utils/color.js',
     'js/02-utils/validators.js',
+    'js/02-utils/diff.js',
 
     # Infrastructure
     'js/01-infrastructure/storage.js',
@@ -47,6 +48,7 @@ JS_V2_ORDER = [
     'js/01-infrastructure/mobile-menu.js',
     'js/01-infrastructure/sidebar-resize.js',
     'js/01-infrastructure/drag-drop.js',
+    'js/01-infrastructure/storage-monitoring.js',
 
     # Models
     'js/04-models/Project.js',
@@ -69,6 +71,11 @@ JS_V2_ORDER = [
     'js/03-services/snapshot.service.js',
     'js/03-services/search.service.js',
     'js/03-services/stats-advanced.service.js',
+    'js/03-services/stats-extended.service.js',
+    'js/03-services/auto-detect.service.js',
+    'js/03-services/scene-versions.service.js',
+    'js/03-services/codex.service.js',
+    'js/03-services/todos.service.js',
 
     # UI Components
     'js/05-ui/modal.js',
@@ -76,6 +83,8 @@ JS_V2_ORDER = [
     'js/05-ui/mobile-views.js',
     'js/05-ui/color-palette.js',
     'js/05-ui/focus-mode.js',
+    'js/05-ui/floating-editor.js',
+    'js/05-ui/map-renderer.js',
 
     # Views - Characters
     'js/06-views/characters/characters.render.js',
@@ -126,6 +135,9 @@ EXCLUDED_OLD_FILES = [
     '04.init.js',       # Intégré dans App.js
     '05.undo-redo.js',  # Remplacé par 03-services/history.service.js
     '06.structure.js',  # Remplacé par 06-views/structure/
+    '07.stats.js',      # Remplacé par 03-services/stats-extended.service.js
+    '08.auto-detect.js', # Remplacé par 03-services/auto-detect.service.js
+    '09.floating-editor.js', # Remplacé par 05-ui/floating-editor.js
     '10.colorpalette.js', # Remplacé par 05-ui/color-palette.js + sidebar-resize.js
     '11.updateStats.js', # Remplacé par 03-services/stats.service.js
     '12.import-export.js', # Remplacé par 03-services/import-export.service.js
@@ -136,11 +148,17 @@ EXCLUDED_OLD_FILES = [
     '18.timeline.js',   # Remplacé par 03-services/timeline.service.js
     '19.notes.js',      # Remplacé par 06-views/notes/
     '20.snapshots.js',  # Remplacé par 03-services/snapshot.service.js
+    '21.sceneVersions.js', # Remplacé par 03-services/scene-versions.service.js
+    '22.diff.js',       # Remplacé par 02-utils/diff.js
     '23.stats.js',      # Remplacé par 03-services/stats-advanced.service.js
+    '24.codex.js',      # Remplacé par 03-services/codex.service.js
     '25.globalSearch.js', # Remplacé par 03-services/search.service.js
     '26.focusMode.js',  # Remplacé par 05-ui/focus-mode.js
     '27.keyboardShortcuts.js', # Remplacé par 01-infrastructure/keyboard.js
+    '29.todos.js',      # Remplacé par 03-services/todos.service.js
+    '35.renderMap.js',  # Remplacé par 05-ui/map-renderer.js
     '40.sidebar-views.js', # Remplacé par 05-ui/mobile-views.js
+    '41.storageMonitoring.js', # Remplacé par 01-infrastructure/storage-monitoring.js
     '42.mobile-swipe.js', # Remplacé par 01-infrastructure/mobile-gestures.js
     '44.storygrid.js',  # Remplacé par 06-views/story-grid/
     '45.arc-board.js',  # Remplacé par 06-views/arc-board/

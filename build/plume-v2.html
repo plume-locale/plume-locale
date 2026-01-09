@@ -16958,6 +16958,50 @@ const Validators = (function() {
 window.Validators = Validators;
 
 
+// ========== js/02-utils/diff.js ==========
+// Text Diff Utility - Comparaison de textes
+const DiffUtils = (() => {
+    function computeDiff(text1, text2) {
+        // Algorithme simple de diff mot par mot
+        const words1 = text1.split(/\s+/);
+        const words2 = text2.split(/\s+/);
+        const result = [];
+        
+        let i = 0, j = 0;
+        while (i < words1.length || j < words2.length) {
+            if (i >= words1.length) {
+                result.push({ type: 'added', text: words2[j++] });
+            } else if (j >= words2.length) {
+                result.push({ type: 'removed', text: words1[i++] });
+            } else if (words1[i] === words2[j]) {
+                result.push({ type: 'unchanged', text: words1[i] });
+                i++; j++;
+            } else {
+                result.push({ type: 'removed', text: words1[i++] });
+                result.push({ type: 'added', text: words2[j++] });
+            }
+        }
+        
+        return result;
+    }
+
+    function renderDiff(diff) {
+        return diff.map(item => {
+            if (item.type === 'added') {
+                return '<span style="background: #d4edda; color: #155724;">' + item.text + '</span>';
+            } else if (item.type === 'removed') {
+                return '<span style="background: #f8d7da; color: #721c24; text-decoration: line-through;">' + item.text + '</span>';
+            }
+            return item.text;
+        }).join(' ');
+    }
+
+    return { computeDiff, renderDiff };
+})();
+
+window.DiffUtils = DiffUtils;
+
+
 // ========== js/01-infrastructure/storage.js ==========
 // ============================================
 // STORAGE SERVICE - Gestion de la persistance
@@ -18434,6 +18478,89 @@ if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => DragDropService.init());
 } else {
     DragDropService.init();
+}
+
+
+// ========== js/01-infrastructure/storage-monitoring.js ==========
+// Storage Monitoring Service - Surveillance de l'espace de stockage
+const StorageMonitoringService = (() => {
+    function getStorageInfo() {
+        let used = 0;
+        let quota = 0;
+
+        try {
+            // Estimer l'espace utilisé par localStorage
+            for (let key in localStorage) {
+                if (localStorage.hasOwnProperty(key)) {
+                    used += localStorage[key].length + key.length;
+                }
+            }
+
+            // Quota typique localStorage: 5-10MB
+            quota = 10 * 1024 * 1024; // 10MB
+        } catch (e) {
+            console.warn('[StorageMonitoring] Erreur:', e);
+        }
+
+        return {
+            used,
+            quota,
+            remaining: quota - used,
+            percentUsed: (used / quota) * 100
+        };
+    }
+
+    function checkQuota() {
+        const info = getStorageInfo();
+        
+        if (info.percentUsed > 90) {
+            if (window.ToastUI) {
+                ToastUI.warning('Attention: Espace de stockage presque plein (' + Math.round(info.percentUsed) + '%)');
+            }
+        }
+        
+        return info;
+    }
+
+    function formatBytes(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+    }
+
+    function showStorageInfo() {
+        const info = getStorageInfo();
+        const message = 'Stockage utilisé: ' + formatBytes(info.used) + ' / ' + formatBytes(info.quota) +
+                       '\nEspace restant: ' + formatBytes(info.remaining) +
+                       '\nUtilisation: ' + Math.round(info.percentUsed) + '%';
+        
+        if (window.ModalUI) {
+            ModalUI.alert('Informations de stockage', message);
+        } else {
+            alert(message);
+        }
+    }
+
+    function init() {
+        // Vérifier le quota toutes les 5 minutes
+        setInterval(checkQuota, 5 * 60 * 1000);
+        
+        // Vérification initiale
+        setTimeout(checkQuota, 5000);
+    }
+
+    return { getStorageInfo, checkQuota, formatBytes, showStorageInfo, init };
+})();
+
+window.StorageMonitoringService = StorageMonitoringService;
+window.showStorageInfo = () => StorageMonitoringService.showStorageInfo();
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => StorageMonitoringService.init());
+} else {
+    StorageMonitoringService.init();
 }
 
 
@@ -21859,6 +21986,335 @@ window.updateGoal = function(type, value) {
 };
 
 
+// ========== js/03-services/stats-extended.service.js ==========
+// Stats Extended Service - Wrapper pour 07.stats.js (à garder temporairement)
+// La majorité des fonctionnalités sont déjà dans stats.service.js et stats-advanced.service.js
+// Ce fichier sert de pont de compatibilité
+
+const StatsExtendedService = (() => {
+    function trackWritingSession() {
+        const state = StateManager.getState();
+        const project = state.project;
+        if (!project.stats) project.stats = { dailyGoal: 500, totalGoal: 80000, writingSessions: [] };
+        
+        const today = new Date().toDateString();
+        const stats = StatsService.calculateStats(project);
+        const totalWords = stats.totalWords;
+
+        const sessionIndex = project.stats.writingSessions.findIndex(s => new Date(s.date).toDateString() === today);
+        
+        if (sessionIndex >= 0) {
+            const session = project.stats.writingSessions[sessionIndex];
+            session.words = totalWords - (session.startWords || 0);
+        } else {
+            project.stats.writingSessions.push({
+                date: new Date().toISOString(),
+                words: 0,
+                startWords: totalWords
+            });
+        }
+        
+        StateManager.setState({ project });
+        if (window.StorageService) StorageService.saveProject(project);
+    }
+
+    return { trackWritingSession };
+})();
+
+window.StatsExtendedService = StatsExtendedService;
+window.trackWritingSession = () => StatsExtendedService.trackWritingSession();
+
+
+// ========== js/03-services/auto-detect.service.js ==========
+// Auto Detect Service - Détection automatique de personnages/lieux dans le texte
+const AutoDetectService = (() => {
+    function detectMentions(text) {
+        if (!text) return { characters: [], locations: [] };
+        
+        const state = StateManager.getState();
+        const project = state.project;
+        const detected = { characters: [], locations: [] };
+        
+        // Détecter les personnages
+        project.characters?.forEach(char => {
+            if (text.includes(char.name)) {
+                detected.characters.push(char.id);
+            }
+        });
+        
+        // Détecter les lieux
+        project.world?.forEach(loc => {
+            if (loc.type === 'lieu' && text.includes(loc.name)) {
+                detected.locations.push(loc.id);
+            }
+        });
+        
+        return detected;
+    }
+
+    function autoLinkScene(sceneId) {
+        const state = StateManager.getState();
+        const project = state.project;
+        
+        // Trouver la scène
+        let scene = null;
+        for (const act of project.acts || []) {
+            for (const chapter of act.chapters || []) {
+                scene = chapter.scenes?.find(s => s.id === sceneId);
+                if (scene) break;
+            }
+            if (scene) break;
+        }
+        
+        if (!scene) return;
+        
+        const detected = detectMentions(scene.content);
+        scene.linkedCharacters = detected.characters;
+        scene.linkedLocations = detected.locations;
+        
+        StateManager.setState({ project });
+        if (window.StorageService) StorageService.saveProject(project);
+    }
+
+    return { detectMentions, autoLinkScene };
+})();
+
+window.AutoDetectService = AutoDetectService;
+
+
+// ========== js/03-services/scene-versions.service.js ==========
+// Scene Versions Service - Gestion des versions de scènes
+const SceneVersionsService = (() => {
+    function saveVersion(actId, chapterId, sceneId, label) {
+        const state = StateManager.getState();
+        const project = state.project;
+        
+        const act = project.acts?.find(a => a.id === actId);
+        if (!act) return null;
+        
+        const chapter = act.chapters?.find(c => c.id === chapterId);
+        if (!chapter) return null;
+        
+        const scene = chapter.scenes?.find(s => s.id === sceneId);
+        if (!scene) return null;
+        
+        if (!scene.versions) scene.versions = [];
+        
+        const version = {
+            id: Date.now(),
+            label: label || 'Version ' + new Date().toLocaleString('fr-FR'),
+            timestamp: new Date().toISOString(),
+            content: scene.content,
+            wordCount: window.getWordCount ? getWordCount(scene.content) : 0
+        };
+        
+        scene.versions.push(version);
+        StateManager.setState({ project });
+        
+        if (window.StorageService) StorageService.saveProject(project);
+        if (window.ToastUI) ToastUI.success('Version sauvegardée');
+        
+        return version;
+    }
+
+    function restoreVersion(actId, chapterId, sceneId, versionId) {
+        const state = StateManager.getState();
+        const project = state.project;
+        
+        const act = project.acts?.find(a => a.id === actId);
+        if (!act) return false;
+        
+        const chapter = act.chapters?.find(c => c.id === chapterId);
+        if (!chapter) return false;
+        
+        const scene = chapter.scenes?.find(s => s.id === sceneId);
+        if (!scene || !scene.versions) return false;
+        
+        const version = scene.versions.find(v => v.id === versionId);
+        if (!version) return false;
+        
+        // Sauvegarder version actuelle avant restauration
+        saveVersion(actId, chapterId, sceneId, 'Backup auto avant restauration');
+        
+        scene.content = version.content;
+        StateManager.setState({ project });
+        
+        if (window.StorageService) StorageService.saveProject(project);
+        if (window.ToastUI) ToastUI.success('Version restaurée');
+        
+        return true;
+    }
+
+    return { saveVersion, restoreVersion };
+})();
+
+window.SceneVersionsService = SceneVersionsService;
+window.saveSceneVersion = (actId, chapterId, sceneId) => {
+    const label = prompt('Nom de cette version :');
+    if (label) SceneVersionsService.saveVersion(actId, chapterId, sceneId, label);
+};
+
+
+// ========== js/03-services/codex.service.js ==========
+// Codex Service - Wiki/encyclopédie de l'univers
+const CodexService = (() => {
+    function add(entry) {
+        const state = StateManager.getState();
+        const project = state.project;
+        
+        if (!project.codex) project.codex = [];
+        
+        const newEntry = {
+            id: Date.now(),
+            title: entry.title || '',
+            category: entry.category || '',
+            summary: entry.summary || '',
+            content: entry.content || '',
+            tags: entry.tags || [],
+            ...entry
+        };
+
+        project.codex.push(newEntry);
+        StateManager.setState({ project });
+        
+        if (window.StorageService) StorageService.saveProject(project);
+        return newEntry;
+    }
+
+    function update(id, updates) {
+        const state = StateManager.getState();
+        const project = state.project;
+        
+        const entry = project.codex?.find(e => e.id === id);
+        if (!entry) return null;
+        
+        Object.assign(entry, updates);
+        StateManager.setState({ project });
+        
+        if (window.StorageService) StorageService.saveProject(project);
+        return entry;
+    }
+
+    function remove(id) {
+        const state = StateManager.getState();
+        const project = state.project;
+        
+        if (!project.codex) return false;
+        
+        project.codex = project.codex.filter(e => e.id !== id);
+        StateManager.setState({ project });
+        
+        if (window.StorageService) StorageService.saveProject(project);
+        return true;
+    }
+
+    function getById(id) {
+        const state = StateManager.getState();
+        return state.project?.codex?.find(e => e.id === id) || null;
+    }
+
+    function getAll() {
+        const state = StateManager.getState();
+        return state.project?.codex || [];
+    }
+
+    function getByCategory(category) {
+        return getAll().filter(e => e.category === category);
+    }
+
+    return { add, update, remove, getById, getAll, getByCategory };
+})();
+
+window.CodexService = CodexService;
+window.addCodexEntry = () => {
+    const title = prompt('Titre de l\'entrée :');
+    if (title) CodexService.add({ title });
+};
+window.deleteCodexEntry = (id) => {
+    if (confirm('Supprimer cette entrée ?')) CodexService.remove(id);
+};
+
+
+// ========== js/03-services/todos.service.js ==========
+// Todos Service - Gestion des tâches du projet
+const TodosService = (() => {
+    function add(todo) {
+        const state = StateManager.getState();
+        const project = state.project;
+        
+        if (!project.todos) project.todos = [];
+        
+        const newTodo = {
+            id: Date.now(),
+            text: todo.text || '',
+            completed: false,
+            priority: todo.priority || 'normal',
+            dueDate: todo.dueDate || null,
+            category: todo.category || 'general',
+            ...todo
+        };
+
+        project.todos.push(newTodo);
+        StateManager.setState({ project });
+        
+        if (window.StorageService) StorageService.saveProject(project);
+        return newTodo;
+    }
+
+    function toggle(id) {
+        const state = StateManager.getState();
+        const project = state.project;
+        
+        const todo = project.todos?.find(t => t.id === id);
+        if (!todo) return null;
+        
+        todo.completed = !todo.completed;
+        StateManager.setState({ project });
+        
+        if (window.StorageService) StorageService.saveProject(project);
+        return todo;
+    }
+
+    function remove(id) {
+        const state = StateManager.getState();
+        const project = state.project;
+        
+        if (!project.todos) return false;
+        
+        project.todos = project.todos.filter(t => t.id !== id);
+        StateManager.setState({ project });
+        
+        if (window.StorageService) StorageService.saveProject(project);
+        return true;
+    }
+
+    function getAll() {
+        const state = StateManager.getState();
+        return state.project?.todos || [];
+    }
+
+    function getActive() {
+        return getAll().filter(t => !t.completed);
+    }
+
+    function getCompleted() {
+        return getAll().filter(t => t.completed);
+    }
+
+    return { add, toggle, remove, getAll, getActive, getCompleted };
+})();
+
+window.TodosService = TodosService;
+window.addTodo = () => {
+    const text = prompt('Nouvelle tâche :');
+    if (text) TodosService.add({ text });
+};
+window.toggleTodo = (id) => TodosService.toggle(id);
+window.deleteTodo = (id) => {
+    if (confirm('Supprimer cette tâche ?')) TodosService.remove(id);
+};
+
+
 // ========== js/05-ui/modal.js ==========
 // ============================================
 // MODAL UI - Système de modales
@@ -22961,6 +23417,85 @@ window.toggleLinksPanelVisibility = () => {
 };
 window.focusModeActive = false;
 window.focusPanelOpen = false;
+
+
+// ========== js/05-ui/floating-editor.js ==========
+// Floating Editor UI - Menu flottant pour édition rapide
+const FloatingEditorUI = (() => {
+    let isOpen = false;
+
+    function toggle() {
+        isOpen = !isOpen;
+        const menu = document.getElementById('floatingEditorMenu');
+        const toggle = document.getElementById('floatingEditorToggle');
+        
+        if (menu) {
+            menu.classList.toggle('active');
+        }
+        
+        if (toggle) {
+            toggle.textContent = isOpen ? '✕' : '⚙️';
+        }
+    }
+
+    function close() {
+        isOpen = false;
+        const menu = document.getElementById('floatingEditorMenu');
+        const toggle = document.getElementById('floatingEditorToggle');
+        
+        if (menu) menu.classList.remove('active');
+        if (toggle) toggle.textContent = '⚙️';
+    }
+
+    return { toggle, close };
+})();
+
+window.FloatingEditorUI = FloatingEditorUI;
+window.toggleFloatingEditor = () => FloatingEditorUI.toggle();
+window.closeFloatingEditor = () => FloatingEditorUI.close();
+
+
+// ========== js/05-ui/map-renderer.js ==========
+// Map Renderer UI - Rendu de cartes pour les lieux
+const MapRendererUI = (() => {
+    function render(locations) {
+        // Version simplifiée du rendu de carte
+        if (!locations || locations.length === 0) {
+            return '<div style="text-align: center; padding: 2rem; color: var(--text-muted);">Aucun lieu à afficher sur la carte</div>';
+        }
+
+        let html = '<div class="map-container" style="position: relative; min-height: 400px; background: var(--bg-secondary); border-radius: 8px;">';
+        
+        locations.forEach((loc, index) => {
+            const x = (loc.mapX || (index * 100 + 50)) % 100;
+            const y = (loc.mapY || (index * 80 + 50)) % 100;
+            
+            html += '<div class="map-marker" style="position: absolute; left: ' + x + '%; top: ' + y + '%; transform: translate(-50%, -50%); cursor: pointer;" onclick="openWorldDetail(' + loc.id + ')">';
+            html += '<div style="background: var(--accent-gold); width: 12px; height: 12px; border-radius: 50%; border: 2px solid white;"></div>';
+            html += '<div style="margin-top: 4px; font-size: 0.75rem; white-space: nowrap; background: rgba(0,0,0,0.7); padding: 2px 6px; border-radius: 4px;">' + loc.name + '</div>';
+            html += '</div>';
+        });
+        
+        html += '</div>';
+        return html;
+    }
+
+    function renderMap() {
+        const container = document.getElementById('editorView');
+        if (!container) return;
+        
+        const state = StateManager.getState();
+        const project = state.project;
+        const locations = (project.world || []).filter(w => w.type === 'lieu');
+        
+        container.innerHTML = '<div style="padding: 2rem;"><h2>Carte des Lieux</h2>' + render(locations) + '</div>';
+    }
+
+    return { render, renderMap };
+})();
+
+window.MapRendererUI = MapRendererUI;
+window.renderMap = () => MapRendererUI.renderMap();
 
 
 // ========== js/06-views/characters/characters.render.js ==========
