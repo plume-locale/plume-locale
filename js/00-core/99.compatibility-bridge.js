@@ -208,24 +208,62 @@
             let state = StateManager.getState();
             let project = state.project;
 
-            // Si pas de projet, essayer de charger depuis l'ancien système
-            if (!project && typeof loadAllProjects === 'function') {
-                console.log('[Bridge] Tentative de chargement de l\'ancien projet...');
-                await loadAllProjects();
+            // Si pas de projet, essayer de charger depuis StorageService
+            if (!project || !project.title) {
+                console.log('[Bridge] Tentative de chargement depuis StorageService...');
 
-                // Vérifier si le projet global existe (ancien système)
-                if (window.project && window.project.title) {
-                    console.log('[Bridge] Projet trouvé dans l\'ancien système:', window.project.title);
+                // Charger la liste des projets depuis StorageService
+                let projectsList = [];
+                if (window.StorageService && typeof StorageService.listProjects === 'function') {
+                    projectsList = await StorageService.listProjects();
+                    console.log('[Bridge] Projets trouvés dans StorageService:', projectsList.length);
+                }
 
-                    // Convertir et sauvegarder dans StateManager
-                    StateManager.setState({ project: window.project });
-                    project = window.project;
+                // Si des projets existent, charger le dernier utilisé
+                if (projectsList.length > 0) {
+                    // Récupérer l'ID du dernier projet utilisé
+                    let currentProjectId = null;
+                    if (window.StorageService && typeof StorageService.loadSetting === 'function') {
+                        currentProjectId = await StorageService.loadSetting('currentProjectId');
+                    }
+
+                    // Charger le projet correspondant
+                    let projectId = currentProjectId || projectsList[0].id;
+
+                    if (window.StorageService && typeof StorageService.loadProject === 'function') {
+                        project = await StorageService.loadProject(projectId);
+                        console.log('[Bridge] Projet chargé:', project.title);
+
+                        // Sauvegarder dans StateManager
+                        StateManager.setState({ project: project });
+
+                        // Sauvegarder dans l'ancien système (compatibilité)
+                        window.project = project;
+                        window.currentProjectId = projectId;
+                    }
+                }
+            }
+
+            // Si pas de projet dans StorageService, essayer l'ancien système
+            if (!project || !project.title) {
+                if (typeof loadAllProjects === 'function') {
+                    console.log('[Bridge] Tentative de chargement depuis l\'ancien système...');
+                    await loadAllProjects();
+
+                    // Vérifier si le projet global existe (ancien système)
+                    if (window.project && window.project.title) {
+                        console.log('[Bridge] Projet trouvé dans l\'ancien système:', window.project.title);
+
+                        // Convertir et sauvegarder dans StateManager
+                        StateManager.setState({ project: window.project });
+                        project = window.project;
+                    }
                 }
             }
 
             // Si toujours pas de projet, créer un projet de démo
             if (!project || !project.title) {
-                console.log('[Bridge] Création d\'un projet de démo...');
+                console.log('[Bridge] Aucun projet existant - Création d\'un projet de démo...');
 
                 const demoProject = {
                     id: Date.now(),
