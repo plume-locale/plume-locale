@@ -81,8 +81,7 @@ JS_V2_ORDER = [
     'js/03-services/plot.service.js',
     'js/03-services/narrative-arcs.service.js',
     'js/03-services/theme.service.js',
-    'js/03-services/export.service.js',
-    'js/03-services/project-extended.service.js',
+    # NOTE: export.service.js et project-extended.service.js supprimés - utiliser les fichiers legacy à la place
 
     # UI Components
     'js/05-ui/modal.js',
@@ -93,11 +92,8 @@ JS_V2_ORDER = [
     'js/05-ui/floating-editor.js',
     'js/05-ui/map-renderer.js',
     'js/05-ui/relations-graph.js',
-    'js/05-ui/corkboard.js',
+    # NOTE: corkboard.js, split-view.js, mindmap.js, timeline-metro.js supprimés - utiliser les fichiers legacy à la place
     'js/05-ui/revision-mode.js',
-    'js/05-ui/split-view.js',
-    'js/05-ui/mindmap.js',
-    'js/05-ui/timeline-metro.js',
 
     # Views - Characters
     'js/06-views/characters/characters.render.js',

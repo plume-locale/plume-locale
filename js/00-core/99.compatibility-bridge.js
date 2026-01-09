@@ -398,6 +398,26 @@
     }
 
     /**
+     * Fonction globale pour fermer une modale
+     */
+    window.closeModal = function(modalId) {
+        const modalElement = document.getElementById(modalId);
+        if (modalElement) {
+            modalElement.classList.remove('active');
+        } else if (window.ModalUI && typeof ModalUI.close === 'function') {
+            // Fallback vers ModalUI si l'élément n'existe pas
+            ModalUI.close();
+        }
+    };
+
+    /**
+     * Variables globales pour 03.project.js
+     */
+    if (typeof currentActId === 'undefined') {
+        window.currentActId = null;
+    }
+
+    /**
      * Exposer les fonctions de storage globalement (aliases vers StorageService)
      */
 
