@@ -81,6 +81,8 @@ JS_V2_ORDER = [
     'js/03-services/plot.service.js',
     'js/03-services/narrative-arcs.service.js',
     'js/03-services/theme.service.js',
+    'js/03-services/export.service.js',
+    'js/03-services/project-extended.service.js',
 
     # UI Components
     'js/05-ui/modal.js',
@@ -93,6 +95,9 @@ JS_V2_ORDER = [
     'js/05-ui/relations-graph.js',
     'js/05-ui/corkboard.js',
     'js/05-ui/revision-mode.js',
+    'js/05-ui/split-view.js',
+    'js/05-ui/mindmap.js',
+    'js/05-ui/timeline-metro.js',
 
     # Views - Characters
     'js/06-views/characters/characters.render.js',
@@ -178,15 +183,17 @@ EXCLUDED_OLD_FILES = [
     '37.theme-manager.js', # Remplacé par 03-services/theme.service.js
     '38.tension.js',    # Remplacé par 03-services/tension-words.service.js
     '43.arcs.js',       # Remplacé par 03-services/narrative-arcs.service.js
+    '03.project.js',    # Remplacé par 03-services/project-extended.service.js
+    '16.split-view.js', # Remplacé par 05-ui/split-view.js
+    '31.mindmap.js',    # Remplacé par 05-ui/mindmap.js
+    '36.timeline-metro.js', # Remplacé par 05-ui/timeline-metro.js
+    '39.export.js',     # Remplacé par 03-services/export.service.js
 ]
 
 # Anciens fichiers À GARDER (fonctionnalités non encore migrées)
+# ⚠️ MIGRATION TERMINÉE - Tous les fichiers ont été migrés vers la nouvelle architecture!
 OLD_FILES_TO_KEEP = [
-    '03.project.js',    # Contient encore beaucoup de fonctions nécessaires (à garder temporairement)
-    '16.split-view.js',
-    '31.mindmap.js',
-    '36.timeline-metro.js',
-    '39.export.js',
+    # Aucun - migration 100% complète!
 ]
 
 # Ordre des fichiers CSS (inchangé)
