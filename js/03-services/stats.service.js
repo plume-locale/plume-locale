@@ -118,6 +118,10 @@ const StatsService = (() => {
     };
 })();
 
+// Exposer globalement
+window.StatsService = StatsService;
+window.getWordCount = StatsService.getWordCount;
+
 // Auto-initialisation
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => StatsService.init());
