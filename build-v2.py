@@ -42,6 +42,8 @@ JS_V2_ORDER = [
 
     # Infrastructure
     'js/01-infrastructure/storage.js',
+    'js/01-infrastructure/keyboard.js',
+    'js/01-infrastructure/mobile-gestures.js',
 
     # Models
     'js/04-models/Project.js',
@@ -57,10 +59,14 @@ JS_V2_ORDER = [
     'js/03-services/character.service.js',
     'js/03-services/location.service.js',
     'js/03-services/note.service.js',
+    'js/03-services/stats.service.js',
+    'js/03-services/history.service.js',
+    'js/03-services/import-export.service.js',
 
     # UI Components
     'js/05-ui/modal.js',
     'js/05-ui/toast.js',
+    'js/05-ui/mobile-views.js',
 
     # Views - Characters
     'js/06-views/characters/characters.render.js',
@@ -109,10 +115,16 @@ EXCLUDED_OLD_FILES = [
     '01.app.js',        # Remplacé par 00-core/00.app.js
     '02.storage.js',    # Remplacé par 01-infrastructure/storage.js
     '04.init.js',       # Intégré dans App.js
+    '05.undo-redo.js',  # Remplacé par 03-services/history.service.js
+    '06.structure.js',  # Remplacé par 06-views/structure/
+    '11.updateStats.js', # Remplacé par 03-services/stats.service.js
+    '12.import-export.js', # Remplacé par 03-services/import-export.service.js
     '15.characters.js', # Remplacé par 06-views/characters/
     '17.world.js',      # Remplacé par 06-views/locations/
     '19.notes.js',      # Remplacé par 06-views/notes/
-    '06.structure.js',  # Remplacé par 06-views/structure/
+    '27.keyboardShortcuts.js', # Remplacé par 01-infrastructure/keyboard.js
+    '40.sidebar-views.js', # Remplacé par 05-ui/mobile-views.js
+    '42.mobile-swipe.js', # Remplacé par 01-infrastructure/mobile-gestures.js
     '44.storygrid.js',  # Remplacé par 06-views/story-grid/
     '45.arc-board.js',  # Remplacé par 06-views/arc-board/
 ]
@@ -120,13 +132,10 @@ EXCLUDED_OLD_FILES = [
 # Anciens fichiers À GARDER (fonctionnalités non encore migrées)
 OLD_FILES_TO_KEEP = [
     '03.project.js',    # Contient encore beaucoup de fonctions nécessaires (à garder temporairement)
-    '05.undo-redo.js',
     '07.stats.js',
     '08.auto-detect.js',
     '09.floating-editor.js',
     '10.colorpalette.js',
-    '11.updateStats.js',
-    '12.import-export.js',
     '13.mobile-menu.js',
     '14.dragndrop-acts.js',
     '16.split-view.js',
@@ -138,7 +147,6 @@ OLD_FILES_TO_KEEP = [
     '24.codex.js',
     '25.globalSearch.js',
     '26.focusMode.js',
-    '27.keyboardShortcuts.js',
     '28.revision.js',
     '29.todos.js',
     '30.corkboard.js',
@@ -151,9 +159,7 @@ OLD_FILES_TO_KEEP = [
     '37.theme-manager.js',
     '38.tension.js',
     '39.export.js',
-    '40.sidebar-views.js',
     '41.storageMonitoring.js',
-    '42.mobile-swipe.js',
     '43.arcs.js',
 ]
 

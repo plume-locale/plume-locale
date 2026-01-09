@@ -17484,6 +17484,328 @@ const StorageService = (function() {
 window.StorageService = StorageService;
 
 
+// ========== js/01-infrastructure/keyboard.js ==========
+/**
+ * Keyboard Service
+ * Gestion des raccourcis clavier globaux de l'application
+ */
+
+const KeyboardService = (() => {
+    'use strict';
+
+    /**
+     * Ferme toutes les modales ouvertes
+     */
+    function closeAllModals() {
+        // Utiliser le nouveau système ModalUI si disponible
+        if (window.ModalUI && typeof ModalUI.close === 'function') {
+            ModalUI.close();
+        }
+
+        // Fallback: fermer les modales de l'ancien système
+        const oldModals = [
+            'addChapterModal',
+            'addSceneModal',
+            'addActModal',
+            'addCharacterModal',
+            'addWorldModal',
+            'addTimelineModal',
+            'addNoteModal',
+            'addCodexModal',
+            'backupModal',
+            'referencesModal',
+            'projectsModal',
+            'newProjectModal'
+        ];
+
+        oldModals.forEach(modalId => {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('active');
+            }
+        });
+
+        // Fermer les résultats de recherche si ouverts
+        if (typeof closeSearchResults === 'function') {
+            closeSearchResults();
+        }
+    }
+
+    /**
+     * Ferme le panneau de focus s'il est ouvert
+     */
+    function closeFocusPanel() {
+        if (window.focusPanelOpen && typeof toggleFocusPanel === 'function') {
+            toggleFocusPanel();
+        }
+    }
+
+    /**
+     * Focus sur le champ de recherche globale
+     */
+    function focusGlobalSearch() {
+        const searchInput = document.getElementById('globalSearch');
+        if (searchInput) {
+            searchInput.focus();
+        }
+    }
+
+    /**
+     * Sauvegarde le projet
+     */
+    async function saveProject() {
+        try {
+            // Utiliser le nouveau StorageService si disponible
+            if (window.StorageService && typeof StorageService.saveProject === 'function') {
+                const state = StateManager.getState();
+                if (state.project) {
+                    await StorageService.saveProject(state.project);
+                    if (window.ToastUI) {
+                        ToastUI.success('Projet sauvegardé');
+                    }
+                }
+            }
+            // Fallback: ancien système
+            else if (typeof window.saveProject === 'function') {
+                await window.saveProject();
+            }
+        } catch (error) {
+            console.error('[Keyboard] Erreur sauvegarde:', error);
+            if (window.ToastUI) {
+                ToastUI.error('Erreur lors de la sauvegarde');
+            }
+        }
+    }
+
+    /**
+     * Toggle le mode focus
+     */
+    function toggleFocusMode() {
+        if (typeof window.toggleFocusMode === 'function') {
+            window.toggleFocusMode();
+        }
+    }
+
+    /**
+     * Toggle le mode révision
+     */
+    function toggleRevisionMode() {
+        if (window.currentSceneId && typeof window.toggleRevisionMode === 'function') {
+            window.toggleRevisionMode();
+        }
+    }
+
+    /**
+     * Gestionnaire principal des événements clavier
+     * @param {KeyboardEvent} e - Événement clavier
+     */
+    function handleKeyDown(e) {
+        // ESC - Fermer les modales et panneaux
+        if (e.key === 'Escape') {
+            closeAllModals();
+            closeFocusPanel();
+            return;
+        }
+
+        // Ctrl/Cmd + F - Focus recherche globale
+        if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+            e.preventDefault();
+            focusGlobalSearch();
+            return;
+        }
+
+        // Ctrl/Cmd + S - Sauvegarder
+        if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+            e.preventDefault();
+            saveProject();
+            return;
+        }
+
+        // F11 - Mode focus
+        if (e.key === 'F11') {
+            e.preventDefault();
+            toggleFocusMode();
+            return;
+        }
+
+        // Ctrl/Cmd + R - Mode révision
+        if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
+            e.preventDefault();
+            toggleRevisionMode();
+            return;
+        }
+
+        // Publier l'événement pour que d'autres modules puissent réagir
+        if (window.EventBus) {
+            EventBus.emit('keyboard:shortcut', {
+                key: e.key,
+                ctrl: e.ctrlKey,
+                meta: e.metaKey,
+                shift: e.shiftKey,
+                alt: e.altKey
+            });
+        }
+    }
+
+    /**
+     * Initialise le service de clavier
+     */
+    function init() {
+        document.addEventListener('keydown', handleKeyDown);
+        console.log('[Keyboard] Service initialisé');
+    }
+
+    /**
+     * Nettoie les écouteurs d'événements
+     */
+    function destroy() {
+        document.removeEventListener('keydown', handleKeyDown);
+    }
+
+    // API publique
+    return {
+        init,
+        destroy,
+        closeAllModals,
+        focusGlobalSearch,
+        saveProject
+    };
+})();
+
+// Auto-initialisation
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => KeyboardService.init());
+} else {
+    KeyboardService.init();
+}
+
+
+// ========== js/01-infrastructure/mobile-gestures.js ==========
+/**
+ * Mobile Gestures Service
+ * Gestion des gestes tactiles pour les appareils mobiles
+ */
+
+const MobileGesturesService = (() => {
+    'use strict';
+
+    // État du swipe
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchEndX = 0;
+    let touchEndY = 0;
+
+    /**
+     * Toggle la sidebar mobile
+     */
+    function toggleMobileSidebar() {
+        const sidebar = document.querySelector('.sidebar');
+        if (!sidebar) return;
+
+        // Utiliser l'ancien système si disponible
+        if (typeof window.toggleMobileSidebar === 'function') {
+            window.toggleMobileSidebar();
+        } else {
+            // Implémentation basique
+            sidebar.classList.toggle('mobile-open');
+        }
+    }
+
+    /**
+     * Gère le début du swipe
+     * @param {TouchEvent} e - Événement tactile
+     */
+    function handleTouchStart(e) {
+        touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY;
+    }
+
+    /**
+     * Gère la fin du swipe
+     * @param {TouchEvent} e - Événement tactile
+     */
+    function handleTouchEnd(e) {
+        touchEndX = e.changedTouches[0].screenX;
+        touchEndY = e.changedTouches[0].screenY;
+        handleSwipe();
+    }
+
+    /**
+     * Détecte et traite le geste de swipe
+     */
+    function handleSwipe() {
+        const diffX = touchEndX - touchStartX;
+        const diffY = touchEndY - touchStartY;
+
+        // Vérifier que c'est un swipe horizontal (pas vertical)
+        if (Math.abs(diffX) > Math.abs(diffY)) {
+            const sidebar = document.querySelector('.sidebar');
+            if (!sidebar) return;
+
+            // Swipe depuis le bord gauche (moins de 50px du bord)
+            if (touchStartX < 50 && diffX > 50) {
+                // Swipe vers la droite depuis le bord gauche - Ouvrir
+                if (!sidebar.classList.contains('mobile-open')) {
+                    toggleMobileSidebar();
+                }
+            }
+            // Swipe vers la gauche pour fermer
+            else if (diffX < -50) {
+                if (sidebar.classList.contains('mobile-open')) {
+                    toggleMobileSidebar();
+                }
+            }
+        }
+    }
+
+    /**
+     * Initialise le service de gestes mobiles
+     */
+    function init() {
+        // Activer seulement sur mobile
+        if (window.innerWidth <= 768) {
+            document.addEventListener('touchstart', handleTouchStart, { passive: true });
+            document.addEventListener('touchend', handleTouchEnd, { passive: true });
+            console.log('[MobileGestures] Service initialisé');
+        }
+
+        // Réinitialiser lors du redimensionnement
+        window.addEventListener('resize', () => {
+            const isMobile = window.innerWidth <= 768;
+            if (isMobile) {
+                // Réactiver si pas déjà actif
+                document.removeEventListener('touchstart', handleTouchStart);
+                document.removeEventListener('touchend', handleTouchEnd);
+                document.addEventListener('touchstart', handleTouchStart, { passive: true });
+                document.addEventListener('touchend', handleTouchEnd, { passive: true });
+            }
+        });
+    }
+
+    /**
+     * Nettoie les écouteurs d'événements
+     */
+    function destroy() {
+        document.removeEventListener('touchstart', handleTouchStart);
+        document.removeEventListener('touchend', handleTouchEnd);
+    }
+
+    // API publique
+    return {
+        init,
+        destroy,
+        toggleMobileSidebar
+    };
+})();
+
+// Auto-initialisation
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => MobileGesturesService.init());
+} else {
+    MobileGesturesService.init();
+}
+
+
 // ========== js/04-models/Project.js ==========
 // ============================================
 // PROJECT MODEL - Modèle de données Projet
@@ -19630,6 +19952,829 @@ const NoteService = {
 window.NoteService = NoteService;
 
 
+// ========== js/03-services/stats.service.js ==========
+/**
+ * Stats Service
+ * Calcule et met à jour les statistiques du projet
+ */
+
+const StatsService = (() => {
+    'use strict';
+
+    /**
+     * Compte le nombre de mots dans un texte
+     * @param {string} text - Texte à analyser
+     * @returns {number} Nombre de mots
+     */
+    function getWordCount(text) {
+        if (!text) return 0;
+        // Supprimer les balises HTML si présentes
+        const plainText = text.replace(/<[^>]*>/g, ' ');
+        // Compter les mots (séparés par espaces)
+        const words = plainText.trim().split(/\s+/);
+        return words.filter(w => w.length > 0).length;
+    }
+
+    /**
+     * Calcule les statistiques du projet
+     * @param {Object} project - Projet à analyser
+     * @returns {Object} Statistiques calculées
+     */
+    function calculateStats(project) {
+        if (!project || !project.acts) {
+            return {
+                totalActs: 0,
+                totalChapters: 0,
+                totalScenes: 0,
+                totalWords: 0,
+                totalCharacters: 0,
+                totalLocations: 0,
+                totalNotes: 0
+            };
+        }
+
+        const totalActs = project.acts.length;
+        const totalChapters = project.acts.reduce((sum, act) =>
+            sum + (act.chapters ? act.chapters.length : 0), 0);
+
+        let totalScenes = 0;
+        let totalWords = 0;
+
+        project.acts.forEach(act => {
+            if (!act.chapters) return;
+
+            act.chapters.forEach(chapter => {
+                if (!chapter.scenes) return;
+
+                totalScenes += chapter.scenes.length;
+
+                chapter.scenes.forEach(scene => {
+                    totalWords += getWordCount(scene.content || '');
+                });
+            });
+        });
+
+        return {
+            totalActs,
+            totalChapters,
+            totalScenes,
+            totalWords,
+            totalCharacters: project.characters ? project.characters.length : 0,
+            totalLocations: project.world ? project.world.length : 0,
+            totalNotes: project.notes ? project.notes.length : 0
+        };
+    }
+
+    /**
+     * Met à jour les statistiques affichées dans le header
+     * @param {Object} project - Projet actuel
+     */
+    function updateHeaderStats(project) {
+        const stats = calculateStats(project);
+
+        // Mettre à jour les éléments du DOM
+        const headerWords = document.getElementById('headerTotalWords');
+        const headerChapters = document.getElementById('headerTotalChapters');
+        const headerTitle = document.getElementById('headerProjectTitle');
+
+        if (headerWords) {
+            headerWords.textContent = `${stats.totalWords} mots`;
+        }
+
+        if (headerChapters) {
+            headerChapters.textContent = `${stats.totalChapters} chapitres`;
+        }
+
+        if (headerTitle && project.title) {
+            headerTitle.textContent = project.title;
+        }
+    }
+
+    /**
+     * S'abonne aux changements de projet pour mettre à jour les stats automatiquement
+     */
+    function init() {
+        // S'abonner aux changements de projet dans StateManager
+        if (window.StateManager) {
+            StateManager.subscribe((state) => {
+                if (state.project) {
+                    updateHeaderStats(state.project);
+                }
+            });
+        }
+    }
+
+    // API publique
+    return {
+        init,
+        getWordCount,
+        calculateStats,
+        updateHeaderStats
+    };
+})();
+
+// Auto-initialisation
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => StatsService.init());
+} else {
+    StatsService.init();
+}
+
+
+// ========== js/03-services/history.service.js ==========
+/**
+ * History Service
+ * Gestion de l'historique (Undo/Redo) pour le projet
+ */
+
+const HistoryService = (() => {
+    'use strict';
+
+    // Configuration
+    const MAX_HISTORY_SIZE = 50;
+    const DEBOUNCE_DELAY = 1000; // 1 seconde
+
+    // État
+    let historyStack = [];
+    let redoStack = [];
+    let debounceTimer = null;
+    let isUndoRedoAction = false;
+
+    /**
+     * Sauvegarde l'état actuel dans l'historique
+     */
+    function saveToHistory() {
+        const state = StateManager.getState();
+        const project = state.project;
+
+        if (!project || isUndoRedoAction) {
+            return;
+        }
+
+        console.log('[History] Sauvegarde - Stack:', historyStack.length);
+
+        // Créer une copie profonde du projet
+        const snapshot = JSON.parse(JSON.stringify(project));
+
+        // Ajouter à l'historique
+        historyStack.push(snapshot);
+
+        // Limiter la taille
+        if (historyStack.length > MAX_HISTORY_SIZE) {
+            historyStack.shift();
+        }
+
+        // Vider le redo stack car on a fait une nouvelle action
+        redoStack = [];
+
+        console.log('[History] État sauvegardé - Total:', historyStack.length);
+
+        // Mettre à jour l'UI
+        updateButtons();
+    }
+
+    /**
+     * Sauvegarde immédiatement (annule le debounce)
+     */
+    function saveToHistoryImmediate() {
+        if (debounceTimer) {
+            clearTimeout(debounceTimer);
+            debounceTimer = null;
+        }
+        saveToHistory();
+    }
+
+    /**
+     * Sauvegarde avec debounce (pour les modifications fréquentes)
+     */
+    function saveToHistoryDebounced() {
+        if (debounceTimer) {
+            clearTimeout(debounceTimer);
+        }
+        debounceTimer = setTimeout(() => {
+            saveToHistory();
+            debounceTimer = null;
+        }, DEBOUNCE_DELAY);
+    }
+
+    /**
+     * Annule la dernière action
+     */
+    async function undo() {
+        console.log('[History] Undo - Stack:', historyStack.length);
+
+        if (historyStack.length === 0) {
+            console.log('[History] Historique vide');
+            if (window.ToastUI) {
+                ToastUI.warning('Aucune action à annuler');
+            } else {
+                showNotification('⚠️ Aucune action à annuler');
+            }
+            return;
+        }
+
+        try {
+            // Sauvegarder l'état actuel dans le redo stack
+            const state = StateManager.getState();
+            redoStack.push(JSON.parse(JSON.stringify(state.project)));
+            console.log('[History] État actuel → redoStack');
+
+            // Restaurer l'état précédent
+            const previousState = historyStack.pop();
+            console.log('[History] État précédent récupéré - Reste:', historyStack.length);
+
+            // Flag pour éviter de sauvegarder cette restauration
+            isUndoRedoAction = true;
+
+            // Mettre à jour l'état
+            StateManager.setState({ project: JSON.parse(JSON.stringify(previousState)) });
+
+            // Aussi mettre à jour window.project pour compatibilité
+            window.project = JSON.parse(JSON.stringify(previousState));
+
+            // Sauvegarder
+            if (window.StorageService) {
+                await StorageService.saveProject(previousState);
+            } else if (typeof saveProject === 'function') {
+                await window.saveProject();
+            }
+
+            // Rafraîchir les vues
+            refreshAllViews();
+
+            isUndoRedoAction = false;
+            updateButtons();
+
+            if (window.ToastUI) {
+                ToastUI.success('Action annulée');
+            } else {
+                showNotification('↶ Annulé');
+            }
+
+        } catch (error) {
+            console.error('[History] Erreur undo:', error);
+            isUndoRedoAction = false;
+            if (window.ToastUI) {
+                ToastUI.error('Erreur lors de l\'annulation');
+            }
+        }
+    }
+
+    /**
+     * Rétablit la dernière action annulée
+     */
+    async function redo() {
+        console.log('[History] Redo - RedoStack:', redoStack.length);
+
+        if (redoStack.length === 0) {
+            if (window.ToastUI) {
+                ToastUI.warning('Aucune action à rétablir');
+            } else {
+                showNotification('⚠️ Aucune action à rétablir');
+            }
+            return;
+        }
+
+        try {
+            // Sauvegarder l'état actuel dans l'historique
+            const state = StateManager.getState();
+            historyStack.push(JSON.parse(JSON.stringify(state.project)));
+
+            // Restaurer l'état suivant
+            const nextState = redoStack.pop();
+
+            // Flag pour éviter de sauvegarder cette restauration
+            isUndoRedoAction = true;
+
+            // Mettre à jour l'état
+            StateManager.setState({ project: JSON.parse(JSON.stringify(nextState)) });
+
+            // Aussi mettre à jour window.project pour compatibilité
+            window.project = JSON.parse(JSON.stringify(nextState));
+
+            // Sauvegarder
+            if (window.StorageService) {
+                await StorageService.saveProject(nextState);
+            } else if (typeof saveProject === 'function') {
+                await window.saveProject();
+            }
+
+            // Rafraîchir les vues
+            refreshAllViews();
+
+            isUndoRedoAction = false;
+            updateButtons();
+
+            if (window.ToastUI) {
+                ToastUI.success('Action rétablie');
+            } else {
+                showNotification('↷ Rétabli');
+            }
+
+        } catch (error) {
+            console.error('[History] Erreur redo:', error);
+            isUndoRedoAction = false;
+            if (window.ToastUI) {
+                ToastUI.error('Erreur lors du rétablissement');
+            }
+        }
+    }
+
+    /**
+     * Rafraîchit toutes les vues
+     */
+    function refreshAllViews() {
+        // Utiliser le nouveau système
+        if (window.EventBus) {
+            EventBus.emit('project:updated');
+        }
+
+        // Fallback: ancien système
+        if (typeof renderActsList === 'function') {
+            renderActsList();
+        }
+        if (typeof renderCharactersList === 'function') {
+            renderCharactersList();
+        }
+        if (typeof renderWorldList === 'function') {
+            renderWorldList();
+        }
+        if (typeof renderNotesList === 'function') {
+            renderNotesList();
+        }
+    }
+
+    /**
+     * Affiche une notification simple
+     * @param {string} message - Message à afficher
+     */
+    function showNotification(message) {
+        if (window.ToastUI) {
+            ToastUI.info(message);
+        } else {
+            // Notification basique
+            const notification = document.createElement('div');
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: var(--bg-secondary);
+                color: var(--text-primary);
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                z-index: 10000;
+            `;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 2000);
+        }
+    }
+
+    /**
+     * Met à jour l'état des boutons undo/redo
+     */
+    function updateButtons() {
+        const undoDisabled = historyStack.length === 0;
+        const redoDisabled = redoStack.length === 0;
+
+        // Boutons dans le header
+        const headerUndoBtn = document.getElementById('headerUndoBtn');
+        const headerRedoBtn = document.getElementById('headerRedoBtn');
+
+        if (headerUndoBtn) {
+            headerUndoBtn.disabled = undoDisabled;
+            headerUndoBtn.title = historyStack.length > 0
+                ? `Annuler (${historyStack.length} action(s) disponible(s)) - Ctrl+Z`
+                : 'Aucune action à annuler';
+        }
+
+        if (headerRedoBtn) {
+            headerRedoBtn.disabled = redoDisabled;
+            headerRedoBtn.title = redoStack.length > 0
+                ? `Rétablir (${redoStack.length} action(s) disponible(s)) - Ctrl+Y`
+                : 'Aucune action à rétablir';
+        }
+
+        // Boutons dans le menu mobile
+        const mobileUndoBtn = document.getElementById('mobileUndoBtn');
+        const mobileRedoBtn = document.getElementById('mobileRedoBtn');
+
+        if (mobileUndoBtn) {
+            mobileUndoBtn.disabled = undoDisabled;
+            mobileUndoBtn.style.opacity = undoDisabled ? '0.5' : '1';
+            mobileUndoBtn.style.cursor = undoDisabled ? 'not-allowed' : 'pointer';
+        }
+
+        if (mobileRedoBtn) {
+            mobileRedoBtn.disabled = redoDisabled;
+            mobileRedoBtn.style.opacity = redoDisabled ? '0.5' : '1';
+            mobileRedoBtn.style.cursor = redoDisabled ? 'not-allowed' : 'pointer';
+        }
+    }
+
+    /**
+     * Initialise le service d'historique
+     */
+    function init() {
+        // S'abonner aux changements de projet
+        if (window.StateManager) {
+            StateManager.subscribe((state) => {
+                if (state.project && !isUndoRedoAction) {
+                    saveToHistoryDebounced();
+                }
+            });
+        }
+
+        // Écouter les raccourcis clavier
+        document.addEventListener('keydown', (e) => {
+            // Ctrl+Z - Undo
+            if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+                e.preventDefault();
+                undo();
+            }
+            // Ctrl+Y ou Ctrl+Shift+Z - Redo
+            else if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
+                e.preventDefault();
+                redo();
+            }
+        });
+
+        // Initialiser les boutons
+        updateButtons();
+
+        console.log('[History] Service initialisé');
+    }
+
+    /**
+     * Réinitialise l'historique
+     */
+    function clear() {
+        historyStack = [];
+        redoStack = [];
+        updateButtons();
+    }
+
+    // API publique
+    return {
+        init,
+        clear,
+        undo,
+        redo,
+        saveToHistory,
+        saveToHistoryImmediate,
+        saveToHistoryDebounced,
+        updateButtons
+    };
+})();
+
+// Exposer globalement pour compatibilité
+window.HistoryService = HistoryService;
+window.undo = () => HistoryService.undo();
+window.redo = () => HistoryService.redo();
+window.saveToHistory = () => HistoryService.saveToHistoryImmediate();
+window.saveToHistoryImmediate = () => HistoryService.saveToHistoryImmediate();
+window.updateUndoRedoButtons = () => HistoryService.updateButtons();
+
+// Auto-initialisation
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => HistoryService.init());
+} else {
+    HistoryService.init();
+}
+
+
+// ========== js/03-services/import-export.service.js ==========
+/**
+ * Import/Export Service
+ * Gestion de l'import et export des projets
+ */
+
+const ImportExportService = (() => {
+    'use strict';
+
+    /**
+     * Exporte le projet au format JSON
+     * @param {Object} project - Projet à exporter
+     */
+    async function exportToJSON(project) {
+        if (!project) {
+            const state = StateManager.getState();
+            project = state.project;
+        }
+
+        if (!project) {
+            if (window.ToastUI) {
+                ToastUI.error('Aucun projet à exporter');
+            }
+            return;
+        }
+
+        try {
+            const dataStr = JSON.stringify(project, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            const filename = `${project.title.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.json`;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+
+            if (window.ToastUI) {
+                ToastUI.success(`Fichier JSON téléchargé : ${filename}`);
+            } else {
+                alert(`✅ Fichier JSON téléchargé !\n\nNom : ${filename}\n\nVous pouvez maintenant l'uploader sur Google Drive, Dropbox, ou tout autre service cloud.`);
+            }
+        } catch (error) {
+            console.error('[ImportExport] Erreur export JSON:', error);
+            if (window.ToastUI) {
+                ToastUI.error('Erreur lors de l\'export');
+            }
+        }
+    }
+
+    /**
+     * Exporte le projet au format texte brut
+     * @param {Object} project - Projet à exporter
+     */
+    function exportToText(project) {
+        if (!project) {
+            const state = StateManager.getState();
+            project = state.project;
+        }
+
+        if (!project) {
+            if (window.ToastUI) {
+                ToastUI.error('Aucun projet à exporter');
+            }
+            return;
+        }
+
+        try {
+            let text = `${project.title}\n${'='.repeat(project.title.length)}\n\n`;
+
+            if (project.acts) {
+                project.acts.forEach(act => {
+                    text += `\n\n${act.title}\n${'='.repeat(act.title.length)}\n\n`;
+
+                    if (act.chapters) {
+                        act.chapters.forEach(chapter => {
+                            text += `\n${chapter.title}\n${'-'.repeat(chapter.title.length)}\n\n`;
+
+                            if (chapter.scenes) {
+                                chapter.scenes.forEach(scene => {
+                                    // Convertir HTML en texte brut
+                                    const temp = document.createElement('div');
+                                    temp.innerHTML = scene.content || '';
+                                    const plainText = temp.textContent || temp.innerText || '';
+
+                                    text += `\n${scene.title}\n\n${plainText}\n\n`;
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${project.title.replace(/\s+/g, '_')}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+
+            if (window.ToastUI) {
+                ToastUI.success('Fichier texte téléchargé');
+            }
+        } catch (error) {
+            console.error('[ImportExport] Erreur export texte:', error);
+            if (window.ToastUI) {
+                ToastUI.error('Erreur lors de l\'export');
+            }
+        }
+    }
+
+    /**
+     * Importe un projet depuis un fichier JSON
+     * @param {File} file - Fichier à importer
+     */
+    async function importFromFile(file) {
+        if (!file) {
+            if (window.ToastUI) {
+                ToastUI.error('Aucun fichier sélectionné');
+            }
+            return;
+        }
+
+        if (!file.name.endsWith('.json')) {
+            if (window.ToastUI) {
+                ToastUI.error('Le fichier doit être au format JSON');
+            } else {
+                alert('❌ Erreur : Le fichier doit être au format JSON');
+            }
+            return;
+        }
+
+        // Demander confirmation
+        const confirmMessage = '⚠️ ATTENTION : L\'import va remplacer toutes vos données actuelles.\n\nVoulez-vous créer une sauvegarde avant de continuer ?';
+        const shouldBackup = window.ModalUI
+            ? await ModalUI.confirm(confirmMessage)
+            : confirm(confirmMessage);
+
+        if (!shouldBackup) {
+            return;
+        }
+
+        // Créer une sauvegarde avant l'import
+        const state = StateManager.getState();
+        if (state.project) {
+            await exportToJSON(state.project);
+        }
+
+        // Lire le fichier
+        const reader = new FileReader();
+
+        reader.onload = async function(e) {
+            try {
+                const importedData = JSON.parse(e.target.result);
+
+                // Valider les données importées
+                if (!importedData.acts || !Array.isArray(importedData.acts)) {
+                    throw new Error('Format de fichier invalide');
+                }
+
+                // Fusionner avec la structure actuelle pour assurer que tous les champs existent
+                const project = {
+                    id: importedData.id || Date.now(),
+                    title: importedData.title || 'Mon Roman',
+                    description: importedData.description || '',
+                    acts: importedData.acts || [],
+                    characters: importedData.characters || [],
+                    world: importedData.world || [],
+                    timeline: importedData.timeline || [],
+                    notes: importedData.notes || [],
+                    codex: importedData.codex || [],
+                    stats: importedData.stats || {
+                        dailyGoal: 500,
+                        totalGoal: 80000,
+                        writingSessions: []
+                    },
+                    versions: importedData.versions || [],
+                    mindmaps: importedData.mindmaps || [],
+                    arcs: importedData.arcs || []
+                };
+
+                // Mettre à jour l'état
+                StateManager.setState({ project });
+
+                // Sauvegarder
+                if (window.StorageService) {
+                    await StorageService.saveProject(project);
+                }
+
+                // Aussi mettre à jour window.project pour compatibilité
+                window.project = project;
+
+                // Naviguer vers la vue structure
+                if (window.Router) {
+                    Router.navigate('structure');
+                } else if (typeof switchView === 'function') {
+                    switchView('editor');
+                }
+
+                // Fermer la modale de backup si ouverte
+                if (window.ModalUI) {
+                    ModalUI.close();
+                }
+
+                // Notification de succès
+                if (window.ToastUI) {
+                    ToastUI.success('Import réussi ! Toutes vos données ont été restaurées.');
+                } else {
+                    alert('✅ Import réussi !\n\nToutes vos données ont été restaurées.');
+                }
+
+                // Publier l'événement
+                if (window.EventBus) {
+                    EventBus.emit('project:imported', { project });
+                }
+
+            } catch (error) {
+                console.error('[ImportExport] Erreur import:', error);
+                if (window.ToastUI) {
+                    ToastUI.error('Erreur lors de l\'import : ' + error.message);
+                } else {
+                    alert('❌ Erreur lors de l\'import : ' + error.message);
+                }
+            }
+        };
+
+        reader.onerror = function() {
+            if (window.ToastUI) {
+                ToastUI.error('Erreur lors de la lecture du fichier');
+            } else {
+                alert('❌ Erreur lors de la lecture du fichier');
+            }
+        };
+
+        reader.readAsText(file);
+    }
+
+    /**
+     * Ouvre le sélecteur de fichier pour l'import
+     */
+    function openFileSelector() {
+        const input = document.getElementById('importFileInput');
+        if (input) {
+            input.click();
+        } else {
+            // Créer un input temporaire
+            const tempInput = document.createElement('input');
+            tempInput.type = 'file';
+            tempInput.accept = '.json';
+            tempInput.onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    importFromFile(file);
+                }
+            };
+            tempInput.click();
+        }
+    }
+
+    /**
+     * Affiche le menu de backup
+     */
+    function showBackupMenu() {
+        const modal = document.getElementById('backupModal');
+        if (modal) {
+            modal.classList.add('active');
+        } else if (window.ModalUI) {
+            const content = `
+                <div style="text-align: center; padding: 2rem;">
+                    <h2 style="margin-bottom: 1.5rem;">Sauvegarde et Import</h2>
+                    <button onclick="ImportExportService.exportToJSON()" class="btn btn-primary" style="margin: 0.5rem; padding: 1rem 2rem;">
+                        📥 Exporter en JSON
+                    </button>
+                    <button onclick="ImportExportService.exportToText()" class="btn btn-secondary" style="margin: 0.5rem; padding: 1rem 2rem;">
+                        📄 Exporter en TXT
+                    </button>
+                    <button onclick="ImportExportService.openFileSelector()" class="btn btn-secondary" style="margin: 0.5rem; padding: 1rem 2rem;">
+                        📤 Importer depuis fichier
+                    </button>
+                </div>
+            `;
+            ModalUI.open('backup-modal', content, { title: 'Gestion des sauvegardes' });
+        }
+    }
+
+    // API publique
+    return {
+        exportToJSON,
+        exportToText,
+        importFromFile,
+        openFileSelector,
+        showBackupMenu
+    };
+})();
+
+// Exposer globalement pour compatibilité
+window.ImportExportService = ImportExportService;
+window.exportToJSON = () => ImportExportService.exportToJSON();
+window.exportProject = () => ImportExportService.exportToText();
+window.importFromFile = () => ImportExportService.openFileSelector();
+window.showBackupMenu = () => ImportExportService.showBackupMenu();
+
+// Gestion de l'input file si présent dans le DOM
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        const importInput = document.getElementById('importFileInput');
+        if (importInput) {
+            importInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    ImportExportService.importFromFile(file);
+                    e.target.value = ''; // Reset input
+                }
+            });
+        }
+    });
+} else {
+    const importInput = document.getElementById('importFileInput');
+    if (importInput) {
+        importInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                ImportExportService.importFromFile(file);
+                e.target.value = ''; // Reset input
+            }
+        });
+    }
+}
+
+
 // ========== js/05-ui/modal.js ==========
 // ============================================
 // MODAL UI - Système de modales
@@ -20193,6 +21338,193 @@ const ToastUI = (function() {
 
 // Exposer globalement
 window.ToastUI = ToastUI;
+
+
+// ========== js/05-ui/mobile-views.js ==========
+/**
+ * Mobile Views UI
+ * Gestion des vues mobiles pour la sidebar
+ */
+
+const MobileViewsUI = (() => {
+    'use strict';
+
+    // Configuration des vues
+    const VIEW_CONFIGS = {
+        editor: {
+            icon: '📝',
+            title: 'Structure de votre roman',
+            description: 'Organisez votre roman en actes, chapitres et scènes',
+            emptyMessage: 'Aucun acte créé',
+            emptySubMessage: 'Commencez par créer votre premier acte pour structurer votre histoire',
+            actionButton: '<button class="btn btn-primary" style="font-size: 1.2rem; padding: 1rem 2rem;" onclick="openAddActModal()">+ Créer un acte</button>',
+            sidebarHint: 'Utilisez la poignée dorée sur le bord gauche pour naviguer dans votre structure',
+            getCount: (project) => project.acts ? project.acts.length : 0,
+            isEmpty: (project) => !project.acts || project.acts.length === 0
+        },
+        characters: {
+            icon: '👥',
+            title: 'Personnages',
+            description: 'Gérez vos personnages et leurs caractéristiques',
+            emptyMessage: 'Aucun personnage créé',
+            emptySubMessage: 'Créez votre premier personnage pour donner vie à votre histoire',
+            actionButton: '<button class="btn btn-primary" style="font-size: 1.2rem; padding: 1rem 2rem;" onclick="openAddCharacterModal()">+ Créer un personnage</button>',
+            sidebarHint: 'Utilisez la poignée dorée sur le bord gauche pour voir la liste complète',
+            getCount: (project) => project.characters ? project.characters.length : 0,
+            isEmpty: (project) => !project.characters || project.characters.length === 0
+        },
+        world: {
+            icon: '🌍',
+            title: 'Univers',
+            description: 'Créez les éléments de votre monde (lieux, objets, concepts)',
+            emptyMessage: 'Aucun élément créé',
+            emptySubMessage: 'Ajoutez des lieux, objets ou concepts pour enrichir votre univers',
+            actionButton: '<button class="btn btn-primary" style="font-size: 1.2rem; padding: 1rem 2rem;" onclick="openAddWorldModal()">+ Créer un élément</button>',
+            sidebarHint: 'Utilisez la poignée dorée sur le bord gauche pour voir tous vos éléments',
+            getCount: (project) => project.world ? project.world.length : 0,
+            isEmpty: (project) => !project.world || project.world.length === 0
+        },
+        notes: {
+            icon: '📋',
+            title: 'Notes',
+            description: 'Prenez des notes et organisez vos recherches',
+            emptyMessage: 'Aucune note créée',
+            emptySubMessage: 'Créez des notes pour garder vos idées et recherches organisées',
+            actionButton: '<button class="btn btn-primary" style="font-size: 1.2rem; padding: 1rem 2rem;" onclick="openAddNoteModal()">+ Créer une note</button>',
+            sidebarHint: 'Utilisez la poignée dorée sur le bord gauche pour voir toutes vos notes',
+            getCount: (project) => project.notes ? project.notes.length : 0,
+            isEmpty: (project) => !project.notes || project.notes.length === 0
+        },
+        codex: {
+            icon: '📖',
+            title: 'Codex',
+            description: 'Wiki de votre univers - glossaire et encyclopédie',
+            emptyMessage: 'Aucune entrée dans le codex',
+            emptySubMessage: 'Créez des entrées pour documenter votre univers',
+            actionButton: '<button class="btn btn-primary" style="font-size: 1.2rem; padding: 1rem 2rem;" onclick="openAddCodexModal()">+ Créer une entrée</button>',
+            sidebarHint: 'Utilisez la poignée dorée sur le bord gauche pour parcourir le codex',
+            getCount: (project) => project.codex ? project.codex.length : 0,
+            isEmpty: (project) => !project.codex || project.codex.length === 0
+        }
+    };
+
+    /**
+     * Génère le HTML pour une vue mobile vide
+     * @param {Object} config - Configuration de la vue
+     * @param {number} count - Nombre d'éléments
+     * @param {boolean} isEmpty - Vue vide ou non
+     * @returns {string} HTML généré
+     */
+    function generateViewHTML(config, count, isEmpty) {
+        let html = `
+            <div class="empty-state" style="padding: 2rem 1.5rem; text-align: center;">
+                <div class="empty-state-icon" style="font-size: 4rem; margin-bottom: 1rem;">
+                    ${config.icon}
+                </div>
+                <div class="empty-state-title" style="font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-primary);">
+                    ${config.title}
+                </div>
+                <div class="empty-state-text" style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6;">
+                    ${config.description}
+                </div>
+        `;
+
+        if (isEmpty) {
+            html += `
+                <div style="background: var(--bg-secondary); padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem; border-left: 3px solid var(--accent-gold);">
+                    <div style="font-weight: 600; margin-bottom: 0.5rem; color: var(--text-primary);">
+                        ${config.emptyMessage}
+                    </div>
+                    <div style="color: var(--text-secondary); font-size: 0.95rem;">
+                        ${config.emptySubMessage}
+                    </div>
+                </div>
+                ${config.actionButton}
+            `;
+        } else {
+            html += `
+                <div style="background: var(--bg-secondary); padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                    <div style="font-size: 2rem; font-weight: bold; color: var(--accent-gold); margin-bottom: 0.5rem;">
+                        ${count}
+                    </div>
+                    <div style="color: var(--text-secondary);">
+                        ${count === 1 ? 'élément' : 'éléments'}
+                    </div>
+                </div>
+                ${config.actionButton}
+            `;
+        }
+
+        html += `
+                <div style="margin-top: 2rem; padding: 1rem; background: rgba(212, 175, 55, 0.1); border-radius: 8px; border: 1px solid var(--accent-gold);">
+                    <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">💡</div>
+                    <div style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6;">
+                        ${config.sidebarHint}
+                    </div>
+                </div>
+            </div>
+        `;
+
+        return html;
+    }
+
+    /**
+     * Rend la vue mobile pour la sidebar
+     * @param {string} view - Nom de la vue
+     */
+    function render(view) {
+        const editorView = document.getElementById('editorView');
+        if (!editorView) return;
+
+        const config = VIEW_CONFIGS[view];
+        if (!config) return;
+
+        // Récupérer le projet actuel
+        const state = window.StateManager ? StateManager.getState() : {};
+        const project = state.project || window.project || {};
+
+        // Calculer l'état de la vue
+        const isEmpty = config.isEmpty(project);
+        const count = config.getCount(project);
+
+        // Générer et injecter le HTML
+        editorView.innerHTML = generateViewHTML(config, count, isEmpty);
+    }
+
+    /**
+     * Initialise le service
+     */
+    function init() {
+        // S'abonner aux changements de vue si EventBus existe
+        if (window.EventBus) {
+            EventBus.on('view:changed', (data) => {
+                if (data.view && window.innerWidth <= 768) {
+                    render(data.view);
+                }
+            });
+        }
+
+        console.log('[MobileViews] UI initialisée');
+    }
+
+    // API publique
+    return {
+        init,
+        render
+    };
+})();
+
+// Auto-initialisation
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => MobileViewsUI.init());
+} else {
+    MobileViewsUI.init();
+}
+
+// Exposer la fonction render globalement pour compatibilité
+window.renderMobileSidebarView = function(view) {
+    MobileViewsUI.render(view);
+};
 
 
 // ========== js/06-views/characters/characters.render.js ==========
@@ -26537,150 +27869,6 @@ if (App.isDevelopment()) {
         }
 
 
-// ========== [OLD] js/05.undo-redo.js ==========
-        function saveToHistory() {
-            // Créer une copie profonde du projet
-            const snapshot = JSON.parse(JSON.stringify(project));
-            
-            console.log('📝 saveToHistory appelé - historyStack.length:', historyStack.length);
-            
-            // Ajouter à l'historique
-            historyStack.push(snapshot);
-            
-            // Limiter la taille de l'historique
-            if (historyStack.length > maxHistorySize) {
-                historyStack.shift(); // Retirer le plus ancien
-            }
-            
-            // Vider le redo stack car on a fait une nouvelle action
-            redoStack = [];
-            
-            console.log('✓ État sauvegardé - Total dans historique:', historyStack.length);
-            
-            // Mettre à jour l'UI
-            updateUndoRedoButtons();
-        }
-        
-        // Sauvegarder immédiatement dans l'historique (pour actions importantes)
-        function saveToHistoryImmediate() {
-            // Annuler le timer de debounce en cours
-            if (historyDebounceTimer) {
-                clearTimeout(historyDebounceTimer);
-                historyDebounceTimer = null;
-            }
-            
-            // Sauvegarder immédiatement
-            saveToHistory();
-        }
-        
-        function undo() {
-            console.log('🔙 Undo appelé - historyStack.length:', historyStack.length);
-            
-            if (historyStack.length === 0) {
-                console.log('⚠️ Historique vide !');
-                showNotification('⚠️ Aucune action à annuler');
-                return;
-            }
-            
-            // Sauvegarder l'état actuel dans le redo stack
-            redoStack.push(JSON.parse(JSON.stringify(project)));
-            console.log('💾 État actuel sauvegardé dans redoStack');
-            
-            // Restaurer l'état précédent
-            const previousState = historyStack.pop();
-            console.log('📂 État précédent récupéré - reste dans historique:', historyStack.length);
-            
-            // Flag pour éviter de sauvegarder cette restauration
-            isUndoRedoAction = true;
-            project = JSON.parse(JSON.stringify(previousState));
-            console.log('✓ Projet restauré');
-            
-            // Sauvegarder et rafraîchir
-            saveProject();
-            refreshAllViews();
-            
-            isUndoRedoAction = false;
-            updateUndoRedoButtons();
-            showNotification('↶ Annulé');
-        }
-        
-        function redo() {
-            if (redoStack.length === 0) {
-                showNotification('⚠️ Aucune action à rétablir');
-                return;
-            }
-            
-            // Sauvegarder l'état actuel dans l'historique
-            historyStack.push(JSON.parse(JSON.stringify(project)));
-            
-            // Restaurer l'état suivant
-            const nextState = redoStack.pop();
-            
-            // Flag pour éviter de sauvegarder cette restauration
-            isUndoRedoAction = true;
-            project = JSON.parse(JSON.stringify(nextState));
-            
-            // Sauvegarder et rafraîchir
-            saveProject();
-            refreshAllViews();
-            
-            isUndoRedoAction = false;
-            updateUndoRedoButtons();
-            showNotification('↷ Rétabli');
-        }
-        
-        function updateUndoRedoButtons() {
-            // Boutons dans le header
-            const headerUndoBtn = document.getElementById('headerUndoBtn');
-            const headerRedoBtn = document.getElementById('headerRedoBtn');
-            
-            // Boutons dans le menu mobile
-            const mobileUndoBtn = document.getElementById('mobileUndoBtn');
-            const mobileRedoBtn = document.getElementById('mobileRedoBtn');
-            
-            const undoDisabled = historyStack.length === 0;
-            const redoDisabled = redoStack.length === 0;
-            
-            if (headerUndoBtn) {
-                headerUndoBtn.disabled = undoDisabled;
-                headerUndoBtn.title = historyStack.length > 0 
-                    ? `Annuler (${historyStack.length} action(s) disponible(s)) - Ctrl+Z`
-                    : 'Aucune action à annuler';
-            }
-            
-            if (headerRedoBtn) {
-                headerRedoBtn.disabled = redoDisabled;
-                headerRedoBtn.title = redoStack.length > 0 
-                    ? `Rétablir (${redoStack.length} action(s) disponible(s)) - Ctrl+Y`
-                    : 'Aucune action à rétablir';
-            }
-            
-            // Mettre à jour aussi les boutons mobiles
-            if (mobileUndoBtn) {
-                mobileUndoBtn.disabled = undoDisabled;
-                if (undoDisabled) {
-                    mobileUndoBtn.style.opacity = '0.5';
-                    mobileUndoBtn.style.cursor = 'not-allowed';
-                } else {
-                    mobileUndoBtn.style.opacity = '1';
-                    mobileUndoBtn.style.cursor = 'pointer';
-                }
-            }
-            
-            if (mobileRedoBtn) {
-                mobileRedoBtn.disabled = redoDisabled;
-                if (redoDisabled) {
-                    mobileRedoBtn.style.opacity = '0.5';
-                    mobileRedoBtn.style.cursor = 'not-allowed';
-                } else {
-                    mobileRedoBtn.style.opacity = '1';
-                    mobileRedoBtn.style.cursor = 'pointer';
-                }
-            }
-        }
-        
-
-
 // ========== [OLD] js/07.stats.js ==========
         // ==========================================
         // HELPER FUNCTIONS - STATS & PROGRESSION
@@ -28299,173 +29487,6 @@ function formatText(command, value = null) {
                 }
             }
         }
-
-// ========== [OLD] js/11.updateStats.js ==========
-
-        function updateStats() {
-            const totalActs = project.acts.length;
-            const totalChapters = project.acts.reduce((sum, act) => sum + act.chapters.length, 0);
-            const totalWords = project.acts.reduce((sum, act) => {
-                return sum + act.chapters.reduce((chSum, chapter) => {
-                    return chSum + chapter.scenes.reduce((sceneSum, scene) => {
-                        return sceneSum + getWordCount(scene.content);
-                    }, 0);
-                }, 0);
-            }, 0);
-
-            // Mettre à jour les stats dans le header
-            const headerWords = document.getElementById('headerTotalWords');
-            const headerChapters = document.getElementById('headerTotalChapters');
-            if (headerWords) headerWords.textContent = `${totalWords} mots`;
-            if (headerChapters) headerChapters.textContent = `${totalChapters} chapitres`;
-            
-            // Mettre à jour le titre du projet dans le header
-            const headerTitle = document.getElementById('headerProjectTitle');
-            if (headerTitle) headerTitle.textContent = project.title;
-        }
-
-// ========== [OLD] js/12.import-export.js ==========
-
-        // Backup and Import Management
-        function showBackupMenu() {
-            document.getElementById('backupModal').classList.add('active');
-        }
-
-        function exportToJSON() {
-            const dataStr = JSON.stringify(project, null, 2);
-            const blob = new Blob([dataStr], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            const filename = `${project.title.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.json`;
-            a.download = filename;
-            a.click();
-            URL.revokeObjectURL(url);
-            
-            alert(`? Fichier JSON téléchargé !\n\nNom : ${filename}\n\nTu peux maintenant l'uploader sur Google Drive, Dropbox, ou tout autre service cloud.`);
-        }
-
-        function importFromFile() {
-            document.getElementById('importFileInput').click();
-        }
-
-        function handleFileImport(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            if (!file.name.endsWith('.json')) {
-                alert('? Erreur : Le fichier doit être au format JSON');
-                return;
-            }
-
-            if (!confirm('?? ATTENTION : L\'import va remplacer toutes vos données actuelles.\n\nVoulez-vous créer une sauvegarde avant de continuer ?')) {
-                event.target.value = ''; // Reset input
-                return;
-            }
-
-            // Create backup before import
-            exportToJSON();
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const importedData = JSON.parse(e.target.result);
-                    
-                    // Validate imported data
-                    if (!importedData.acts || !Array.isArray(importedData.acts)) {
-                        throw new Error('Format de fichier invalide');
-                    }
-
-                    // Merge with current structure to ensure all fields exist
-                    project = {
-                        title: importedData.title || "Mon Roman",
-                        acts: importedData.acts || [],
-                        characters: importedData.characters || [],
-                        world: importedData.world || [],
-                        timeline: importedData.timeline || [],
-                        notes: importedData.notes || [],
-                        codex: importedData.codex || [],
-                        stats: importedData.stats || {
-                            dailyGoal: 500,
-                            totalGoal: 80000,
-                            writingSessions: []
-                        },
-                        versions: importedData.versions || []
-                    };
-
-                    saveProject();
-                    switchView('editor');
-                    renderActsList();
-                    closeModal('backupModal');
-                    
-                    alert('? Import réussi !\n\nToutes vos données ont été restaurées.');
-                } catch (error) {
-                    alert('? Erreur lors de l\'import : ' + error.message);
-                }
-                
-                event.target.value = ''; // Reset input
-            };
-            
-            reader.onerror = function() {
-                alert('? Erreur lors de la lecture du fichier');
-                event.target.value = ''; // Reset input
-            };
-            
-            reader.readAsText(file);
-        }
-
-        // Export
-        function exportProject() {
-            let text = `${project.title}\n${'='.repeat(project.title.length)}\n\n`;
-            
-            project.acts.forEach(act => {
-                text += `\n\n${act.title}\n${'='.repeat(act.title.length)}\n\n`;
-                
-                act.chapters.forEach(chapter => {
-                    text += `\n${chapter.title}\n${'-'.repeat(chapter.title.length)}\n\n`;
-                    chapter.scenes.forEach(scene => {
-                        // Convert HTML to plain text for export
-                        const temp = document.createElement('div');
-                        temp.innerHTML = scene.content;
-                        const plainText = temp.textContent || temp.innerText || '';
-                        
-                        text += `\n${scene.title}\n\n${plainText}\n\n`;
-                    });
-                });
-            });
-
-            const blob = new Blob([text], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `${project.title.replace(/\s+/g, '_')}.txt`;
-            a.click();
-            URL.revokeObjectURL(url);
-        }
-
-        // Modal Management
-        function openAddActModal() {
-            document.getElementById('addActModal').classList.add('active');
-            setTimeout(() => document.getElementById('actTitleInput').focus(), 100);
-        }
-
-        function openAddChapterModal(actId) {
-            // Si pas d'actId fourni, utiliser le premier acte ou on en créera un
-            if (actId) {
-                activeActId = actId;
-            } else if (project.acts.length > 0) {
-                activeActId = project.acts[0].id;
-            } else {
-                activeActId = null; // Sera créé dans addChapter
-            }
-            document.getElementById('addChapterModal').classList.add('active');
-            setTimeout(() => document.getElementById('chapterTitleInput').focus(), 100);
-        }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.remove('active');
-        }
-
 
 // ========== [OLD] js/13.mobile-menu.js ==========
 
@@ -32790,52 +33811,6 @@ function formatText(command, value = null) {
             originalUpdateSceneContent();
             updateFocusStats();
         };
-
-
-// ========== [OLD] js/27.keyboardShortcuts.js ==========
-
-        // Keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                closeModal('addChapterModal');
-                closeModal('addSceneModal');
-                closeModal('addActModal');
-                closeModal('addCharacterModal');
-                closeModal('addWorldModal');
-                closeModal('addTimelineModal');
-                closeModal('addNoteModal');
-                closeModal('addCodexModal');
-                closeModal('backupModal');
-                closeModal('referencesModal');
-                closeModal('projectsModal');
-                closeModal('newProjectModal');
-                closeSearchResults();
-                
-                // Close focus panel if open
-                if (focusPanelOpen) {
-                    toggleFocusPanel();
-                }
-            }
-            if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
-                e.preventDefault();
-                document.getElementById('globalSearch').focus();
-            }
-            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-                e.preventDefault();
-                saveProject();
-            }
-            if (e.key === 'F11') {
-                e.preventDefault();
-                toggleFocusMode();
-            }
-            // Raccourci pour le mode révision (Ctrl+R)
-            if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
-                e.preventDefault();
-                if (currentSceneId) {
-                    toggleRevisionMode();
-                }
-            }
-        });
 
 
 // ========== [OLD] js/28.revision.js ==========
@@ -40592,143 +41567,6 @@ hr.divider {
 
 
 
-// ========== [OLD] js/40.sidebar-views.js ==========
-        // ============================================
-        // MOBILE SIDEBAR VIEWS
-        // ============================================
-        
-        function renderMobileSidebarView(view) {
-            const editorView = document.getElementById('editorView');
-            if (!editorView) return;
-            
-            const viewConfig = {
-                editor: {
-                    icon: '📝',
-                    title: 'Structure de votre roman',
-                    description: 'Organisez votre roman en actes, chapitres et scènes',
-                    emptyMessage: 'Aucun acte créé',
-                    emptySubMessage: 'Commencez par créer votre premier acte pour structurer votre histoire',
-                    actionButton: '<button class="btn btn-primary" style="font-size: 1.2rem; padding: 1rem 2rem;" onclick="openAddActModal()">+ Créer un acte</button>',
-                    sidebarHint: 'Utilisez la poignée dorée sur le bord gauche pour naviguer dans votre structure'
-                },
-                characters: {
-                    icon: '👥',
-                    title: 'Personnages',
-                    description: 'Gérez vos personnages et leurs caractéristiques',
-                    emptyMessage: 'Aucun personnage créé',
-                    emptySubMessage: 'Créez votre premier personnage pour donner vie à votre histoire',
-                    actionButton: '<button class="btn btn-primary" style="font-size: 1.2rem; padding: 1rem 2rem;" onclick="openAddCharacterModal()">+ Créer un personnage</button>',
-                    sidebarHint: 'Utilisez la poignée dorée sur le bord gauche pour voir la liste complète'
-                },
-                world: {
-                    icon: '🌍',
-                    title: 'Univers',
-                    description: 'Créez les éléments de votre monde (lieux, objets, concepts)',
-                    emptyMessage: 'Aucun élément créé',
-                    emptySubMessage: 'Ajoutez des lieux, objets ou concepts pour enrichir votre univers',
-                    actionButton: '<button class="btn btn-primary" style="font-size: 1.2rem; padding: 1rem 2rem;" onclick="openAddWorldModal()">+ Créer un élément</button>',
-                    sidebarHint: 'Utilisez la poignée dorée sur le bord gauche pour voir tous vos éléments'
-                },
-                notes: {
-                    icon: '📋',
-                    title: 'Notes',
-                    description: 'Prenez des notes et organisez vos recherches',
-                    emptyMessage: 'Aucune note créée',
-                    emptySubMessage: 'Créez des notes pour garder vos idées et recherches organisées',
-                    actionButton: '<button class="btn btn-primary" style="font-size: 1.2rem; padding: 1rem 2rem;" onclick="openAddNoteModal()">+ Créer une note</button>',
-                    sidebarHint: 'Utilisez la poignée dorée sur le bord gauche pour voir toutes vos notes'
-                },
-                codex: {
-                    icon: '📖',
-                    title: 'Codex',
-                    description: 'Wiki de votre univers - glossaire et encyclopédie',
-                    emptyMessage: 'Aucune entrée dans le codex',
-                    emptySubMessage: 'Créez des entrées pour documenter votre univers',
-                    actionButton: '<button class="btn btn-primary" style="font-size: 1.2rem; padding: 1rem 2rem;" onclick="openAddCodexModal()">+ Créer une entrée</button>',
-                    sidebarHint: 'Utilisez la poignée dorée sur le bord gauche pour parcourir le codex'
-                }
-            };
-            
-            const config = viewConfig[view];
-            if (!config) return;
-            
-            // Vérifier si vide
-            let isEmpty = false;
-            let count = 0;
-            
-            if (view === 'editor') {
-                isEmpty = !project.acts || project.acts.length === 0;
-                count = project.acts ? project.acts.length : 0;
-            } else if (view === 'characters') {
-                isEmpty = !project.characters || project.characters.length === 0;
-                count = project.characters ? project.characters.length : 0;
-            } else if (view === 'world') {
-                isEmpty = !project.world || project.world.length === 0;
-                count = project.world ? project.world.length : 0;
-            } else if (view === 'notes') {
-                isEmpty = !project.notes || project.notes.length === 0;
-                count = project.notes ? project.notes.length : 0;
-            } else if (view === 'codex') {
-                isEmpty = !project.codex || project.codex.length === 0;
-                count = project.codex ? project.codex.length : 0;
-            }
-            
-            let html = `
-                <div class="empty-state" style="padding: 2rem 1.5rem; text-align: center;">
-                    <div class="empty-state-icon" style="font-size: 4rem; margin-bottom: 1rem;">
-                        ${config.icon}
-                    </div>
-                    <div class="empty-state-title" style="font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-primary);">
-                        ${config.title}
-                    </div>
-                    <div class="empty-state-text" style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6;">
-                        ${config.description}
-                    </div>
-            `;
-            
-            if (isEmpty) {
-                html += `
-                    <div style="background: var(--bg-secondary); padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem; border-left: 3px solid var(--accent-gold);">
-                        <div style="font-weight: 600; margin-bottom: 0.5rem; color: var(--text-primary);">
-                            ${config.emptyMessage}
-                        </div>
-                        <div style="color: var(--text-secondary); font-size: 0.95rem;">
-                            ${config.emptySubMessage}
-                        </div>
-                    </div>
-                    ${config.actionButton}
-                `;
-            } else {
-                html += `
-                    <div style="background: var(--bg-secondary); padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem;">
-                        <div style="font-size: 2rem; font-weight: bold; color: var(--accent-gold); margin-bottom: 0.5rem;">
-                            ${count}
-                        </div>
-                        <div style="color: var(--text-secondary);">
-                            ${count === 1 ? 'élément' : 'éléments'}
-                        </div>
-                    </div>
-                    ${config.actionButton}
-                `;
-            }
-            
-            html += `
-                    <div style="margin-top: 2rem; padding: 1rem; background: rgba(212, 175, 55, 0.1); border-radius: 8px; border: 1px solid var(--accent-gold);">
-                        <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">💡</div>
-                        <div style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6;">
-                            ${config.sidebarHint}
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            editorView.innerHTML = html;
-        }
-        
-        // ============================================
-        // END MOBILE SIDEBAR VIEWS
-        // ============================================
-
 // ========== [OLD] js/41.storageMonitoring.js ==========
 
 
@@ -40998,56 +41836,6 @@ hr.divider {
 
         // ============================================
         // END STORAGE QUOTA MONITORING FUNCTIONS
-        // ============================================
-
-// ========== [OLD] js/42.mobile-swipe.js ==========
-        // ============================================
-        // MOBILE SWIPE GESTURE SUPPORT
-        // ============================================
-        
-        let touchStartX = 0;
-        let touchStartY = 0;
-        let touchEndX = 0;
-        let touchEndY = 0;
-        
-        // Détecter le swipe depuis le bord gauche
-        document.addEventListener('touchstart', function(e) {
-            touchStartX = e.changedTouches[0].screenX;
-            touchStartY = e.changedTouches[0].screenY;
-        }, false);
-        
-        document.addEventListener('touchend', function(e) {
-            touchEndX = e.changedTouches[0].screenX;
-            touchEndY = e.changedTouches[0].screenY;
-            handleSwipe();
-        }, false);
-        
-        function handleSwipe() {
-            const diffX = touchEndX - touchStartX;
-            const diffY = touchEndY - touchStartY;
-            
-            // Vérifier que c'est un swipe horizontal (pas vertical)
-            if (Math.abs(diffX) > Math.abs(diffY)) {
-                // Swipe depuis le bord gauche (moins de 50px du bord)
-                if (touchStartX < 50 && diffX > 50) {
-                    // Swipe vers la droite depuis le bord gauche
-                    const sidebar = document.querySelector('.sidebar');
-                    if (sidebar && !sidebar.classList.contains('mobile-open')) {
-                        toggleMobileSidebar();
-                    }
-                }
-                // Swipe vers la gauche pour fermer
-                else if (diffX < -50) {
-                    const sidebar = document.querySelector('.sidebar');
-                    if (sidebar && sidebar.classList.contains('mobile-open')) {
-                        toggleMobileSidebar();
-                    }
-                }
-            }
-        }
-        
-        // ============================================
-        // END MOBILE SWIPE GESTURE SUPPORT
         // ============================================
 
 // ========== [OLD] js/43.arcs.js ==========
