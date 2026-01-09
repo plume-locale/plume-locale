@@ -29898,714 +29898,7 @@ const StoryGridView = (function() {
 window.StoryGridView = StoryGridView;
 
 
-// ========== js/00-core/00.app.js ==========
-// ============================================
-// APP - Point d'entrée de l'application
-// ============================================
-
-/**
- * App - Orchestrateur principal de l'application
- *
- * Responsabilités :
- * - Initialiser tous les modules
- * - Coordonner le démarrage de l'application
- * - Gérer le cycle de vie de l'application
- * - Exposer l'API publique
- *
- * Usage :
- *   App.init() - Initialise l'application
- *   App.getVersion() - Version de l'application
- */
-
-const App = (function() {
-    'use strict';
-
-    // Version de l'application
-    const VERSION = '2.0.0';
-
-    // État de l'application
-    let _initialized = false;
-    let _startTime = null;
-
-    /**
-     * Initialise l'application
-     * @returns {Promise<void>}
-     */
-    async function init() {
-        if (_initialized) {
-            console.warn('[App] Application already initialized');
-            return;
-        }
-
-        _startTime = Date.now();
-        console.log(`[App] Initializing Plume Locale v${VERSION}...`);
-
-        try {
-            // 1. Vérifier les dépendances
-            _checkDependencies();
-
-            // 2. Initialiser l'état global
-            _initializeState();
-
-            // 3. Charger le projet depuis le storage
-            await _loadProject();
-
-            // 4. Enregistrer les vues
-            _registerViews();
-
-            // 5. Configurer les event listeners globaux
-            _setupGlobalListeners();
-
-            // 6. Initialiser la vue par défaut
-            await _initializeDefaultView();
-
-            _initialized = true;
-
-            const elapsed = Date.now() - _startTime;
-            console.log(`[App] Initialized in ${elapsed}ms`);
-
-            // Émettre l'événement d'initialisation
-            EventBus.emit('app:ready', { version: VERSION, elapsed });
-
-        } catch (error) {
-            console.error('[App] Initialization failed:', error);
-            EventBus.emit('app:error', { error });
-            throw error;
-        }
-    }
-
-    /**
-     * Vérifie que toutes les dépendances sont chargées
-     * @private
-     */
-    function _checkDependencies() {
-        const required = [
-            'StateManager',
-            'EventBus',
-            'Router',
-            'DOMUtils',
-            'TextUtils',
-            'ArrayUtils',
-            'DateUtils',
-            'ColorUtils',
-            'Validators'
-        ];
-
-        const missing = required.filter(dep => !window[dep]);
-
-        if (missing.length > 0) {
-            throw new Error(`Missing dependencies: ${missing.join(', ')}`);
-        }
-
-        console.log('[App] ✓ All dependencies loaded');
-    }
-
-    /**
-     * Initialise l'état global
-     * @private
-     */
-    function _initializeState() {
-        // L'état est déjà initialisé dans StateManager
-        // On peut le personnaliser ici si nécessaire
-        console.log('[App] ✓ State initialized');
-    }
-
-    /**
-     * Charge le projet depuis le storage
-     * @private
-     */
-    async function _loadProject() {
-        // TODO: Implémenter le chargement du projet
-        // Pour l'instant, on simule avec un projet vide
-
-        console.log('[App] ✓ Project loaded');
-    }
-
-    /**
-     * Enregistre toutes les vues disponibles
-     * @private
-     */
-    function _registerViews() {
-        // Enregistrer les vues disponibles
-        if (window.CharactersView) {
-            Router.register('characters', CharactersView);
-            console.log('[App] ✓ Registered CharactersView');
-        }
-
-        if (window.LocationsView) {
-            Router.register('locations', LocationsView);
-            console.log('[App] ✓ Registered LocationsView');
-        }
-
-        if (window.NotesView) {
-            Router.register('notes', NotesView);
-            console.log('[App] ✓ Registered NotesView');
-        }
-
-        if (window.ScenesView) {
-            Router.register('scenes', ScenesView);
-            console.log('[App] ✓ Registered ScenesView');
-        }
-
-        if (window.StructureView) {
-            Router.register('structure', StructureView);
-            console.log('[App] ✓ Registered StructureView');
-        }
-
-        if (window.ArcBoardView) {
-            Router.register('arc-board', ArcBoardView);
-            console.log('[App] ✓ Registered ArcBoardView');
-        }
-
-        if (window.StoryGridView) {
-            Router.register('story-grid', StoryGridView);
-            console.log('[App] ✓ Registered StoryGridView');
-        }
-
-        // TODO: Enregistrer les autres vues au fur et à mesure de la migration
-        // Router.register('timeline', TimelineView);
-        // Router.register('corkboard', CorkboardView);
-        // etc.
-
-        console.log('[App] ✓ Views registered');
-    }
-
-    /**
-     * Configure les event listeners globaux
-     * @private
-     */
-    function _setupGlobalListeners() {
-        // Écouter les changements d'état pour le debug
-        if (isDevelopment()) {
-            StateManager.subscribeAll((newState, oldState, updates) => {
-                console.log('[State] Updated:', updates);
-            });
-        }
-
-        // Sauvegarder automatiquement lors de certains événements
-        const autoSaveEvents = [
-            'scene:updated',
-            'character:created',
-            'character:updated',
-            'character:deleted',
-            'location:created',
-            'location:updated',
-            'location:deleted'
-        ];
-
-        autoSaveEvents.forEach(event => {
-            EventBus.on(event, () => {
-                if (StateManager.getState().features.autoSaveEnabled) {
-                    // TODO: Déclencher la sauvegarde
-                    console.log('[App] Auto-save triggered by:', event);
-                }
-            });
-        });
-
-        console.log('[App] ✓ Global listeners configured');
-    }
-
-    /**
-     * Initialise la vue par défaut
-     * @private
-     */
-    async function _initializeDefaultView() {
-        const state = StateManager.getState();
-        const defaultView = state.currentView || 'structure';
-
-        // TODO: Naviguer vers la vue par défaut
-        // await Router.navigate(defaultView);
-
-        console.log('[App] ✓ Default view initialized:', defaultView);
-    }
-
-    /**
-     * Récupère la version de l'application
-     * @returns {string}
-     */
-    function getVersion() {
-        return VERSION;
-    }
-
-    /**
-     * Vérifie si l'application est initialisée
-     * @returns {boolean}
-     */
-    function isInitialized() {
-        return _initialized;
-    }
-
-    /**
-     * Vérifie si on est en mode développement
-     * @returns {boolean}
-     */
-    function isDevelopment() {
-        return window.location.hostname === 'localhost' ||
-               window.location.hostname === '127.0.0.1' ||
-               window.location.search.includes('debug=true');
-    }
-
-    /**
-     * Active le mode debug
-     */
-    function enableDebug() {
-        EventBus.setDebug(true);
-        console.log('[App] Debug mode enabled');
-
-        // Exposer des helpers pour le debug
-        window.DEBUG = {
-            state: () => StateManager.getState(),
-            events: () => EventBus.getEvents(),
-            router: () => Router.stats(),
-            eventBus: () => EventBus.stats(),
-            history: () => EventBus.getHistory(20)
-        };
-
-        console.log('[App] Debug helpers available via window.DEBUG');
-    }
-
-    /**
-     * Désactive le mode debug
-     */
-    function disableDebug() {
-        EventBus.setDebug(false);
-        delete window.DEBUG;
-        console.log('[App] Debug mode disabled');
-    }
-
-    /**
-     * Réinitialise l'application
-     */
-    async function reset() {
-        console.log('[App] Resetting application...');
-
-        // Réinitialiser l'état
-        StateManager.resetState();
-
-        // Nettoyer les événements
-        EventBus.clear();
-
-        // Recharger
-        await init();
-
-        console.log('[App] Application reset complete');
-    }
-
-    /**
-     * Affiche des informations sur l'application
-     */
-    function info() {
-        console.group('[App] Information');
-        console.log('Version:', VERSION);
-        console.log('Initialized:', _initialized);
-        console.log('Uptime:', _startTime ? `${Math.floor((Date.now() - _startTime) / 1000)}s` : 'N/A');
-        console.log('Development mode:', isDevelopment());
-        console.log('Current view:', StateManager.getState().currentView);
-        console.log('Registered views:', Router.getViews());
-        console.log('Active events:', EventBus.getEvents());
-        console.groupEnd();
-    }
-
-    // API publique
-    return {
-        init,
-        getVersion,
-        isInitialized,
-        isDevelopment,
-        enableDebug,
-        disableDebug,
-        reset,
-        info,
-
-        // Alias
-        version: getVersion
-    };
-})();
-
-// Exposer globalement
-window.App = App;
-
-// Auto-initialisation si on est en mode développement
-if (App.isDevelopment()) {
-    console.log('[App] Development mode detected');
-
-    // Message de bienvenue dans la console
-    console.log('%c🪶 Plume Locale v' + App.getVersion(), 'font-size: 20px; font-weight: bold; color: #3498db;');
-    console.log('%cNouvelle architecture - Migration en cours', 'font-size: 12px; color: #95a5a6;');
-    console.log('%cUtilisez App.info() pour plus d\'informations', 'font-size: 12px; color: #95a5a6;');
-}
-
-
-// ========== js/00-core/99.compatibility-bridge.js ==========
-// ============================================
-// COMPATIBILITY BRIDGE - Pont de compatibilité
-// ============================================
-
-/**
- * Ce fichier assure la compatibilité entre:
- * - L'ancien HTML (html/body.html) qui utilise des fonctions globales
- * - La nouvelle architecture MVC
- *
- * Il réimplémente les fonctions globales appelées par onclick="..."
- * en utilisant la nouvelle architecture quand possible.
- */
-
-(function() {
-    'use strict';
-
-    // Variables globales nécessaires à l'ancien code
-    window.currentView = window.currentView || 'editor';
-    window.currentActId = window.currentActId || null;
-    window.currentChapterId = window.currentChapterId || null;
-    window.currentSceneId = window.currentSceneId || null;
-    window.splitViewActive = window.splitViewActive || false;
-
-    /**
-     * switchView - Fonction principale de changement de vue
-     * Appelée par les boutons de navigation onclick="switchView('...')"
-     *
-     * @param {string} view - Nom de la vue (editor, characters, notes, etc.)
-     */
-    window.switchView = function(view) {
-        console.log(`[Bridge] switchView('${view}')`);
-
-        // Mettre à jour la variable globale
-        window.currentView = view;
-
-        // Mapping ancien nom → nouveau nom de vue
-        const viewMapping = {
-            'editor': 'structure',      // Vue structure (anciennement editor)
-            'characters': 'characters',  // Vue personnages
-            'world': 'locations',        // Vue lieux (anciennement world)
-            'notes': 'notes',            // Vue notes
-            'arcs': 'arc-board',         // Vue arcs (tableau)
-            'storygrid': 'story-grid'    // Vue grille
-        };
-
-        // Mettre à jour les boutons de navigation (visual)
-        document.querySelectorAll('[id^="header-tab-"]').forEach(btn => {
-            btn.classList.remove('active');
-        });
-        const headerBtn = document.getElementById(`header-tab-${view}`);
-        if (headerBtn) {
-            headerBtn.classList.add('active');
-        }
-
-        // Éléments UI spécifiques (sidebar, etc.)
-        _updateUIElements(view);
-
-        // Si la vue est migrée vers v2, utiliser le Router
-        const newViewName = viewMapping[view];
-        if (newViewName && window.Router && window[_getViewName(newViewName)]) {
-            console.log(`[Bridge] Navigation vers nouvelle vue: ${newViewName}`);
-
-            // Masquer toutes les vues
-            document.querySelectorAll('.view-container, .editor-view, #editorView').forEach(el => {
-                el.style.display = 'none';
-            });
-
-            // Afficher le container de la nouvelle vue
-            const viewContainer = document.getElementById(`${newViewName}-view`);
-            if (viewContainer) {
-                viewContainer.style.display = 'block';
-            }
-
-            // Naviguer avec le Router
-            Router.navigate(newViewName).catch(err => {
-                console.error(`[Bridge] Erreur navigation vers ${newViewName}:`, err);
-            });
-        } else {
-            // Vue non migrée, utiliser l'ancien code
-            console.log(`[Bridge] Vue non migrée: ${view}, utilisation ancien code`);
-
-            // L'ancien code gère ces vues via renderViewContent()
-            // qui est dans 03.project.js (conservé dans build-v2)
-            if (typeof renderViewContent === 'function') {
-                renderViewContent(view);
-            } else {
-                console.warn(`[Bridge] renderViewContent non disponible pour ${view}`);
-            }
-        }
-    };
-
-    /**
-     * switchViewMobile - Version mobile de switchView
-     * Appelée par les boutons de navigation mobile
-     */
-    window.switchViewMobile = function(view) {
-        console.log(`[Bridge] switchViewMobile('${view}')`);
-
-        // Fermer le menu mobile
-        if (typeof toggleMobileNav === 'function') {
-            toggleMobileNav();
-        }
-
-        // Appeler switchView normale
-        switchView(view);
-    };
-
-    /**
-     * openProjectsModal - Ouvre le modal de gestion des projets
-     */
-    window.openProjectsModal = function() {
-        console.log('[Bridge] openProjectsModal()');
-
-        // Si ModalUI existe (nouvelle architecture)
-        if (window.ModalUI) {
-            ModalUI.alert(
-                'Gestion des Projets',
-                'La gestion des projets sera bientôt disponible dans la nouvelle architecture.'
-            );
-        } else {
-            // Utiliser l'ancien code
-            alert('Gestion des projets (à implémenter)');
-        }
-    };
-
-    /**
-     * Fonction helper pour obtenir le nom de la classe de vue
-     */
-    function _getViewName(viewId) {
-        // Ex: 'characters' → 'CharactersView'
-        return viewId.split('-').map(part =>
-            part.charAt(0).toUpperCase() + part.slice(1)
-        ).join('') + 'View';
-    }
-
-    /**
-     * Met à jour les éléments UI en fonction de la vue active
-     */
-    function _updateUIElements(view) {
-        // Éléments spécifiques à la vue Structure
-        const structureOnlyElements = [
-            'projectProgressBar',
-            'statusFilters',
-            'sceneTools'
-        ];
-
-        structureOnlyElements.forEach(id => {
-            const el = document.getElementById(id);
-            if (el) {
-                el.style.display = (view === 'editor') ? '' : 'none';
-            }
-        });
-
-        // Tree collapse toolbar
-        const treeCollapseToolbar = document.getElementById('treeCollapseToolbar');
-        const viewsWithGroups = ['editor', 'world', 'notes', 'codex'];
-        if (treeCollapseToolbar) {
-            treeCollapseToolbar.style.display = viewsWithGroups.includes(view) ? '' : 'none';
-        }
-
-        // Sidebar lists
-        const sidebarLists = [
-            'chaptersList', 'charactersList', 'worldList', 'timelineList',
-            'notesList', 'codexList', 'arcsList', 'statsList', 'versionsList',
-            'analysisList', 'todosList', 'corkboardList', 'mindmapList',
-            'plotList', 'relationsList', 'mapList', 'timelineVizList',
-            'storyGridList', 'noSidebarMessage'
-        ];
-
-        sidebarLists.forEach(listId => {
-            const el = document.getElementById(listId);
-            if (el) el.style.display = 'none';
-        });
-
-        // Mapping vue → sidebar
-        const sidebarViews = {
-            'editor': 'chaptersList',
-            'characters': 'charactersList',
-            'world': 'worldList',
-            'notes': 'notesList',
-            'codex': 'codexList',
-            'arcs': 'arcsList',
-            'mindmap': 'mindmapList',
-            'timelineviz': 'timelineVizList'
-        };
-
-        // Afficher la sidebar appropriée
-        if (sidebarViews[view]) {
-            const listEl = document.getElementById(sidebarViews[view]);
-            if (listEl) listEl.style.display = 'block';
-        }
-    }
-
-    /**
-     * Initialisation automatique du projet au chargement
-     */
-    async function autoInitProject() {
-        console.log('[Bridge] Auto-initialisation du projet...');
-
-        try {
-            // Attendre que StorageService soit initialisé
-            if (window.StorageService && typeof StorageService.init === 'function') {
-                await StorageService.init();
-                console.log('[Bridge] StorageService initialisé');
-            }
-
-            // Vérifier si un projet existe dans le StateManager
-            let state = StateManager.getState();
-            let project = state.project;
-
-            // Si pas de projet, essayer de charger depuis l'ancien système
-            if (!project && typeof loadAllProjects === 'function') {
-                console.log('[Bridge] Tentative de chargement de l\'ancien projet...');
-                await loadAllProjects();
-
-                // Vérifier si le projet global existe (ancien système)
-                if (window.project && window.project.title) {
-                    console.log('[Bridge] Projet trouvé dans l\'ancien système:', window.project.title);
-
-                    // Convertir et sauvegarder dans StateManager
-                    StateManager.setState({ project: window.project });
-                    project = window.project;
-                }
-            }
-
-            // Si toujours pas de projet, créer un projet de démo
-            if (!project || !project.title) {
-                console.log('[Bridge] Création d\'un projet de démo...');
-
-                const demoProject = {
-                    id: Date.now(),
-                    title: 'Mon Roman',
-                    description: 'Projet de démonstration - Commencez à écrire !',
-                    genre: 'Roman',
-                    author: '',
-                    createdAt: Date.now(),
-                    updatedAt: Date.now(),
-
-                    // Structure narrative
-                    acts: [
-                        {
-                            id: Date.now(),
-                            title: 'Acte I',
-                            chapters: [
-                                {
-                                    id: Date.now() + 1,
-                                    title: 'Chapitre 1',
-                                    scenes: [
-                                        {
-                                            id: Date.now() + 2,
-                                            title: 'Scène 1',
-                                            content: 'Commencez à écrire votre histoire ici...',
-                                            summary: '',
-                                            status: 'draft',
-                                            tension: 5,
-                                            characters: [],
-                                            locations: [],
-                                            tags: [],
-                                            notes: '',
-                                            wordCount: 8,
-                                            createdAt: Date.now(),
-                                            updatedAt: Date.now()
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-                    ],
-
-                    // Base de données
-                    characters: [],
-                    world: [],
-                    notes: [],
-                    codex: [],
-                    arcs: [],
-
-                    // Timeline
-                    timeline: [],
-                    visualTimeline: [],
-                    metroTimeline: [],
-
-                    // Relations
-                    relations: [],
-                    relationships: [],
-                    characterPositions: {},
-                    characterColors: {},
-
-                    // Carte
-                    mapLocations: [],
-                    mapImage: null,
-
-                    // Mindmaps
-                    mindmaps: [],
-
-                    // Statistiques
-                    stats: {
-                        dailyGoal: 500,
-                        totalGoal: 80000,
-                        writingSessions: []
-                    },
-
-                    // Versions
-                    versions: [],
-
-                    // Métadonnées
-                    metadata: {
-                        version: '2.0.0',
-                        lastBackup: null,
-                        autoSaveEnabled: true
-                    }
-                };
-
-                // Sauvegarder dans StateManager
-                StateManager.setState({ project: demoProject });
-
-                // Sauvegarder dans l'ancien système (compatibilité)
-                window.project = demoProject;
-
-                // Sauvegarder dans le storage
-                if (window.StorageService && typeof StorageService.saveProject === 'function') {
-                    await StorageService.saveProject(demoProject);
-                } else if (typeof saveProject === 'function') {
-                    await saveProject();
-                }
-
-                console.log('[Bridge] ✓ Projet de démo créé et sauvegardé');
-            }
-
-            // Mettre à jour le titre de la page
-            const projectTitle = (project && project.title) || 'Mon Roman';
-            document.title = `${projectTitle} - Plume`;
-
-            // Mettre à jour le header
-            const headerTitle = document.getElementById('headerProjectTitle');
-            if (headerTitle) {
-                headerTitle.textContent = projectTitle;
-            }
-
-            // Initialiser la vue Structure par défaut
-            if (typeof renderActsList === 'function') {
-                renderActsList();
-            }
-
-            console.log('[Bridge] ✓ Projet initialisé:', projectTitle);
-
-        } catch (error) {
-            console.error('[Bridge] Erreur lors de l\'initialisation du projet:', error);
-        }
-    }
-
-    // Lancer l'auto-initialisation au chargement
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => {
-            // Attendre un peu que tout soit chargé
-            setTimeout(autoInitProject, 500);
-        });
-    } else {
-        // DOM déjà chargé
-        setTimeout(autoInitProject, 500);
-    }
-
-    // Log de chargement
-    console.log('[Bridge] Compatibility bridge chargé');
-    console.log('[Bridge] Fonctions exposées: switchView, switchViewMobile, openProjectsModal');
-
-})();
-
-
-// ========== [OLD] js/03.project.js ==========
+// ========== js/03.project.js ==========
 
         // View Management (définie tôt pour être accessible partout)
         function switchView(view) {
@@ -31526,7 +30819,7 @@ if (App.isDevelopment()) {
         }
 
 
-// ========== [OLD] js/16.split-view.js ==========
+// ========== js/16.split-view.js ==========
         // ==========================================
         // SPLIT VIEW SYSTEM - New Architecture
         // ==========================================
@@ -33155,7 +32448,7 @@ if (App.isDevelopment()) {
 
         
 
-// ========== [OLD] js/31.mindmap.js ==========
+// ========== js/31.mindmap.js ==========
         // ============================================
         // NOUVELLES FONCTIONNALITÉS DE VISUALISATION
         // ============================================
@@ -34199,7 +33492,7 @@ if (App.isDevelopment()) {
 
 
 
-// ========== [OLD] js/36.timeline-metro.js ==========
+// ========== js/36.timeline-metro.js ==========
 // ============================================
 		// ============================================
         // ============================================
@@ -35352,7 +34645,7 @@ if (App.isDevelopment()) {
         }
        
 
-// ========== [OLD] js/39.export.js ==========
+// ========== js/39.export.js ==========
         // ============================================
         // EXPORT NOVEL FUNCTIONS
         // ============================================
@@ -36651,6 +35944,713 @@ hr.divider {
             URL.revokeObjectURL(url);
         }
 
+
+
+// ========== js/00-core/00.app.js ==========
+// ============================================
+// APP - Point d'entrée de l'application
+// ============================================
+
+/**
+ * App - Orchestrateur principal de l'application
+ *
+ * Responsabilités :
+ * - Initialiser tous les modules
+ * - Coordonner le démarrage de l'application
+ * - Gérer le cycle de vie de l'application
+ * - Exposer l'API publique
+ *
+ * Usage :
+ *   App.init() - Initialise l'application
+ *   App.getVersion() - Version de l'application
+ */
+
+const App = (function() {
+    'use strict';
+
+    // Version de l'application
+    const VERSION = '2.0.0';
+
+    // État de l'application
+    let _initialized = false;
+    let _startTime = null;
+
+    /**
+     * Initialise l'application
+     * @returns {Promise<void>}
+     */
+    async function init() {
+        if (_initialized) {
+            console.warn('[App] Application already initialized');
+            return;
+        }
+
+        _startTime = Date.now();
+        console.log(`[App] Initializing Plume Locale v${VERSION}...`);
+
+        try {
+            // 1. Vérifier les dépendances
+            _checkDependencies();
+
+            // 2. Initialiser l'état global
+            _initializeState();
+
+            // 3. Charger le projet depuis le storage
+            await _loadProject();
+
+            // 4. Enregistrer les vues
+            _registerViews();
+
+            // 5. Configurer les event listeners globaux
+            _setupGlobalListeners();
+
+            // 6. Initialiser la vue par défaut
+            await _initializeDefaultView();
+
+            _initialized = true;
+
+            const elapsed = Date.now() - _startTime;
+            console.log(`[App] Initialized in ${elapsed}ms`);
+
+            // Émettre l'événement d'initialisation
+            EventBus.emit('app:ready', { version: VERSION, elapsed });
+
+        } catch (error) {
+            console.error('[App] Initialization failed:', error);
+            EventBus.emit('app:error', { error });
+            throw error;
+        }
+    }
+
+    /**
+     * Vérifie que toutes les dépendances sont chargées
+     * @private
+     */
+    function _checkDependencies() {
+        const required = [
+            'StateManager',
+            'EventBus',
+            'Router',
+            'DOMUtils',
+            'TextUtils',
+            'ArrayUtils',
+            'DateUtils',
+            'ColorUtils',
+            'Validators'
+        ];
+
+        const missing = required.filter(dep => !window[dep]);
+
+        if (missing.length > 0) {
+            throw new Error(`Missing dependencies: ${missing.join(', ')}`);
+        }
+
+        console.log('[App] ✓ All dependencies loaded');
+    }
+
+    /**
+     * Initialise l'état global
+     * @private
+     */
+    function _initializeState() {
+        // L'état est déjà initialisé dans StateManager
+        // On peut le personnaliser ici si nécessaire
+        console.log('[App] ✓ State initialized');
+    }
+
+    /**
+     * Charge le projet depuis le storage
+     * @private
+     */
+    async function _loadProject() {
+        // TODO: Implémenter le chargement du projet
+        // Pour l'instant, on simule avec un projet vide
+
+        console.log('[App] ✓ Project loaded');
+    }
+
+    /**
+     * Enregistre toutes les vues disponibles
+     * @private
+     */
+    function _registerViews() {
+        // Enregistrer les vues disponibles
+        if (window.CharactersView) {
+            Router.register('characters', CharactersView);
+            console.log('[App] ✓ Registered CharactersView');
+        }
+
+        if (window.LocationsView) {
+            Router.register('locations', LocationsView);
+            console.log('[App] ✓ Registered LocationsView');
+        }
+
+        if (window.NotesView) {
+            Router.register('notes', NotesView);
+            console.log('[App] ✓ Registered NotesView');
+        }
+
+        if (window.ScenesView) {
+            Router.register('scenes', ScenesView);
+            console.log('[App] ✓ Registered ScenesView');
+        }
+
+        if (window.StructureView) {
+            Router.register('structure', StructureView);
+            console.log('[App] ✓ Registered StructureView');
+        }
+
+        if (window.ArcBoardView) {
+            Router.register('arc-board', ArcBoardView);
+            console.log('[App] ✓ Registered ArcBoardView');
+        }
+
+        if (window.StoryGridView) {
+            Router.register('story-grid', StoryGridView);
+            console.log('[App] ✓ Registered StoryGridView');
+        }
+
+        // TODO: Enregistrer les autres vues au fur et à mesure de la migration
+        // Router.register('timeline', TimelineView);
+        // Router.register('corkboard', CorkboardView);
+        // etc.
+
+        console.log('[App] ✓ Views registered');
+    }
+
+    /**
+     * Configure les event listeners globaux
+     * @private
+     */
+    function _setupGlobalListeners() {
+        // Écouter les changements d'état pour le debug
+        if (isDevelopment()) {
+            StateManager.subscribeAll((newState, oldState, updates) => {
+                console.log('[State] Updated:', updates);
+            });
+        }
+
+        // Sauvegarder automatiquement lors de certains événements
+        const autoSaveEvents = [
+            'scene:updated',
+            'character:created',
+            'character:updated',
+            'character:deleted',
+            'location:created',
+            'location:updated',
+            'location:deleted'
+        ];
+
+        autoSaveEvents.forEach(event => {
+            EventBus.on(event, () => {
+                if (StateManager.getState().features.autoSaveEnabled) {
+                    // TODO: Déclencher la sauvegarde
+                    console.log('[App] Auto-save triggered by:', event);
+                }
+            });
+        });
+
+        console.log('[App] ✓ Global listeners configured');
+    }
+
+    /**
+     * Initialise la vue par défaut
+     * @private
+     */
+    async function _initializeDefaultView() {
+        const state = StateManager.getState();
+        const defaultView = state.currentView || 'structure';
+
+        // TODO: Naviguer vers la vue par défaut
+        // await Router.navigate(defaultView);
+
+        console.log('[App] ✓ Default view initialized:', defaultView);
+    }
+
+    /**
+     * Récupère la version de l'application
+     * @returns {string}
+     */
+    function getVersion() {
+        return VERSION;
+    }
+
+    /**
+     * Vérifie si l'application est initialisée
+     * @returns {boolean}
+     */
+    function isInitialized() {
+        return _initialized;
+    }
+
+    /**
+     * Vérifie si on est en mode développement
+     * @returns {boolean}
+     */
+    function isDevelopment() {
+        return window.location.hostname === 'localhost' ||
+               window.location.hostname === '127.0.0.1' ||
+               window.location.search.includes('debug=true');
+    }
+
+    /**
+     * Active le mode debug
+     */
+    function enableDebug() {
+        EventBus.setDebug(true);
+        console.log('[App] Debug mode enabled');
+
+        // Exposer des helpers pour le debug
+        window.DEBUG = {
+            state: () => StateManager.getState(),
+            events: () => EventBus.getEvents(),
+            router: () => Router.stats(),
+            eventBus: () => EventBus.stats(),
+            history: () => EventBus.getHistory(20)
+        };
+
+        console.log('[App] Debug helpers available via window.DEBUG');
+    }
+
+    /**
+     * Désactive le mode debug
+     */
+    function disableDebug() {
+        EventBus.setDebug(false);
+        delete window.DEBUG;
+        console.log('[App] Debug mode disabled');
+    }
+
+    /**
+     * Réinitialise l'application
+     */
+    async function reset() {
+        console.log('[App] Resetting application...');
+
+        // Réinitialiser l'état
+        StateManager.resetState();
+
+        // Nettoyer les événements
+        EventBus.clear();
+
+        // Recharger
+        await init();
+
+        console.log('[App] Application reset complete');
+    }
+
+    /**
+     * Affiche des informations sur l'application
+     */
+    function info() {
+        console.group('[App] Information');
+        console.log('Version:', VERSION);
+        console.log('Initialized:', _initialized);
+        console.log('Uptime:', _startTime ? `${Math.floor((Date.now() - _startTime) / 1000)}s` : 'N/A');
+        console.log('Development mode:', isDevelopment());
+        console.log('Current view:', StateManager.getState().currentView);
+        console.log('Registered views:', Router.getViews());
+        console.log('Active events:', EventBus.getEvents());
+        console.groupEnd();
+    }
+
+    // API publique
+    return {
+        init,
+        getVersion,
+        isInitialized,
+        isDevelopment,
+        enableDebug,
+        disableDebug,
+        reset,
+        info,
+
+        // Alias
+        version: getVersion
+    };
+})();
+
+// Exposer globalement
+window.App = App;
+
+// Auto-initialisation si on est en mode développement
+if (App.isDevelopment()) {
+    console.log('[App] Development mode detected');
+
+    // Message de bienvenue dans la console
+    console.log('%c🪶 Plume Locale v' + App.getVersion(), 'font-size: 20px; font-weight: bold; color: #3498db;');
+    console.log('%cNouvelle architecture - Migration en cours', 'font-size: 12px; color: #95a5a6;');
+    console.log('%cUtilisez App.info() pour plus d\'informations', 'font-size: 12px; color: #95a5a6;');
+}
+
+
+// ========== js/00-core/99.compatibility-bridge.js ==========
+// ============================================
+// COMPATIBILITY BRIDGE - Pont de compatibilité
+// ============================================
+
+/**
+ * Ce fichier assure la compatibilité entre:
+ * - L'ancien HTML (html/body.html) qui utilise des fonctions globales
+ * - La nouvelle architecture MVC
+ *
+ * Il réimplémente les fonctions globales appelées par onclick="..."
+ * en utilisant la nouvelle architecture quand possible.
+ */
+
+(function() {
+    'use strict';
+
+    // Variables globales nécessaires à l'ancien code
+    window.currentView = window.currentView || 'editor';
+    window.currentActId = window.currentActId || null;
+    window.currentChapterId = window.currentChapterId || null;
+    window.currentSceneId = window.currentSceneId || null;
+    window.splitViewActive = window.splitViewActive || false;
+
+    /**
+     * switchView - Fonction principale de changement de vue
+     * Appelée par les boutons de navigation onclick="switchView('...')"
+     *
+     * @param {string} view - Nom de la vue (editor, characters, notes, etc.)
+     */
+    window.switchView = function(view) {
+        console.log(`[Bridge] switchView('${view}')`);
+
+        // Mettre à jour la variable globale
+        window.currentView = view;
+
+        // Mapping ancien nom → nouveau nom de vue
+        const viewMapping = {
+            'editor': 'structure',      // Vue structure (anciennement editor)
+            'characters': 'characters',  // Vue personnages
+            'world': 'locations',        // Vue lieux (anciennement world)
+            'notes': 'notes',            // Vue notes
+            'arcs': 'arc-board',         // Vue arcs (tableau)
+            'storygrid': 'story-grid'    // Vue grille
+        };
+
+        // Mettre à jour les boutons de navigation (visual)
+        document.querySelectorAll('[id^="header-tab-"]').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        const headerBtn = document.getElementById(`header-tab-${view}`);
+        if (headerBtn) {
+            headerBtn.classList.add('active');
+        }
+
+        // Éléments UI spécifiques (sidebar, etc.)
+        _updateUIElements(view);
+
+        // Si la vue est migrée vers v2, utiliser le Router
+        const newViewName = viewMapping[view];
+        if (newViewName && window.Router && window[_getViewName(newViewName)]) {
+            console.log(`[Bridge] Navigation vers nouvelle vue: ${newViewName}`);
+
+            // Masquer toutes les vues
+            document.querySelectorAll('.view-container, .editor-view, #editorView').forEach(el => {
+                el.style.display = 'none';
+            });
+
+            // Afficher le container de la nouvelle vue
+            const viewContainer = document.getElementById(`${newViewName}-view`);
+            if (viewContainer) {
+                viewContainer.style.display = 'block';
+            }
+
+            // Naviguer avec le Router
+            Router.navigate(newViewName).catch(err => {
+                console.error(`[Bridge] Erreur navigation vers ${newViewName}:`, err);
+            });
+        } else {
+            // Vue non migrée, utiliser l'ancien code
+            console.log(`[Bridge] Vue non migrée: ${view}, utilisation ancien code`);
+
+            // L'ancien code gère ces vues via renderViewContent()
+            // qui est dans 03.project.js (conservé dans build-v2)
+            if (typeof renderViewContent === 'function') {
+                renderViewContent(view);
+            } else {
+                console.warn(`[Bridge] renderViewContent non disponible pour ${view}`);
+            }
+        }
+    };
+
+    /**
+     * switchViewMobile - Version mobile de switchView
+     * Appelée par les boutons de navigation mobile
+     */
+    window.switchViewMobile = function(view) {
+        console.log(`[Bridge] switchViewMobile('${view}')`);
+
+        // Fermer le menu mobile
+        if (typeof toggleMobileNav === 'function') {
+            toggleMobileNav();
+        }
+
+        // Appeler switchView normale
+        switchView(view);
+    };
+
+    /**
+     * openProjectsModal - Ouvre le modal de gestion des projets
+     */
+    window.openProjectsModal = function() {
+        console.log('[Bridge] openProjectsModal()');
+
+        // Si ModalUI existe (nouvelle architecture)
+        if (window.ModalUI) {
+            ModalUI.alert(
+                'Gestion des Projets',
+                'La gestion des projets sera bientôt disponible dans la nouvelle architecture.'
+            );
+        } else {
+            // Utiliser l'ancien code
+            alert('Gestion des projets (à implémenter)');
+        }
+    };
+
+    /**
+     * Fonction helper pour obtenir le nom de la classe de vue
+     */
+    function _getViewName(viewId) {
+        // Ex: 'characters' → 'CharactersView'
+        return viewId.split('-').map(part =>
+            part.charAt(0).toUpperCase() + part.slice(1)
+        ).join('') + 'View';
+    }
+
+    /**
+     * Met à jour les éléments UI en fonction de la vue active
+     */
+    function _updateUIElements(view) {
+        // Éléments spécifiques à la vue Structure
+        const structureOnlyElements = [
+            'projectProgressBar',
+            'statusFilters',
+            'sceneTools'
+        ];
+
+        structureOnlyElements.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.style.display = (view === 'editor') ? '' : 'none';
+            }
+        });
+
+        // Tree collapse toolbar
+        const treeCollapseToolbar = document.getElementById('treeCollapseToolbar');
+        const viewsWithGroups = ['editor', 'world', 'notes', 'codex'];
+        if (treeCollapseToolbar) {
+            treeCollapseToolbar.style.display = viewsWithGroups.includes(view) ? '' : 'none';
+        }
+
+        // Sidebar lists
+        const sidebarLists = [
+            'chaptersList', 'charactersList', 'worldList', 'timelineList',
+            'notesList', 'codexList', 'arcsList', 'statsList', 'versionsList',
+            'analysisList', 'todosList', 'corkboardList', 'mindmapList',
+            'plotList', 'relationsList', 'mapList', 'timelineVizList',
+            'storyGridList', 'noSidebarMessage'
+        ];
+
+        sidebarLists.forEach(listId => {
+            const el = document.getElementById(listId);
+            if (el) el.style.display = 'none';
+        });
+
+        // Mapping vue → sidebar
+        const sidebarViews = {
+            'editor': 'chaptersList',
+            'characters': 'charactersList',
+            'world': 'worldList',
+            'notes': 'notesList',
+            'codex': 'codexList',
+            'arcs': 'arcsList',
+            'mindmap': 'mindmapList',
+            'timelineviz': 'timelineVizList'
+        };
+
+        // Afficher la sidebar appropriée
+        if (sidebarViews[view]) {
+            const listEl = document.getElementById(sidebarViews[view]);
+            if (listEl) listEl.style.display = 'block';
+        }
+    }
+
+    /**
+     * Initialisation automatique du projet au chargement
+     */
+    async function autoInitProject() {
+        console.log('[Bridge] Auto-initialisation du projet...');
+
+        try {
+            // Attendre que StorageService soit initialisé
+            if (window.StorageService && typeof StorageService.init === 'function') {
+                await StorageService.init();
+                console.log('[Bridge] StorageService initialisé');
+            }
+
+            // Vérifier si un projet existe dans le StateManager
+            let state = StateManager.getState();
+            let project = state.project;
+
+            // Si pas de projet, essayer de charger depuis l'ancien système
+            if (!project && typeof loadAllProjects === 'function') {
+                console.log('[Bridge] Tentative de chargement de l\'ancien projet...');
+                await loadAllProjects();
+
+                // Vérifier si le projet global existe (ancien système)
+                if (window.project && window.project.title) {
+                    console.log('[Bridge] Projet trouvé dans l\'ancien système:', window.project.title);
+
+                    // Convertir et sauvegarder dans StateManager
+                    StateManager.setState({ project: window.project });
+                    project = window.project;
+                }
+            }
+
+            // Si toujours pas de projet, créer un projet de démo
+            if (!project || !project.title) {
+                console.log('[Bridge] Création d\'un projet de démo...');
+
+                const demoProject = {
+                    id: Date.now(),
+                    title: 'Mon Roman',
+                    description: 'Projet de démonstration - Commencez à écrire !',
+                    genre: 'Roman',
+                    author: '',
+                    createdAt: Date.now(),
+                    updatedAt: Date.now(),
+
+                    // Structure narrative
+                    acts: [
+                        {
+                            id: Date.now(),
+                            title: 'Acte I',
+                            chapters: [
+                                {
+                                    id: Date.now() + 1,
+                                    title: 'Chapitre 1',
+                                    scenes: [
+                                        {
+                                            id: Date.now() + 2,
+                                            title: 'Scène 1',
+                                            content: 'Commencez à écrire votre histoire ici...',
+                                            summary: '',
+                                            status: 'draft',
+                                            tension: 5,
+                                            characters: [],
+                                            locations: [],
+                                            tags: [],
+                                            notes: '',
+                                            wordCount: 8,
+                                            createdAt: Date.now(),
+                                            updatedAt: Date.now()
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+
+                    // Base de données
+                    characters: [],
+                    world: [],
+                    notes: [],
+                    codex: [],
+                    arcs: [],
+
+                    // Timeline
+                    timeline: [],
+                    visualTimeline: [],
+                    metroTimeline: [],
+
+                    // Relations
+                    relations: [],
+                    relationships: [],
+                    characterPositions: {},
+                    characterColors: {},
+
+                    // Carte
+                    mapLocations: [],
+                    mapImage: null,
+
+                    // Mindmaps
+                    mindmaps: [],
+
+                    // Statistiques
+                    stats: {
+                        dailyGoal: 500,
+                        totalGoal: 80000,
+                        writingSessions: []
+                    },
+
+                    // Versions
+                    versions: [],
+
+                    // Métadonnées
+                    metadata: {
+                        version: '2.0.0',
+                        lastBackup: null,
+                        autoSaveEnabled: true
+                    }
+                };
+
+                // Sauvegarder dans StateManager
+                StateManager.setState({ project: demoProject });
+
+                // Sauvegarder dans l'ancien système (compatibilité)
+                window.project = demoProject;
+
+                // Sauvegarder dans le storage
+                if (window.StorageService && typeof StorageService.saveProject === 'function') {
+                    await StorageService.saveProject(demoProject);
+                } else if (typeof saveProject === 'function') {
+                    await saveProject();
+                }
+
+                console.log('[Bridge] ✓ Projet de démo créé et sauvegardé');
+            }
+
+            // Mettre à jour le titre de la page
+            const projectTitle = (project && project.title) || 'Mon Roman';
+            document.title = `${projectTitle} - Plume`;
+
+            // Mettre à jour le header
+            const headerTitle = document.getElementById('headerProjectTitle');
+            if (headerTitle) {
+                headerTitle.textContent = projectTitle;
+            }
+
+            // Initialiser la vue Structure par défaut
+            if (typeof renderActsList === 'function') {
+                renderActsList();
+            }
+
+            console.log('[Bridge] ✓ Projet initialisé:', projectTitle);
+
+        } catch (error) {
+            console.error('[Bridge] Erreur lors de l\'initialisation du projet:', error);
+        }
+    }
+
+    // Lancer l'auto-initialisation au chargement
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            // Attendre un peu que tout soit chargé
+            setTimeout(autoInitProject, 500);
+        });
+    } else {
+        // DOM déjà chargé
+        setTimeout(autoInitProject, 500);
+    }
+
+    // Log de chargement
+    console.log('[Bridge] Compatibility bridge chargé');
+    console.log('[Bridge] Fonctions exposées: switchView, switchViewMobile, openProjectsModal');
+
+})();
 
 
     </script>

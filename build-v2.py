@@ -134,6 +134,15 @@ JS_V2_ORDER = [
     'js/06-views/story-grid/story-grid.handlers.js',
     'js/06-views/story-grid/story-grid.view.js',
 
+    # LEGACY FILES - Must be loaded BEFORE App.js (provide critical functions)
+    # Note: These are loaded here temporarily until full migration is complete
+    # Order matters: project.js must be first as it defines switchView, renderViewContent, etc.
+    'js/03.project.js',
+    'js/16.split-view.js',
+    'js/31.mindmap.js',
+    'js/36.timeline-metro.js',
+    'js/39.export.js',
+
     # App (orchestrateur - chargé en dernier)
     'js/00-core/00.app.js',
 
@@ -191,14 +200,15 @@ EXCLUDED_OLD_FILES = [
 ]
 
 # Anciens fichiers À GARDER (fonctionnalités non encore migrées)
-# ⚠️ APPROCHE HYBRIDE: Garder les fichiers critiques temporairement
-# Les nouveaux modules sont des wrappers - logique complète à migrer progressivement
+# ⚠️ APPROCHE HYBRIDE: Les 5 fichiers critiques sont maintenant dans JS_V2_ORDER
+# Ils sont chargés AVANT App.js pour assurer la disponibilité des fonctions critiques
 OLD_FILES_TO_KEEP = [
-    '03.project.js',    # CRITIQUE: switchView, renderViewContent, etc.
-    '16.split-view.js', # CRITIQUE: logique split-view complète
-    '31.mindmap.js',    # CRITIQUE: mindmap drag & drop complet
-    '36.timeline-metro.js', # CRITIQUE: rendu SVG timeline métro
-    '39.export.js',     # CRITIQUE: export DOCX/EPUB avec libs
+    # Fichiers maintenant intégrés dans JS_V2_ORDER (avant App.js):
+    # - 03.project.js
+    # - 16.split-view.js
+    # - 31.mindmap.js
+    # - 36.timeline-metro.js
+    # - 39.export.js
 ]
 
 # Ordre des fichiers CSS (inchangé)
