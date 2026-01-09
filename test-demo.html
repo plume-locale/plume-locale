@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Démo - Diagnostic</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #1e1e1e;
+            color: #d4d4d4;
+        }
+        .log { margin: 5px 0; padding: 5px; border-left: 3px solid #4CAF50; }
+        .error { border-left-color: #f44336; color: #ff6b6b; }
+        .success { border-left-color: #4CAF50; color: #69db7c; }
+        .info { border-left-color: #2196F3; color: #74c0fc; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test de Chargement des Modules</h1>
+    <div id="logs"></div>
+
+    <script>
+        const logs = document.getElementById('logs');
+
+        function log(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `log ${type}`;
+            div.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logs.appendChild(div);
+            console.log(message);
+        }
+
+        window.onerror = function(msg, url, line, col, error) {
+            log(`❌ ERROR: ${msg} at ${url}:${line}:${col}`, 'error');
+            return false;
+        };
+
+        log('Début du test de chargement...', 'info');
+    </script>
+
+    <!-- Test IndexedDB Library -->
+    <script src="https://unpkg.com/idb@7/build/umd.js"></script>
+    <script>log(typeof idb !== 'undefined' ? '✓ idb chargé' : '❌ idb manquant', typeof idb !== 'undefined' ? 'success' : 'error');</script>
+
+    <!-- Test Core -->
+    <script src="js/00-core/01.state.js"></script>
+    <script>log(typeof StateManager !== 'undefined' ? '✓ StateManager chargé' : '❌ StateManager manquant', typeof StateManager !== 'undefined' ? 'success' : 'error');</script>
+
+    <script src="js/00-core/02.events.js"></script>
+    <script>log(typeof EventBus !== 'undefined' ? '✓ EventBus chargé' : '❌ EventBus manquant', typeof EventBus !== 'undefined' ? 'success' : 'error');</script>
+
+    <script src="js/00-core/03.router.js"></script>
+    <script>log(typeof Router !== 'undefined' ? '✓ Router chargé' : '❌ Router manquant', typeof Router !== 'undefined' ? 'success' : 'error');</script>
+
+    <!-- Test Utils -->
+    <script src="js/02-utils/dom.js"></script>
+    <script>log(typeof DOMUtils !== 'undefined' ? '✓ DOMUtils chargé' : '❌ DOMUtils manquant', typeof DOMUtils !== 'undefined' ? 'success' : 'error');</script>
+
+    <script src="js/02-utils/text.js"></script>
+    <script>log(typeof TextUtils !== 'undefined' ? '✓ TextUtils chargé' : '❌ TextUtils manquant', typeof TextUtils !== 'undefined' ? 'success' : 'error');</script>
+
+    <script src="js/02-utils/array.js"></script>
+    <script>log(typeof ArrayUtils !== 'undefined' ? '✓ ArrayUtils chargé' : '❌ ArrayUtils manquant', typeof ArrayUtils !== 'undefined' ? 'success' : 'error');</script>
+
+    <script src="js/02-utils/date.js"></script>
+    <script>log(typeof DateUtils !== 'undefined' ? '✓ DateUtils chargé' : '❌ DateUtils manquant', typeof DateUtils !== 'undefined' ? 'success' : 'error');</script>
+
+    <script src="js/02-utils/color.js"></script>
+    <script>log(typeof ColorUtils !== 'undefined' ? '✓ ColorUtils chargé' : '❌ ColorUtils manquant', typeof ColorUtils !== 'undefined' ? 'success' : 'error');</script>
+
+    <script src="js/02-utils/validators.js"></script>
+    <script>log(typeof Validators !== 'undefined' ? '✓ Validators chargé' : '❌ Validators manquant', typeof Validators !== 'undefined' ? 'success' : 'error');</script>
+
+    <!-- Test Infrastructure -->
+    <script src="js/01-infrastructure/storage.js"></script>
+    <script>log(typeof StorageService !== 'undefined' ? '✓ StorageService chargé' : '❌ StorageService manquant', typeof StorageService !== 'undefined' ? 'success' : 'error');</script>
+
+    <!-- Test Models -->
+    <script src="js/04-models/Project.js"></script>
+    <script>log(typeof Project !== 'undefined' ? '✓ Project chargé' : '❌ Project manquant', typeof Project !== 'undefined' ? 'success' : 'error');</script>
+
+    <script src="js/04-models/Scene.js"></script>
+    <script>log(typeof Scene !== 'undefined' ? '✓ Scene chargé' : '❌ Scene manquant', typeof Scene !== 'undefined' ? 'success' : 'error');</script>
+
+    <script src="js/04-models/Character.js"></script>
+    <script>log(typeof Character !== 'undefined' ? '✓ Character chargé' : '❌ Character manquant', typeof Character !== 'undefined' ? 'success' : 'error');</script>
+
+    <script src="js/04-models/Location.js"></script>
+    <script>log(typeof Location !== 'undefined' ? '✓ Location chargé' : '❌ Location manquant', typeof Location !== 'undefined' ? 'success' : 'error');</script>
+
+    <script src="js/04-models/Arc.js"></script>
+    <script>log(typeof Arc !== 'undefined' ? '✓ Arc chargé' : '❌ Arc manquant', typeof Arc !== 'undefined' ? 'success' : 'error');</script>
+
+    <script src="js/04-models/Note.js"></script>
+    <script>log(typeof Note !== 'undefined' ? '✓ Note chargé' : '❌ Note manquant', typeof Note !== 'undefined' ? 'success' : 'error');</script>
+
+    <!-- Test Services -->
+    <script src="js/03-services/project.service.js"></script>
+    <script>log(typeof ProjectService !== 'undefined' ? '✓ ProjectService chargé' : '❌ ProjectService manquant', typeof ProjectService !== 'undefined' ? 'success' : 'error');</script>
+
+    <script src="js/03-services/scene.service.js"></script>
+    <script>log(typeof SceneService !== 'undefined' ? '✓ SceneService chargé' : '❌ SceneService manquant', typeof SceneService !== 'undefined' ? 'success' : 'error');</script>
+
+    <script src="js/03-services/character.service.js"></script>
+    <script>log(typeof CharacterService !== 'undefined' ? '✓ CharacterService chargé' : '❌ CharacterService manquant', typeof CharacterService !== 'undefined' ? 'success' : 'error');</script>
+
+    <!-- Test UI -->
+    <script src="js/05-ui/modal.js"></script>
+    <script>log(typeof ModalUI !== 'undefined' ? '✓ ModalUI chargé' : '❌ ModalUI manquant', typeof ModalUI !== 'undefined' ? 'success' : 'error');</script>
+
+    <script src="js/05-ui/toast.js"></script>
+    <script>log(typeof ToastUI !== 'undefined' ? '✓ ToastUI chargé' : '❌ ToastUI manquant', typeof ToastUI !== 'undefined' ? 'success' : 'error');</script>
+
+    <!-- Test Views -->
+    <script src="js/06-views/characters/characters.render.js"></script>
+    <script>log(typeof CharactersRender !== 'undefined' ? '✓ CharactersRender chargé' : '❌ CharactersRender manquant', typeof CharactersRender !== 'undefined' ? 'success' : 'error');</script>
+
+    <script src="js/06-views/characters/characters.handlers.js"></script>
+    <script>log(typeof CharactersHandlers !== 'undefined' ? '✓ CharactersHandlers chargé' : '❌ CharactersHandlers manquant', typeof CharactersHandlers !== 'undefined' ? 'success' : 'error');</script>
+
+    <script src="js/06-views/characters/characters.view.js"></script>
+    <script>log(typeof CharactersView !== 'undefined' ? '✓ CharactersView chargé' : '❌ CharactersView manquant', typeof CharactersView !== 'undefined' ? 'success' : 'error');</script>
+
+    <!-- Test App -->
+    <script src="js/00-core/00.app.js"></script>
+    <script>log(typeof App !== 'undefined' ? '✓ App chargé' : '❌ App manquant', typeof App !== 'undefined' ? 'success' : 'error');</script>
+
+    <script>
+        log('─────────────────────────────────────', 'info');
+        log('Test terminé !', 'success');
+
+        // Test d'initialisation rapide
+        setTimeout(async () => {
+            try {
+                log('Test d\'initialisation du StorageService...', 'info');
+                await StorageService.init();
+                log('✓ StorageService initialisé', 'success');
+
+                log('Test de création d\'un projet...', 'info');
+                const testProject = new Project({ title: 'Test' });
+                log('✓ Projet créé: ' + testProject.title, 'success');
+
+                log('Test du StateManager...', 'info');
+                StateManager.setState({ test: 'hello' });
+                const state = StateManager.getState();
+                log('✓ State: ' + JSON.stringify(state.test), 'success');
+
+                log('─────────────────────────────────────', 'info');
+                log('🎉 TOUS LES TESTS PASSÉS !', 'success');
+
+            } catch (error) {
+                log('❌ Erreur lors de l\'initialisation: ' + error.message, 'error');
+                console.error(error);
+            }
+        }, 1000);
+    </script>
+</body>
+</html>

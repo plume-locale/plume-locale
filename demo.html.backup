@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plume Locale - Démo Architecture v2.0</title>
+    <link rel="stylesheet" href="demo.css">
+
+    <!-- Lucide Icons (CDN pour les icônes) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <!-- Header avec navigation -->
+    <header class="app-header">
+        <div class="app-header-content">
+            <h1>🪶 Plume Locale</h1>
+            <p class="app-version">Architecture v2.0 - Démo</p>
+        </div>
+        <nav class="app-nav">
+            <button class="nav-btn active" data-view="characters">
+                <i data-lucide="users"></i> Personnages
+            </button>
+            <button class="nav-btn" data-view="locations">
+                <i data-lucide="map-pin"></i> Lieux
+            </button>
+            <button class="nav-btn" data-view="notes">
+                <i data-lucide="sticky-note"></i> Notes
+            </button>
+            <button class="nav-btn" data-view="scenes">
+                <i data-lucide="file-text"></i> Scènes
+            </button>
+            <button class="nav-btn" data-view="structure">
+                <i data-lucide="book-open"></i> Structure
+            </button>
+            <button class="nav-btn" data-view="arc-board">
+                <i data-lucide="git-branch"></i> Arcs
+            </button>
+            <button class="nav-btn" data-view="story-grid">
+                <i data-lucide="table"></i> Grille
+            </button>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="app-main">
+        <!-- Characters View -->
+        <div id="characters-view" data-view="characters" class="view-container active">
+            <div class="loading">Chargement...</div>
+        </div>
+
+        <!-- Locations View -->
+        <div id="locations-view" data-view="locations" class="view-container">
+            <div class="loading">Chargement...</div>
+        </div>
+
+        <!-- Notes View -->
+        <div id="notes-view" data-view="notes" class="view-container">
+            <div class="loading">Chargement...</div>
+        </div>
+
+        <!-- Scenes View -->
+        <div id="scenes-view" data-view="scenes" class="view-container">
+            <div class="loading">Chargement...</div>
+        </div>
+
+        <!-- Structure View -->
+        <div id="structure-view" data-view="structure" class="view-container">
+            <div class="loading">Chargement...</div>
+        </div>
+
+        <!-- Arc Board View -->
+        <div id="arc-board-view" data-view="arc-board" class="view-container">
+            <div class="loading">Chargement...</div>
+        </div>
+
+        <!-- Story Grid View -->
+        <div id="story-grid-view" data-view="story-grid" class="view-container">
+            <div class="loading">Chargement...</div>
+        </div>
+    </main>
+
+    <!-- Footer avec infos -->
+    <footer class="app-footer">
+        <div class="footer-info">
+            <span id="app-status">Initialisation...</span>
+            <span id="storage-info"></span>
+        </div>
+        <div class="footer-actions">
+            <button onclick="showDebugInfo()" class="btn-debug">Debug Info</button>
+            <button onclick="clearAllData()" class="btn-danger">Clear Data</button>
+        </div>
+    </footer>
+
+    <!-- Scripts - IndexedDB Library -->
+    <script src="https://unpkg.com/idb@7/build/umd.js"></script>
+
+    <!-- Scripts - Core -->
+    <script src="js/00-core/01.state.js"></script>
+    <script src="js/00-core/02.events.js"></script>
+    <script src="js/00-core/03.router.js"></script>
+
+    <!-- Scripts - Utils -->
+    <script src="js/02-utils/dom.js"></script>
+    <script src="js/02-utils/text.js"></script>
+    <script src="js/02-utils/array.js"></script>
+    <script src="js/02-utils/date.js"></script>
+    <script src="js/02-utils/color.js"></script>
+    <script src="js/02-utils/validators.js"></script>
+
+    <!-- Scripts - Infrastructure -->
+    <script src="js/01-infrastructure/storage.js"></script>
+
+    <!-- Scripts - Models -->
+    <script src="js/04-models/Project.js"></script>
+    <script src="js/04-models/Scene.js"></script>
+    <script src="js/04-models/Character.js"></script>
+    <script src="js/04-models/Location.js"></script>
+    <script src="js/04-models/Arc.js"></script>
+    <script src="js/04-models/Note.js"></script>
+
+    <!-- Scripts - Services -->
+    <script src="js/03-services/project.service.js"></script>
+    <script src="js/03-services/scene.service.js"></script>
+    <script src="js/03-services/character.service.js"></script>
+    <script src="js/03-services/location.service.js"></script>
+    <script src="js/03-services/note.service.js"></script>
+
+    <!-- Scripts - UI Components -->
+    <script src="js/05-ui/modal.js"></script>
+    <script src="js/05-ui/toast.js"></script>
+
+    <!-- Scripts - Views -->
+    <script src="js/06-views/characters/characters.render.js"></script>
+    <script src="js/06-views/characters/characters.handlers.js"></script>
+    <script src="js/06-views/characters/characters.view.js"></script>
+
+    <script src="js/06-views/locations/locations.render.js"></script>
+    <script src="js/06-views/locations/locations.handlers.js"></script>
+    <script src="js/06-views/locations/locations.view.js"></script>
+
+    <script src="js/06-views/notes/notes.render.js"></script>
+    <script src="js/06-views/notes/notes.handlers.js"></script>
+    <script src="js/06-views/notes/notes.view.js"></script>
+
+    <script src="js/06-views/scenes/scenes.render.js"></script>
+    <script src="js/06-views/scenes/scenes.handlers.js"></script>
+    <script src="js/06-views/scenes/scenes.view.js"></script>
+
+    <script src="js/06-views/structure/structure.render.js"></script>
+    <script src="js/06-views/structure/structure.handlers.js"></script>
+    <script src="js/06-views/structure/structure.view.js"></script>
+
+    <script src="js/06-views/arc-board/arc-board.render.js"></script>
+    <script src="js/06-views/arc-board/arc-board.handlers.js"></script>
+    <script src="js/06-views/arc-board/arc-board.view.js"></script>
+
+    <script src="js/06-views/story-grid/story-grid.render.js"></script>
+    <script src="js/06-views/story-grid/story-grid.handlers.js"></script>
+    <script src="js/06-views/story-grid/story-grid.view.js"></script>
+
+    <!-- Scripts - App (last) -->
+    <script src="js/00-core/00.app.js"></script>
+
+    <!-- Initialization Script -->
+    <script>
+        // Variables globales pour la démo
+        let currentView = 'characters';
+        let demoProject = null;
+
+        // Initialisation de l'application
+        async function initDemo() {
+            console.log('=== Initialisation de la démo ===');
+
+            try {
+                // 1. Initialiser le storage
+                await StorageService.init();
+                updateStatus('Storage initialisé');
+
+                // 2. Créer ou charger un projet de test
+                await initDemoProject();
+                updateStatus('Projet de démo créé');
+
+                // 3. Enregistrer les vues dans le Router
+                Router.register('characters', CharactersView);
+                Router.register('locations', LocationsView);
+                Router.register('notes', NotesView);
+                Router.register('scenes', ScenesView);
+                Router.register('structure', StructureView);
+                Router.register('arc-board', ArcBoardView);
+                Router.register('story-grid', StoryGridView);
+                updateStatus('Vues enregistrées');
+
+                // 4. Initialiser la vue par défaut
+                await Router.navigate('characters');
+                updateStatus('✓ Application prête');
+
+                // 5. Afficher les infos de storage
+                updateStorageInfo();
+
+                // 6. Initialiser les icônes Lucide
+                if (typeof lucide !== 'undefined') {
+                    lucide.createIcons();
+                }
+
+                // 7. Configurer la navigation
+                setupNavigation();
+
+                console.log('✓ Démo initialisée avec succès');
+
+            } catch (error) {
+                console.error('Erreur lors de l\'initialisation:', error);
+                updateStatus('❌ Erreur: ' + error.message);
+            }
+        }
+
+        // Créer un projet de démo avec données de test
+        async function initDemoProject() {
+            // Créer un projet de test
+            demoProject = new Project({
+                title: 'Mon Roman de Démo',
+                description: 'Projet de démonstration de l\'architecture',
+                genre: 'Fantasy',
+                author: 'Auteur Test'
+            });
+
+            // Ajouter quelques données de test
+            demoProject.characters = [
+                {
+                    id: Date.now(),
+                    name: 'Alice Dubois',
+                    role: 'protagonist',
+                    description: 'Une jeune aventurière courageuse',
+                    color: '#e74c3c',
+                    appearance: { age: 25, gender: 'Femme' },
+                    background: { occupation: 'Exploratrice' },
+                    personality: { traits: ['Courageuse', 'Curieuse', 'Déterminée'] },
+                    relations: [],
+                    scenes: [],
+                    createdAt: Date.now(),
+                    updatedAt: Date.now()
+                },
+                {
+                    id: Date.now() + 1,
+                    name: 'Marc Leblanc',
+                    role: 'antagonist',
+                    description: 'Un mystérieux rival',
+                    color: '#8e44ad',
+                    appearance: { age: 30, gender: 'Homme' },
+                    background: { occupation: 'Mercenaire' },
+                    personality: { traits: ['Rusé', 'Ambitieux'] },
+                    relations: [],
+                    scenes: [],
+                    createdAt: Date.now(),
+                    updatedAt: Date.now()
+                }
+            ];
+
+            demoProject.world = [
+                {
+                    id: Date.now(),
+                    name: 'La Cité Ancienne',
+                    type: 'city',
+                    description: 'Une ville millénaire aux secrets oubliés',
+                    color: '#3498db',
+                    icon: 'building',
+                    scenes: [],
+                    createdAt: Date.now(),
+                    updatedAt: Date.now()
+                }
+            ];
+
+            demoProject.notes = [
+                {
+                    id: Date.now(),
+                    title: 'Idées pour le chapitre 1',
+                    content: 'Alice découvre une carte mystérieuse dans la bibliothèque...',
+                    category: 'ideas',
+                    color: '#f39c12',
+                    tags: ['chapitre-1', 'intrigue'],
+                    pinned: true,
+                    archived: false,
+                    createdAt: Date.now(),
+                    updatedAt: Date.now()
+                }
+            ];
+
+            // Ajouter une structure narrative (acts > chapters > scenes)
+            demoProject.acts = [
+                {
+                    id: Date.now(),
+                    title: 'Acte I - La Découverte',
+                    chapters: [
+                        {
+                            id: Date.now() + 1,
+                            title: 'Chapitre 1 - Le Commencement',
+                            scenes: [
+                                {
+                                    id: Date.now() + 2,
+                                    title: 'La Bibliothèque',
+                                    content: 'Alice fouillait dans les vieux rayons de la bibliothèque...',
+                                    summary: 'Alice découvre une carte mystérieuse',
+                                    status: 'draft',
+                                    tension: 6,
+                                    characters: [],
+                                    locations: [],
+                                    tags: ['découverte'],
+                                    notes: '',
+                                    createdAt: Date.now(),
+                                    updatedAt: Date.now()
+                                },
+                                {
+                                    id: Date.now() + 3,
+                                    title: 'La Rencontre',
+                                    content: 'Marc apparut soudainement dans la pénombre...',
+                                    summary: 'Première rencontre avec Marc',
+                                    status: 'revision',
+                                    tension: 8,
+                                    characters: [],
+                                    locations: [],
+                                    tags: ['rencontre', 'tension'],
+                                    notes: '',
+                                    createdAt: Date.now(),
+                                    updatedAt: Date.now()
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ];
+
+            // Ajouter des arcs narratifs
+            demoProject.arcs = [
+                {
+                    id: Date.now(),
+                    title: 'La Quête de la Carte',
+                    description: 'Alice cherche à déchiffrer la carte et découvrir ses secrets',
+                    category: 'plot',
+                    color: '#3498db',
+                    status: 'in-progress',
+                    priority: 'high',
+                    scenes: [Date.now() + 2, Date.now() + 3],
+                    milestones: [],
+                    createdAt: Date.now(),
+                    updatedAt: Date.now()
+                },
+                {
+                    id: Date.now() + 1,
+                    title: 'Évolution d\'Alice',
+                    description: 'Le parcours de transformation d\'Alice',
+                    category: 'character',
+                    color: '#e74c3c',
+                    status: 'planned',
+                    priority: 'medium',
+                    scenes: [],
+                    milestones: [],
+                    createdAt: Date.now(),
+                    updatedAt: Date.now()
+                }
+            ];
+
+            // Sauvegarder le projet
+            StateManager.setState({ project: demoProject.toJSON() });
+            await StorageService.saveProject(demoProject);
+        }
+
+        // Configuration de la navigation
+        function setupNavigation() {
+            const navButtons = document.querySelectorAll('.nav-btn');
+
+            navButtons.forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const viewName = btn.dataset.view;
+
+                    // Mettre à jour l'UI
+                    navButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+
+                    // Naviguer vers la vue
+                    await Router.navigate(viewName);
+
+                    // Mettre à jour les containers
+                    document.querySelectorAll('.view-container').forEach(c => {
+                        c.classList.remove('active');
+                    });
+                    document.querySelector(`#${viewName}-view`).classList.add('active');
+
+                    // Réinitialiser les icônes
+                    if (typeof lucide !== 'undefined') {
+                        lucide.createIcons();
+                    }
+                });
+            });
+        }
+
+        // Mise à jour du statut
+        function updateStatus(message) {
+            const statusEl = document.getElementById('app-status');
+            if (statusEl) {
+                statusEl.textContent = message;
+            }
+        }
+
+        // Mise à jour des infos de storage
+        async function updateStorageInfo() {
+            const info = await StorageService.getStorageInfo();
+            const infoEl = document.getElementById('storage-info');
+
+            if (infoEl && info) {
+                infoEl.textContent = `Storage: ${info.usageFormatted} / ${info.quotaFormatted} (${info.percentage}%)`;
+            }
+        }
+
+        // Afficher les infos de debug
+        function showDebugInfo() {
+            const state = StateManager.getState();
+            const views = Router.getViews();
+            const events = EventBus.getEvents();
+
+            console.group('🐛 Debug Info');
+            console.log('State:', state);
+            console.log('Registered Views:', views);
+            console.log('Active Events:', events);
+            console.log('Current View:', Router.getCurrentView());
+            console.log('Event History:', EventBus.getHistory(10));
+            console.groupEnd();
+
+            ToastUI.info('Debug info affiché dans la console');
+        }
+
+        // Effacer toutes les données
+        async function clearAllData() {
+            const confirmed = await ModalUI.confirm(
+                'Effacer toutes les données ?',
+                'Cette action supprimera le projet de démo et toutes les données. L\'application sera rechargée.',
+                { danger: true }
+            );
+
+            if (confirmed) {
+                // Clear localStorage
+                localStorage.clear();
+
+                // Clear IndexedDB
+                if (window.indexedDB) {
+                    indexedDB.deleteDatabase('PlumeDB');
+                }
+
+                ToastUI.success('Données effacées. Rechargement...');
+
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
+            }
+        }
+
+        // Lancer l'init au chargement de la page
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('🪶 Plume Locale v2.0 - Démo');
+            console.log('Documentation : voir ARCHITECTURE_PROPOSAL.md');
+
+            initDemo();
+        });
+
+        // Exposer pour debug
+        window.demoProject = () => demoProject;
+    </script>
+</body>
+</html>
