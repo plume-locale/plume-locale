@@ -1,6 +1,10 @@
+// ============================================
+// Module: features/plot
+// Plot Analysis & Tension Calculation - Plume Writer
+// ============================================
 
         let plotPoints = [];
-        
+
         // Algorithme d'analyse de tension basé sur le contenu
         function calculateSceneTension(scene, actIndex, totalActs, chapterIndex, totalChapters, sceneIndex, totalScenes) {
             let tension = 0;

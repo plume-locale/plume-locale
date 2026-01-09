@@ -1,3 +1,8 @@
+// ============================================
+// Module: views/world
+// World Management - Plume Writer
+// ============================================
+
 // World Management
         function openAddWorldModal() {
             document.getElementById('addWorldModal').classList.add('active');
@@ -35,7 +40,7 @@
         }
 
         function deleteWorldElement(id) {
-            if (!confirm('Êtes-vous sûr de vouloir supprimer cet élément ?')) return;
+            if (!confirm('ï¿½tes-vous sï¿½r de vouloir supprimer cet ï¿½lï¿½ment ?')) return;
             project.world = project.world.filter(w => w.id !== id);
             saveProject();
             renderWorldList();
@@ -46,7 +51,7 @@
             const container = document.getElementById('worldList');
             
             if (project.world.length === 0) {
-                container.innerHTML = '<div style="padding: 1rem; text-align: center; color: var(--text-muted); font-size: 0.85rem;">Aucun élément</div>';
+                container.innerHTML = '<div style="padding: 1rem; text-align: center; color: var(--text-muted); font-size: 0.85rem;">Aucun ï¿½lï¿½ment</div>';
                 return;
             }
             
@@ -58,13 +63,13 @@
                 groups[type].push(elem);
             });
             
-            // Icons for each type (Mise à jour avec Lucide Icons)
+            // Icons for each type (Mise ï¿½ jour avec Lucide Icons)
             const typeIcons = {
                 'Lieu': 'map-pin',
                 'Objet': 'package', 
                 'Concept': 'lightbulb',
                 'Organisation': 'users',
-                'Événement': 'calendar',
+                'ï¿½vï¿½nement': 'calendar',
                 'Autre': 'more-horizontal'
             };
             
@@ -90,13 +95,13 @@
                         </div>
                         <div class="treeview-children ${isCollapsed ? 'collapsed' : ''}">
                             ${sortedElements.map(elem => {
-                                const iconName = typeIcons[type] || 'circle'; // Icône par défaut 'circle'
+                                const iconName = typeIcons[type] || 'circle'; // Icï¿½ne par dï¿½faut 'circle'
                                 
                                 return `
                                 <div class="treeview-item" onclick="openWorldDetail(${elem.id})">
                                     <span class="treeview-item-icon"><i data-lucide="${iconName}" style="width:14px;height:14px;vertical-align:middle;"></i></span>
                                     <span class="treeview-item-label">${elem.name}</span>
-                                    <button class="treeview-item-delete" onclick="event.stopPropagation(); deleteWorldElement(${elem.id})" title="Supprimer">×</button>
+                                    <button class="treeview-item-delete" onclick="event.stopPropagation(); deleteWorldElement(${elem.id})" title="Supprimer">ï¿½</button>
                                 </div>
                                 `;
                             }).join('')}
@@ -115,7 +120,7 @@
 
             return `
                 <div class="detail-section">
-                    <div class="detail-section-title"><i data-lucide="file-text" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Apparaît dans ${scenes.length} scène(s)</div>
+                    <div class="detail-section-title"><i data-lucide="file-text" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Apparaï¿½t dans ${scenes.length} scï¿½ne(s)</div>
                     <div class="quick-links">
                         ${scenes.map(scene => {
                             const actIndex = project.acts.findIndex(a => a.id === scene.actId);
@@ -123,7 +128,7 @@
                             const chapterIndex = act.chapters.findIndex(c => c.id === scene.chapterId);
                             const actNumber = toRoman(actIndex + 1);
                             const chapterNumber = chapterIndex + 1;
-                            const breadcrumb = `Acte ${actNumber} › Chapitre ${chapterNumber} › ${scene.sceneTitle}`;
+                            const breadcrumb = `Acte ${actNumber} ï¿½ Chapitre ${chapterNumber} ï¿½ ${scene.sceneTitle}`;
                             
                             return `
                             <span class="link-badge" onclick="openScene(${scene.actId}, ${scene.chapterId}, ${scene.sceneId})" title="${scene.actTitle} - ${scene.chapterTitle}">
@@ -160,8 +165,8 @@
                             <span style="font-size: 0.9rem; padding: 0.5rem 1rem; background: var(--accent-gold); color: var(--bg-primary); border-radius: 2px;">${element.type}</span>
                         </div>
                         <div style="display: flex; gap: 0.5rem;">
-                            <button class="btn btn-small" onclick="showReferencesForElement(${id})"><i data-lucide="link" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Voir les références</button>
-                            <button class="btn" onclick="switchView('editor')">? Retour à l'éditeur</button>
+                            <button class="btn btn-small" onclick="showReferencesForElement(${id})"><i data-lucide="link" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Voir les rï¿½fï¿½rences</button>
+                            <button class="btn" onclick="switchView('editor')">? Retour ï¿½ l'ï¿½diteur</button>
                         </div>
                     </div>
                     
@@ -183,7 +188,7 @@
                             <option value="Objet" ${element.type === 'Objet' ? 'selected' : ''}>Objet</option>
                             <option value="Concept" ${element.type === 'Concept' ? 'selected' : ''}>Concept</option>
                             <option value="Organisation" ${element.type === 'Organisation' ? 'selected' : ''}>Organisation</option>
-                            <option value="Événement" ${element.type === 'Événement' ? 'selected' : ''}>Événement</option>
+                            <option value="ï¿½vï¿½nement" ${element.type === 'ï¿½vï¿½nement' ? 'selected' : ''}>ï¿½vï¿½nement</option>
                         </select>
                     </div>
 
@@ -194,7 +199,7 @@
                     </div>
 
                     <div class="detail-section">
-                        <div class="detail-section-title">Détails</div>
+                        <div class="detail-section-title">Dï¿½tails</div>
                         <textarea class="form-input" rows="6" 
                                   onchange="updateWorldField(${id}, 'details', this.value)">${element.details}</textarea>
                     </div>

@@ -1,7 +1,12 @@
+// ============================================
+// Module: views/todos
+// Todos Panel - Plume Writer
+// ============================================
+
         // ==========================================
         // TODOS PANEL
         // ==========================================
-        
+
         function toggleTodosPanel() {
             const panel = document.getElementById('todosPanel');
             const btn = document.getElementById('sidebarTodosBtn');

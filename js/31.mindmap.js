@@ -1,7 +1,12 @@
+// ============================================
+// Module: views/mindmap
+// Mindmap Visualization - Plume Writer
+// ============================================
+
         // ============================================
         // NOUVELLES FONCTIONNALITÉS DE VISUALISATION
         // ============================================
-        
+
         // Initialiser les données de visualisation si elles n'existent pas
         if (!project.mindmapNodes) project.mindmapNodes = [];
         if (!project.plotPoints) project.plotPoints = [];

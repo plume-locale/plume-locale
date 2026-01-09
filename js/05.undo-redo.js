@@ -1,3 +1,8 @@
+// ============================================
+// Module: core/undo-redo
+// History Management - Plume Writer
+// ============================================
+
         function saveToHistory() {
             // Créer une copie profonde du projet
             const snapshot = JSON.parse(JSON.stringify(project));

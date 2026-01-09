@@ -1,7 +1,12 @@
+// ============================================
+// Module: features/scene-versions
+// Scene Version Management - Plume Writer
+// ============================================
+
         // ==========================================
         // SCENE VERSION MANAGEMENT (Versions par scène)
         // ==========================================
-        
+
         let sceneVersionsSidebarVisible = false;
         
         function toggleVersionsSidebar() {

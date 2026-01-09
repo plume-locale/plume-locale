@@ -1,3 +1,7 @@
+// ============================================
+// Module: utils/updateStats
+// Statistics Update Functions - Plume Writer
+// ============================================
 
         function updateStats() {
             const totalActs = project.acts.length;
@@ -10,13 +14,13 @@
                 }, 0);
             }, 0);
 
-            // Mettre à jour les stats dans le header
+            // Mettre ï¿½ jour les stats dans le header
             const headerWords = document.getElementById('headerTotalWords');
             const headerChapters = document.getElementById('headerTotalChapters');
             if (headerWords) headerWords.textContent = `${totalWords} mots`;
             if (headerChapters) headerChapters.textContent = `${totalChapters} chapitres`;
             
-            // Mettre à jour le titre du projet dans le header
+            // Mettre ï¿½ jour le titre du projet dans le header
             const headerTitle = document.getElementById('headerProjectTitle');
             if (headerTitle) headerTitle.textContent = project.title;
         }

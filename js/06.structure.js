@@ -1,3 +1,8 @@
+// ============================================
+// Module: views/structure
+// Structure View Management - Plume Writer
+// ============================================
+
         function refreshAllViews() {
             // Rafraîchir tous les affichages après un undo/redo
             renderActsList();

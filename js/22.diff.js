@@ -1,7 +1,12 @@
+// ============================================
+// Module: features/diff
+// Diff Viewer (Comparaison de versions) - Plume Writer
+// ============================================
+
         // ==========================================
         // DIFF VIEWER (Comparaison de versions)
         // ==========================================
-        
+
         let currentDiffView = 'unified';
         let diffVersions = { old: null, new: null };
         

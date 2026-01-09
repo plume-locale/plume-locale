@@ -1,3 +1,7 @@
+// ============================================
+// Module: features/import-export
+// Backup and Import Management - Plume Writer
+// ============================================
 
         // Backup and Import Management
         function showBackupMenu() {
@@ -15,7 +19,7 @@
             a.click();
             URL.revokeObjectURL(url);
             
-            alert(`? Fichier JSON téléchargé !\n\nNom : ${filename}\n\nTu peux maintenant l'uploader sur Google Drive, Dropbox, ou tout autre service cloud.`);
+            alert(`? Fichier JSON tï¿½lï¿½chargï¿½ !\n\nNom : ${filename}\n\nTu peux maintenant l'uploader sur Google Drive, Dropbox, ou tout autre service cloud.`);
         }
 
         function importFromFile() {
@@ -27,11 +31,11 @@
             if (!file) return;
 
             if (!file.name.endsWith('.json')) {
-                alert('? Erreur : Le fichier doit être au format JSON');
+                alert('? Erreur : Le fichier doit ï¿½tre au format JSON');
                 return;
             }
 
-            if (!confirm('?? ATTENTION : L\'import va remplacer toutes vos données actuelles.\n\nVoulez-vous créer une sauvegarde avant de continuer ?')) {
+            if (!confirm('?? ATTENTION : L\'import va remplacer toutes vos donnï¿½es actuelles.\n\nVoulez-vous crï¿½er une sauvegarde avant de continuer ?')) {
                 event.target.value = ''; // Reset input
                 return;
             }
@@ -71,7 +75,7 @@
                     renderActsList();
                     closeModal('backupModal');
                     
-                    alert('? Import réussi !\n\nToutes vos données ont été restaurées.');
+                    alert('? Import rï¿½ussi !\n\nToutes vos donnï¿½es ont ï¿½tï¿½ restaurï¿½es.');
                 } catch (error) {
                     alert('? Erreur lors de l\'import : ' + error.message);
                 }
@@ -123,13 +127,13 @@
         }
 
         function openAddChapterModal(actId) {
-            // Si pas d'actId fourni, utiliser le premier acte ou on en créera un
+            // Si pas d'actId fourni, utiliser le premier acte ou on en crï¿½era un
             if (actId) {
                 activeActId = actId;
             } else if (project.acts.length > 0) {
                 activeActId = project.acts[0].id;
             } else {
-                activeActId = null; // Sera créé dans addChapter
+                activeActId = null; // Sera crï¿½ï¿½ dans addChapter
             }
             document.getElementById('addChapterModal').classList.add('active');
             setTimeout(() => document.getElementById('chapterTitleInput').focus(), 100);

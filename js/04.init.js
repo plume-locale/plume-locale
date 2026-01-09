@@ -1,3 +1,8 @@
+// ============================================
+// Module: core/init
+// Application Initialization - Plume Writer
+// ============================================
+
         // Initialize
         async function init() {
             // Initialiser IndexedDB en premier

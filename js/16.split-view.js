@@ -1,7 +1,12 @@
+// ============================================
+// Module: views/split-view
+// Split View System - Plume Writer
+// ============================================
+
         // ==========================================
         // SPLIT VIEW SYSTEM - New Architecture
         // ==========================================
-        
+
         const viewLabels = {
             'editor': 'Structure',
             'characters': 'Personnages',

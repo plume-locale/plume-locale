@@ -1,7 +1,12 @@
+// ============================================
+// Module: views/relations-graph
+// Relations Graph Functions - Plume Writer
+// ============================================
+
         // ============================================
         // RELATIONS GRAPH FUNCTIONS
         // ============================================
-        
+
         function renderRelationsView() {
             const editorView = document.getElementById('editorView');
             if (!editorView) {

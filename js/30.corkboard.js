@@ -1,7 +1,12 @@
+// ============================================
+// Module: views/corkboard
+// Cork Board Functions - Plume Writer
+// ============================================
+
         // ============================================
         // CORK BOARD FUNCTIONS
         // ============================================
-        
+
         let corkBoardFilter = {
             type: 'all', // 'all', 'act', 'chapter'
             actId: null,

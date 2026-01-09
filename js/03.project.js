@@ -1,3 +1,7 @@
+// ============================================
+// Module: views/navigation
+// View Management - Plume Writer
+// ============================================
 
         // View Management (définie tôt pour être accessible partout)
         function switchView(view) {

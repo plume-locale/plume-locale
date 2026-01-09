@@ -1,3 +1,8 @@
+// ============================================
+// Module: core/app
+// Data Structure - Plume Writer
+// ============================================
+
         // Data Structure
         let projects = []; // Array of all projects
         let currentProjectId = null;

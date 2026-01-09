@@ -1,7 +1,12 @@
+// ============================================
+// Module: ui/mobile-swipe
+// Mobile Swipe Gesture Support - Plume Writer
+// ============================================
+
         // ============================================
         // MOBILE SWIPE GESTURE SUPPORT
         // ============================================
-        
+
         let touchStartX = 0;
         let touchStartY = 0;
         let touchEndX = 0;

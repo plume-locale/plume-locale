@@ -1,4 +1,9 @@
 // ============================================
+// Module: views/arc-board
+// Arc Board - Canvas System (Milanote-inspired) - Plume Writer
+// ============================================
+
+// ============================================
 // ARC BOARD - Canvas System (Milanote-inspired)
 // ============================================
 

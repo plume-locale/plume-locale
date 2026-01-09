@@ -1,4 +1,9 @@
 // ============================================
+// Module: features/auto-detect
+// Auto-Détection des Personnages et Lieux - Plume Writer
+// ============================================
+
+// ============================================
 // AUTO-DÉTECTION DES PERSONNAGES ET LIEUX
 // ============================================
 

@@ -1,3 +1,7 @@
+// ============================================
+// Module: ui/keyboard-shortcuts
+// Keyboard Shortcuts - Plume Writer
+// ============================================
 
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
@@ -33,7 +37,7 @@
                 e.preventDefault();
                 toggleFocusMode();
             }
-            // Raccourci pour le mode révision (Ctrl+R)
+            // Raccourci pour le mode rï¿½vision (Ctrl+R)
             if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
                 e.preventDefault();
                 if (currentSceneId) {

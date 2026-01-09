@@ -1,7 +1,11 @@
+// ============================================
+// Module: views/characters
+// Characters View Management - Plume Writer
+// ============================================
 
 
         // View Management
-        
+
         // Si la liste des races n'existe pas, on en crée une par défaut
         if (!project.races) {
             project.races = ['Humain', 'Elfe', 'Nain', 'Orc', 'Autre'];

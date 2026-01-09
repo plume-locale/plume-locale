@@ -1,7 +1,12 @@
+// ============================================
+// Module: core/storage
+// IndexedDB Functions - Plume Writer
+// ============================================
+
         // ============================================
         // INDEXEDDB FUNCTIONS
         // ============================================
-        
+
         let db = null; // Instance de la base de données
         let useLocalStorage = false; // Fallback si IndexedDB échoue
         

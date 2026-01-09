@@ -1,8 +1,12 @@
+// ============================================
+// Module: views/map
+// Map Rendering Functions - Plume Writer
+// ============================================
 
         // ============================================
         // MAP FUNCTIONS
         // ============================================
-        
+
         function renderMapView() {
             const editorView = document.getElementById('editorView');
             if (!editorView) {
@@ -54,7 +58,7 @@
                 mapContent = `
                     <div style="padding: 4rem; text-align: center; background: var(--bg-secondary); border-radius: 8px; border: 2px dashed var(--border-color);">
                         <div style="font-size: 4rem; margin-bottom: 1rem;">???</div>
-                        <div style="font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem;">Aucune carte chargée</div>
+                        <div style="font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem;">Aucune carte chargï¿½e</div>
                         <div style="color: var(--text-muted); margin-bottom: 1.5rem;">Cliquez sur "Charger carte" pour ajouter une image</div>
                         <button class="btn btn-primary" onclick="uploadMapImage()">?? Charger une carte</button>
                     </div>
@@ -63,13 +67,13 @@
             
             editorView.innerHTML = `
                 <div style="height: 100%; overflow-y: auto; padding: 2rem 3rem;">
-                    <h2 style="margin-bottom: 2rem; color: var(--accent-gold);">??? Carte Géographique</h2>
+                    <h2 style="margin-bottom: 2rem; color: var(--accent-gold);">??? Carte Gï¿½ographique</h2>
                     
                     <div style="margin-bottom: 2rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
                         <button class="btn btn-primary" onclick="uploadMapImage()">??? Charger carte</button>
                         <button class="btn" onclick="addMapLocation()" ${!project.mapImage ? 'disabled' : ''}>?? Ajouter lieu</button>
                         <button class="btn btn-small" onclick="clearMap()" ${!project.mapImage ? 'disabled' : ''}>??? Effacer carte</button>
-                        <button class="btn btn-small" onclick="exportMapData()">?? Exporter données</button>
+                        <button class="btn btn-small" onclick="exportMapData()">?? Exporter donnï¿½es</button>
                     </div>
                     
                     <div style="background: var(--bg-secondary); padding: 2rem; border-radius: 8px; text-align: center;">
@@ -78,7 +82,7 @@
                     
                     ${project.mapLocations.length > 0 ? `
                         <div style="margin-top: 2rem; background: var(--bg-secondary); padding: 1.5rem; border-radius: 8px;">
-                            <h3 style="margin-bottom: 1rem; color: var(--text-primary);">?? Lieux marqués (${project.mapLocations.length})</h3>
+                            <h3 style="margin-bottom: 1rem; color: var(--text-primary);">?? Lieux marquï¿½s (${project.mapLocations.length})</h3>
                             <div style="display: grid; gap: 0.5rem;">
                                 ${project.mapLocations.map((loc, i) => `
                                     <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: var(--bg-primary); border-radius: 4px;">
@@ -96,7 +100,7 @@
                     <div style="margin-top: 2rem; padding: 1.5rem; background: var(--bg-secondary); border-radius: 8px; border-left: 4px solid var(--accent-gold);">
                         <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.6;">
                             ?? <strong>Utilisation:</strong><br>
-                            1. Chargez une image de carte (dessinée à la main, générée par IA, etc.)<br>
+                            1. Chargez une image de carte (dessinï¿½e ï¿½ la main, gï¿½nï¿½rï¿½e par IA, etc.)<br>
                             2. Cliquez directement sur la carte pour placer un marqueur<br>
                             3. Cliquez sur un marqueur existant pour le modifier ou le supprimer
                         </p>
@@ -124,7 +128,7 @@
                 });
                 saveProject();
                 renderMapView();
-                showNotification(`?? Lieu "${name}" ajouté`);
+                showNotification(`?? Lieu "${name}" ajoutï¿½`);
             }
         }
         
@@ -175,7 +179,7 @@
                 loc.name = newName;
                 saveProject();
                 renderMapView();
-                showNotification(`?? Lieu modifié: ${newName}`);
+                showNotification(`?? Lieu modifiï¿½: ${newName}`);
             }
         }
         
@@ -185,7 +189,7 @@
                 project.mapLocations.splice(index, 1);
                 saveProject();
                 renderMapView();
-                showNotification(`??? Lieu supprimé: ${loc.name}`);
+                showNotification(`??? Lieu supprimï¿½: ${loc.name}`);
             }
         }
         
@@ -195,13 +199,13 @@
                 project.mapLocations = [];
                 saveProject();
                 renderMapView();
-                showNotification('??? Carte effacée');
+                showNotification('??? Carte effacï¿½e');
             }
         }
         
         function exportMapData() {
             const data = {
-                image: project.mapImage ? 'Image présente' : 'Pas d\'image',
+                image: project.mapImage ? 'Image prï¿½sente' : 'Pas d\'image',
                 locations: project.mapLocations
             };
             const json = JSON.stringify(data, null, 2);
@@ -211,5 +215,5 @@
             a.href = url;
             a.download = `carte_${project.title.replace(/[^a-z0-9]/gi, '_')}.json`;
             a.click();
-            showNotification('?? Données de la carte exportées');
+            showNotification('?? Donnï¿½es de la carte exportï¿½es');
         }

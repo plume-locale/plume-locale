@@ -1,7 +1,12 @@
+// ============================================
+// Module: ui/sidebar-views
+// Mobile Sidebar Views - Plume Writer
+// ============================================
+
         // ============================================
         // MOBILE SIDEBAR VIEWS
         // ============================================
-        
+
         function renderMobileSidebarView(view) {
             const editorView = document.getElementById('editorView');
             if (!editorView) return;
