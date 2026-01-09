@@ -49,6 +49,7 @@ JS_V2_ORDER = [
     'js/01-infrastructure/sidebar-resize.js',
     'js/01-infrastructure/drag-drop.js',
     'js/01-infrastructure/storage-monitoring.js',
+    'js/01-infrastructure/touch-events.js',
 
     # Models
     'js/04-models/Project.js',
@@ -76,6 +77,10 @@ JS_V2_ORDER = [
     'js/03-services/scene-versions.service.js',
     'js/03-services/codex.service.js',
     'js/03-services/todos.service.js',
+    'js/03-services/tension-words.service.js',
+    'js/03-services/plot.service.js',
+    'js/03-services/narrative-arcs.service.js',
+    'js/03-services/theme.service.js',
 
     # UI Components
     'js/05-ui/modal.js',
@@ -85,6 +90,9 @@ JS_V2_ORDER = [
     'js/05-ui/focus-mode.js',
     'js/05-ui/floating-editor.js',
     'js/05-ui/map-renderer.js',
+    'js/05-ui/relations-graph.js',
+    'js/05-ui/corkboard.js',
+    'js/05-ui/revision-mode.js',
 
     # Views - Characters
     'js/06-views/characters/characters.render.js',
@@ -162,40 +170,23 @@ EXCLUDED_OLD_FILES = [
     '42.mobile-swipe.js', # Remplacé par 01-infrastructure/mobile-gestures.js
     '44.storygrid.js',  # Remplacé par 06-views/story-grid/
     '45.arc-board.js',  # Remplacé par 06-views/arc-board/
+    '28.revision.js',   # Remplacé par 05-ui/revision-mode.js
+    '30.corkboard.js',  # Remplacé par 05-ui/corkboard.js
+    '32.touch-events.js', # Remplacé par 01-infrastructure/touch-events.js
+    '33.plot.js',       # Remplacé par 03-services/plot.service.js
+    '34.relations-graph.js', # Remplacé par 05-ui/relations-graph.js
+    '37.theme-manager.js', # Remplacé par 03-services/theme.service.js
+    '38.tension.js',    # Remplacé par 03-services/tension-words.service.js
+    '43.arcs.js',       # Remplacé par 03-services/narrative-arcs.service.js
 ]
 
 # Anciens fichiers À GARDER (fonctionnalités non encore migrées)
 OLD_FILES_TO_KEEP = [
     '03.project.js',    # Contient encore beaucoup de fonctions nécessaires (à garder temporairement)
-    '07.stats.js',
-    '08.auto-detect.js',
-    '09.floating-editor.js',
-    '10.colorpalette.js',
-    '13.mobile-menu.js',
-    '14.dragndrop-acts.js',
     '16.split-view.js',
-    '18.timeline.js',
-    '20.snapshots.js',
-    '21.sceneVersions.js',
-    '22.diff.js',
-    '23.stats.js',
-    '24.codex.js',
-    '25.globalSearch.js',
-    '26.focusMode.js',
-    '28.revision.js',
-    '29.todos.js',
-    '30.corkboard.js',
     '31.mindmap.js',
-    '32.touch-events.js',
-    '33.plot.js',
-    '34.relations-graph.js',
-    '35.renderMap.js',
     '36.timeline-metro.js',
-    '37.theme-manager.js',
-    '38.tension.js',
     '39.export.js',
-    '41.storageMonitoring.js',
-    '43.arcs.js',
 ]
 
 # Ordre des fichiers CSS (inchangé)
