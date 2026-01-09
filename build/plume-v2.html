@@ -17806,6 +17806,637 @@ if (document.readyState === 'loading') {
 }
 
 
+// ========== js/01-infrastructure/mobile-menu.js ==========
+/**
+ * Mobile Menu Service
+ * Gestion des menus mobiles, sidebar et toolbar
+ */
+
+const MobileMenuService = (() => {
+    'use strict';
+
+    // Icons SVG
+    const ICONS = {
+        menu: `
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="4" x2="20" y1="12" y2="12"/>
+                <line x1="4" x2="20" y1="6" y2="6"/>
+                <line x1="4" x2="20" y1="18" y2="18"/>
+            </svg>
+        `,
+        close: `
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 6 6 18"/>
+                <path d="m6 6 12 12"/>
+            </svg>
+        `
+    };
+
+    /**
+     * Toggle la sidebar mobile
+     */
+    function toggleMobileSidebar() {
+        const sidebar = document.querySelector('.sidebar');
+        const overlay = document.querySelector('.sidebar-overlay');
+        const handle = document.querySelector('.mobile-menu-handle');
+
+        console.log('[MobileMenu] toggleMobileSidebar appelé');
+
+        if (!sidebar || !overlay) {
+            console.warn('[MobileMenu] Éléments sidebar ou overlay introuvables');
+            return;
+        }
+
+        // Toggle sidebar
+        sidebar.classList.toggle('mobile-open');
+
+        // Toggle overlay and handle
+        if (sidebar.classList.contains('mobile-open')) {
+            overlay.style.display = 'block';
+            setTimeout(() => overlay.classList.add('active'), 10);
+            if (handle) handle.classList.add('hidden');
+            document.body.style.overflow = 'hidden';
+            console.log('[MobileMenu] Sidebar ouverte');
+        } else {
+            overlay.classList.remove('active');
+            setTimeout(() => overlay.style.display = 'none', 300);
+            if (handle) handle.classList.remove('hidden');
+            document.body.style.overflow = '';
+            console.log('[MobileMenu] Sidebar fermée');
+        }
+
+        // Émettre un événement
+        if (window.EventBus) {
+            EventBus.emit('mobile-sidebar:toggled', {
+                isOpen: sidebar.classList.contains('mobile-open')
+            });
+        }
+    }
+
+    /**
+     * Ferme la sidebar mobile
+     */
+    function closeMobileSidebar() {
+        const sidebar = document.querySelector('.sidebar');
+        const overlay = document.querySelector('.sidebar-overlay');
+        const handle = document.querySelector('.mobile-menu-handle');
+
+        if (sidebar && sidebar.classList.contains('mobile-open')) {
+            sidebar.classList.remove('mobile-open');
+            if (overlay) {
+                overlay.classList.remove('active');
+                setTimeout(() => overlay.style.display = 'none', 300);
+            }
+            if (handle) handle.classList.remove('hidden');
+            document.body.style.overflow = '';
+
+            if (window.EventBus) {
+                EventBus.emit('mobile-sidebar:closed');
+            }
+        }
+    }
+
+    /**
+     * Toggle le menu de navigation mobile
+     */
+    function toggleMobileNav() {
+        const dropdown = document.getElementById('mobileNavDropdown');
+        const toggleBtn = document.getElementById('mobileNavToggleBtn');
+        const sidebar = document.querySelector('.sidebar');
+
+        if (!dropdown || !toggleBtn) return;
+
+        // Déterminer si le menu est actif (ouvert)
+        if (dropdown.classList.contains('active')) {
+            // Fermer le menu
+            dropdown.classList.remove('active');
+            toggleBtn.innerHTML = ICONS.menu;
+            if (sidebar) sidebar.style.visibility = '';
+        } else {
+            // Ouvrir le menu
+            dropdown.classList.add('active');
+            toggleBtn.innerHTML = ICONS.close;
+            if (sidebar) sidebar.style.visibility = 'hidden';
+        }
+    }
+
+    /**
+     * Ferme le menu de navigation mobile
+     */
+    function closeMobileNav() {
+        const dropdown = document.getElementById('mobileNavDropdown');
+        const toggleBtn = document.getElementById('mobileNavToggleBtn');
+        const sidebar = document.querySelector('.sidebar');
+
+        if (dropdown && dropdown.classList.contains('active')) {
+            dropdown.classList.remove('active');
+            if (toggleBtn) toggleBtn.innerHTML = ICONS.menu;
+            if (sidebar) sidebar.style.visibility = '';
+        }
+    }
+
+    /**
+     * Switche la vue depuis le menu mobile
+     * @param {string} view - Nom de la vue
+     */
+    function switchViewMobile(view) {
+        // Update active state in mobile menu
+        document.querySelectorAll('.mobile-nav-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        const activeItem = document.querySelector(`[data-view="${view}"]`);
+        if (activeItem) {
+            activeItem.classList.add('active');
+        }
+
+        // Close mobile nav
+        closeMobileNav();
+
+        // Switch to the view
+        if (window.switchView) {
+            switchView(view);
+        } else if (window.Router) {
+            Router.navigate(view);
+        }
+    }
+
+    /**
+     * Toggle le toolbar de l'éditeur (mobile)
+     */
+    function toggleEditorToolbar() {
+        const toolbar = document.getElementById('editorToolbar');
+        const toggleText = document.getElementById('toolbarToggleText');
+        const toggleBtn = document.querySelector('.toolbar-mobile-toggle');
+
+        if (!toolbar) return;
+
+        if (toolbar.classList.contains('expanded')) {
+            toolbar.classList.remove('expanded');
+            if (toggleText) {
+                toggleText.innerHTML = '<i data-lucide="pen-line" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Afficher les outils de formatage';
+            }
+            if (toggleBtn) toggleBtn.classList.remove('expanded');
+        } else {
+            toolbar.classList.add('expanded');
+            if (toggleText) {
+                toggleText.innerHTML = '<i data-lucide="x" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Masquer les outils de formatage';
+            }
+            if (toggleBtn) toggleBtn.classList.add('expanded');
+        }
+
+        // Rafraîchir les icônes Lucide si disponible
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    }
+
+    /**
+     * Toggle le panneau de liens (personnages & lieux)
+     */
+    function toggleLinksPanel() {
+        const panel = document.getElementById('linksPanel');
+        const toggleText = document.getElementById('linksPanelToggleText');
+        const toggleBtn = document.querySelector('.links-panel-toggle');
+
+        if (!panel) return;
+
+        if (panel.classList.contains('expanded')) {
+            panel.classList.remove('expanded');
+            if (toggleText) {
+                toggleText.innerHTML = '<i data-lucide="chevron-right" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Afficher personnages & lieux liés';
+            }
+            if (toggleBtn) toggleBtn.classList.remove('expanded');
+        } else {
+            panel.classList.add('expanded');
+            if (toggleText) {
+                toggleText.innerHTML = '<i data-lucide="chevron-down" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Masquer personnages & lieux liés';
+            }
+            if (toggleBtn) toggleBtn.classList.add('expanded');
+        }
+
+        // Rafraîchir les icônes Lucide
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    }
+
+    /**
+     * Toggle le toolbar depuis le menu flottant
+     */
+    function toggleToolbarFromFloating() {
+        // Fermer le menu flottant
+        const floatingMenu = document.getElementById('floatingEditorMenu');
+        const floatingToggle = document.getElementById('floatingEditorToggle');
+
+        if (floatingMenu && floatingMenu.classList.contains('active')) {
+            floatingMenu.classList.remove('active');
+            if (floatingToggle) floatingToggle.textContent = '⚙️';
+        }
+
+        // Ouvrir le toolbar complet
+        const toolbar = document.getElementById('editorToolbar');
+        const toggleText = document.getElementById('toolbarToggleText');
+        const toggleBtn = document.querySelector('.toolbar-mobile-toggle');
+
+        if (toolbar && !toolbar.classList.contains('expanded')) {
+            toolbar.classList.add('expanded');
+            if (toggleText) toggleText.textContent = '✕ Masquer les outils de formatage';
+            if (toggleBtn) toggleBtn.classList.add('expanded');
+        }
+
+        // Scroll vers le toolbar
+        setTimeout(() => {
+            if (toolbar) {
+                toolbar.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }, 100);
+    }
+
+    /**
+     * Toggle le menu avancé
+     */
+    function toggleAdvancedMenu() {
+        const advancedBar = document.getElementById('advancedMenuBar');
+        const advancedBtn = document.getElementById('advancedMenuBtn');
+
+        if (!advancedBar) return;
+
+        if (advancedBar.classList.contains('active')) {
+            advancedBar.classList.remove('active');
+            if (advancedBtn) advancedBtn.style.background = '';
+        } else {
+            advancedBar.classList.add('active');
+            if (advancedBtn) advancedBtn.style.background = 'rgba(255,215,0,0.3)';
+        }
+    }
+
+    /**
+     * Vérifie si le header déborde (menu trop large)
+     */
+    function checkHeaderOverflow() {
+        const header = document.querySelector('.app-header');
+        const headerNav = document.querySelector('.header-nav');
+        const body = document.body;
+
+        if (!header || !headerNav) return;
+
+        // Temporairement forcer le mode desktop pour mesurer
+        body.classList.remove('force-mobile-nav');
+
+        // Attendre le reflow
+        requestAnimationFrame(() => {
+            const headerWidth = header.offsetWidth;
+            const logoWidth = document.querySelector('.app-logo')?.offsetWidth || 0;
+            const actionsWidth = document.querySelector('.header-actions')?.offsetWidth || 0;
+            const navWidth = headerNav.scrollWidth;
+            const availableSpace = headerWidth - logoWidth - actionsWidth - 60; // 60px de marge
+
+            if (navWidth > availableSpace) {
+                body.classList.add('force-mobile-nav');
+            } else {
+                body.classList.remove('force-mobile-nav');
+            }
+        });
+    }
+
+    /**
+     * Gestion du redimensionnement de la fenêtre
+     */
+    function handleResize() {
+        // Vérifier le débordement du header
+        checkHeaderOverflow();
+
+        // Si redimensionnement vers desktop, réinitialiser
+        if (window.innerWidth > 900 && !document.body.classList.contains('force-mobile-nav')) {
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
+            const menuBtn = document.querySelector('.mobile-menu-toggle');
+
+            if (sidebar) sidebar.classList.remove('mobile-open');
+            if (overlay) {
+                overlay.classList.remove('active');
+                overlay.style.display = 'none';
+            }
+            if (menuBtn) menuBtn.innerHTML = ICONS.menu;
+            document.body.style.overflow = '';
+        }
+    }
+
+    /**
+     * Initialise le service de menu mobile
+     */
+    function init() {
+        // Override switchView pour fermer la sidebar mobile
+        const originalSwitchView = window.switchView;
+        if (originalSwitchView) {
+            window.switchView = function(view) {
+                if (window.innerWidth <= 900) {
+                    closeMobileSidebar();
+                }
+                originalSwitchView(view);
+            };
+        }
+
+        // Écouter le redimensionnement
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(handleResize, 100);
+        });
+
+        // Vérifier au chargement
+        setTimeout(checkHeaderOverflow, 100);
+
+        console.log('[MobileMenu] Service initialisé');
+    }
+
+    // API publique
+    return {
+        init,
+        toggleMobileSidebar,
+        closeMobileSidebar,
+        toggleMobileNav,
+        closeMobileNav,
+        switchViewMobile,
+        toggleEditorToolbar,
+        toggleLinksPanel,
+        toggleToolbarFromFloating,
+        toggleAdvancedMenu,
+        checkHeaderOverflow
+    };
+})();
+
+// Exposer globalement pour compatibilité
+window.MobileMenuService = MobileMenuService;
+window.toggleMobileSidebar = () => MobileMenuService.toggleMobileSidebar();
+window.closeMobileSidebar = () => MobileMenuService.closeMobileSidebar();
+window.toggleMobileNav = () => MobileMenuService.toggleMobileNav();
+window.closeMobileNav = () => MobileMenuService.closeMobileNav();
+window.switchViewMobile = (view) => MobileMenuService.switchViewMobile(view);
+window.toggleEditorToolbar = () => MobileMenuService.toggleEditorToolbar();
+window.toggleLinksPanel = () => MobileMenuService.toggleLinksPanel();
+window.toggleToolbarFromFloating = () => MobileMenuService.toggleToolbarFromFloating();
+window.toggleAdvancedMenu = () => MobileMenuService.toggleAdvancedMenu();
+window.insertLink = () => {
+    const url = prompt('Entrez l\'URL du lien:');
+    if (url && typeof formatText === 'function') {
+        formatText('createLink', url);
+    }
+};
+
+// Auto-initialisation
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        MobileMenuService.init();
+        window.addEventListener('load', () => MobileMenuService.checkHeaderOverflow());
+    });
+} else {
+    MobileMenuService.init();
+    window.addEventListener('load', () => MobileMenuService.checkHeaderOverflow());
+}
+
+
+// ========== js/01-infrastructure/sidebar-resize.js ==========
+/**
+ * Sidebar Resize Service
+ * Gestion du redimensionnement de la sidebar
+ */
+
+const SidebarResizeService = (() => {
+    'use strict';
+
+    // Configuration
+    const MIN_WIDTH = 200;
+    const MAX_WIDTH = 600;
+    const STORAGE_KEY = 'sidebarWidth';
+
+    // État
+    let isResizing = false;
+    let startX = 0;
+    let startWidth = 0;
+
+    /**
+     * Gère le début du redimensionnement
+     * @param {MouseEvent} e - Événement souris
+     */
+    function handleMouseDown(e) {
+        const sidebar = document.querySelector('.sidebar');
+        if (!sidebar) return;
+
+        isResizing = true;
+        startX = e.clientX;
+        startWidth = sidebar.offsetWidth;
+
+        document.body.style.cursor = 'ew-resize';
+        document.body.style.userSelect = 'none';
+
+        e.preventDefault();
+    }
+
+    /**
+     * Gère le mouvement de la souris pendant le redimensionnement
+     * @param {MouseEvent} e - Événement souris
+     */
+    function handleMouseMove(e) {
+        if (!isResizing) return;
+
+        const sidebar = document.querySelector('.sidebar');
+        const appContainer = document.querySelector('.app-container');
+
+        if (!sidebar || !appContainer) return;
+
+        const diff = e.clientX - startX;
+        const newWidth = startWidth + diff;
+
+        // Respecter min et max width
+        if (newWidth >= MIN_WIDTH && newWidth <= MAX_WIDTH) {
+            sidebar.style.width = newWidth + 'px';
+            appContainer.style.gridTemplateColumns = `${newWidth}px 1fr`;
+        }
+    }
+
+    /**
+     * Gère la fin du redimensionnement
+     */
+    function handleMouseUp() {
+        if (!isResizing) return;
+
+        isResizing = false;
+        document.body.style.cursor = '';
+        document.body.style.userSelect = '';
+
+        // Sauvegarder la largeur dans localStorage
+        const sidebar = document.querySelector('.sidebar');
+        if (sidebar) {
+            localStorage.setItem(STORAGE_KEY, sidebar.offsetWidth.toString());
+            console.log('[SidebarResize] Largeur sauvegardée:', sidebar.offsetWidth);
+
+            // Émettre un événement
+            if (window.EventBus) {
+                EventBus.emit('sidebar:resized', { width: sidebar.offsetWidth });
+            }
+        }
+    }
+
+    /**
+     * Charge la largeur sauvegardée
+     */
+    function loadSavedWidth() {
+        const savedWidth = localStorage.getItem(STORAGE_KEY);
+        if (!savedWidth) return;
+
+        const width = parseInt(savedWidth);
+        if (isNaN(width) || width < MIN_WIDTH || width > MAX_WIDTH) {
+            return;
+        }
+
+        const sidebar = document.querySelector('.sidebar');
+        const appContainer = document.querySelector('.app-container');
+
+        if (sidebar && appContainer) {
+            sidebar.style.width = width + 'px';
+            appContainer.style.gridTemplateColumns = `${width}px 1fr`;
+            console.log('[SidebarResize] Largeur restaurée:', width);
+        }
+    }
+
+    /**
+     * Initialise le service de redimensionnement
+     */
+    function init() {
+        const resizeHandle = document.getElementById('sidebarResizeHandle');
+        if (!resizeHandle) {
+            console.warn('[SidebarResize] Handle de redimensionnement introuvable');
+            return;
+        }
+
+        // Écouter les événements souris
+        resizeHandle.addEventListener('mousedown', handleMouseDown);
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
+
+        // Charger la largeur sauvegardée
+        loadSavedWidth();
+
+        console.log('[SidebarResize] Service initialisé');
+    }
+
+    /**
+     * Nettoie les écouteurs d'événements
+     */
+    function destroy() {
+        const resizeHandle = document.getElementById('sidebarResizeHandle');
+        if (resizeHandle) {
+            resizeHandle.removeEventListener('mousedown', handleMouseDown);
+        }
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+    }
+
+    // API publique
+    return {
+        init,
+        destroy,
+        loadSavedWidth
+    };
+})();
+
+// Exposer globalement pour compatibilité
+window.initSidebarResize = () => SidebarResizeService.init();
+
+// Auto-initialisation
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => SidebarResizeService.init());
+} else {
+    SidebarResizeService.init();
+}
+
+
+// ========== js/01-infrastructure/drag-drop.js ==========
+// Drag and Drop Service
+const DragDropService = (() => {
+    let draggedAct = null;
+    let draggedChapter = { chapterId: null, actId: null };
+    let draggedScene = { sceneId: null, chapterId: null, actId: null };
+
+    function setupActDragAndDrop() {
+        document.querySelectorAll('.act-header').forEach(header => {
+            const handle = header.querySelector('.drag-handle');
+            if (!handle) return;
+            
+            handle.addEventListener('dragstart', (e) => {
+                draggedAct = parseInt(header.dataset.actId);
+                header.classList.add('dragging');
+                e.dataTransfer.effectAllowed = 'move';
+                e.stopPropagation();
+            });
+            
+            handle.addEventListener('dragend', () => {
+                header.classList.remove('dragging');
+                draggedAct = null;
+            });
+            
+            header.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                const targetId = parseInt(e.currentTarget.dataset.actId);
+                if (draggedAct && draggedAct !== targetId) {
+                    e.currentTarget.classList.add('drag-over');
+                }
+            });
+            
+            header.addEventListener('dragleave', () => {
+                header.classList.remove('drag-over');
+            });
+            
+            header.addEventListener('drop', (e) => {
+                e.preventDefault();
+                header.classList.remove('drag-over');
+                const targetId = parseInt(e.currentTarget.dataset.actId);
+                if (draggedAct && draggedAct !== targetId) {
+                    reorderActs(draggedAct, targetId);
+                }
+            });
+        });
+    }
+
+    function reorderActs(draggedId, targetId) {
+        const state = StateManager.getState();
+        const project = state.project;
+        const draggedIndex = project.acts.findIndex(a => a.id === draggedId);
+        const targetIndex = project.acts.findIndex(a => a.id === targetId);
+        
+        if (draggedIndex === -1 || targetIndex === -1) return;
+        
+        const [removed] = project.acts.splice(draggedIndex, 1);
+        project.acts.splice(targetIndex, 0, removed);
+        
+        StateManager.setState({ project });
+        if (window.StorageService) StorageService.saveProject(project);
+        if (typeof renderActsList === 'function') renderActsList();
+    }
+
+    function init() {
+        if (window.EventBus) {
+            EventBus.on('view:rendered', setupActDragAndDrop);
+        }
+        setupActDragAndDrop();
+    }
+
+    return { init, setupActDragAndDrop };
+})();
+
+window.DragDropService = DragDropService;
+window.setupActDragAndDrop = () => DragDropService.setupActDragAndDrop();
+window.setupChapterDragAndDrop = () => {}; // Placeholder
+window.setupSceneDragAndDrop = () => {}; // Placeholder
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => DragDropService.init());
+} else {
+    DragDropService.init();
+}
+
+
 // ========== js/04-models/Project.js ==========
 // ============================================
 // PROJECT MODEL - Modèle de données Projet
@@ -20775,6 +21406,459 @@ if (document.readyState === 'loading') {
 }
 
 
+// ========== js/03-services/timeline.service.js ==========
+/**
+ * Timeline Service
+ * Gestion de la chronologie du projet
+ */
+
+const TimelineService = (() => {
+    'use strict';
+
+    function add(event) {
+        const state = StateManager.getState();
+        const project = state.project;
+        
+        if (!project.timeline) project.timeline = [];
+        
+        const newEvent = {
+            id: Date.now(),
+            title: event.title || '',
+            date: event.date || '',
+            location: event.location || '',
+            characters: event.characters || '',
+            description: event.description || '',
+            consequences: '',
+            notes: '',
+            order: project.timeline.length,
+            ...event
+        };
+
+        project.timeline.push(newEvent);
+        StateManager.setState({ project });
+        
+        if (window.StorageService) {
+            StorageService.saveProject(project);
+        }
+        
+        return newEvent;
+    }
+
+    function update(id, updates) {
+        const state = StateManager.getState();
+        const project = state.project;
+        
+        const event = project.timeline?.find(e => e.id === id);
+        if (!event) return null;
+        
+        Object.assign(event, updates);
+        StateManager.setState({ project });
+        
+        if (window.StorageService) {
+            StorageService.saveProject(project);
+        }
+        
+        return event;
+    }
+
+    function remove(id) {
+        const state = StateManager.getState();
+        const project = state.project;
+        
+        if (!project.timeline) return false;
+        
+        project.timeline = project.timeline.filter(e => e.id !== id);
+        StateManager.setState({ project });
+        
+        if (window.StorageService) {
+            StorageService.saveProject(project);
+        }
+        
+        return true;
+    }
+
+    function getById(id) {
+        const state = StateManager.getState();
+        return state.project?.timeline?.find(e => e.id === id) || null;
+    }
+
+    function getAll() {
+        const state = StateManager.getState();
+        const timeline = state.project?.timeline || [];
+        return [...timeline].sort((a, b) => a.order - b.order);
+    }
+
+    return { add, update, remove, getById, getAll };
+})();
+
+window.TimelineService = TimelineService;
+
+
+// ========== js/03-services/snapshot.service.js ==========
+/**
+ * Snapshot Service (Versions)
+ * Gestion des snapshots/versions du projet
+ */
+
+const SnapshotService = (() => {
+    'use strict';
+
+    function create(label) {
+        const state = StateManager.getState();
+        const project = state.project;
+
+        if (!project.versions) project.versions = [];
+
+        const totalWords = StatsService ? StatsService.calculateStats(project).totalWords : 0;
+
+        const snapshot = {
+            id: Date.now(),
+            label: label || 'Version ' + new Date().toLocaleDateString(),
+            timestamp: new Date().toISOString(),
+            wordCount: totalWords,
+            snapshot: JSON.parse(JSON.stringify({
+                acts: project.acts || [],
+                characters: project.characters || [],
+                world: project.world || [],
+                timeline: project.timeline || [],
+                notes: project.notes || [],
+                codex: project.codex || []
+            }))
+        };
+
+        project.versions.push(snapshot);
+        StateManager.setState({ project });
+
+        if (window.StorageService) {
+            StorageService.saveProject(project);
+        }
+
+        return snapshot;
+    }
+
+    function restore(id) {
+        const state = StateManager.getState();
+        const project = state.project;
+
+        const version = project.versions?.find(v => v.id === id);
+        if (!version) return false;
+
+        // Créer backup avant restauration
+        create('Backup avant restauration ' + new Date().toLocaleTimeString());
+
+        // Restaurer
+        Object.assign(project, {
+            acts: JSON.parse(JSON.stringify(version.snapshot.acts || [])),
+            characters: JSON.parse(JSON.stringify(version.snapshot.characters || [])),
+            world: JSON.parse(JSON.stringify(version.snapshot.world || [])),
+            timeline: JSON.parse(JSON.stringify(version.snapshot.timeline || [])),
+            notes: JSON.parse(JSON.stringify(version.snapshot.notes || [])),
+            codex: JSON.parse(JSON.stringify(version.snapshot.codex || []))
+        });
+
+        StateManager.setState({ project });
+
+        if (window.StorageService) {
+            StorageService.saveProject(project);
+        }
+
+        if (window.EventBus) {
+            EventBus.emit('project:restored', { versionId: id });
+        }
+
+        return true;
+    }
+
+    function remove(id) {
+        const state = StateManager.getState();
+        const project = state.project;
+
+        if (!project.versions) return false;
+
+        project.versions = project.versions.filter(v => v.id !== id);
+        StateManager.setState({ project });
+
+        if (window.StorageService) {
+            StorageService.saveProject(project);
+        }
+
+        return true;
+    }
+
+    function getAll() {
+        const state = StateManager.getState();
+        const versions = state.project?.versions || [];
+        return [...versions].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    }
+
+    return { create, restore, remove, getAll };
+})();
+
+window.SnapshotService = SnapshotService;
+window.createVersion = () => {
+    const label = prompt('Nom de la version :');
+    if (label && label.trim()) {
+        SnapshotService.create(label.trim());
+        if (window.ToastUI) ToastUI.success('Version créée');
+        if (typeof renderVersionsList === 'function') renderVersionsList();
+    }
+};
+window.restoreVersion = (id) => {
+    if (confirm('⚠️ Restaurer cette version va créer une sauvegarde. Continuer ?')) {
+        SnapshotService.restore(id);
+        if (window.ToastUI) ToastUI.success('Version restaurée');
+        if (window.Router) Router.navigate('structure');
+        else if (typeof switchView === 'function') switchView('editor');
+        if (typeof renderActsList === 'function') renderActsList();
+    }
+};
+window.deleteVersion = (id) => {
+    if (confirm('Supprimer cette version ?')) {
+        SnapshotService.remove(id);
+        if (window.ToastUI) ToastUI.success('Version supprimée');
+        if (typeof renderVersionsList === 'function') renderVersionsList();
+    }
+};
+window.compareVersion = (id) => {
+    const versions = SnapshotService.getAll();
+    const version = versions.find(v => v.id === id);
+    if (!version) return;
+
+    const state = StateManager.getState();
+    const currentWords = StatsService ? StatsService.calculateStats(state.project).totalWords : 0;
+    const diff = currentWords - version.wordCount;
+    const diffText = diff > 0 ? '+' + diff : '' + diff;
+
+    alert('Comparaison:\n\nSauvegardée: ' + version.wordCount.toLocaleString('fr-FR') + ' mots\nActuelle: ' + currentWords.toLocaleString('fr-FR') + ' mots\nDifférence: ' + diffText + ' mots');
+};
+
+
+// ========== js/03-services/search.service.js ==========
+/**
+ * Global Search Service
+ * Recherche globale dans tout le projet
+ */
+
+const SearchService = (() => {
+    'use strict';
+
+    let searchTimeout = null;
+
+    function getPreview(text, matchIndex, queryLength) {
+        const start = Math.max(0, matchIndex - 60);
+        const end = Math.min(text.length, matchIndex + queryLength + 90);
+        let preview = text.substring(start, end);
+
+        if (start > 0) preview = '...' + preview;
+        if (end < text.length) preview = preview + '...';
+
+        return preview;
+    }
+
+    function searchEverywhere(query) {
+        const state = StateManager.getState();
+        const project = state.project;
+        const results = [];
+        const lowerQuery = query.toLowerCase();
+
+        // Search in scenes
+        project.acts?.forEach(act => {
+            act.chapters?.forEach(chapter => {
+                chapter.scenes?.forEach(scene => {
+                    const temp = document.createElement('div');
+                    temp.innerHTML = scene.content || '';
+                    const textContent = temp.textContent || temp.innerText || '';
+
+                    if (scene.title.toLowerCase().includes(lowerQuery) ||
+                        textContent.toLowerCase().includes(lowerQuery)) {
+
+                        const matchIndex = textContent.toLowerCase().indexOf(lowerQuery);
+                        const preview = matchIndex >= 0
+                            ? getPreview(textContent, matchIndex, query.length)
+                            : textContent.substring(0, 150);
+
+                        results.push({
+                            type: 'Scène',
+                            title: scene.title,
+                            path: act.title + ' > ' + chapter.title,
+                            preview: preview,
+                            action: () => typeof openScene === 'function' && openScene(act.id, chapter.id, scene.id)
+                        });
+                    }
+                });
+            });
+        });
+
+        // Search in characters
+        project.characters?.forEach(char => {
+            const searchText = (char.name + ' ' + (char.role || '') + ' ' + (char.description || '') + ' ' + (char.personality || '') + ' ' + (char.background || '')).toLowerCase();
+            if (searchText.includes(lowerQuery)) {
+                results.push({
+                    type: 'Personnage',
+                    title: char.name,
+                    path: char.role || 'Personnage',
+                    preview: char.description || 'Aucune description',
+                    action: () => {
+                        if (typeof switchView === 'function') switchView('characters');
+                        if (typeof openCharacterDetail === 'function') openCharacterDetail(char.id);
+                    }
+                });
+            }
+        });
+
+        // Search in world elements
+        project.world?.forEach(element => {
+            const searchText = (element.name + ' ' + (element.description || '') + ' ' + (element.details || '')).toLowerCase();
+            if (searchText.includes(lowerQuery)) {
+                results.push({
+                    type: 'Univers',
+                    title: element.name,
+                    path: element.type,
+                    preview: element.description || 'Aucune description',
+                    action: () => {
+                        if (typeof switchView === 'function') switchView('world');
+                        if (typeof openWorldDetail === 'function') openWorldDetail(element.id);
+                    }
+                });
+            }
+        });
+
+        // Search in notes
+        project.notes?.forEach(note => {
+            const searchText = (note.title + ' ' + note.content).toLowerCase();
+            if (searchText.includes(lowerQuery)) {
+                const matchIndex = note.content.toLowerCase().indexOf(lowerQuery);
+                const preview = matchIndex >= 0
+                    ? getPreview(note.content, matchIndex, query.length)
+                    : note.content.substring(0, 150);
+
+                results.push({
+                    type: 'Note',
+                    title: note.title,
+                    path: note.category,
+                    preview: preview,
+                    action: () => {
+                        if (typeof switchView === 'function') switchView('notes');
+                        if (typeof openNoteDetail === 'function') openNoteDetail(note.id);
+                    }
+                });
+            }
+        });
+
+        return results;
+    }
+
+    function performSearch(query, debounceMs) {
+        if (debounceMs === undefined) debounceMs = 300;
+        clearTimeout(searchTimeout);
+
+        const resultsContainer = document.getElementById('searchResults');
+
+        if (!query || query.trim().length < 2) {
+            if (resultsContainer) resultsContainer.classList.remove('active');
+            return;
+        }
+
+        searchTimeout = setTimeout(() => {
+            const results = searchEverywhere(query.trim());
+            displayResults(results, query.trim());
+        }, debounceMs);
+    }
+
+    function displayResults(results, query) {
+        const container = document.getElementById('searchResults');
+        if (!container) return;
+
+        if (results.length === 0) {
+            container.innerHTML = '<div class="search-no-results">Aucun résultat trouvé</div>';
+            container.classList.add('active');
+            return;
+        }
+
+        const highlightQuery = (text) => {
+            const regex = new RegExp('(' + query + ')', 'gi');
+            return text.replace(regex, '<span class="search-highlight">$1</span>');
+        };
+
+        container.innerHTML = results.map((result, index) => {
+            return '<div class="search-result-item" onclick="executeSearchAction(' + index + '); closeSearchResults();">' +
+                '<div class="search-result-type">' + result.type + '</div>' +
+                '<div class="search-result-title">' + highlightQuery(result.title) + '</div>' +
+                '<div class="search-result-path">' + result.path + '</div>' +
+                '<div class="search-result-preview">' + highlightQuery(result.preview) + '</div>' +
+                '</div>';
+        }).join('');
+
+        window.searchResultActions = results.map(r => r.action);
+        container.classList.add('active');
+    }
+
+    function close() {
+        const container = document.getElementById('searchResults');
+        const input = document.getElementById('globalSearch');
+        if (container) container.classList.remove('active');
+        if (input) input.value = '';
+    }
+
+    function init() {
+        document.addEventListener('click', (e) => {
+            const searchContainer = document.querySelector('.search-container');
+            if (searchContainer && !searchContainer.contains(e.target)) {
+                close();
+            }
+        });
+    }
+
+    return { performSearch, searchEverywhere, displayResults, close, init };
+})();
+
+window.SearchService = SearchService;
+window.performGlobalSearch = (query) => SearchService.performSearch(query);
+window.closeSearchResults = () => SearchService.close();
+window.executeSearchAction = (index) => {
+    if (window.searchResultActions && window.searchResultActions[index]) {
+        window.searchResultActions[index]();
+    }
+};
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => SearchService.init());
+} else {
+    SearchService.init();
+}
+
+
+// ========== js/03-services/stats-advanced.service.js ==========
+// Stats Advanced - Rendu des statistiques détaillées
+window.renderStats = function() {
+    const container = document.getElementById('editorView');
+    if (!container) return;
+    
+    const state = StateManager.getState();
+    const project = state.project;
+    const stats = StatsService ? StatsService.calculateStats(project) : {};
+    
+    const totalWords = stats.totalWords || 0;
+    const dailyGoal = project.stats?.dailyGoal || 500;
+    const totalGoal = project.stats?.totalGoal || 80000;
+    
+    container.innerHTML = '<div style="padding: 2rem;"><h2>Statistiques</h2><p>Total: ' + totalWords.toLocaleString('fr-FR') + ' mots / ' + totalGoal.toLocaleString('fr-FR') + '</p></div>';
+};
+
+window.updateGoal = function(type, value) {
+    const numValue = parseInt(value);
+    if (numValue && numValue > 0) {
+        const state = StateManager.getState();
+        const project = state.project;
+        if (!project.stats) project.stats = {};
+        project.stats[type] = numValue;
+        StateManager.setState({ project });
+        if (window.StorageService) StorageService.saveProject(project);
+        renderStats();
+    }
+};
+
+
 // ========== js/05-ui/modal.js ==========
 // ============================================
 // MODAL UI - Système de modales
@@ -21525,6 +22609,358 @@ if (document.readyState === 'loading') {
 window.renderMobileSidebarView = function(view) {
     MobileViewsUI.render(view);
 };
+
+
+// ========== js/05-ui/color-palette.js ==========
+/**
+ * Color Palette UI
+ * Sélecteur de couleurs pour le formatage de texte
+ */
+
+const ColorPaletteUI = (() => {
+    'use strict';
+
+    // Palette de couleurs complète
+    const COLOR_PALETTE = [
+        '#000000', '#434343', '#666666', '#999999', '#b7b7b7', '#cccccc', '#d9d9d9', '#efefef',
+        '#f3f3f3', '#ffffff', '#980000', '#ff0000', '#ff9900', '#ffff00', '#00ff00', '#00ffff',
+        '#4a86e8', '#0000ff', '#9900ff', '#ff00ff', '#e6b8af', '#f4cccc', '#fce5cd', '#fff2cc',
+        '#d9ead3', '#d0e0e3', '#c9daf8', '#cfe2f3', '#d9d2e9', '#ead1dc', '#dd7e6b', '#ea9999',
+        '#f9cb9c', '#ffe599', '#b6d7a8', '#a2c4c9', '#a4c2f4', '#9fc5e8', '#b4a7d6', '#d5a6bd',
+        '#cc4125', '#e06666', '#f6b26b', '#ffd966', '#93c47d', '#76a5af', '#6d9eeb', '#6fa8dc',
+        '#8e7cc3', '#c27ba0', '#a61c00', '#cc0000', '#e69138', '#f1c232', '#6aa84f', '#45818e',
+        '#3c78d8', '#3d85c6', '#674ea7', '#a64d79', '#85200c', '#990000', '#b45f06', '#bf9000',
+        '#38761d', '#134f5c', '#1155cc', '#0b5394', '#351c75', '#741b47', '#5b0f00', '#660000'
+    ];
+
+    /**
+     * Initialise les grilles de couleurs
+     */
+    function initializeColorPickers() {
+        const textColorGrid = document.getElementById('textColorGrid');
+        const bgColorGrid = document.getElementById('backgroundColorGrid');
+
+        // Vérifier que les éléments existent
+        if (!textColorGrid || !bgColorGrid) {
+            console.log('[ColorPalette] Grilles introuvables, initialisation ignorée');
+            return;
+        }
+
+        // Vider les grilles existantes
+        textColorGrid.innerHTML = '';
+        bgColorGrid.innerHTML = '';
+
+        // Créer les swatches de couleur
+        COLOR_PALETTE.forEach(color => {
+            // Text color swatch
+            const textSwatch = document.createElement('div');
+            textSwatch.className = 'color-swatch';
+            textSwatch.style.backgroundColor = color;
+            textSwatch.title = color;
+            textSwatch.onclick = () => applyTextColor(color);
+            textColorGrid.appendChild(textSwatch);
+
+            // Background color swatch
+            const bgSwatch = document.createElement('div');
+            bgSwatch.className = 'color-swatch';
+            bgSwatch.style.backgroundColor = color;
+            bgSwatch.title = color;
+            bgSwatch.onclick = () => applyBackgroundColor(color);
+            bgColorGrid.appendChild(bgSwatch);
+        });
+
+        console.log('[ColorPalette] Palettes initialisées');
+    }
+
+    /**
+     * Toggle le color picker
+     * @param {string} type - Type de couleur ('text' ou 'background')
+     * @param {Event} event - Événement de clic
+     */
+    function toggleColorPicker(type, event) {
+        const textPicker = document.getElementById('textColorPicker');
+        const bgPicker = document.getElementById('backgroundColorPicker');
+
+        if (!textPicker || !bgPicker) return;
+
+        // Obtenir le bouton cliqué pour positionner la popup
+        const button = event ? event.currentTarget : null;
+
+        if (type === 'text') {
+            const wasActive = textPicker.classList.contains('active');
+            bgPicker.classList.remove('active');
+
+            if (!wasActive && button) {
+                const rect = button.getBoundingClientRect();
+                textPicker.style.top = (rect.bottom + 5) + 'px';
+                textPicker.style.left = rect.left + 'px';
+            }
+            textPicker.classList.toggle('active');
+        } else {
+            const wasActive = bgPicker.classList.contains('active');
+            textPicker.classList.remove('active');
+
+            if (!wasActive && button) {
+                const rect = button.getBoundingClientRect();
+                bgPicker.style.top = (rect.bottom + 5) + 'px';
+                bgPicker.style.left = rect.left + 'px';
+            }
+            bgPicker.classList.toggle('active');
+        }
+    }
+
+    /**
+     * Applique une couleur de texte
+     * @param {string} color - Couleur au format hexadécimal
+     */
+    function applyTextColor(color) {
+        document.execCommand('foreColor', false, color);
+
+        // Mettre à jour les inputs si disponibles
+        const colorInput = document.getElementById('textColorInput');
+        const hexInput = document.getElementById('textColorHex');
+
+        if (colorInput) colorInput.value = color;
+        if (hexInput) hexInput.value = color.toUpperCase();
+
+        // Focus sur l'éditeur
+        const editor = document.querySelector('.editor-textarea');
+        if (editor) editor.focus();
+
+        console.log('[ColorPalette] Couleur de texte appliquée:', color);
+    }
+
+    /**
+     * Applique une couleur de fond
+     * @param {string} color - Couleur au format hexadécimal
+     */
+    function applyBackgroundColor(color) {
+        document.execCommand('hiliteColor', false, color);
+
+        // Mettre à jour les inputs si disponibles
+        const colorInput = document.getElementById('bgColorInput');
+        const hexInput = document.getElementById('bgColorHex');
+
+        if (colorInput) colorInput.value = color;
+        if (hexInput) hexInput.value = color.toUpperCase();
+
+        // Focus sur l'éditeur
+        const editor = document.querySelector('.editor-textarea');
+        if (editor) editor.focus();
+
+        console.log('[ColorPalette] Couleur de fond appliquée:', color);
+    }
+
+    /**
+     * Ferme tous les color pickers
+     */
+    function closeAll() {
+        document.querySelectorAll('.color-picker-dropdown').forEach(picker => {
+            picker.classList.remove('active');
+        });
+    }
+
+    /**
+     * Gère les raccourcis clavier de l'éditeur
+     * @param {KeyboardEvent} event - Événement clavier
+     */
+    function handleEditorKeydown(event) {
+        // Handle keyboard shortcuts
+        if (event.ctrlKey || event.metaKey) {
+            switch(event.key.toLowerCase()) {
+                case 'b':
+                    event.preventDefault();
+                    if (typeof formatText === 'function') formatText('bold');
+                    break;
+                case 'i':
+                    event.preventDefault();
+                    if (typeof formatText === 'function') formatText('italic');
+                    break;
+                case 'u':
+                    event.preventDefault();
+                    if (typeof formatText === 'function') formatText('underline');
+                    break;
+            }
+        }
+    }
+
+    /**
+     * Initialise le service de palette de couleurs
+     */
+    function init() {
+        // Initialiser les color pickers
+        initializeColorPickers();
+
+        // Fermer les color pickers si on clique à l'extérieur
+        document.addEventListener('click', (event) => {
+            if (!event.target.closest('.color-picker-wrapper')) {
+                closeAll();
+            }
+        });
+
+        // Ajouter les raccourcis clavier sur l'éditeur
+        const editor = document.querySelector('.editor-textarea');
+        if (editor) {
+            editor.addEventListener('keydown', handleEditorKeydown);
+        }
+
+        console.log('[ColorPalette] Service initialisé');
+    }
+
+    // API publique
+    return {
+        init,
+        initializeColorPickers,
+        toggleColorPicker,
+        applyTextColor,
+        applyBackgroundColor,
+        closeAll,
+        handleEditorKeydown
+    };
+})();
+
+// Exposer globalement pour compatibilité
+window.ColorPaletteUI = ColorPaletteUI;
+window.colorPalette = [
+    '#000000', '#434343', '#666666', '#999999', '#b7b7b7', '#cccccc', '#d9d9d9', '#efefef',
+    '#f3f3f3', '#ffffff', '#980000', '#ff0000', '#ff9900', '#ffff00', '#00ff00', '#00ffff',
+    '#4a86e8', '#0000ff', '#9900ff', '#ff00ff', '#e6b8af', '#f4cccc', '#fce5cd', '#fff2cc',
+    '#d9ead3', '#d0e0e3', '#c9daf8', '#cfe2f3', '#d9d2e9', '#ead1dc', '#dd7e6b', '#ea9999',
+    '#f9cb9c', '#ffe599', '#b6d7a8', '#a2c4c9', '#a4c2f4', '#9fc5e8', '#b4a7d6', '#d5a6bd',
+    '#cc4125', '#e06666', '#f6b26b', '#ffd966', '#93c47d', '#76a5af', '#6d9eeb', '#6fa8dc',
+    '#8e7cc3', '#c27ba0', '#a61c00', '#cc0000', '#e69138', '#f1c232', '#6aa84f', '#45818e',
+    '#3c78d8', '#3d85c6', '#674ea7', '#a64d79', '#85200c', '#990000', '#b45f06', '#bf9000',
+    '#38761d', '#134f5c', '#1155cc', '#0b5394', '#351c75', '#741b47', '#5b0f00', '#660000'
+];
+window.initializeColorPickers = () => ColorPaletteUI.initializeColorPickers();
+window.toggleColorPicker = (type, event) => ColorPaletteUI.toggleColorPicker(type, event);
+window.applyTextColor = (color) => ColorPaletteUI.applyTextColor(color);
+window.applyBackgroundColor = (color) => ColorPaletteUI.applyBackgroundColor(color);
+window.handleEditorKeydown = (event) => ColorPaletteUI.handleEditorKeydown(event);
+
+// Auto-initialisation
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => ColorPaletteUI.init());
+} else {
+    ColorPaletteUI.init();
+}
+
+
+// ========== js/05-ui/focus-mode.js ==========
+// Focus Mode UI - Mode de concentration avec pomodoro
+const FocusModeUI = (() => {
+    let focusModeActive = false;
+    let focusPanelOpen = false;
+    let focusStartWordCount = 0;
+    let projectWordGoal = 50000;
+    let pomodoroTime = 25 * 60;
+    let pomodoroInterval = null;
+    let pomodoroRunning = false;
+    let pomodorosCompleted = 0;
+
+    function toggle() {
+        focusModeActive = !focusModeActive;
+        const appContainer = document.querySelector('.app-container');
+        if (!appContainer) return;
+
+        if (focusModeActive) {
+            appContainer.classList.add('focus-mode');
+            if (appContainer.requestFullscreen) {
+                appContainer.requestFullscreen().catch(() => {});
+            }
+        } else {
+            appContainer.classList.remove('focus-mode');
+            if (document.exitFullscreen && document.fullscreenElement) {
+                document.exitFullscreen();
+            }
+            focusPanelOpen = false;
+            const panel = document.getElementById('focusPanel');
+            if (panel) panel.classList.remove('active');
+        }
+    }
+
+    function togglePanel() {
+        focusPanelOpen = !focusPanelOpen;
+        const panel = document.getElementById('focusPanel');
+        if (panel) panel.classList.toggle('active');
+    }
+
+    function startPomodoro() {
+        if (pomodoroRunning) return;
+        pomodoroRunning = true;
+        const btn = document.getElementById('pomodoroHeaderBtn');
+        if (btn) btn.classList.add('pomodoro-active');
+        
+        pomodoroInterval = setInterval(() => {
+            if (pomodoroTime > 0) {
+                pomodoroTime--;
+                updatePomodoroDisplay();
+            } else {
+                completePomodoro();
+            }
+        }, 1000);
+    }
+
+    function pausePomodoro() {
+        pomodoroRunning = false;
+        const btn = document.getElementById('pomodoroHeaderBtn');
+        if (btn) btn.classList.remove('pomodoro-active');
+        if (pomodoroInterval) {
+            clearInterval(pomodoroInterval);
+            pomodoroInterval = null;
+        }
+    }
+
+    function resetPomodoro() {
+        pausePomodoro();
+        pomodoroTime = 25 * 60;
+        updatePomodoroDisplay();
+    }
+
+    function completePomodoro() {
+        pausePomodoro();
+        pomodorosCompleted++;
+        const display = document.getElementById('pomodorosCompleted');
+        if (display) display.textContent = pomodorosCompleted;
+        alert('⏰ Pomodoro terminé ! Temps de pause.');
+        pomodoroTime = 25 * 60;
+        updatePomodoroDisplay();
+    }
+
+    function updatePomodoroDisplay() {
+        const minutes = Math.floor(pomodoroTime / 60);
+        const seconds = pomodoroTime % 60;
+        const display = document.getElementById('pomodoroDisplay');
+        if (display) {
+            display.textContent = minutes.toString().padStart(2, '0') + ':' + seconds.toString().padStart(2, '0');
+        }
+    }
+
+    function togglePomodoroPopup() {
+        const popup = document.getElementById('pomodoroPopup');
+        if (popup) popup.classList.toggle('active');
+    }
+
+    return { toggle, togglePanel, startPomodoro, pausePomodoro, resetPomodoro, togglePomodoroPopup };
+})();
+
+window.FocusModeUI = FocusModeUI;
+window.toggleFocusMode = () => FocusModeUI.toggle();
+window.toggleFocusPanel = () => FocusModeUI.togglePanel();
+window.startPomodoro = () => FocusModeUI.startPomodoro();
+window.pausePomodoro = () => FocusModeUI.pausePomodoro();
+window.resetPomodoro = () => FocusModeUI.resetPomodoro();
+window.togglePomodoroPopup = () => FocusModeUI.togglePomodoroPopup();
+window.toggleToolbar = () => {
+    const toolbar = document.getElementById('editorToolbar');
+    if (toolbar) toolbar.style.display = document.getElementById('hideToolbar')?.checked ? 'none' : 'flex';
+};
+window.toggleLinksPanelVisibility = () => {
+    const panel = document.getElementById('linksPanel');
+    if (panel) panel.style.display = document.getElementById('hideLinksPanel')?.checked ? 'none' : 'block';
+};
+window.focusModeActive = false;
+window.focusPanelOpen = false;
 
 
 // ========== js/06-views/characters/characters.render.js ==========

@@ -44,6 +44,9 @@ JS_V2_ORDER = [
     'js/01-infrastructure/storage.js',
     'js/01-infrastructure/keyboard.js',
     'js/01-infrastructure/mobile-gestures.js',
+    'js/01-infrastructure/mobile-menu.js',
+    'js/01-infrastructure/sidebar-resize.js',
+    'js/01-infrastructure/drag-drop.js',
 
     # Models
     'js/04-models/Project.js',
@@ -62,11 +65,17 @@ JS_V2_ORDER = [
     'js/03-services/stats.service.js',
     'js/03-services/history.service.js',
     'js/03-services/import-export.service.js',
+    'js/03-services/timeline.service.js',
+    'js/03-services/snapshot.service.js',
+    'js/03-services/search.service.js',
+    'js/03-services/stats-advanced.service.js',
 
     # UI Components
     'js/05-ui/modal.js',
     'js/05-ui/toast.js',
     'js/05-ui/mobile-views.js',
+    'js/05-ui/color-palette.js',
+    'js/05-ui/focus-mode.js',
 
     # Views - Characters
     'js/06-views/characters/characters.render.js',
@@ -117,11 +126,19 @@ EXCLUDED_OLD_FILES = [
     '04.init.js',       # Intégré dans App.js
     '05.undo-redo.js',  # Remplacé par 03-services/history.service.js
     '06.structure.js',  # Remplacé par 06-views/structure/
+    '10.colorpalette.js', # Remplacé par 05-ui/color-palette.js + sidebar-resize.js
     '11.updateStats.js', # Remplacé par 03-services/stats.service.js
     '12.import-export.js', # Remplacé par 03-services/import-export.service.js
+    '13.mobile-menu.js', # Remplacé par 01-infrastructure/mobile-menu.js
+    '14.dragndrop-acts.js', # Remplacé par 01-infrastructure/drag-drop.js
     '15.characters.js', # Remplacé par 06-views/characters/
     '17.world.js',      # Remplacé par 06-views/locations/
+    '18.timeline.js',   # Remplacé par 03-services/timeline.service.js
     '19.notes.js',      # Remplacé par 06-views/notes/
+    '20.snapshots.js',  # Remplacé par 03-services/snapshot.service.js
+    '23.stats.js',      # Remplacé par 03-services/stats-advanced.service.js
+    '25.globalSearch.js', # Remplacé par 03-services/search.service.js
+    '26.focusMode.js',  # Remplacé par 05-ui/focus-mode.js
     '27.keyboardShortcuts.js', # Remplacé par 01-infrastructure/keyboard.js
     '40.sidebar-views.js', # Remplacé par 05-ui/mobile-views.js
     '42.mobile-swipe.js', # Remplacé par 01-infrastructure/mobile-gestures.js
