@@ -36659,27 +36659,62 @@ if (App.isDevelopment()) {
     }
 
     /**
-     * Exposer saveProject globalement (alias vers StorageService ou ancien système)
+     * Exposer les fonctions de storage globalement (aliases vers StorageService)
      */
+
+    // saveProject - Sauvegarde le projet actuel
     window.saveProject = async function() {
-        // Utiliser StorageService si disponible
         if (window.StorageService && typeof StorageService.saveProject === 'function') {
             const state = StateManager.getState();
             return await StorageService.saveProject(state.project);
-        }
-        // Sinon, utiliser l'ancien système si disponible
-        else if (typeof saveAllProjects === 'function') {
+        } else if (typeof saveAllProjects === 'function') {
             return await saveAllProjects();
-        }
-        else {
+        } else {
             console.warn('[Bridge] saveProject: aucun système de sauvegarde disponible');
             return false;
         }
     };
 
+    // saveProjectToDB - Alias pour sauvegarder un projet dans la DB
+    window.saveProjectToDB = async function(project) {
+        if (window.StorageService && typeof StorageService.saveProject === 'function') {
+            return await StorageService.saveProject(project);
+        }
+        console.warn('[Bridge] saveProjectToDB: StorageService non disponible');
+        return false;
+    };
+
+    // loadAllProjectsFromDB - Charge tous les projets
+    window.loadAllProjectsFromDB = async function() {
+        if (window.StorageService && typeof StorageService.listProjects === 'function') {
+            return await StorageService.listProjects();
+        }
+        console.warn('[Bridge] loadAllProjectsFromDB: StorageService non disponible');
+        return [];
+    };
+
+    // saveSetting - Sauvegarde un paramètre
+    window.saveSetting = async function(key, value) {
+        if (window.StorageService && typeof StorageService.saveSetting === 'function') {
+            return await StorageService.saveSetting(key, value);
+        }
+        console.warn('[Bridge] saveSetting: StorageService non disponible');
+        return false;
+    };
+
+    // loadSetting - Charge un paramètre
+    window.loadSetting = async function(key) {
+        if (window.StorageService && typeof StorageService.loadSetting === 'function') {
+            return await StorageService.loadSetting(key);
+        }
+        console.warn('[Bridge] loadSetting: StorageService non disponible');
+        return null;
+    };
+
     // Log de chargement
     console.log('[Bridge] Compatibility bridge chargé');
-    console.log('[Bridge] Fonctions exposées: switchView, switchViewMobile, openProjectsModal, saveProject');
+    console.log('[Bridge] Fonctions exposées: switchView, switchViewMobile, openProjectsModal');
+    console.log('[Bridge] Storage exposées: saveProject, saveProjectToDB, loadAllProjectsFromDB, saveSetting, loadSetting');
 
 })();
 
