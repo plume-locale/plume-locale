@@ -191,9 +191,14 @@ EXCLUDED_OLD_FILES = [
 ]
 
 # Anciens fichiers À GARDER (fonctionnalités non encore migrées)
-# ⚠️ MIGRATION TERMINÉE - Tous les fichiers ont été migrés vers la nouvelle architecture!
+# ⚠️ APPROCHE HYBRIDE: Garder les fichiers critiques temporairement
+# Les nouveaux modules sont des wrappers - logique complète à migrer progressivement
 OLD_FILES_TO_KEEP = [
-    # Aucun - migration 100% complète!
+    '03.project.js',    # CRITIQUE: switchView, renderViewContent, etc.
+    '16.split-view.js', # CRITIQUE: logique split-view complète
+    '31.mindmap.js',    # CRITIQUE: mindmap drag & drop complet
+    '36.timeline-metro.js', # CRITIQUE: rendu SVG timeline métro
+    '39.export.js',     # CRITIQUE: export DOCX/EPUB avec libs
 ]
 
 # Ordre des fichiers CSS (inchangé)
