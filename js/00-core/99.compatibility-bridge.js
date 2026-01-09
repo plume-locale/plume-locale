@@ -359,8 +359,27 @@
         setTimeout(autoInitProject, 500);
     }
 
+    /**
+     * Exposer saveProject globalement (alias vers StorageService ou ancien système)
+     */
+    window.saveProject = async function() {
+        // Utiliser StorageService si disponible
+        if (window.StorageService && typeof StorageService.saveProject === 'function') {
+            const state = StateManager.getState();
+            return await StorageService.saveProject(state.project);
+        }
+        // Sinon, utiliser l'ancien système si disponible
+        else if (typeof saveAllProjects === 'function') {
+            return await saveAllProjects();
+        }
+        else {
+            console.warn('[Bridge] saveProject: aucun système de sauvegarde disponible');
+            return false;
+        }
+    };
+
     // Log de chargement
     console.log('[Bridge] Compatibility bridge chargé');
-    console.log('[Bridge] Fonctions exposées: switchView, switchViewMobile, openProjectsModal');
+    console.log('[Bridge] Fonctions exposées: switchView, switchViewMobile, openProjectsModal, saveProject');
 
 })();

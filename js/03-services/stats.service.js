@@ -101,7 +101,7 @@ const StatsService = (() => {
     function init() {
         // S'abonner aux changements de projet dans StateManager
         if (window.StateManager) {
-            StateManager.subscribe((state) => {
+            StateManager.subscribeAll((state) => {
                 if (state.project) {
                     updateHeaderStats(state.project);
                 }

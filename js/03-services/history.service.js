@@ -295,7 +295,7 @@ const HistoryService = (() => {
     function init() {
         // S'abonner aux changements de projet
         if (window.StateManager) {
-            StateManager.subscribe((state) => {
+            StateManager.subscribeAll((state) => {
                 if (state.project && !isUndoRedoAction) {
                     saveToHistoryDebounced();
                 }
