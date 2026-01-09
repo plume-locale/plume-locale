@@ -1,0 +1,46 @@
+========================================
+Build Plume v2.0 - 2026-01-09 06:54:49
+========================================
+Nouvelle architecture MVC
+Répertoire: /home/user/plume-locale
+
+--- Templates HTML ---
+   [OK] head.html (972 caractères)
+   [OK] body.html (90333 caractères)
+   [OK] footer.html (478 caractères)
+
+--- CSS ---
+   [OK] 12 fichiers CSS trouvés
+   Total: 312,430 caractères
+
+--- JavaScript ---
+   === NOUVELLE ARCHITECTURE v2.0 ===
+   [OK] 45 nouveaux fichiers JS trouvés
+   === ANCIEN CODE (non migré) ===
+   [!] js/10.colorpalette.js lu en cp1252
+   [!] js/11.updateStats.js lu en cp1252
+   [!] js/12.import-export.js lu en cp1252
+   [!] js/13.mobile-menu.js lu en cp1252
+   [!] js/14.dragndrop-acts.js lu en cp1252
+   [!] js/18.timeline.js lu en cp1252
+   [!] js/20.snapshots.js lu en cp1252
+   [!] js/23.stats.js lu en cp1252
+   [!] js/25.globalSearch.js lu en cp1252
+   [!] js/26.focusMode.js lu en cp1252
+   [!] js/27.keyboardShortcuts.js lu en cp1252
+   [!] js/35.renderMap.js lu en cp1252
+   [OK] 35 anciens fichiers conservés
+   [i] 10 fichiers exclus (déjà migrés)
+   Total: 45 nouveaux + 35 anciens = 80 fichiers
+   Total: 1,068,902 caractères
+
+--- Écriture ---
+
+========================================
+BUILD v2.0 TERMINÉ !
+========================================
+Fichier: /home/user/plume-locale/build/plume-v2.html
+Taille: 1,477,695 octets
+Architecture: NOUVELLE (v2.0)
+Fichiers exclus: 10 (migrés)
+Fichiers gardés: 35 (à migrer)
