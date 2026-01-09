@@ -1,5 +1,5 @@
 ========================================
-Build Plume v2.0 - 2026-01-09 07:00:38
+Build Plume v2.0 - 2026-01-09 07:05:19
 ========================================
 Nouvelle architecture MVC
 Répertoire: /home/user/plume-locale
@@ -32,7 +32,7 @@ Répertoire: /home/user/plume-locale
    [OK] 36 anciens fichiers conservés
    [i] 9 fichiers exclus (déjà migrés)
    Total: 46 nouveaux + 36 anciens = 82 fichiers
-   Total: 1,123,356 caractères
+   Total: 1,129,732 caractères
 
 --- Écriture ---
 
@@ -40,7 +40,7 @@ Répertoire: /home/user/plume-locale
 BUILD v2.0 TERMINÉ !
 ========================================
 Fichier: /home/user/plume-locale/build/plume-v2.html
-Taille: 1,532,338 octets
+Taille: 1,538,753 octets
 Architecture: NOUVELLE (v2.0)
 Fichiers exclus: 9 (migrés)
 Fichiers gardés: 36 (à migrer)

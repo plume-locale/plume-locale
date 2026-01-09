@@ -191,6 +191,174 @@
         }
     }
 
+    /**
+     * Initialisation automatique du projet au chargement
+     */
+    async function autoInitProject() {
+        console.log('[Bridge] Auto-initialisation du projet...');
+
+        try {
+            // Attendre que StorageService soit initialisé
+            if (window.StorageService && typeof StorageService.init === 'function') {
+                await StorageService.init();
+                console.log('[Bridge] StorageService initialisé');
+            }
+
+            // Vérifier si un projet existe dans le StateManager
+            let state = StateManager.getState();
+            let project = state.project;
+
+            // Si pas de projet, essayer de charger depuis l'ancien système
+            if (!project && typeof loadAllProjects === 'function') {
+                console.log('[Bridge] Tentative de chargement de l\'ancien projet...');
+                await loadAllProjects();
+
+                // Vérifier si le projet global existe (ancien système)
+                if (window.project && window.project.title) {
+                    console.log('[Bridge] Projet trouvé dans l\'ancien système:', window.project.title);
+
+                    // Convertir et sauvegarder dans StateManager
+                    StateManager.setState({ project: window.project });
+                    project = window.project;
+                }
+            }
+
+            // Si toujours pas de projet, créer un projet de démo
+            if (!project || !project.title) {
+                console.log('[Bridge] Création d\'un projet de démo...');
+
+                const demoProject = {
+                    id: Date.now(),
+                    title: 'Mon Roman',
+                    description: 'Projet de démonstration - Commencez à écrire !',
+                    genre: 'Roman',
+                    author: '',
+                    createdAt: Date.now(),
+                    updatedAt: Date.now(),
+
+                    // Structure narrative
+                    acts: [
+                        {
+                            id: Date.now(),
+                            title: 'Acte I',
+                            chapters: [
+                                {
+                                    id: Date.now() + 1,
+                                    title: 'Chapitre 1',
+                                    scenes: [
+                                        {
+                                            id: Date.now() + 2,
+                                            title: 'Scène 1',
+                                            content: 'Commencez à écrire votre histoire ici...',
+                                            summary: '',
+                                            status: 'draft',
+                                            tension: 5,
+                                            characters: [],
+                                            locations: [],
+                                            tags: [],
+                                            notes: '',
+                                            wordCount: 8,
+                                            createdAt: Date.now(),
+                                            updatedAt: Date.now()
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+
+                    // Base de données
+                    characters: [],
+                    world: [],
+                    notes: [],
+                    codex: [],
+                    arcs: [],
+
+                    // Timeline
+                    timeline: [],
+                    visualTimeline: [],
+                    metroTimeline: [],
+
+                    // Relations
+                    relations: [],
+                    relationships: [],
+                    characterPositions: {},
+                    characterColors: {},
+
+                    // Carte
+                    mapLocations: [],
+                    mapImage: null,
+
+                    // Mindmaps
+                    mindmaps: [],
+
+                    // Statistiques
+                    stats: {
+                        dailyGoal: 500,
+                        totalGoal: 80000,
+                        writingSessions: []
+                    },
+
+                    // Versions
+                    versions: [],
+
+                    // Métadonnées
+                    metadata: {
+                        version: '2.0.0',
+                        lastBackup: null,
+                        autoSaveEnabled: true
+                    }
+                };
+
+                // Sauvegarder dans StateManager
+                StateManager.setState({ project: demoProject });
+
+                // Sauvegarder dans l'ancien système (compatibilité)
+                window.project = demoProject;
+
+                // Sauvegarder dans le storage
+                if (window.StorageService && typeof StorageService.saveProject === 'function') {
+                    await StorageService.saveProject(demoProject);
+                } else if (typeof saveProject === 'function') {
+                    await saveProject();
+                }
+
+                console.log('[Bridge] ✓ Projet de démo créé et sauvegardé');
+            }
+
+            // Mettre à jour le titre de la page
+            const projectTitle = (project && project.title) || 'Mon Roman';
+            document.title = `${projectTitle} - Plume`;
+
+            // Mettre à jour le header
+            const headerTitle = document.getElementById('headerProjectTitle');
+            if (headerTitle) {
+                headerTitle.textContent = projectTitle;
+            }
+
+            // Initialiser la vue Structure par défaut
+            if (typeof renderActsList === 'function') {
+                renderActsList();
+            }
+
+            console.log('[Bridge] ✓ Projet initialisé:', projectTitle);
+
+        } catch (error) {
+            console.error('[Bridge] Erreur lors de l\'initialisation du projet:', error);
+        }
+    }
+
+    // Lancer l'auto-initialisation au chargement
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            // Attendre un peu que tout soit chargé
+            setTimeout(autoInitProject, 500);
+        });
+    } else {
+        // DOM déjà chargé
+        setTimeout(autoInitProject, 500);
+    }
+
     // Log de chargement
     console.log('[Bridge] Compatibility bridge chargé');
     console.log('[Bridge] Fonctions exposées: switchView, switchViewMobile, openProjectsModal');
