@@ -99,13 +99,15 @@ JS_V2_ORDER = [
 
     # App (orchestrateur - chargé en dernier)
     'js/00-core/00.app.js',
+
+    # Compatibility Bridge (assure compatibilité avec l'ancien HTML)
+    'js/00-core/99.compatibility-bridge.js',
 ]
 
 # Anciens fichiers EXCLUS (déjà migrés dans v2)
 EXCLUDED_OLD_FILES = [
     '01.app.js',        # Remplacé par 00-core/00.app.js
     '02.storage.js',    # Remplacé par 01-infrastructure/storage.js
-    '03.project.js',    # Remplacé par services + models
     '04.init.js',       # Intégré dans App.js
     '15.characters.js', # Remplacé par 06-views/characters/
     '17.world.js',      # Remplacé par 06-views/locations/
@@ -117,6 +119,7 @@ EXCLUDED_OLD_FILES = [
 
 # Anciens fichiers À GARDER (fonctionnalités non encore migrées)
 OLD_FILES_TO_KEEP = [
+    '03.project.js',    # Contient encore beaucoup de fonctions nécessaires (à garder temporairement)
     '05.undo-redo.js',
     '07.stats.js',
     '08.auto-detect.js',
