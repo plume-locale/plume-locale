@@ -1,3 +1,15 @@
+        // ============================================
+        // VARIABLES GLOBALES
+        // ============================================
+
+        // Gestion multi-projets
+        let projects = [];              // Liste de tous les projets
+        let project = null;             // Projet actuellement ouvert
+        let currentProjectId = null;    // ID du projet actuel
+
+        // ============================================
+        // VIEW MANAGEMENT
+        // ============================================
 
         // View Management (définie tôt pour être accessible partout)
         function switchView(view) {
