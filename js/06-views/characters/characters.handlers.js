@@ -1,11 +1,310 @@
-// Migrated handlers from js/15.characters.js
+/**
+ * Characters Handlers
+ * Responsible for handling all user interactions in the characters view
+ */
 
-// Race management
-if (!project.races) {
-    project.races = ['Humain', 'Elfe', 'Nain', 'Orc', 'Autre'];
-}
+const CharactersHandlers = (() => {
+    /**
+     * Attach event listeners to the characters list
+     */
+    function attachListHandlers() {
+        const container = document.getElementById('charactersList');
+        if (!container) return;
 
-function addNewRace(charId) {
+        // Event delegation for list items
+        container.addEventListener('click', async (e) => {
+            const listItem = e.target.closest('.character-list-item');
+            if (listItem) {
+                const characterId = parseInt(listItem.dataset.characterId);
+                CharactersView.openDetail(characterId);
+            }
+        });
+    }
+
+    /**
+     * Attach event listeners to the add character modal
+     */
+    function attachAddModalHandlers() {
+        const form = document.getElementById('add-character-form');
+        if (!form) return;
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await handleAddCharacter();
+        });
+    }
+
+    /**
+     * Attach event listeners to the character detail sheet
+     */
+    function attachDetailHandlers() {
+        // Edit handlers for inline fields would go here
+        // This is a simple example - more complex logic can be added
+    }
+
+    /**
+     * Handle adding a new character
+     */
+    async function handleAddCharacter() {
+        const name = document.getElementById('character-name')?.value.trim();
+        const role = document.getElementById('character-role')?.value.trim();
+        const description = document.getElementById('character-description')?.value.trim();
+
+        if (!name) {
+            alert('Le nom du personnage est requis');
+            return;
+        }
+
+        try {
+            const characterData = {
+                name: name,
+                firstName: name.split(' ')[0] || '',
+                lastName: name.split(' ').slice(1).join(' ') || '',
+                role: role || '',
+                physicalDescription: description || '',
+                color: generateRandomColor(),
+                avatarEmoji: '🙂'
+            };
+
+            await CharacterService.create(characterData);
+            
+            // Close modal and refresh
+            ModalUI.close();
+            await CharactersView.render();
+        } catch (error) {
+            console.error('Error creating character:', error);
+            alert('Erreur lors de la création du personnage');
+        }
+    }
+
+    /**
+     * Handle deleting a character
+     * @param {number} characterId - Character ID
+     */
+    async function handleDelete(characterId) {
+        if (!confirm('Êtes-vous sûr de vouloir supprimer ce personnage ? Cette action ne peut pas être annulée.')) {
+            return;
+        }
+
+        try {
+            await CharacterService.remove(characterId);
+            await CharactersView.render();
+        } catch (error) {
+            console.error('Error deleting character:', error);
+            alert('Erreur lors de la suppression du personnage');
+        }
+    }
+
+    /**
+     * Handle changing character avatar
+     * @param {number} characterId - Character ID
+     */
+    function changeAvatar(characterId) {
+        const character = CharacterService.findById(characterId);
+        if (!character) return;
+
+        const emojiPicker = [
+            '😀', '😃', '😄', '😁', '😆', '😊', '😇', '🙂',
+            '🤗', '🤩', '😍', '😘', '😚', '😙', '😗', '😌',
+            '😔', '😍', '😔', '🤐', '😐', '😑', '😶', '🙄',
+            '🧐', '🤨', '😏', '😒', '🙁', '☹️', '😲', '😞',
+            '😖', '😢', '😭', '😤', '😠', '😡', '🤬', '😈',
+            '👿', '💀', '☠️', '💩', '🤡', '👹', '👺', '👻'
+        ];
+
+        let html = '<div class="emoji-picker" style="display: grid; grid-template-columns: repeat(8, 1fr); gap: 0.5rem; padding: 1rem;">';
+        emojiPicker.forEach(emoji => {
+            html += `<button type="button" onclick="CharactersHandlers.setAvatar(${characterId}, '${emoji}')" style="
+                background: none;
+                border: 1px solid var(--border-color);
+                padding: 0.5rem;
+                font-size: 1.5em;
+                cursor: pointer;
+                border-radius: 4px;
+                transition: all 0.2s;
+            " onmouseover="this.style.background = 'var(--bg-secondary)'" onmouseout="this.style.background = 'none'">
+                ${emoji}
+            </button>`;
+        });
+        html += '</div>';
+
+        ModalUI.open('emoji-picker-modal', html);
+    }
+
+    /**
+     * Set character avatar
+     * @param {number} characterId - Character ID
+     * @param {string} emoji - Emoji character
+     */
+    async function setAvatar(characterId, emoji) {
+        try {
+            await CharacterService.update(characterId, { avatarEmoji: emoji });
+            ModalUI.close();
+            CharactersView.openDetail(characterId);
+        } catch (error) {
+            console.error('Error setting avatar:', error);
+            alert('Erreur lors de la modification de l\'avatar');
+        }
+    }
+
+    /**
+     * Handle inline editing of character fields
+     * @param {number} characterId - Character ID
+     * @param {string} fieldName - Field name
+     * @param {string} newValue - New value
+     */
+    async function handleFieldUpdate(characterId, fieldName, newValue) {
+        try {
+            await CharacterService.update(characterId, { [fieldName]: newValue });
+        } catch (error) {
+            console.error('Error updating character field:', error);
+            alert('Erreur lors de la mise à jour');
+        }
+    }
+
+    /**
+     * Open character relationship modal
+     * @param {number} characterId - Character ID
+     */
+    function openRelationshipsModal(characterId) {
+        const character = CharacterService.findById(characterId);
+        if (!character) return;
+
+        const relationships = character.relations || [];
+        const otherCharacters = CharacterService.findAll()
+            .filter(c => c.id !== characterId);
+
+        let html = `
+            <div class="modal-content relationships-modal">
+                <h2>Relations du personnage</h2>
+                <div style="margin-bottom: 2rem;">
+                    <h3>Ajouter une relation</h3>
+                    <div style="display: grid; gap: 1rem;">
+                        <div class="form-group">
+                            <label for="related-character">Personnage lié</label>
+                            <select id="related-character">
+                                <option value="">Sélectionner un personnage...</option>
+                                ${otherCharacters.map(c => `<option value="${c.id}">${c.name}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="relationship-type">Type de relation</label>
+                            <select id="relationship-type">
+                                <option value="family">Famille</option>
+                                <option value="friend">Ami(e)</option>
+                                <option value="enemy">Ennemi(e)</option>
+                                <option value="ally">Allié(e)</option>
+                                <option value="rival">Rival(e)</option>
+                                <option value="romance">Romance</option>
+                                <option value="mentor">Mentor</option>
+                                <option value="other">Autre</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="relationship-description">Description</label>
+                            <textarea id="relationship-description" rows="3" placeholder="Décrivez la relation..."></textarea>
+                        </div>
+                        <button onclick="CharactersHandlers.addRelationship(${characterId})" style="padding: 0.5rem 1.5rem;">Ajouter</button>
+                    </div>
+                </div>
+
+                <h3>Relations existantes</h3>
+                <div style="max-height: 300px; overflow-y: auto;">
+                    ${relationships.length > 0 ? relationships.map(rel => {
+                        const relatedChar = CharacterService.findById(rel.characterId);
+                        return `
+                            <div style="
+                                padding: 1rem;
+                                border: 1px solid var(--border-color);
+                                border-radius: 4px;
+                                margin-bottom: 0.5rem;
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: center;
+                            ">
+                                <div>
+                                    <div style="font-weight: 500;">${relatedChar?.name || 'Inconnu'}</div>
+                                    <div style="font-size: 0.85rem; color: var(--text-muted);">${rel.type}</div>
+                                    ${rel.description ? `<p style="margin: 0.5rem 0 0 0; font-size: 0.9rem;">${rel.description}</p>` : ''}
+                                </div>
+                                <button onclick="CharactersHandlers.removeRelationship(${characterId}, ${rel.characterId})" style="background: none; border: none; cursor: pointer;">×</button>
+                            </div>
+                        `;
+                    }).join('') : '<p style="color: var(--text-muted);">Aucune relation</p>'}
+                </div>
+            </div>
+        `;
+
+        ModalUI.open('relationships-modal', html);
+    }
+
+    /**
+     * Add a relationship between characters
+     * @param {number} characterId - Character ID
+     */
+    async function addRelationship(characterId) {
+        const relatedId = parseInt(document.getElementById('related-character')?.value);
+        const type = document.getElementById('relationship-type')?.value;
+        const description = document.getElementById('relationship-description')?.value;
+
+        if (!relatedId || !type) {
+            alert('Veuillez sélectionner un personnage et un type de relation');
+            return;
+        }
+
+        try {
+            await CharacterService.addRelationship(characterId, relatedId, {
+                type,
+                description
+            });
+            CharactersHandlers.openRelationshipsModal(characterId);
+        } catch (error) {
+            console.error('Error adding relationship:', error);
+            alert('Erreur lors de l\'ajout de la relation');
+        }
+    }
+
+    /**
+     * Remove a relationship
+     * @param {number} characterId - Character ID
+     * @param {number} relatedId - Related character ID
+     */
+    async function removeRelationship(characterId, relatedId) {
+        try {
+            const character = CharacterService.findById(characterId);
+            character.relations = (character.relations || []).filter(r => r.characterId !== relatedId);
+            await CharacterService.update(characterId, { relations: character.relations });
+            CharactersHandlers.openRelationshipsModal(characterId);
+        } catch (error) {
+            console.error('Error removing relationship:', error);
+            alert('Erreur lors de la suppression de la relation');
+        }
+    }
+
+    /**
+     * Helper function to generate random color
+     * @returns {string} Hex color
+     */
+    function generateRandomColor() {
+        const colors = ['#3498db', '#e74c3c', '#2ecc71', '#f39c12', '#9b59b6', '#1abc9c', '#e67e22', '#34495e'];
+        return colors[Math.floor(Math.random() * colors.length)];
+    }
+
+    // Public API
+    return {
+        attachListHandlers,
+        attachAddModalHandlers,
+        attachDetailHandlers,
+        handleAddCharacter,
+        handleDelete,
+        changeAvatar,
+        setAvatar,
+        handleFieldUpdate,
+        openRelationshipsModal,
+        addRelationship,
+        removeRelationship
+    };
+})();
     const newRace = prompt("Nom de la nouvelle race :");
     if (newRace && newRace.trim() !== "") {
         const formattedRace = newRace.trim();

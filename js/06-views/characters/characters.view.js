@@ -1,15 +1,100 @@
-// Migrated from js/15.characters.js
+/**
+ * Characters View
+ * Orchestrates the characters view by coordinating render and handlers
+ */
 
-// Note: file migrated into view folder; further refactor into render/handlers/state files recommended.
+const CharactersView = (() => {
+    const RACES = ['Humain', 'Elfe', 'Nain', 'Orc', 'Autre'];
 
-// View Management
+    /**
+     * Initialize the characters view
+     */
+    async function init() {
+        // Ensure project races exist
+        const state = StateManager.get('project');
+        if (!state.races) {
+            state.races = RACES;
+            StateManager.set('project', state);
+        }
 
-// Si la liste des races n'existe pas, on en crée une par défaut
-if (!project.races) {
-    project.races = ['Humain', 'Elfe', 'Nain', 'Orc', 'Autre'];
-}
+        await render();
+        bindEvents();
+    }
 
-function addNewRace(charId) {
+    /**
+     * Render the characters list
+     */
+    async function render() {
+        const characters = CharacterService.findAll();
+        const state = StateManager.get('project');
+        const races = state.races || RACES;
+        
+        const html = CharactersRender.renderList(characters, races);
+        const container = document.getElementById('charactersList');
+        if (container) {
+            container.innerHTML = html;
+            CharactersHandlers.attachListHandlers();
+        }
+    }
+
+    /**
+     * Open character details
+     * @param {number} characterId - Character ID
+     */
+    async function openDetail(characterId) {
+        const character = CharacterService.findById(characterId);
+        if (!character) return;
+
+        const html = CharactersRender.renderDetailSheet(character);
+        const container = document.getElementById('editorView');
+        if (container) {
+            container.innerHTML = html;
+            CharactersHandlers.attachDetailHandlers();
+        }
+    }
+
+    /**
+     * Open add character modal
+     */
+    function openAddModal() {
+        const html = CharactersRender.renderAddModal();
+        ModalUI.open('add-character-modal', html);
+        CharactersHandlers.attachAddModalHandlers();
+    }
+
+    /**
+     * Bind global events
+     */
+    function bindEvents() {
+        // Listen for character events
+        if (window.EventBus) {
+            EventBus.on('character:created', () => render());
+            EventBus.on('character:updated', () => render());
+            EventBus.on('character:deleted', () => render());
+        }
+    }
+
+    /**
+     * Unbind events on destroy
+     */
+    function destroy() {
+        if (window.EventBus) {
+            EventBus.off('character:created');
+            EventBus.off('character:updated');
+            EventBus.off('character:deleted');
+        }
+    }
+
+    // Public API
+    return {
+        init,
+        render,
+        openDetail,
+        openAddModal,
+        bindEvents,
+        destroy
+    };
+})();
     const newRace = prompt("Nom de la nouvelle race :");
     if (newRace && newRace.trim() !== "") {
         const formattedRace = newRace.trim();

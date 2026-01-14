@@ -1,107 +1,172 @@
-// Migrated from js/06.structure.js
+/**
+ * Structure View (Refactored MVVM)
+ * Orchestrates the structure view by delegating to render and handler modules
+ * Manages view lifecycle, state synchronization, and event binding
+ */
 
-// Note: migrated into view folder. Further refactor into render/handlers/state files recommended.
+const StructureView = (() => {
+    // State for tracking expansion
+    let expandedActs = [];
+    let currentActId = null;
+    let currentChapterId = null;
+    let currentSceneId = null;
 
-function refreshAllViews() {
-    // Rafraîchir tous les affichages après un undo/redo
-    renderActsList();
-    
-    // Restaurer l'état d'expansion immédiatement après le rendu
-    setTimeout(() => restoreTreeState(), 100);
-    
-    updateStats();
-    
-    // Rafraîchir la vue actuelle
-    switch(currentView) {
-        case 'editor':
-            // Render the acts/chapters sidebar
-            renderActsList();
-            // renderViewContent will handle rendering the editor
-            break;
-        case 'characters':
-            renderCharactersList();
-            break;
-        case 'world':
-            renderWorldList();
-            break;
-        case 'timeline':
-            renderTimelineList();
-            break;
-        case 'notes':
-            renderNotesList();
-            break;
-        case 'codex':
-            renderCodexList();
-            break;
-        case 'stats':
-            renderStats();
-            break;
-        case 'analysis':
-            renderAnalysis();
-            break;
-        case 'versions':
-            renderVersionsList();
-            break;
-        case 'todos':
-            if (typeof renderTodosList === 'function') renderTodosList();
-            break;
-        case 'corkboard':
-            if (typeof renderCorkBoard === 'function') renderCorkBoard();
-            break;
-        case 'mindmap':
-            if (typeof renderMindmapView === 'function') renderMindmapView();
-            break;
-        case 'plot':
-            if (typeof renderPlotView === 'function') renderPlotView();
-            break;
-        case 'relations':
-            if (typeof renderRelationsView === 'function') renderRelationsView();
-            break;
-        case 'map':
-            if (typeof renderMapView === 'function') renderMapView();
-            break;
-        case 'timelineviz':
-            if (typeof renderTimelineVizView === 'function') renderTimelineVizView();
-            break;
+    /**
+     * Initialize the structure view
+     */
+    function init() {
+        loadExpandedActs();
+        render();
+        bindEvents();
+        setupKeyboardShortcuts();
     }
-    
-    // Rafraîchir l'éditeur si une scène est ouverte
-    if (currentSceneId) {
-        const scene = findScene(currentActId, currentChapterId, currentSceneId);
-        if (scene) {
-            document.getElementById('sceneTitle').value = scene.title;
-            document.getElementById('sceneContent').value = scene.content || '';
-            updateWordCount();
+
+    /**
+     * Render the structure list
+     */
+    function render() {
+        const container = document.getElementById('structureList');
+        if (!container) return;
+
+        const state = StateManager.get('project');
+        if (!state || !state.acts) {
+            container.innerHTML = StructureRender.renderEmptyStructure();
+            return;
+        }
+
+        // Render acts list with expanded state
+        const html = StructureRender.renderActsList(state.acts, expandedActs);
+        container.innerHTML = html;
+
+        // Attach handlers to all interactive elements
+        StructureHandlers.attachListHandlers();
+    }
+
+    /**
+     * Bind events to state changes
+     */
+    function bindEvents() {
+        if (typeof EventBus !== 'undefined') {
+            EventBus.on('project:updated', () => render());
+            EventBus.on('history:undo', refreshAllViews);
+            EventBus.on('history:redo', refreshAllViews);
         }
     }
-}
 
-// Raccourcis clavier pour undo/redo
-document.addEventListener('keydown', function(e) {
-    // Ctrl+Z ou Cmd+Z pour undo
-    if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
-        e.preventDefault();
-        if (typeof EventBus !== 'undefined') EventBus.emit('history:undo');
-        else if (typeof undo === 'function') undo();
-    }
-    // Ctrl+Y ou Cmd+Shift+Z pour redo
-    else if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
-        e.preventDefault();
-        if (typeof EventBus !== 'undefined') EventBus.emit('history:redo');
-        else if (typeof redo === 'function') redo();
-    }
-});
-
-function loadProject() {
-    const saved = localStorage.getItem('plume_locale_project');
-    if (saved) {
-        const loadedProject = JSON.parse(saved);
+    /**
+     * Refresh all views after undo/redo
+     */
+    function refreshAllViews() {
+        render();
         
+        // Restore expansion state after render
+        setTimeout(() => loadExpandedActs(), 100);
+        
+        // Update stats if available
+        if (typeof updateStats === 'function') {
+            updateStats();
+        }
+
+        // Refresh the current view content
+        if (typeof refreshCurrentViewContent === 'function') {
+            refreshCurrentViewContent();
+        }
+    }
+
+    /**
+     * Setup keyboard shortcuts for undo/redo
+     */
+    function setupKeyboardShortcuts() {
+        document.addEventListener('keydown', (e) => {
+            // Ctrl+Z or Cmd+Z for undo
+            if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+                e.preventDefault();
+                if (typeof EventBus !== 'undefined') {
+                    EventBus.emit('history:undo');
+                } else if (typeof undo === 'function') {
+                    undo();
+                }
+            }
+            // Ctrl+Y or Cmd+Shift+Z for redo
+            else if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
+                e.preventDefault();
+                if (typeof EventBus !== 'undefined') {
+                    EventBus.emit('history:redo');
+                } else if (typeof redo === 'function') {
+                    redo();
+                }
+            }
+        });
+    }
+
+    /**
+     * Save expansion state to localStorage
+     */
+    function saveExpandedActs() {
+        localStorage.setItem('plume_expanded_acts', JSON.stringify(expandedActs));
+    }
+
+    /**
+     * Load expansion state from localStorage
+     */
+    function loadExpandedActs() {
+        expandedActs = JSON.parse(localStorage.getItem('plume_expanded_acts') || '[]');
+    }
+
+    /**
+     * Open detail view for a scene
+     * @param {number} actId - Act ID
+     * @param {number} chapterId - Chapter ID
+     * @param {number} sceneId - Scene ID
+     */
+    function openDetail(actId, chapterId, sceneId) {
+        currentActId = actId;
+        currentChapterId = chapterId;
+        currentSceneId = sceneId;
+        StructureHandlers.openScene(actId, chapterId, sceneId);
+    }
+
+    /**
+     * Show empty state
+     */
+    function showEmptyState() {
+        const container = document.getElementById('editorView');
+        if (container) {
+            container.innerHTML = '<div class="empty-state">Sélectionnez une scène pour commencer à écrire</div>';
+        }
+    }
+
+    /**
+     * Load project and synchronize state
+     * Migration support for old structure (chapters) to new (acts)
+     */
+    function loadProject() {
+        const saved = localStorage.getItem('plume_locale_project');
+        if (!saved) {
+            const newProject = {
+                title: "Mon Roman",
+                author: "Auteur",
+                acts: [],
+                characters: [],
+                locations: [],
+                arcs: [],
+                world: {
+                    name: "Monde",
+                    description: ""
+                }
+            };
+            StateManager.set('project', newProject);
+            return;
+        }
+
+        const loadedProject = JSON.parse(saved);
+
         // Migration: Convert old structure (chapters array) to new structure (acts array)
         if (loadedProject.chapters && !loadedProject.acts) {
             console.log('Migrating old project structure to acts-based structure...');
-            project = {
+            const migratedProject = {
                 title: loadedProject.title || "Mon Roman",
+                author: loadedProject.author || "Auteur",
                 acts: [
                     {
                         id: Date.now(),
@@ -110,17 +175,29 @@ function loadProject() {
                     }
                 ],
                 characters: loadedProject.characters || [],
-                world: loadedProject.world || []
+                locations: loadedProject.locations || [],
+                arcs: loadedProject.arcs || [],
+                world: loadedProject.world || { name: "Monde", description: "" }
             };
+            StateManager.set('project', migratedProject);
+
             // Save migrated structure
-            saveProject();
+            if (typeof StorageService !== 'undefined') {
+                StorageService.saveProject(migratedProject);
+            } else if (typeof saveProject === 'function') {
+                saveProject();
+            }
             console.log('Migration complete!');
         } else {
-            // Ensure all data structures exist
-            project = {
-                ...loadedProject,
+            // Ensure all data structures exist with defaults
+            const project = {
+                title: loadedProject.title || "Mon Roman",
+                author: loadedProject.author || "Auteur",
+                acts: loadedProject.acts || [],
                 characters: loadedProject.characters || [],
-                world: loadedProject.world || [],
+                locations: loadedProject.locations || [],
+                arcs: loadedProject.arcs || [],
+                world: loadedProject.world || { name: "Monde", description: "" },
                 timeline: loadedProject.timeline || [],
                 notes: loadedProject.notes || [],
                 codex: loadedProject.codex || [],
@@ -134,115 +211,55 @@ function loadProject() {
                 metroTimeline: loadedProject.metroTimeline || [],
                 characterColors: loadedProject.characterColors || {}
             };
-            
+
             // Ensure all scenes have linked arrays
             project.acts.forEach(act => {
+                act.chapters = act.chapters || [];
                 act.chapters.forEach(chapter => {
+                    chapter.scenes = chapter.scenes || [];
                     chapter.scenes.forEach(scene => {
                         if (!scene.linkedCharacters) scene.linkedCharacters = [];
                         if (!scene.linkedElements) scene.linkedElements = [];
                     });
                 });
             });
-            
+
             // Ensure all characters have linked arrays
             project.characters.forEach(char => {
                 if (!char.linkedScenes) char.linkedScenes = [];
                 if (!char.linkedElements) char.linkedElements = [];
             });
-            
-            // Ensure all world elements have linked arrays
-            project.world.forEach(elem => {
-                if (!elem.linkedScenes) elem.linkedScenes = [];
-                if (!elem.linkedElements) elem.linkedElements = [];
-            });
+
+            StateManager.set('project', project);
         }
     }
-}
 
-// Act Management
-function addAct() {
-    const title = document.getElementById('actTitleInput').value.trim();
-    if (!title) return;
-
-    const act = {
-        id: Date.now(),
-        title: title,
-        chapters: []
-    };
-
-    project.acts.push(act);
-    
-    // Auto-déplier le nouvel acte
-    expandedActs.add(act.id);
-    
-    document.getElementById('actTitleInput').value = '';
-    closeModal('addActModal');
-    saveProject();
-    renderActsList();
-}
-
-function deleteAct(actId) {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer cet acte et tous ses chapitres ?')) return;
-    
-    project.acts = project.acts.filter(a => a.id !== actId);
-    if (currentActId === actId) {
-        currentActId = null;
-        currentChapterId = null;
-        currentSceneId = null;
-        showEmptyState();
+    /**
+     * Destroy the view and clean up event listeners
+     */
+    function destroy() {
+        // Remove EventBus subscriptions if needed
+        // Clear any timers
     }
-    saveProject();
-    renderActsList();
-}
 
-function toggleAct(actId) {
-    const element = document.getElementById(`act-${actId}`);
-    const icon = element.querySelector('.act-icon');
-    const chaptersContainer = element.querySelector('.act-chapters');
-    
-    const isExpanded = icon.classList.contains('expanded');
-    
-    icon.classList.toggle('expanded');
-    chaptersContainer.classList.toggle('visible');
-    
-    // Sauvegarder l'état
-    if (isExpanded) {
-        expandedActs.delete(actId);
-    } else {
-        expandedActs.add(actId);
-    }
-    saveTreeState();
-}
-
-function startEditingAct(actId, element) {
-    const act = project.acts.find(a => a.id === actId);
-    if (!act) return;
-
-    const originalText = act.title;
-    const input = document.createElement('input');
-    input.type = 'text';
-    input.className = 'editing-input';
-    input.value = originalText;
-    
-    element.textContent = '';
-    element.appendChild(input);
-    input.focus();
-    input.select();
-
-    const finishEditing = () => {
-        const newTitle = input.value.trim();
-        if (newTitle && newTitle !== originalText) {
-            act.title = newTitle;
-            saveProject();
-        }
-        renderActsList();
+    // Public API
+    return {
+        init,
+        render,
+        bindEvents,
+        refreshAllViews,
+        setupKeyboardShortcuts,
+        saveExpandedActs,
+        loadExpandedActs,
+        openDetail,
+        showEmptyState,
+        loadProject,
+        destroy
     };
+})();
 
-    input.addEventListener('blur', finishEditing);
-    input.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-            finishEditing();
-        } else if (e.key === 'Escape') {
-            renderActsList();
+// Export for external use
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = StructureView;
+}
 *** End File
