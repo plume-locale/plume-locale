@@ -77,12 +77,14 @@
             // Ctrl+Z ou Cmd+Z pour undo
             if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
                 e.preventDefault();
-                undo();
+                if (typeof EventBus !== 'undefined') EventBus.emit('history:undo');
+                else if (typeof undo === 'function') undo();
             }
             // Ctrl+Y ou Cmd+Shift+Z pour redo
             else if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
                 e.preventDefault();
-                redo();
+                if (typeof EventBus !== 'undefined') EventBus.emit('history:redo');
+                else if (typeof redo === 'function') redo();
             }
         });
 
