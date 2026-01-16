@@ -485,6 +485,141 @@ function renderThrillerElementFields(element) {
                 </div>
             `;
 
+        case 'backstory':
+            return `
+                <div class="form-group">
+                    <label for="bsCharacterId">Personnage</label>
+                    <select id="bsCharacterId">
+                        <option value="">Sélectionner un personnage</option>
+                        ${project.characters.map(char => `<option value="${char.id}" ${element.data.character_id === char.id ? 'selected' : ''}>${char.name}</option>`).join('')}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="bsPeriod">Période / Date</label>
+                    <input type="text" id="bsPeriod" value="${element.data.period || ''}">
+                </div>
+                <div class="form-group">
+                    <label for="bsSummary">Résumé</label>
+                    <textarea id="bsSummary" rows="4">${element.data.summary || ''}</textarea>
+                </div>
+            `;
+
+        case 'knowledge_state':
+            return `
+                <div class="form-group">
+                    <label for="ksCharacterId">Personnage</label>
+                    <select id="ksCharacterId">
+                        <option value="">Sélectionner un personnage</option>
+                        ${project.characters.map(char => `<option value="${char.id}" ${element.data.character_id === char.id ? 'selected' : ''}>${char.name}</option>`).join('')}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="ksAbout">Connaissance concernant</label>
+                    <input type="text" id="ksAbout" value="${element.data.about || ''}">
+                </div>
+                <div class="form-group">
+                    <label for="ksDetails">Détails</label>
+                    <textarea id="ksDetails" rows="3">${element.data.details || ''}</textarea>
+                </div>
+            `;
+
+        case 'location':
+            return `
+                <div class="form-group">
+                    <label for="locName">Nom du lieu</label>
+                    <input type="text" id="locName" value="${element.data.name || ''}">
+                </div>
+                <div class="form-group">
+                    <label for="locCoordinates">Coordonnées</label>
+                    <input type="text" id="locCoordinates" value="${element.data.coordinates || ''}">
+                </div>
+                <div class="form-group">
+                    <label for="locDesc">Description</label>
+                    <textarea id="locDesc" rows="3">${element.data.description || ''}</textarea>
+                </div>
+            `;
+
+        case 'motive_means_opportunity':
+            return `
+                <div class="form-group">
+                    <label for="mmCharacterId">Suspect</label>
+                    <select id="mmCharacterId">
+                        <option value="">Sélectionner un personnage</option>
+                        ${project.characters.map(char => `<option value="${char.id}" ${element.data.character_id === char.id ? 'selected' : ''}>${char.name}</option>`).join('')}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="mmMotive">Mobile</label>
+                    <textarea id="mmMotive" rows="2">${element.data.motive || ''}</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="mmMeans">Moyens</label>
+                    <textarea id="mmMeans" rows="2">${element.data.means || ''}</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="mmOpportunity">Opportunité</label>
+                    <textarea id="mmOpportunity" rows="2">${element.data.opportunity || ''}</textarea>
+                </div>
+            `;
+
+        case 'question':
+            return `
+                <div class="form-group">
+                    <label for="qText">Question</label>
+                    <input type="text" id="qText" value="${element.data.question || ''}">
+                </div>
+                <div class="form-group">
+                    <label for="qResolved">Résolue ?</label>
+                    <select id="qResolved">
+                        <option value="false" ${!element.data.resolved ? 'selected' : ''}>Non</option>
+                        <option value="true" ${element.data.resolved ? 'selected' : ''}>Oui</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="qAnswer">Réponse (si connue)</label>
+                    <textarea id="qAnswer" rows="3">${element.data.answer || ''}</textarea>
+                </div>
+            `;
+
+        case 'red_herring':
+            return `
+                <div class="form-group">
+                    <label for="rhReason">Raison / Origine</label>
+                    <input type="text" id="rhReason" value="${element.data.reason || ''}">
+                </div>
+                <div class="form-group">
+                    <label for="rhNotes">Notes</label>
+                    <textarea id="rhNotes" rows="3">${element.data.notes || ''}</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="rhDeliberate">Délibéré ?</label>
+                    <select id="rhDeliberate">
+                        <option value="false" ${!element.data.deliberate ? 'selected' : ''}>Non</option>
+                        <option value="true" ${element.data.deliberate ? 'selected' : ''}>Oui</option>
+                    </select>
+                </div>
+            `;
+
+        case 'reversal':
+            return `
+                <div class="form-group">
+                    <label for="rvAbout">Révélation concernant</label>
+                    <input type="text" id="rvAbout" value="${element.data.about || ''}">
+                </div>
+                <div class="form-group">
+                    <label for="rvDesc">Description de la révélation</label>
+                    <textarea id="rvDesc" rows="3">${element.data.description || ''}</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="rvImpact">Impact</label>
+                    <select id="rvImpact">
+                        <option value="low" ${element.data.impact === 'low' ? 'selected' : ''}>Faible</option>
+                        <option value="medium" ${element.data.impact === 'medium' ? 'selected' : ''}>Moyen</option>
+                        <option value="high" ${element.data.impact === 'high' ? 'selected' : ''}>Élevé</option>
+                    </select>
+                </div>
+            `;
+
         default:
             return '';
     }
@@ -521,6 +656,62 @@ function saveThrillerElement(event, elementId) {
                 holder_character_id: document.getElementById('holderCharacterId').value,
                 about_character_id: document.getElementById('aboutCharacterId').value,
                 secret_type: document.getElementById('secretType').value
+            };
+            break;
+        case 'backstory':
+            element.data = {
+                character_id: document.getElementById('bsCharacterId') ? document.getElementById('bsCharacterId').value : '',
+                period: document.getElementById('bsPeriod') ? document.getElementById('bsPeriod').value : '',
+                summary: document.getElementById('bsSummary') ? document.getElementById('bsSummary').value : ''
+            };
+            break;
+
+        case 'knowledge_state':
+            element.data = {
+                character_id: document.getElementById('ksCharacterId') ? document.getElementById('ksCharacterId').value : '',
+                about: document.getElementById('ksAbout') ? document.getElementById('ksAbout').value : '',
+                details: document.getElementById('ksDetails') ? document.getElementById('ksDetails').value : ''
+            };
+            break;
+
+        case 'location':
+            element.data = {
+                name: document.getElementById('locName') ? document.getElementById('locName').value : '',
+                coordinates: document.getElementById('locCoordinates') ? document.getElementById('locCoordinates').value : '',
+                description: document.getElementById('locDesc') ? document.getElementById('locDesc').value : ''
+            };
+            break;
+
+        case 'motive_means_opportunity':
+            element.data = {
+                character_id: document.getElementById('mmCharacterId') ? document.getElementById('mmCharacterId').value : '',
+                motive: document.getElementById('mmMotive') ? document.getElementById('mmMotive').value : '',
+                means: document.getElementById('mmMeans') ? document.getElementById('mmMeans').value : '',
+                opportunity: document.getElementById('mmOpportunity') ? document.getElementById('mmOpportunity').value : ''
+            };
+            break;
+
+        case 'question':
+            element.data = {
+                question: document.getElementById('qText') ? document.getElementById('qText').value : '',
+                resolved: document.getElementById('qResolved') ? document.getElementById('qResolved').value === 'true' : false,
+                answer: document.getElementById('qAnswer') ? document.getElementById('qAnswer').value : ''
+            };
+            break;
+
+        case 'red_herring':
+            element.data = {
+                reason: document.getElementById('rhReason') ? document.getElementById('rhReason').value : '',
+                notes: document.getElementById('rhNotes') ? document.getElementById('rhNotes').value : '',
+                deliberate: document.getElementById('rhDeliberate') ? document.getElementById('rhDeliberate').value === 'true' : false
+            };
+            break;
+
+        case 'reversal':
+            element.data = {
+                about: document.getElementById('rvAbout') ? document.getElementById('rvAbout').value : '',
+                description: document.getElementById('rvDesc') ? document.getElementById('rvDesc').value : '',
+                impact: document.getElementById('rvImpact') ? document.getElementById('rvImpact').value : 'medium'
             };
             break;
     }
