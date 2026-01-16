@@ -77,7 +77,7 @@
             };
             
             // Vues qui utilisent editorView entièrement (visualisations plein écran sans sidebar)
-            const editorViewVues = ['stats', 'analysis', 'versions', 'todos', 'timeline', 'corkboard', 'plot', 'relations', 'map'];
+            const editorViewVues = ['stats', 'analysis', 'versions', 'todos', 'timeline', 'corkboard', 'plot', 'relations', 'map', 'thriller'];
             
             // Labels pour les vues sans sidebar
             const viewLabelsNoSidebar = {
@@ -90,6 +90,7 @@
                 'plot': 'Intrigue',
                 'relations': 'Relations',
                 'map': 'Carte',
+                'thriller': 'Thriller',
                 'storygrid': 'Story Grid'
             };
             
@@ -254,6 +255,9 @@
                     break;
                 case 'storygrid':
                     if (typeof renderStoryGrid === 'function') renderStoryGrid();
+                    break;
+                case 'thriller':
+                    if (typeof renderThrillerBoard === 'function') renderThrillerBoard();
                     break;
                 default:
                     container.innerHTML = `

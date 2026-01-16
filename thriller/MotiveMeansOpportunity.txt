@@ -1,0 +1,72 @@
+{
+  "name": "MotiveMeansOpportunity",
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "description": "Reference to the project"
+    },
+    "character_id": {
+      "type": "string",
+      "description": "Suspect character"
+    },
+    "for_crime": {
+      "type": "string",
+      "description": "What crime/event this applies to"
+    },
+    "motive": {
+      "type": "string",
+      "description": "Why they would do it"
+    },
+    "motive_strength": {
+      "type": "string",
+      "enum": [
+        "none",
+        "weak",
+        "moderate",
+        "strong",
+        "compelling"
+      ],
+      "default": "none"
+    },
+    "means": {
+      "type": "string",
+      "description": "How they could do it (tools, knowledge, ability)"
+    },
+    "has_means": {
+      "type": "boolean",
+      "default": false
+    },
+    "opportunity": {
+      "type": "string",
+      "description": "When/where they could have done it"
+    },
+    "has_opportunity": {
+      "type": "boolean",
+      "default": false
+    },
+    "alibi_id": {
+      "type": "string",
+      "description": "Reference to their alibi if they have one"
+    },
+    "reader_knows_motive_scene": {
+      "type": "string",
+      "description": "Scene where reader learns about motive"
+    },
+    "actual_guilt": {
+      "type": "string",
+      "enum": [
+        "guilty",
+        "innocent",
+        "accomplice",
+        "unknowing_participant"
+      ],
+      "description": "Are they actually responsible?"
+    }
+  },
+  "required": [
+    "project_id",
+    "character_id",
+    "for_crime"
+  ]
+}

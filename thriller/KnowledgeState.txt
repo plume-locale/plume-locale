@@ -1,0 +1,55 @@
+{
+  "name": "KnowledgeState",
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "description": "Reference to the project"
+    },
+    "scene_id": {
+      "type": "string",
+      "description": "Scene where this knowledge state applies"
+    },
+    "character_id": {
+      "type": "string",
+      "description": "Character (or 'READER' for reader knowledge)"
+    },
+    "knows_about": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "fact": {
+            "type": "string"
+          },
+          "believes": {
+            "type": "string"
+          },
+          "truth": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "What they know/believe vs truth"
+    },
+    "secrets_known": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Secret IDs this character knows"
+    },
+    "clues_aware_of": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Clue IDs this character knows about"
+    }
+  },
+  "required": [
+    "project_id",
+    "scene_id",
+    "character_id"
+  ]
+}

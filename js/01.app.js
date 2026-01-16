@@ -28,7 +28,9 @@
             visualTimeline: [], // Timeline visualization events
             metroTimeline: [], // Metro-style timeline with character links
             characterColors: {}, // Colors for metro timeline lines
-            mindmaps: [] // Custom mindmaps with nodes and links
+            mindmaps: [], // Custom mindmaps with nodes and links
+            thrillerElements: [], // Thriller mystery elements (alibis, clues, secrets, etc.)
+            thrillerConnections: [] // Connections between thriller elements
         };
 
         let currentActId = null;

@@ -1,0 +1,65 @@
+{
+  "name": "Alibi",
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "description": "Reference to the project"
+    },
+    "character_id": {
+      "type": "string",
+      "description": "Character providing the alibi"
+    },
+    "for_event": {
+      "type": "string",
+      "description": "What event this alibi covers"
+    },
+    "claimed_location": {
+      "type": "string",
+      "description": "Where they claim to have been"
+    },
+    "claimed_activity": {
+      "type": "string",
+      "description": "What they claim to have been doing"
+    },
+    "witnesses": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Character IDs who can verify"
+    },
+    "is_true": {
+      "type": "boolean",
+      "description": "Is this alibi actually true?"
+    },
+    "real_location": {
+      "type": "string",
+      "description": "Where they actually were (if lying)"
+    },
+    "real_activity": {
+      "type": "string",
+      "description": "What they were actually doing (if lying)"
+    },
+    "holes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Weaknesses in the alibi"
+    },
+    "verified_scene_id": {
+      "type": "string",
+      "description": "Scene where alibi is checked"
+    },
+    "broken_scene_id": {
+      "type": "string",
+      "description": "Scene where false alibi is broken"
+    }
+  },
+  "required": [
+    "project_id",
+    "character_id",
+    "for_event"
+  ]
+}

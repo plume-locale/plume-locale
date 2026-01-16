@@ -1,0 +1,70 @@
+{
+  "name": "Reversal",
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "description": "Reference to the project"
+    },
+    "title": {
+      "type": "string",
+      "description": "Name of the reversal"
+    },
+    "setup_belief": {
+      "type": "string",
+      "description": "What readers were led to believe"
+    },
+    "actual_truth": {
+      "type": "string",
+      "description": "What's actually true"
+    },
+    "setup_scenes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Scenes that established the false belief"
+    },
+    "reversal_scene_id": {
+      "type": "string",
+      "description": "Scene where truth is revealed"
+    },
+    "reversal_type": {
+      "type": "string",
+      "enum": [
+        "identity",
+        "motive",
+        "victim",
+        "ally_is_enemy",
+        "enemy_is_ally",
+        "timeline",
+        "method",
+        "location"
+      ],
+      "description": "Type of reversal"
+    },
+    "impact": {
+      "type": "string",
+      "enum": [
+        "major_twist",
+        "medium",
+        "minor"
+      ],
+      "default": "medium"
+    },
+    "is_earned": {
+      "type": "boolean",
+      "description": "Was this properly foreshadowed?"
+    },
+    "foreshadowing_notes": {
+      "type": "string",
+      "description": "How this was foreshadowed"
+    }
+  },
+  "required": [
+    "project_id",
+    "title",
+    "setup_belief",
+    "actual_truth"
+  ]
+}

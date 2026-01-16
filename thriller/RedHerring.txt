@@ -1,0 +1,53 @@
+{
+  "name": "RedHerring",
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "description": "Reference to the project"
+    },
+    "title": {
+      "type": "string",
+      "description": "Name of the red herring"
+    },
+    "description": {
+      "type": "string",
+      "description": "What the false lead suggests"
+    },
+    "target_character_id": {
+      "type": "string",
+      "description": "Character this misdirects suspicion toward"
+    },
+    "introduced_scene_id": {
+      "type": "string",
+      "description": "Scene where red herring is introduced"
+    },
+    "debunked_scene_id": {
+      "type": "string",
+      "description": "Scene where it's proven false"
+    },
+    "false_evidence": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of misleading clues"
+    },
+    "reader_impact": {
+      "type": "string",
+      "description": "What emotion/conclusion this should trigger in reader"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "debunked"
+      ],
+      "default": "active"
+    }
+  },
+  "required": [
+    "project_id",
+    "title"
+  ]
+}

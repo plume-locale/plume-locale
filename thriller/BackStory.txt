@@ -1,0 +1,86 @@
+{
+  "name": "BackstoryEvent",
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "description": "Reference to the project"
+    },
+    "title": {
+      "type": "string",
+      "description": "Event name"
+    },
+    "description": {
+      "type": "string",
+      "description": "What happened"
+    },
+    "when_it_happened": {
+      "type": "string",
+      "description": "Actual chronological time (e.g., '5 years ago', 'June 2019')"
+    },
+    "characters_involved": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Character IDs who were there"
+    },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "original_crime",
+        "trauma",
+        "betrayal",
+        "relationship_start",
+        "death",
+        "secret_formed",
+        "other"
+      ],
+      "description": "Category"
+    },
+    "revealed_in_scenes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "scene_id": {
+            "type": "string"
+          },
+          "what_revealed": {
+            "type": "string"
+          },
+          "how_much": {
+            "type": "string",
+            "enum": [
+              "hint",
+              "partial",
+              "full"
+            ]
+          }
+        }
+      },
+      "description": "How backstory is revealed throughout narrative"
+    },
+    "importance": {
+      "type": "string",
+      "enum": [
+        "critical",
+        "major",
+        "minor"
+      ],
+      "default": "minor"
+    },
+    "connects_to_clues": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Clue IDs related to this event"
+    }
+  },
+  "required": [
+    "project_id",
+    "title",
+    "when_it_happened"
+  ]
+}

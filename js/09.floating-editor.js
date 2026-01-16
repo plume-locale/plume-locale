@@ -63,12 +63,14 @@
                     // Swipe vers le haut = annuler
                     if (deltaY < -50) {
                         e.preventDefault();
-                        undo();
+                        if (typeof EventBus !== 'undefined') EventBus.emit('history:undo');
+                        else if (typeof undo === 'function') undo();
                     }
                     // Swipe vers le bas = refaire
                     else if (deltaY > 50) {
                         e.preventDefault();
-                        redo();
+                        if (typeof EventBus !== 'undefined') EventBus.emit('history:redo');
+                        else if (typeof redo === 'function') redo();
                     }
                 }
             });

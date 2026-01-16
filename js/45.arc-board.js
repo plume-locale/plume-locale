@@ -3228,13 +3228,15 @@ document.addEventListener('keydown', function(event) {
     // Ctrl+Z - undo
     if ((event.ctrlKey || event.metaKey) && event.key === 'z' && !event.shiftKey) {
         event.preventDefault();
-        if (typeof undo === 'function') undo();
+        if (typeof EventBus !== 'undefined') EventBus.emit('history:undo');
+        else if (typeof undo === 'function') undo();
     }
     
     // Ctrl+Y ou Ctrl+Shift+Z - redo
     if ((event.ctrlKey || event.metaKey) && (event.key === 'y' || (event.key === 'z' && event.shiftKey))) {
         event.preventDefault();
-        if (typeof redo === 'function') redo();
+        if (typeof EventBus !== 'undefined') EventBus.emit('history:redo');
+        else if (typeof redo === 'function') redo();
     }
 });
 

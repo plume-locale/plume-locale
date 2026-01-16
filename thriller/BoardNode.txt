@@ -1,0 +1,45 @@
+{
+  "name": "BoardNode",
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "description": "Reference to the project"
+    },
+    "node_type": {
+      "type": "string",
+      "enum": [
+        "scene",
+        "character",
+        "secret",
+        "alibi",
+        "red_herring"
+      ],
+      "description": "Type of element"
+    },
+    "reference_id": {
+      "type": "string",
+      "description": "ID of the referenced entity"
+    },
+    "position_x": {
+      "type": "number",
+      "description": "X position on canvas"
+    },
+    "position_y": {
+      "type": "number",
+      "description": "Y position on canvas"
+    },
+    "connections": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "IDs of connected board nodes"
+    }
+  },
+  "required": [
+    "project_id",
+    "node_type",
+    "reference_id"
+  ]
+}

@@ -36,7 +36,8 @@ CSS_ORDER = [
     '09.utilities.css',
     '10.mobile.css',
     '11.storygrid.css',
-    '12.arc-board.css'
+    '12.arc-board.css',
+    '13.thriller-board.css'
 ]
 
 # Ordre des fichiers JS (selon concat.sh)
@@ -85,7 +86,8 @@ JS_ORDER = [
     '42.mobile-swipe.js',
     '43.arcs.js',
     '44.storygrid.js',
-    '45.arc-board.js'
+    '45.arc-board.js',
+    '46.thriller-board.js'
 ]
 
 def read_file(path):
