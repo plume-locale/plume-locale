@@ -627,33 +627,33 @@ function renderThrillerElementFields(element) {
         case 'backstory':
             return `
                 <div class="form-group">
-                    <label for="whenItHappened">When It Happened *</label>
-                    <input type="text" id="whenItHappened" placeholder="e.g., 5 years ago, June 2019" value="${element.data.when_it_happened || ''}" required>
+                    <label for="whenItHappened">Quand c'est arrivé *</label>
+                    <input type="text" id="whenItHappened" placeholder="ex: il y a 5 ans, juin 2019" value="${element.data.when_it_happened || ''}" required>
                 </div>
                 <div class="form-row">
                     <div class="form-group" style="flex: 1;">
                         <label for="backstoryType">Type</label>
                         <select id="backstoryType">
-                            <option value="other" ${element.data.event_type === 'other' ? 'selected' : ''}>Other</option>
-                            <option value="original_crime" ${element.data.event_type === 'original_crime' ? 'selected' : ''}>Original Crime</option>
-                            <option value="trauma" ${element.data.event_type === 'trauma' ? 'selected' : ''}>Trauma</option>
-                            <option value="betrayal" ${element.data.event_type === 'betrayal' ? 'selected' : ''}>Betrayal</option>
-                            <option value="relationship_start" ${element.data.event_type === 'relationship_start' ? 'selected' : ''}>Relationship Start</option>
-                            <option value="death" ${element.data.event_type === 'death' ? 'selected' : ''}>Death</option>
-                            <option value="secret_formed" ${element.data.event_type === 'secret_formed' ? 'selected' : ''}>Secret Formed</option>
+                            <option value="other" ${element.data.event_type === 'other' ? 'selected' : ''}>Autre</option>
+                            <option value="original_crime" ${element.data.event_type === 'original_crime' ? 'selected' : ''}>Crime d'origine</option>
+                            <option value="trauma" ${element.data.event_type === 'trauma' ? 'selected' : ''}>Traumatisme</option>
+                            <option value="betrayal" ${element.data.event_type === 'betrayal' ? 'selected' : ''}>Trahison</option>
+                            <option value="relationship_start" ${element.data.event_type === 'relationship_start' ? 'selected' : ''}>Début de relation</option>
+                            <option value="death" ${element.data.event_type === 'death' ? 'selected' : ''}>Décès</option>
+                            <option value="secret_formed" ${element.data.event_type === 'secret_formed' ? 'selected' : ''}>Secret formé</option>
                         </select>
                     </div>
                     <div class="form-group" style="flex: 1;">
                         <label for="backstoryImportance">Importance</label>
                         <select id="backstoryImportance">
-                            <option value="minor" ${element.data.importance === 'minor' ? 'selected' : ''}>Minor</option>
-                            <option value="major" ${element.data.importance === 'major' ? 'selected' : ''}>Major</option>
-                            <option value="critical" ${element.data.importance === 'critical' ? 'selected' : ''}>Critical</option>
+                            <option value="minor" ${element.data.importance === 'minor' ? 'selected' : ''}>Mineur</option>
+                            <option value="major" ${element.data.importance === 'major' ? 'selected' : ''}>Majeur</option>
+                            <option value="critical" ${element.data.importance === 'critical' ? 'selected' : ''}>Critique</option>
                         </select>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Characters Involved</label>
+                    <label>Personnages impliqués</label>
                     <div class="character-pills-container" id="backstoryCharactersContainer">
                         ${renderCharacterPills(element.data.characters_involved || [], 'backstoryCharacters')}
                     </div>
@@ -699,58 +699,58 @@ function renderThrillerElementFields(element) {
             return `
                 <div class="form-row">
                     <div class="form-group" style="flex: 1;">
-                        <label for="mmCharacterId">Character *</label>
+                        <label for="mmCharacterId">Personnage *</label>
                         <select id="mmCharacterId" required>
-                            <option value="">Select character</option>
+                            <option value="">Sélectionner un personnage</option>
                             ${project.characters.map(char => `<option value="${char.id}" ${element.data.character_id === char.id ? 'selected' : ''}>${char.name}</option>`).join('')}
                         </select>
                     </div>
                     <div class="form-group" style="flex: 1;">
-                        <label for="forCrimeEvent">For Crime/Event *</label>
-                        <input type="text" id="forCrimeEvent" placeholder="e.g., Murder of John Doe" value="${element.data.for_crime || ''}" required>
+                        <label for="forCrimeEvent">Pour crime/événement *</label>
+                        <input type="text" id="forCrimeEvent" placeholder="ex: Meurtre de Jean Dupont" value="${element.data.for_crime || ''}" required>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="actualGuilt">Actual Guilt</label>
+                    <label for="actualGuilt">Culpabilité réelle</label>
                     <select id="actualGuilt">
                         <option value="innocent" ${element.data.actual_guilt === 'innocent' ? 'selected' : ''}>Innocent</option>
-                        <option value="guilty" ${element.data.actual_guilt === 'guilty' ? 'selected' : ''}>Guilty</option>
-                        <option value="accomplice" ${element.data.actual_guilt === 'accomplice' ? 'selected' : ''}>Accomplice</option>
-                        <option value="unknowing_participant" ${element.data.actual_guilt === 'unknowing_participant' ? 'selected' : ''}>Unknowing Participant</option>
+                        <option value="guilty" ${element.data.actual_guilt === 'guilty' ? 'selected' : ''}>Coupable</option>
+                        <option value="accomplice" ${element.data.actual_guilt === 'accomplice' ? 'selected' : ''}>Complice</option>
+                        <option value="unknowing_participant" ${element.data.actual_guilt === 'unknowing_participant' ? 'selected' : ''}>Participant involontaire</option>
                     </select>
                 </div>
                 <div class="form-section" style="background-color: #fef5e7;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                        <h4 style="margin: 0;">Motive</h4>
+                        <h4 style="margin: 0;">Mobile</h4>
                         <select id="motiveStrength" style="width: auto; font-size: 14px;">
-                            <option value="none" ${element.data.motive_strength === 'none' ? 'selected' : ''}>None</option>
-                            <option value="weak" ${element.data.motive_strength === 'weak' ? 'selected' : ''}>Weak</option>
-                            <option value="moderate" ${element.data.motive_strength === 'moderate' ? 'selected' : ''}>Moderate</option>
-                            <option value="strong" ${element.data.motive_strength === 'strong' ? 'selected' : ''}>Strong</option>
-                            <option value="compelling" ${element.data.motive_strength === 'compelling' ? 'selected' : ''}>Compelling</option>
+                            <option value="none" ${element.data.motive_strength === 'none' ? 'selected' : ''}>Aucun</option>
+                            <option value="weak" ${element.data.motive_strength === 'weak' ? 'selected' : ''}>Faible</option>
+                            <option value="moderate" ${element.data.motive_strength === 'moderate' ? 'selected' : ''}>Modéré</option>
+                            <option value="strong" ${element.data.motive_strength === 'strong' ? 'selected' : ''}>Fort</option>
+                            <option value="compelling" ${element.data.motive_strength === 'compelling' ? 'selected' : ''}>Convaincant</option>
                         </select>
                     </div>
-                    <textarea id="mmMotive" rows="3" placeholder="Why they would do it...">${element.data.motive || ''}</textarea>
+                    <textarea id="mmMotive" rows="3" placeholder="Pourquoi ils le feraient...">${element.data.motive || ''}</textarea>
                 </div>
                 <div class="form-section" style="background-color: #ebf5fb;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                        <h4 style="margin: 0;">Means</h4>
+                        <h4 style="margin: 0;">Moyens</h4>
                         <label style="display: flex; align-items: center; gap: 8px; margin: 0;">
                             <input type="checkbox" id="hasMeans" ${element.data.has_means ? 'checked' : ''}>
-                            Has Means
+                            A les moyens
                         </label>
                     </div>
-                    <textarea id="mmMeans" rows="3" placeholder="Tools, knowledge, ability to do it...">${element.data.means || ''}</textarea>
+                    <textarea id="mmMeans" rows="3" placeholder="Outils, connaissances, capacité à le faire...">${element.data.means || ''}</textarea>
                 </div>
                 <div class="form-section" style="background-color: #e8f8f5;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                        <h4 style="margin: 0;">Opportunity</h4>
+                        <h4 style="margin: 0;">Opportunité</h4>
                         <label style="display: flex; align-items: center; gap: 8px; margin: 0;">
                             <input type="checkbox" id="hasOpportunity" ${element.data.has_opportunity ? 'checked' : ''}>
-                            Has Opportunity
+                            A l'opportunité
                         </label>
                     </div>
-                    <textarea id="mmOpportunity" rows="3" placeholder="When/where they could have done it...">${element.data.opportunity || ''}</textarea>
+                    <textarea id="mmOpportunity" rows="3" placeholder="Quand/où ils auraient pu le faire...">${element.data.opportunity || ''}</textarea>
                 </div>
             `;
 
@@ -872,61 +872,61 @@ function renderThrillerElementFields(element) {
         case 'reversal':
             return `
                 <div class="form-group">
-                    <label for="setupBelief">Setup Belief *</label>
-                    <textarea id="setupBelief" rows="3" placeholder="What readers were led to believe..." required>${element.data.setup_belief || ''}</textarea>
+                    <label for="setupBelief">Croyance établie *</label>
+                    <textarea id="setupBelief" rows="3" placeholder="Ce que les lecteurs ont été amenés à croire..." required>${element.data.setup_belief || ''}</textarea>
                 </div>
                 <div class="form-group">
-                    <label for="actualTruth">Actual Truth *</label>
-                    <textarea id="actualTruth" rows="3" placeholder="What's actually true..." required>${element.data.actual_truth || ''}</textarea>
+                    <label for="actualTruth">Vérité réelle *</label>
+                    <textarea id="actualTruth" rows="3" placeholder="Ce qui est réellement vrai..." required>${element.data.actual_truth || ''}</textarea>
                 </div>
                 <div class="form-row">
                     <div class="form-group" style="flex: 1;">
                         <label for="reversalType">Type</label>
                         <select id="reversalType">
-                            <option value="identity" ${element.data.reversal_type === 'identity' ? 'selected' : ''}>Identity</option>
-                            <option value="motive" ${element.data.reversal_type === 'motive' ? 'selected' : ''}>Motive</option>
-                            <option value="victim" ${element.data.reversal_type === 'victim' ? 'selected' : ''}>Victim</option>
-                            <option value="ally_is_enemy" ${element.data.reversal_type === 'ally_is_enemy' ? 'selected' : ''}>Ally is Enemy</option>
-                            <option value="enemy_is_ally" ${element.data.reversal_type === 'enemy_is_ally' ? 'selected' : ''}>Enemy is Ally</option>
-                            <option value="timeline" ${element.data.reversal_type === 'timeline' ? 'selected' : ''}>Timeline</option>
-                            <option value="method" ${element.data.reversal_type === 'method' ? 'selected' : ''}>Method</option>
-                            <option value="location" ${element.data.reversal_type === 'location' ? 'selected' : ''}>Location</option>
+                            <option value="identity" ${element.data.reversal_type === 'identity' ? 'selected' : ''}>Identité</option>
+                            <option value="motive" ${element.data.reversal_type === 'motive' ? 'selected' : ''}>Mobile</option>
+                            <option value="victim" ${element.data.reversal_type === 'victim' ? 'selected' : ''}>Victime</option>
+                            <option value="ally_is_enemy" ${element.data.reversal_type === 'ally_is_enemy' ? 'selected' : ''}>L'allié est l'ennemi</option>
+                            <option value="enemy_is_ally" ${element.data.reversal_type === 'enemy_is_ally' ? 'selected' : ''}>L'ennemi est l'allié</option>
+                            <option value="timeline" ${element.data.reversal_type === 'timeline' ? 'selected' : ''}>Chronologie</option>
+                            <option value="method" ${element.data.reversal_type === 'method' ? 'selected' : ''}>Méthode</option>
+                            <option value="location" ${element.data.reversal_type === 'location' ? 'selected' : ''}>Lieu</option>
                         </select>
                     </div>
                     <div class="form-group" style="flex: 1;">
                         <label for="reversalImpact">Impact</label>
                         <select id="reversalImpact">
-                            <option value="minor" ${element.data.impact === 'minor' ? 'selected' : ''}>Minor</option>
-                            <option value="medium" ${element.data.impact === 'medium' ? 'selected' : ''}>Medium</option>
-                            <option value="major_twist" ${element.data.impact === 'major_twist' ? 'selected' : ''}>Major Twist</option>
+                            <option value="minor" ${element.data.impact === 'minor' ? 'selected' : ''}>Mineur</option>
+                            <option value="medium" ${element.data.impact === 'medium' ? 'selected' : ''}>Moyen</option>
+                            <option value="major_twist" ${element.data.impact === 'major_twist' ? 'selected' : ''}>Rebondissement majeur</option>
                         </select>
                     </div>
                     <div class="form-group" style="flex: 1; display: flex; align-items: center; padding-top: 24px;">
                         <label style="display: flex; align-items: center; gap: 8px; margin: 0;">
                             <input type="checkbox" id="isEarned" ${element.data.is_earned ? 'checked' : ''}>
-                            Properly Earned
+                            Bien mérité
                         </label>
                     </div>
                 </div>
                 <div class="form-section">
-                    <h4>Setup Scenes</h4>
+                    <h4>Scènes de mise en place</h4>
                     <div class="form-group">
-                        <label>Scenes that established the false belief</label>
+                        <label>Scènes qui ont établi la fausse croyance</label>
                         <div class="scene-pills-container" id="setupScenesContainer">
                             ${renderScenePills(element.data.setup_scenes || [], 'setupScenes')}
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="reversalScene">Reversal Scene</label>
+                        <label for="reversalScene">Scène de révélation</label>
                         <select id="reversalScene">
-                            <option value="">Select scene</option>
+                            <option value="">Sélectionner une scène</option>
                             ${renderSceneOptions(element.data.reversal_scene_id)}
                         </select>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="foreshadowingNotes">Foreshadowing Notes</label>
-                    <textarea id="foreshadowingNotes" rows="4" placeholder="How this was foreshadowed...">${element.data.foreshadowing_notes || ''}</textarea>
+                    <label for="foreshadowingNotes">Notes de préfiguration</label>
+                    <textarea id="foreshadowingNotes" rows="4" placeholder="Comment cela a été préfiguré...">${element.data.foreshadowing_notes || ''}</textarea>
                 </div>
             `;
 
