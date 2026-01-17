@@ -25,61 +25,61 @@ const THRILLER_TYPES = {
         label: 'Alibi',
         icon: 'shield-check',
         color: '#27ae60',
-        description: 'Character alibi for an event'
+        description: 'Alibi de personnage pour un événement'
     },
     backstory: {
-        label: 'Backstory Event',
+        label: 'Événement passé',
         icon: 'history',
         color: '#8e44ad',
-        description: 'Character background information'
+        description: 'Informations de contexte du personnage'
     },
     clue: {
-        label: 'Clue',
+        label: 'Indice',
         icon: 'search',
         color: '#e67e22',
-        description: 'Evidence or hint in the mystery'
+        description: 'Preuve ou indice dans le mystère'
     },
     knowledge_state: {
-        label: 'Knowledge State',
+        label: 'État de connaissance',
         icon: 'brain',
         color: '#3498db',
-        description: 'What a character knows'
+        description: 'Ce qu\'un personnage sait'
     },
     location: {
-        label: 'Location',
+        label: 'Lieu',
         icon: 'map-pin',
         color: '#16a085',
-        description: 'Important location in the story'
+        description: 'Lieu important dans l\'histoire'
     },
     motive_means_opportunity: {
-        label: 'Suspect Analysis',
+        label: 'Analyse de suspect',
         icon: 'target',
         color: '#e74c3c',
-        description: 'Suspect\'s potential for committing crime'
+        description: 'Potentiel du suspect à commettre le crime'
     },
     question: {
         label: 'Question',
         icon: 'help-circle',
         color: '#f39c12',
-        description: 'Mystery question to be answered'
+        description: 'Question mystérieuse à résoudre'
     },
     red_herring: {
-        label: 'Red Herring',
+        label: 'Fausse piste',
         icon: 'fish',
         color: '#9b59b6',
-        description: 'False lead or misleading clue'
+        description: 'Indice trompeur ou fausse piste'
     },
     reversal: {
-        label: 'Reversal',
+        label: 'Révélation',
         icon: 'rotate-ccw',
         color: '#d35400',
-        description: 'Plot twist or revelation'
+        description: 'Rebondissement ou révélation'
     },
     secret: {
         label: 'Secret',
         icon: 'lock',
         color: '#c0392b',
-        description: 'Hidden information'
+        description: 'Information cachée'
     }
 };
 
@@ -413,77 +413,77 @@ function renderThrillerElementFields(element) {
             return `
                 <div class="form-row">
                     <div class="form-group" style="flex: 1;">
-                        <label for="characterId">Character</label>
+                        <label for="characterId">Personnage</label>
                         <select id="characterId">
-                            <option value="">Select character</option>
+                            <option value="">Sélectionner un personnage</option>
                             ${project.characters.map(char => `<option value="${char.id}" ${element.data.character_id === char.id ? 'selected' : ''}>${char.name}</option>`).join('')}
                         </select>
                     </div>
                     <div class="form-group" style="flex: 1;">
-                        <label for="forEvent">For Event</label>
+                        <label for="forEvent">Pour l'événement</label>
                         <input type="text" id="forEvent" value="${element.data.for_event || ''}">
                     </div>
                 </div>
                 <div class="form-group">
                     <label style="display: flex; align-items: center; gap: 8px;">
                         <input type="checkbox" id="isTrue" ${element.data.is_true ? 'checked' : ''}>
-                        Is this alibi true?
+                        Cet alibi est-il vrai ?
                     </label>
-                    <small style="color: #666; margin-left: 24px;">Toggle off if this is a false alibi</small>
+                    <small style="color: #666; margin-left: 24px;">Décocher si c'est un faux alibi</small>
                 </div>
                 <div class="form-section">
-                    <h4>Claimed Alibi</h4>
+                    <h4>Alibi déclaré</h4>
                     <div class="form-row">
                         <div class="form-group" style="flex: 1;">
-                            <label for="claimedLocation">Claimed Location</label>
-                            <input type="text" id="claimedLocation" placeholder="Where they claim to have been" value="${element.data.claimed_location || ''}">
+                            <label for="claimedLocation">Lieu déclaré</label>
+                            <input type="text" id="claimedLocation" placeholder="Où ils prétendent avoir été" value="${element.data.claimed_location || ''}">
                         </div>
                         <div class="form-group" style="flex: 1;">
-                            <label for="claimedActivity">Claimed Activity</label>
-                            <input type="text" id="claimedActivity" placeholder="What they claim to have done" value="${element.data.claimed_activity || ''}">
+                            <label for="claimedActivity">Activité déclarée</label>
+                            <input type="text" id="claimedActivity" placeholder="Ce qu'ils prétendent avoir fait" value="${element.data.claimed_activity || ''}">
                         </div>
                     </div>
                 </div>
                 <div class="form-section" style="background-color: #fff5f5;">
-                    <h4 style="color: #c0392b;">Reality (Hidden)</h4>
+                    <h4 style="color: #c0392b;">Réalité (cachée)</h4>
                     <div class="form-row">
                         <div class="form-group" style="flex: 1;">
-                            <label for="realLocation">Real Location</label>
-                            <input type="text" id="realLocation" placeholder="Where they actually were" value="${element.data.real_location || ''}">
+                            <label for="realLocation">Lieu réel</label>
+                            <input type="text" id="realLocation" placeholder="Où ils étaient réellement" value="${element.data.real_location || ''}">
                         </div>
                         <div class="form-group" style="flex: 1;">
-                            <label for="realActivity">Real Activity</label>
-                            <input type="text" id="realActivity" placeholder="What they actually did" value="${element.data.real_activity || ''}">
+                            <label for="realActivity">Activité réelle</label>
+                            <input type="text" id="realActivity" placeholder="Ce qu'ils ont réellement fait" value="${element.data.real_activity || ''}">
                         </div>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Witnesses</label>
+                    <label>Témoins</label>
                     <div class="character-pills-container" id="alibiWitnessesContainer">
                         ${renderCharacterPills(element.data.witnesses || [], 'alibiWitnesses')}
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Weaknesses / Holes in Alibi</label>
+                    <label>Faiblesses / Failles de l'alibi</label>
                     <div id="weaknessesContainer">
                         ${renderListItems(element.data.weaknesses || [], 'weaknesses')}
                     </div>
-                    <button type="button" class="btn btn-secondary btn-sm" onclick="addListItem('weaknesses', 'Add a weakness...')">
-                        <i data-lucide="plus"></i> Add
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="addListItem('weaknesses', 'Ajouter une faiblesse...')">
+                        <i data-lucide="plus"></i> Ajouter
                     </button>
                 </div>
                 <div class="form-row">
                     <div class="form-group" style="flex: 1;">
-                        <label for="verifiedScene">Verified in Scene</label>
+                        <label for="verifiedScene">Vérifié dans la scène</label>
                         <select id="verifiedScene">
-                            <option value="">Select scene</option>
+                            <option value="">Sélectionner une scène</option>
                             ${renderSceneOptions(element.data.verified_scene)}
                         </select>
                     </div>
                     <div class="form-group" style="flex: 1;">
-                        <label for="brokenScene">Broken in Scene</label>
+                        <label for="brokenScene">Brisé dans la scène</label>
                         <select id="brokenScene">
-                            <option value="">When alibi is broken</option>
+                            <option value="">Quand l'alibi est brisé</option>
                             ${renderSceneOptions(element.data.broken_scene)}
                         </select>
                     </div>
@@ -496,60 +496,60 @@ function renderThrillerElementFields(element) {
                     <div class="form-group" style="flex: 1;">
                         <label for="clueType">Type *</label>
                         <select id="clueType">
-                            <option value="physical" ${element.data.clue_type === 'physical' ? 'selected' : ''}>Physical</option>
-                            <option value="testimonial" ${element.data.clue_type === 'testimonial' ? 'selected' : ''}>Testimonial</option>
-                            <option value="circumstantial" ${element.data.clue_type === 'circumstantial' ? 'selected' : ''}>Circumstantial</option>
-                            <option value="digital" ${element.data.clue_type === 'digital' ? 'selected' : ''}>Digital</option>
-                            <option value="forensic" ${element.data.clue_type === 'forensic' ? 'selected' : ''}>Forensic</option>
-                            <option value="documentary" ${element.data.clue_type === 'documentary' ? 'selected' : ''}>Documentary</option>
+                            <option value="physical" ${element.data.clue_type === 'physical' ? 'selected' : ''}>Physique</option>
+                            <option value="testimonial" ${element.data.clue_type === 'testimonial' ? 'selected' : ''}>Témoignage</option>
+                            <option value="circumstantial" ${element.data.clue_type === 'circumstantial' ? 'selected' : ''}>Circonstanciel</option>
+                            <option value="digital" ${element.data.clue_type === 'digital' ? 'selected' : ''}>Numérique</option>
+                            <option value="forensic" ${element.data.clue_type === 'forensic' ? 'selected' : ''}>Médico-légal</option>
+                            <option value="documentary" ${element.data.clue_type === 'documentary' ? 'selected' : ''}>Documentaire</option>
                         </select>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group" style="flex: 1;">
-                        <label for="clueSignificance">Significance</label>
+                        <label for="clueSignificance">Importance</label>
                         <select id="clueSignificance">
-                            <option value="minor" ${element.data.significance === 'minor' ? 'selected' : ''}>Minor</option>
-                            <option value="major" ${element.data.significance === 'major' ? 'selected' : ''}>Major</option>
-                            <option value="critical" ${element.data.significance === 'critical' ? 'selected' : ''}>Critical</option>
+                            <option value="minor" ${element.data.significance === 'minor' ? 'selected' : ''}>Mineur</option>
+                            <option value="major" ${element.data.significance === 'major' ? 'selected' : ''}>Majeur</option>
+                            <option value="critical" ${element.data.significance === 'critical' ? 'selected' : ''}>Critique</option>
                         </select>
                     </div>
                     <div class="form-group" style="flex: 1;">
                         <label style="display: flex; align-items: center; gap: 8px;">
                             <input type="checkbox" id="isGenuine" ${element.data.is_genuine !== false ? 'checked' : ''}>
-                            Genuine Evidence
+                            Preuve authentique
                         </label>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="whatItSuggests">What It Suggests</label>
+                    <label for="whatItSuggests">Ce qu'il suggère</label>
                     <textarea id="whatItSuggests" rows="3">${element.data.what_it_suggests || ''}</textarea>
                 </div>
                 <div class="form-group">
-                    <label>Points To Characters</label>
+                    <label>Pointe vers les personnages</label>
                     <div class="character-pills-container" id="clueCharactersContainer">
                         ${renderCharacterPills(element.data.points_to_characters || [], 'clueCharacters')}
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group" style="flex: 1;">
-                        <label for="plantedScene">Planted Scene</label>
+                        <label for="plantedScene">Scène où il est planté</label>
                         <select id="plantedScene">
-                            <option value="">Select</option>
+                            <option value="">Sélectionner</option>
                             ${renderSceneOptions(element.data.planted_scene)}
                         </select>
                     </div>
                     <div class="form-group" style="flex: 1;">
-                        <label for="discoveredScene">Discovered Scene</label>
+                        <label for="discoveredScene">Scène de découverte</label>
                         <select id="discoveredScene">
-                            <option value="">Select</option>
+                            <option value="">Sélectionner</option>
                             ${renderSceneOptions(element.data.discovered_scene)}
                         </select>
                     </div>
                     <div class="form-group" style="flex: 1;">
-                        <label for="readerSeesAt">Reader Sees At</label>
+                        <label for="readerSeesAt">Le lecteur voit à</label>
                         <select id="readerSeesAt">
-                            <option value="">Select</option>
+                            <option value="">Sélectionner</option>
                             ${renderSceneOptions(element.data.reader_sees_at)}
                         </select>
                     </div>
@@ -559,67 +559,67 @@ function renderThrillerElementFields(element) {
         case 'secret':
             return `
                 <div class="form-group">
-                    <label for="secretFullDescription">Full Description</label>
-                    <textarea id="secretFullDescription" rows="3" placeholder="Describe the secret in detail...">${element.data.full_description || ''}</textarea>
+                    <label for="secretFullDescription">Description complète</label>
+                    <textarea id="secretFullDescription" rows="3" placeholder="Décrire le secret en détail...">${element.data.full_description || ''}</textarea>
                 </div>
                 <div class="form-row">
                     <div class="form-group" style="flex: 1;">
-                        <label for="secretType">Secret Type</label>
+                        <label for="secretType">Type de secret</label>
                         <select id="secretType">
-                            <option value="relationship" ${element.data.secret_type === 'relationship' ? 'selected' : ''}>Relationship</option>
-                            <option value="identity" ${element.data.secret_type === 'identity' ? 'selected' : ''}>Identity</option>
+                            <option value="relationship" ${element.data.secret_type === 'relationship' ? 'selected' : ''}>Relation</option>
+                            <option value="identity" ${element.data.secret_type === 'identity' ? 'selected' : ''}>Identité</option>
                             <option value="crime" ${element.data.secret_type === 'crime' ? 'selected' : ''}>Crime</option>
-                            <option value="past" ${element.data.secret_type === 'past' ? 'selected' : ''}>Past</option>
-                            <option value="ability" ${element.data.secret_type === 'ability' ? 'selected' : ''}>Ability</option>
+                            <option value="past" ${element.data.secret_type === 'past' ? 'selected' : ''}>Passé</option>
+                            <option value="ability" ${element.data.secret_type === 'ability' ? 'selected' : ''}>Capacité</option>
                         </select>
                     </div>
                     <div class="form-group" style="flex: 1;">
                         <label for="secretImportance">Importance</label>
                         <select id="secretImportance">
-                            <option value="minor" ${element.data.importance === 'minor' ? 'selected' : ''}>Minor</option>
-                            <option value="major" ${element.data.importance === 'major' ? 'selected' : ''}>Major</option>
-                            <option value="critical" ${element.data.importance === 'critical' ? 'selected' : ''}>Critical</option>
+                            <option value="minor" ${element.data.importance === 'minor' ? 'selected' : ''}>Mineur</option>
+                            <option value="major" ${element.data.importance === 'major' ? 'selected' : ''}>Majeur</option>
+                            <option value="critical" ${element.data.importance === 'critical' ? 'selected' : ''}>Critique</option>
                         </select>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group" style="flex: 1;">
-                        <label for="holderCharacterId">Held by Character</label>
+                        <label for="holderCharacterId">Détenu par le personnage</label>
                         <select id="holderCharacterId">
-                            <option value="">Who knows this secret</option>
+                            <option value="">Qui connaît ce secret</option>
                             ${project.characters.map(char => `<option value="${char.id}" ${element.data.holder_character_id === char.id ? 'selected' : ''}>${char.name}</option>`).join('')}
                         </select>
                     </div>
                     <div class="form-group" style="flex: 1;">
-                        <label for="aboutCharacterId">About Character</label>
+                        <label for="aboutCharacterId">Concernant le personnage</label>
                         <select id="aboutCharacterId">
-                            <option value="">Select</option>
+                            <option value="">Sélectionner</option>
                             ${project.characters.map(char => `<option value="${char.id}" ${element.data.about_character_id === char.id ? 'selected' : ''}>${char.name}</option>`).join('')}
                         </select>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group" style="flex: 1;">
-                        <label for="secretPlantedScene">Planted in Scene</label>
+                        <label for="secretPlantedScene">Planté dans la scène</label>
                         <select id="secretPlantedScene">
-                            <option value="">First clues appear</option>
+                            <option value="">Premiers indices apparaissent</option>
                             ${renderSceneOptions(element.data.planted_scene)}
                         </select>
                     </div>
                     <div class="form-group" style="flex: 1;">
-                        <label for="secretRevealedScene">Revealed in Scene</label>
+                        <label for="secretRevealedScene">Révélé dans la scène</label>
                         <select id="secretRevealedScene">
-                            <option value="">Secret is revealed</option>
+                            <option value="">Le secret est révélé</option>
                             ${renderSceneOptions(element.data.revealed_scene)}
                         </select>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="secretCurrentStatus">Current Status</label>
+                    <label for="secretCurrentStatus">Statut actuel</label>
                     <select id="secretCurrentStatus">
-                        <option value="hidden" ${element.data.current_status === 'hidden' ? 'selected' : ''}>Hidden</option>
-                        <option value="partially_revealed" ${element.data.current_status === 'partially_revealed' ? 'selected' : ''}>Partially Revealed</option>
-                        <option value="fully_revealed" ${element.data.current_status === 'fully_revealed' ? 'selected' : ''}>Fully Revealed</option>
+                        <option value="hidden" ${element.data.current_status === 'hidden' ? 'selected' : ''}>Caché</option>
+                        <option value="partially_revealed" ${element.data.current_status === 'partially_revealed' ? 'selected' : ''}>Partiellement révélé</option>
+                        <option value="fully_revealed" ${element.data.current_status === 'fully_revealed' ? 'selected' : ''}>Complètement révélé</option>
                     </select>
                 </div>
             `;
@@ -758,113 +758,113 @@ function renderThrillerElementFields(element) {
             return `
                 <div class="form-group">
                     <label for="qText">Question *</label>
-                    <textarea id="qText" rows="2" placeholder="What mystery question does this raise?" required>${element.data.question || ''}</textarea>
+                    <textarea id="qText" rows="2" placeholder="Quelle question mystérieuse cela soulève-t-il ?" required>${element.data.question || ''}</textarea>
                 </div>
                 <div class="form-row">
                     <div class="form-group" style="flex: 1;">
                         <label for="qType">Type</label>
                         <select id="qType">
-                            <option value="whodunit" ${element.data.question_type === 'whodunit' ? 'selected' : ''}>Whodunit</option>
-                            <option value="how" ${element.data.question_type === 'how' ? 'selected' : ''}>How</option>
-                            <option value="why" ${element.data.question_type === 'why' ? 'selected' : ''}>Why</option>
-                            <option value="when" ${element.data.question_type === 'when' ? 'selected' : ''}>When</option>
-                            <option value="where" ${element.data.question_type === 'where' ? 'selected' : ''}>Where</option>
-                            <option value="what" ${element.data.question_type === 'what' ? 'selected' : ''}>What</option>
+                            <option value="whodunit" ${element.data.question_type === 'whodunit' ? 'selected' : ''}>Qui l'a fait</option>
+                            <option value="how" ${element.data.question_type === 'how' ? 'selected' : ''}>Comment</option>
+                            <option value="why" ${element.data.question_type === 'why' ? 'selected' : ''}>Pourquoi</option>
+                            <option value="when" ${element.data.question_type === 'when' ? 'selected' : ''}>Quand</option>
+                            <option value="where" ${element.data.question_type === 'where' ? 'selected' : ''}>Où</option>
+                            <option value="what" ${element.data.question_type === 'what' ? 'selected' : ''}>Quoi</option>
                         </select>
                     </div>
                     <div class="form-group" style="flex: 1;">
                         <label for="qImportance">Importance</label>
                         <select id="qImportance">
-                            <option value="minor" ${element.data.importance === 'minor' ? 'selected' : ''}>Minor</option>
-                            <option value="major" ${element.data.importance === 'major' ? 'selected' : ''}>Major</option>
-                            <option value="critical" ${element.data.importance === 'critical' ? 'selected' : ''}>Critical</option>
+                            <option value="minor" ${element.data.importance === 'minor' ? 'selected' : ''}>Mineur</option>
+                            <option value="major" ${element.data.importance === 'major' ? 'selected' : ''}>Majeur</option>
+                            <option value="critical" ${element.data.importance === 'critical' ? 'selected' : ''}>Critique</option>
                         </select>
                     </div>
                     <div class="form-group" style="flex: 1;">
-                        <label for="qStatus">Status</label>
+                        <label for="qStatus">Statut</label>
                         <select id="qStatus">
-                            <option value="open" ${element.data.status === 'open' ? 'selected' : ''}>Open</option>
-                            <option value="answered" ${element.data.status === 'answered' ? 'selected' : ''}>Answered</option>
-                            <option value="partially_answered" ${element.data.status === 'partially_answered' ? 'selected' : ''}>Partially Answered</option>
+                            <option value="open" ${element.data.status === 'open' ? 'selected' : ''}>Ouvert</option>
+                            <option value="answered" ${element.data.status === 'answered' ? 'selected' : ''}>Répondu</option>
+                            <option value="partially_answered" ${element.data.status === 'partially_answered' ? 'selected' : ''}>Partiellement répondu</option>
                         </select>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group" style="flex: 1;">
-                        <label for="qRaisedScene">Raised in Scene</label>
+                        <label for="qRaisedScene">Soulevée dans la scène</label>
                         <select id="qRaisedScene">
-                            <option value="">Select scene</option>
+                            <option value="">Sélectionner une scène</option>
                             ${renderSceneOptions(element.data.raised_scene)}
                         </select>
                     </div>
                     <div class="form-group" style="flex: 1;">
-                        <label for="qAnsweredScene">Answered in Scene</label>
+                        <label for="qAnsweredScene">Répondue dans la scène</label>
                         <select id="qAnsweredScene">
-                            <option value="">Select scene</option>
+                            <option value="">Sélectionner une scène</option>
                             ${renderSceneOptions(element.data.answered_scene)}
                         </select>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Foreshadowing Scenes</label>
+                    <label>Scènes de préfiguration</label>
                     <div class="scene-pills-container" id="foreshadowingScenesContainer">
                         ${renderScenePills(element.data.foreshadowing_scenes || [], 'foreshadowingScenes')}
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="qAnswer">Answer</label>
-                    <textarea id="qAnswer" rows="3" placeholder="What's the answer to this question?">${element.data.answer || ''}</textarea>
+                    <label for="qAnswer">Réponse</label>
+                    <textarea id="qAnswer" rows="3" placeholder="Quelle est la réponse à cette question ?">${element.data.answer || ''}</textarea>
                 </div>
             `;
 
         case 'red_herring':
             return `
                 <div class="form-group">
-                    <label for="whatItSuggestsRH">What it suggests</label>
-                    <textarea id="whatItSuggestsRH" rows="3" placeholder="What false conclusion does this lead to...">${element.data.what_it_suggests || ''}</textarea>
+                    <label for="whatItSuggestsRH">Ce qu'il suggère</label>
+                    <textarea id="whatItSuggestsRH" rows="3" placeholder="À quelle fausse conclusion cela mène-t-il...">${element.data.what_it_suggests || ''}</textarea>
                 </div>
                 <div class="form-group">
-                    <label for="misdirectsTo">Misdirects suspicion to</label>
+                    <label for="misdirectsTo">Dirige les soupçons vers</label>
                     <select id="misdirectsTo">
-                        <option value="">Select character</option>
+                        <option value="">Sélectionner un personnage</option>
                         ${project.characters.map(char => `<option value="${char.id}" ${element.data.misdirects_to === char.id ? 'selected' : ''}>${char.name}</option>`).join('')}
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>False Evidence / Misleading Clues</label>
+                    <label>Fausses preuves / Indices trompeurs</label>
                     <div id="misleadingCluesContainer">
                         ${renderListItems(element.data.misleading_clues || [], 'misleadingClues')}
                     </div>
-                    <button type="button" class="btn btn-secondary btn-sm" onclick="addListItem('misleadingClues', 'Add misleading clue...')">
-                        <i data-lucide="plus"></i> Add
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="addListItem('misleadingClues', 'Ajouter un indice trompeur...')">
+                        <i data-lucide="plus"></i> Ajouter
                     </button>
                 </div>
                 <div class="form-group">
-                    <label for="intendedReaderImpact">Intended Reader Impact</label>
-                    <textarea id="intendedReaderImpact" rows="3" style="background-color: #f3e8ff;" placeholder="What should the reader think/feel?">${element.data.intended_reader_impact || ''}</textarea>
+                    <label for="intendedReaderImpact">Impact prévu sur le lecteur</label>
+                    <textarea id="intendedReaderImpact" rows="3" style="background-color: #f3e8ff;" placeholder="Que doit penser/ressentir le lecteur ?">${element.data.intended_reader_impact || ''}</textarea>
                 </div>
                 <div class="form-row">
                     <div class="form-group" style="flex: 1;">
-                        <label for="introducedScene">Introduced in Scene</label>
+                        <label for="introducedScene">Introduit dans la scène</label>
                         <select id="introducedScene">
-                            <option value="">Select scene</option>
+                            <option value="">Sélectionner une scène</option>
                             ${renderSceneOptions(element.data.introduced_scene)}
                         </select>
                     </div>
                     <div class="form-group" style="flex: 1;">
-                        <label for="debunkedScene">Debunked in Scene</label>
+                        <label for="debunkedScene">Démenti dans la scène</label>
                         <select id="debunkedScene">
-                            <option value="">When it's proven false</option>
+                            <option value="">Quand c'est prouvé faux</option>
                             ${renderSceneOptions(element.data.debunked_scene)}
                         </select>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="rhStatus">Status</label>
+                    <label for="rhStatus">Statut</label>
                     <select id="rhStatus">
-                        <option value="active" ${element.data.status === 'active' ? 'selected' : ''}>Active</option>
-                        <option value="resolved" ${element.data.status === 'resolved' ? 'selected' : ''}>Resolved</option>
-                        <option value="abandoned" ${element.data.status === 'abandoned' ? 'selected' : ''}>Abandoned</option>
+                        <option value="active" ${element.data.status === 'active' ? 'selected' : ''}>Actif</option>
+                        <option value="resolved" ${element.data.status === 'resolved' ? 'selected' : ''}>Résolu</option>
+                        <option value="abandoned" ${element.data.status === 'abandoned' ? 'selected' : ''}>Abandonné</option>
                     </select>
                 </div>
             `;
