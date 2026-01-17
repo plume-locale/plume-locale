@@ -2027,7 +2027,6 @@ function saveThrillerSwimlaneRow(event) {
     };
 
     thrillerBoardState.gridConfig.rows.push(newRow);
-    project.thrillerGridConfig.rows.push(newRow);
     saveProject();
 
     document.querySelector('.modal-overlay').remove();
@@ -2074,7 +2073,6 @@ function addThrillerColumn() {
     };
 
     thrillerBoardState.gridConfig.columns.push(newColumn);
-    project.thrillerGridConfig.columns.push(newColumn);
     saveProject();
     renderThrillerBoard();
 }
@@ -2242,7 +2240,6 @@ function saveNewThrillerCard(event, rowId, columnId) {
     };
 
     thrillerBoardState.gridConfig.cards.push(newCard);
-    project.thrillerGridConfig.cards.push(newCard);
     saveProject();
 
     document.querySelector('.modal-overlay').remove();
@@ -2325,12 +2322,8 @@ function createThrillerConnection(fromCardId, fromProperty, toCardId, toProperty
     if (!thrillerBoardState.gridConfig.connections) {
         thrillerBoardState.gridConfig.connections = [];
     }
-    if (!project.thrillerGridConfig.connections) {
-        project.thrillerGridConfig.connections = [];
-    }
 
     thrillerBoardState.gridConfig.connections.push(connection);
-    project.thrillerGridConfig.connections.push(connection);
 
     saveProject();
     renderThrillerBoard();
