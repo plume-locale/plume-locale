@@ -53,10 +53,10 @@
             
             // Cacher toutes les listes de la sidebar
             const sidebarLists = [
-                'chaptersList', 'charactersList', 'worldList', 'timelineList', 
+                'chaptersList', 'charactersList', 'worldList', 'timelineList',
                 'notesList', 'codexList', 'arcsList', 'statsList', 'versionsList', 'analysisList',
-                'todosList', 'corkboardList', 'mindmapList', 'plotList', 
-                'relationsList', 'mapList', 'timelineVizList', 'storyGridList', 'noSidebarMessage'
+                'todosList', 'corkboardList', 'mindmapList', 'plotList',
+                'relationsList', 'mapList', 'timelineVizList', 'storyGridList', 'thrillerList', 'noSidebarMessage'
             ];
             
             sidebarLists.forEach(listId => {
