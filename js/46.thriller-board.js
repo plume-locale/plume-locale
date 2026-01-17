@@ -1289,26 +1289,30 @@ function renderCharacterPills(selectedCharacters, fieldName) {
 
 // Helper function to render scene options
 function renderSceneOptions(selectedSceneId) {
-    if (!project.chapters || project.chapters.length === 0) {
-        return '<option value="" disabled>Aucun chapitre créé</option>';
+    if (!project.acts || project.acts.length === 0) {
+        return '<option value="" disabled>Aucun acte créé</option>';
     }
 
     let options = '';
     let hasScenes = false;
 
-    project.chapters.forEach(chapter => {
-        if (chapter.scenes && chapter.scenes.length > 0) {
-            hasScenes = true;
-            chapter.scenes.forEach(scene => {
-                const sceneLabel = `${chapter.title}: ${scene.title || 'Scène ' + (chapter.scenes.indexOf(scene) + 1)}`;
-                const selected = selectedSceneId === scene.id ? 'selected' : '';
-                options += `<option value="${scene.id}" ${selected}>${sceneLabel}</option>`;
+    project.acts.forEach(act => {
+        if (act.chapters && act.chapters.length > 0) {
+            act.chapters.forEach(chapter => {
+                if (chapter.scenes && chapter.scenes.length > 0) {
+                    hasScenes = true;
+                    chapter.scenes.forEach(scene => {
+                        const sceneLabel = `${act.title} > ${chapter.title}: ${scene.title || 'Scène ' + (chapter.scenes.indexOf(scene) + 1)}`;
+                        const selected = selectedSceneId === scene.id ? 'selected' : '';
+                        options += `<option value="${scene.id}" ${selected}>${sceneLabel}</option>`;
+                    });
+                }
             });
         }
     });
 
     if (!hasScenes) {
-        return '<option value="" disabled>Aucune scène créée dans les chapitres</option>';
+        return '<option value="" disabled>Aucune scène créée</option>';
     }
 
     return options;
@@ -1316,8 +1320,8 @@ function renderSceneOptions(selectedSceneId) {
 
 // Helper function to render scene pills
 function renderScenePills(selectedScenes, fieldName) {
-    if (!project.chapters || project.chapters.length === 0) {
-        return '<p style="color: #999; font-size: 13px;">Aucune scène disponible. Créez d\'abord des chapitres et des scènes dans votre projet.</p>';
+    if (!project.acts || project.acts.length === 0) {
+        return '<p style="color: #999; font-size: 13px;">Aucune scène disponible. Créez d\'abord des actes, chapitres et scènes dans votre projet.</p>';
     }
 
     // Ensure selectedScenes is an array of strings for consistent comparison
@@ -1328,12 +1332,16 @@ function renderScenePills(selectedScenes, fieldName) {
     // Render selected scene pills
     selectedScenesStr.forEach(sceneId => {
         let sceneLabel = '';
-        project.chapters.forEach(chapter => {
-            if (chapter.scenes) {
-                const scene = chapter.scenes.find(s => String(s.id) === sceneId);
-                if (scene) {
-                    sceneLabel = `${chapter.title}: Scène ${chapter.scenes.indexOf(scene) + 1}`;
-                }
+        project.acts.forEach(act => {
+            if (act.chapters) {
+                act.chapters.forEach(chapter => {
+                    if (chapter.scenes) {
+                        const scene = chapter.scenes.find(s => String(s.id) === sceneId);
+                        if (scene) {
+                            sceneLabel = `${act.title} > ${chapter.title}: ${scene.title || 'Scène ' + (chapter.scenes.indexOf(scene) + 1)}`;
+                        }
+                    }
+                });
             }
         });
 
@@ -1355,12 +1363,16 @@ function renderScenePills(selectedScenes, fieldName) {
             <option value="">Ajouter une scène...</option>
     `;
 
-    project.chapters.forEach(chapter => {
-        if (chapter.scenes && chapter.scenes.length > 0) {
-            chapter.scenes.forEach(scene => {
-                if (!selectedScenesStr.includes(String(scene.id))) {
-                    const sceneLabel = `${chapter.title}: Scène ${chapter.scenes.indexOf(scene) + 1}`;
-                    html += `<option value="${scene.id}">${sceneLabel}</option>`;
+    project.acts.forEach(act => {
+        if (act.chapters && act.chapters.length > 0) {
+            act.chapters.forEach(chapter => {
+                if (chapter.scenes && chapter.scenes.length > 0) {
+                    chapter.scenes.forEach(scene => {
+                        if (!selectedScenesStr.includes(String(scene.id))) {
+                            const sceneLabel = `${act.title} > ${chapter.title}: ${scene.title || 'Scène ' + (chapter.scenes.indexOf(scene) + 1)}`;
+                            html += `<option value="${scene.id}">${sceneLabel}</option>`;
+                        }
+                    });
                 }
             });
         }
@@ -1379,7 +1391,7 @@ function renderListItems(items, fieldName) {
 
     return items.map((item, index) => `
         <div class="list-item-row">
-            <input type="text" class="list-item-input form-input" value="${item}" data-field="${fieldName}" data-index="${index}" />
+            <input type="text" class="list-item-input form-input" value="${item}" data-field="${fieldName}" data-index="${index}" onkeydown="if(event.key === 'Enter') event.preventDefault();" />
             <button type="button" class="btn btn-ghost btn-xs" onclick="removeListItem('${fieldName}', ${index})">
                 <i data-lucide="x"></i>
             </button>
