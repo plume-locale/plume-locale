@@ -172,11 +172,6 @@ function renderThrillerList() {
     const container = document.getElementById('thrillerList');
     if (!container) return;
 
-    if (thrillerBoardState.elements.length === 0) {
-        container.innerHTML = '<div style="padding: 1rem; text-align: center; color: var(--text-muted); font-size: 0.85rem;">Aucun élément</div>';
-        return;
-    }
-
     // Get collapsed state from localStorage
     const collapsedState = JSON.parse(localStorage.getItem('plume_treeview_collapsed') || '{}');
 
