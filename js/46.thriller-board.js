@@ -16,7 +16,14 @@ const THRILLER_BOARD_CONFIG = {
     maxColumnWidth: 500,
     canvasWidth: 3000,
     canvasHeight: 2000,
-    snapToGrid: true
+    snapToGrid: true,
+    // Grid view configuration
+    swimlaneHeight: 200,
+    minSwimlaneHeight: 120,
+    maxSwimlaneHeight: 400,
+    cardMinWidth: 240,
+    cardMaxWidth: 360,
+    cardDefaultWidth: 280
 };
 
 // Thriller element types based on the JSON schemas
@@ -95,6 +102,29 @@ const THRILLER_CARD_TYPES = {
     divider: { label: 'Séparateur', icon: 'minus' }
 };
 
+// Card statuses
+const THRILLER_CARD_STATUS = {
+    pending: { label: 'En attente', color: '#95a5a6', icon: 'clock' },
+    active: { label: 'Actif', color: '#3498db', icon: 'activity' },
+    resolved: { label: 'Résolu', color: '#27ae60', icon: 'check-circle' },
+    contradicted: { label: 'Contredit', color: '#e74c3c', icon: 'x-circle' },
+    partial: { label: 'Partiel', color: '#f39c12', icon: 'alert-circle' },
+    hidden: { label: 'Caché', color: '#34495e', icon: 'eye-off' }
+};
+
+// Swimlane row types
+const SWIMLANE_ROW_TYPES = {
+    character: { label: 'Personnages', icon: 'user', color: '#3498db' },
+    location: { label: 'Lieux', icon: 'map-pin', color: '#16a085' },
+    custom: { label: 'Personnalisé', icon: 'tag', color: '#95a5a6' }
+};
+
+// Column mode types
+const COLUMN_MODE_TYPES = {
+    free: { label: 'Colonnes libres', icon: 'columns' },
+    narrative: { label: 'Structure narrative', icon: 'book-open' }
+};
+
 // ============================================
 // STATE MANAGEMENT
 // ============================================
@@ -107,7 +137,14 @@ let thrillerBoardState = {
     selectedElements: [],
     contextPanelOpen: true,
     currentFilter: 'clue', // Default to clues tab
-    snapToGrid: true
+    snapToGrid: true,
+    viewMode: 'canvas', // 'canvas' or 'grid'
+    gridConfig: {
+        columnMode: 'free', // 'free' or 'narrative'
+        rows: [], // Swimlane rows configuration
+        columns: [], // Column configuration
+        cards: [] // Cards positioned on the grid
+    }
 };
 
 // ============================================
@@ -122,9 +159,24 @@ function initThrillerBoard() {
     if (!project.thrillerConnections) {
         project.thrillerConnections = [];
     }
+    if (!project.thrillerGridConfig) {
+        project.thrillerGridConfig = {
+            columnMode: 'free',
+            rows: [],
+            columns: [],
+            cards: []
+        };
+    }
 
     thrillerBoardState.elements = project.thrillerElements;
     thrillerBoardState.connections = project.thrillerConnections;
+    thrillerBoardState.gridConfig = project.thrillerGridConfig;
+
+    // Restore view mode from localStorage
+    const savedViewMode = localStorage.getItem('plume_thriller_view_mode');
+    if (savedViewMode) {
+        thrillerBoardState.viewMode = savedViewMode;
+    }
 }
 
 function renderThrillerBoard() {
@@ -136,8 +188,30 @@ function renderThrillerBoard() {
     // Render sidebar list
     renderThrillerList();
 
+    // Render based on view mode
+    if (thrillerBoardState.viewMode === 'grid') {
+        renderThrillerGridView();
+    } else {
+        renderThrillerCanvasView();
+    }
+
+    // Refresh Lucide icons
+    setTimeout(() => {
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    }, 50);
+}
+
+function renderThrillerCanvasView() {
+    const container = document.getElementById('editorView');
+    if (!container) return;
+
     // Render main canvas area
     container.innerHTML = `
+        <div class="thriller-board-toolbar">
+            <button class="btn btn-secondary btn-sm" onclick="toggleThrillerViewMode()" title="Basculer vers la vue grille">
+                <i data-lucide="table"></i> Vue grille
+            </button>
+        </div>
         <div class="thriller-board-canvas-wrapper">
             <div class="thriller-board-canvas" id="thrillerBoardCanvas"
                  onmousedown="handleThrillerCanvasMouseDown(event)"
@@ -157,11 +231,314 @@ function renderThrillerBoard() {
     `;
 
     renderThrillerElements();
+}
 
-    // Refresh Lucide icons
-    setTimeout(() => {
-        if (typeof lucide !== 'undefined') lucide.createIcons();
-    }, 50);
+function renderThrillerGridView() {
+    const container = document.getElementById('editorView');
+    if (!container) return;
+
+    const gridConfig = thrillerBoardState.gridConfig;
+
+    container.innerHTML = `
+        <div class="thriller-grid-view">
+            <!-- Toolbar -->
+            <div class="thriller-board-toolbar">
+                <button class="btn btn-secondary btn-sm" onclick="toggleThrillerViewMode()" title="Basculer vers la vue canvas">
+                    <i data-lucide="layout"></i> Vue canvas
+                </button>
+                <div class="toolbar-divider"></div>
+                <button class="btn btn-secondary btn-sm ${gridConfig.columnMode === 'free' ? 'active' : ''}"
+                        onclick="setThrillerColumnMode('free')" title="Colonnes libres">
+                    <i data-lucide="columns"></i> Colonnes libres
+                </button>
+                <button class="btn btn-secondary btn-sm ${gridConfig.columnMode === 'narrative' ? 'active' : ''}"
+                        onclick="setThrillerColumnMode('narrative')" title="Structure narrative">
+                    <i data-lucide="book-open"></i> Structure
+                </button>
+                <div class="toolbar-divider"></div>
+                <button class="btn btn-secondary btn-sm" onclick="addThrillerSwimlaneRow()" title="Ajouter une ligne">
+                    <i data-lucide="plus"></i> Ajouter ligne
+                </button>
+                ${gridConfig.columnMode === 'free' ? `
+                    <button class="btn btn-secondary btn-sm" onclick="addThrillerColumn()" title="Ajouter une colonne">
+                        <i data-lucide="plus"></i> Ajouter colonne
+                    </button>
+                ` : ''}
+            </div>
+
+            <!-- Grid Container -->
+            <div class="thriller-grid-container" id="thrillerGridContainer">
+                ${renderThrillerGrid()}
+            </div>
+        </div>
+    `;
+}
+
+function renderThrillerGrid() {
+    const gridConfig = thrillerBoardState.gridConfig;
+
+    // Get columns based on mode
+    const columns = gridConfig.columnMode === 'narrative' ? getNarrativeColumns() : gridConfig.columns;
+
+    // If no rows, show empty state
+    if (gridConfig.rows.length === 0) {
+        return `
+            <div class="thriller-grid-empty-state">
+                <i data-lucide="table" style="width: 48px; height: 48px; color: var(--text-secondary);"></i>
+                <p>Aucune ligne de swimlane configurée</p>
+                <button class="btn btn-primary" onclick="addThrillerSwimlaneRow()">
+                    <i data-lucide="plus"></i> Ajouter une première ligne
+                </button>
+            </div>
+        `;
+    }
+
+    let html = `
+        <div class="thriller-grid-table">
+            <!-- Header Row -->
+            <div class="thriller-grid-header-row">
+                <div class="thriller-grid-row-header-cell">
+                    <span>Lignes / Colonnes</span>
+                </div>
+                ${columns.map(col => `
+                    <div class="thriller-grid-column-header" data-column-id="${col.id}">
+                        <div class="thriller-grid-column-title">
+                            ${col.title}
+                            ${gridConfig.columnMode === 'free' ? `
+                                <button class="btn-icon-sm" onclick="editThrillerColumn('${col.id}')" title="Modifier">
+                                    <i data-lucide="edit-2"></i>
+                                </button>
+                                <button class="btn-icon-sm" onclick="deleteThrillerColumn('${col.id}')" title="Supprimer">
+                                    <i data-lucide="trash-2"></i>
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+
+            <!-- Swimlane Rows -->
+            ${gridConfig.rows.map(row => renderThrillerSwimlaneRow(row, columns)).join('')}
+        </div>
+    `;
+
+    return html;
+}
+
+function renderThrillerSwimlaneRow(row, columns) {
+    const gridConfig = thrillerBoardState.gridConfig;
+
+    return `
+        <div class="thriller-grid-row" data-row-id="${row.id}">
+            <!-- Row Header -->
+            <div class="thriller-grid-row-header" style="background-color: ${row.color || '#f0f0f0'};">
+                <div class="thriller-grid-row-info">
+                    <i data-lucide="${row.icon || 'tag'}" style="width: 16px; height: 16px;"></i>
+                    <span class="thriller-grid-row-title">${row.title}</span>
+                </div>
+                <div class="thriller-grid-row-actions">
+                    <button class="btn-icon-sm" onclick="editThrillerRow('${row.id}')" title="Modifier">
+                        <i data-lucide="edit-2"></i>
+                    </button>
+                    <button class="btn-icon-sm" onclick="deleteThrillerRow('${row.id}')" title="Supprimer">
+                        <i data-lucide="trash-2"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Row Cells -->
+            ${columns.map(col => {
+                const card = gridConfig.cards.find(c => c.rowId === row.id && c.columnId === col.id);
+                return renderThrillerGridCell(row, col, card);
+            }).join('')}
+        </div>
+    `;
+}
+
+function renderThrillerGridCell(row, column, card) {
+    if (!card) {
+        return `
+            <div class="thriller-grid-cell" data-row-id="${row.id}" data-column-id="${column.id}"
+                 onclick="addThrillerCardToCell('${row.id}', '${column.id}')">
+                <div class="thriller-grid-cell-add">
+                    <i data-lucide="plus"></i>
+                </div>
+            </div>
+        `;
+    }
+
+    return `
+        <div class="thriller-grid-cell has-card" data-row-id="${row.id}" data-column-id="${column.id}">
+            ${renderThrillerCard(card)}
+        </div>
+    `;
+}
+
+function renderThrillerCard(card) {
+    const typeData = THRILLER_TYPES[card.type];
+    const statusData = THRILLER_CARD_STATUS[card.status || 'pending'];
+
+    return `
+        <div class="thriller-card" data-card-id="${card.id}" onclick="editThrillerCard('${card.id}')">
+            <!-- Card Header -->
+            <div class="thriller-card-header" style="background-color: ${typeData.color};">
+                <i data-lucide="${typeData.icon}" style="width: 16px; height: 16px;"></i>
+                <span class="thriller-card-type">${typeData.label}</span>
+                <span class="thriller-card-title">${card.title}</span>
+            </div>
+
+            <!-- Card Body with Sockets -->
+            <div class="thriller-card-body">
+                ${renderThrillerCardProperties(card)}
+            </div>
+
+            <!-- Card Footer -->
+            <div class="thriller-card-footer" style="background-color: ${statusData.color}20; border-left: 3px solid ${statusData.color};">
+                <i data-lucide="${statusData.icon}" style="width: 14px; height: 14px; color: ${statusData.color};"></i>
+                <span style="color: ${statusData.color};">${statusData.label}</span>
+            </div>
+        </div>
+    `;
+}
+
+function renderThrillerCardProperties(card) {
+    // Render properties with sockets based on card type
+    const properties = getCardTypeProperties(card.type);
+
+    return properties.map(prop => {
+        const value = card.data[prop.key] || '';
+        if (!value && !prop.showEmpty) return '';
+
+        return `
+            <div class="thriller-card-property" data-property="${prop.key}">
+                <div class="thriller-card-property-content">
+                    <span class="thriller-card-property-label">${prop.label}:</span>
+                    <span class="thriller-card-property-value">${formatPropertyValue(value, prop.type)}</span>
+                </div>
+                <div class="thriller-card-socket"
+                     data-card-id="${card.id}"
+                     data-property="${prop.key}"
+                     onmousedown="startThrillerConnection(event, '${card.id}', '${prop.key}')"
+                     title="Créer une connexion">
+                    <i data-lucide="circle" style="width: 12px; height: 12px;"></i>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function getCardTypeProperties(cardType) {
+    // Define which properties to show for each card type
+    const propertyMap = {
+        alibi: [
+            { key: 'character_name', label: 'Personnage', type: 'text', showEmpty: true },
+            { key: 'for_event', label: 'Pour événement', type: 'text', showEmpty: false },
+            { key: 'claimed_location', label: 'Lieu déclaré', type: 'text', showEmpty: false },
+            { key: 'actual_location', label: 'Vrai lieu', type: 'text', showEmpty: false },
+            { key: 'is_true', label: 'Véracité', type: 'boolean', showEmpty: true }
+        ],
+        clue: [
+            { key: 'description', label: 'Description', type: 'text', showEmpty: false },
+            { key: 'points_to', label: 'Pointe vers', type: 'text', showEmpty: false },
+            { key: 'visibility', label: 'Visibilité', type: 'text', showEmpty: false }
+        ],
+        motive_means_opportunity: [
+            { key: 'character_name', label: 'Suspect', type: 'text', showEmpty: true },
+            { key: 'motive', label: 'Mobile', type: 'text', showEmpty: false },
+            { key: 'means', label: 'Moyens', type: 'text', showEmpty: false },
+            { key: 'opportunity', label: 'Opportunité', type: 'text', showEmpty: false }
+        ],
+        red_herring: [
+            { key: 'what_it_suggests', label: 'Ce que ça suggère', type: 'text', showEmpty: false },
+            { key: 'misdirects_to', label: 'Dirige vers', type: 'text', showEmpty: false }
+        ],
+        secret: [
+            { key: 'keeper', label: 'Gardien', type: 'text', showEmpty: true },
+            { key: 'nature', label: 'Nature', type: 'text', showEmpty: false },
+            { key: 'if_revealed', label: 'Si révélé', type: 'text', showEmpty: false }
+        ],
+        question: [
+            { key: 'mystery', label: 'Mystère', type: 'text', showEmpty: false },
+            { key: 'answer', label: 'Réponse', type: 'text', showEmpty: false }
+        ],
+        knowledge_state: [
+            { key: 'character_name', label: 'Personnage', type: 'text', showEmpty: true },
+            { key: 'knows', label: 'Ce qu\'il sait', type: 'text', showEmpty: false },
+            { key: 'believes', label: 'Ce qu\'il croit', type: 'text', showEmpty: false }
+        ],
+        reversal: [
+            { key: 'setup_belief', label: 'Croyance établie', type: 'text', showEmpty: false },
+            { key: 'actual_truth', label: 'Vérité réelle', type: 'text', showEmpty: false }
+        ],
+        backstory: [
+            { key: 'event', label: 'Événement', type: 'text', showEmpty: false },
+            { key: 'impact', label: 'Impact', type: 'text', showEmpty: false }
+        ],
+        location: [
+            { key: 'name', label: 'Nom', type: 'text', showEmpty: true },
+            { key: 'significance', label: 'Signification', type: 'text', showEmpty: false }
+        ]
+    };
+
+    return propertyMap[cardType] || [];
+}
+
+function formatPropertyValue(value, type) {
+    if (type === 'boolean') {
+        return value ? '<span style="color: #27ae60;">✓ Vrai</span>' : '<span style="color: #e74c3c;">✗ Faux</span>';
+    }
+    if (Array.isArray(value)) {
+        return value.length > 0 ? value.join(', ') : '<em>Aucun</em>';
+    }
+    if (typeof value === 'string' && value.length > 60) {
+        return value.substring(0, 60) + '...';
+    }
+    return value || '<em>Non défini</em>';
+}
+
+function getNarrativeColumns() {
+    // Generate columns from story structure (acts/chapters/scenes)
+    const columns = [];
+
+    if (project.acts && project.acts.length > 0) {
+        project.acts.forEach(act => {
+            if (act.chapters && act.chapters.length > 0) {
+                act.chapters.forEach(chapter => {
+                    if (chapter.scenes && chapter.scenes.length > 0) {
+                        chapter.scenes.forEach(scene => {
+                            columns.push({
+                                id: `scene_${scene.id}`,
+                                title: `${act.title} > ${chapter.title}: ${scene.title || 'Scène'}`,
+                                type: 'scene',
+                                sceneId: scene.id,
+                                chapterId: chapter.id,
+                                actId: act.id
+                            });
+                        });
+                    }
+                });
+            }
+        });
+    }
+
+    return columns.length > 0 ? columns : [{ id: 'default', title: 'Aucune scène', type: 'placeholder' }];
+}
+
+// ============================================
+// GRID VIEW ACTIONS
+// ============================================
+
+function toggleThrillerViewMode() {
+    thrillerBoardState.viewMode = thrillerBoardState.viewMode === 'canvas' ? 'grid' : 'canvas';
+    localStorage.setItem('plume_thriller_view_mode', thrillerBoardState.viewMode);
+    renderThrillerBoard();
+}
+
+function setThrillerColumnMode(mode) {
+    thrillerBoardState.gridConfig.columnMode = mode;
+    project.thrillerGridConfig.columnMode = mode;
+    saveProject();
+    renderThrillerBoard();
 }
 
 // ============================================
@@ -1524,4 +1901,437 @@ function removeListItem(fieldName, index) {
     if (items[index]) {
         items[index].remove();
     }
+}
+
+// ============================================
+// GRID VIEW - SWIMLANE ROW MANAGEMENT
+// ============================================
+
+function addThrillerSwimlaneRow() {
+    // Show modal to configure row
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3>Ajouter une ligne de swimlane</h3>
+                <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="swimlaneRowForm" onsubmit="saveThrillerSwimlaneRow(event)">
+                    <div class="form-group">
+                        <label class="form-label" for="rowType">Type de ligne</label>
+                        <select class="form-input" id="rowType" onchange="updateRowTypeFields(this.value)">
+                            <option value="character">Personnage</option>
+                            <option value="location">Lieu</option>
+                            <option value="custom">Personnalisé</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="rowEntityField">
+                        <label class="form-label" for="rowEntity">Personnage</label>
+                        <select class="form-input" id="rowEntity">
+                            <option value="">Sélectionner un personnage...</option>
+                            ${project.characters ? project.characters.map(char => \`<option value="${char.id}">${char.name}</option>\`).join('') : ''}
+                        </select>
+                    </div>
+                    <div class="form-group" id="rowTitleField" style="display: none;">
+                        <label class="form-label" for="rowTitle">Titre</label>
+                        <input type="text" class="form-input" id="rowTitle" placeholder="Nom de la ligne">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="rowColor">Couleur</label>
+                        <input type="color" class="form-input" id="rowColor" value="#3498db">
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-secondary" onclick="this.closest('.modal-overlay').remove()">Annuler</button>
+                        <button type="submit" class="btn btn-primary">Ajouter</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    setTimeout(() => {
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    }, 50);
+}
+
+function updateRowTypeFields(type) {
+    const entityField = document.getElementById('rowEntityField');
+    const titleField = document.getElementById('rowTitleField');
+    const entitySelect = document.getElementById('rowEntity');
+    const entityLabel = entityField.querySelector('label');
+
+    if (type === 'character') {
+        entityField.style.display = 'block';
+        titleField.style.display = 'none';
+        entityLabel.textContent = 'Personnage';
+        entitySelect.innerHTML = '<option value="">Sélectionner un personnage...</option>' +
+            (project.characters ? project.characters.map(char => \`<option value="${char.id}">${char.name}</option>\`).join('') : '');
+    } else if (type === 'location') {
+        entityField.style.display = 'block';
+        titleField.style.display = 'none';
+        entityLabel.textContent = 'Lieu';
+        entitySelect.innerHTML = '<option value="">Sélectionner un lieu...</option>' +
+            (project.world ? project.world.map(loc => \`<option value="${loc.id}">${loc.name}</option>\`).join('') : '');
+    } else {
+        entityField.style.display = 'none';
+        titleField.style.display = 'block';
+    }
+}
+
+function saveThrillerSwimlaneRow(event) {
+    event.preventDefault();
+
+    const type = document.getElementById('rowType').value;
+    const entity = document.getElementById('rowEntity').value;
+    const title = document.getElementById('rowTitle').value;
+    const color = document.getElementById('rowColor').value;
+
+    let rowTitle = title;
+    let icon = 'tag';
+    let entityId = null;
+
+    if (type === 'character' && entity) {
+        const char = project.characters.find(c => c.id === entity);
+        if (char) {
+            rowTitle = char.name;
+            icon = 'user';
+            entityId = entity;
+        }
+    } else if (type === 'location' && entity) {
+        const loc = project.world ? project.world.find(l => l.id === entity) : null;
+        if (loc) {
+            rowTitle = loc.name;
+            icon = 'map-pin';
+            entityId = entity;
+        }
+    }
+
+    if (!rowTitle) {
+        alert('Veuillez saisir un titre ou sélectionner une entité');
+        return;
+    }
+
+    const newRow = {
+        id: generateId(),
+        type: type,
+        title: rowTitle,
+        icon: icon,
+        color: color,
+        entityId: entityId
+    };
+
+    thrillerBoardState.gridConfig.rows.push(newRow);
+    project.thrillerGridConfig.rows.push(newRow);
+    saveProject();
+
+    document.querySelector('.modal-overlay').remove();
+    renderThrillerBoard();
+}
+
+function editThrillerRow(rowId) {
+    const row = thrillerBoardState.gridConfig.rows.find(r => r.id === rowId);
+    if (!row) return;
+
+    const newTitle = prompt('Nouveau titre:', row.title);
+    if (newTitle && newTitle !== row.title) {
+        row.title = newTitle;
+        project.thrillerGridConfig.rows = thrillerBoardState.gridConfig.rows;
+        saveProject();
+        renderThrillerBoard();
+    }
+}
+
+function deleteThrillerRow(rowId) {
+    if (!confirm('Supprimer cette ligne et toutes ses cartes ?')) return;
+
+    thrillerBoardState.gridConfig.rows = thrillerBoardState.gridConfig.rows.filter(r => r.id !== rowId);
+    project.thrillerGridConfig.rows = thrillerBoardState.gridConfig.rows;
+
+    thrillerBoardState.gridConfig.cards = thrillerBoardState.gridConfig.cards.filter(c => c.rowId !== rowId);
+    project.thrillerGridConfig.cards = thrillerBoardState.gridConfig.cards;
+
+    saveProject();
+    renderThrillerBoard();
+}
+
+// ============================================
+// GRID VIEW - COLUMN MANAGEMENT
+// ============================================
+
+function addThrillerColumn() {
+    const title = prompt('Titre de la colonne:');
+    if (!title) return;
+
+    const newColumn = {
+        id: generateId(),
+        title: title
+    };
+
+    thrillerBoardState.gridConfig.columns.push(newColumn);
+    project.thrillerGridConfig.columns.push(newColumn);
+    saveProject();
+    renderThrillerBoard();
+}
+
+function editThrillerColumn(columnId) {
+    const column = thrillerBoardState.gridConfig.columns.find(c => c.id === columnId);
+    if (!column) return;
+
+    const newTitle = prompt('Nouveau titre:', column.title);
+    if (newTitle && newTitle !== column.title) {
+        column.title = newTitle;
+        project.thrillerGridConfig.columns = thrillerBoardState.gridConfig.columns;
+        saveProject();
+        renderThrillerBoard();
+    }
+}
+
+function deleteThrillerColumn(columnId) {
+    if (!confirm('Supprimer cette colonne et toutes ses cartes ?')) return;
+
+    thrillerBoardState.gridConfig.columns = thrillerBoardState.gridConfig.columns.filter(c => c.id !== columnId);
+    project.thrillerGridConfig.columns = thrillerBoardState.gridConfig.columns;
+
+    thrillerBoardState.gridConfig.cards = thrillerBoardState.gridConfig.cards.filter(c => c.columnId !== columnId);
+    project.thrillerGridConfig.cards = thrillerBoardState.gridConfig.cards;
+
+    saveProject();
+    renderThrillerBoard();
+}
+
+// ============================================
+// GRID VIEW - CARD MANAGEMENT
+// ============================================
+
+function addThrillerCardToCell(rowId, columnId) {
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.innerHTML = \`
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3>Nouvelle carte</h3>
+                <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="cardForm" onsubmit="saveNewThrillerCard(event, '\${rowId}', '\${columnId}')">
+                    <div class="form-group">
+                        <label class="form-label" for="cardType">Type de carte</label>
+                        <select class="form-input" id="cardType" onchange="updateCardFields(this.value)">
+                            \${Object.entries(THRILLER_TYPES).map(([key, data]) => \`
+                                <option value="\${key}">\${data.label}</option>
+                            \`).join('')}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="cardTitle">Titre</label>
+                        <input type="text" class="form-input" id="cardTitle" required>
+                    </div>
+                    <div id="cardFieldsContainer"></div>
+                    <div class="form-group">
+                        <label class="form-label" for="cardStatus">Statut</label>
+                        <select class="form-input" id="cardStatus">
+                            \${Object.entries(THRILLER_CARD_STATUS).map(([key, data]) => \`
+                                <option value="\${key}">\${data.label}</option>
+                            \`).join('')}
+                        </select>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-secondary" onclick="this.closest('.modal-overlay').remove()">Annuler</button>
+                        <button type="submit" class="btn btn-primary">Créer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    \`;
+
+    document.body.appendChild(modal);
+
+    updateCardFields(Object.keys(THRILLER_TYPES)[0]);
+
+    setTimeout(() => {
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    }, 50);
+}
+
+function updateCardFields(cardType) {
+    const container = document.getElementById('cardFieldsContainer');
+
+    let html = '';
+
+    if (cardType === 'alibi') {
+        html = \`
+            <div class="form-group">
+                <label class="form-label" for="characterId">Personnage</label>
+                <select class="form-input" id="characterId">
+                    <option value="">Sélectionner un personnage</option>
+                    \${project.characters ? project.characters.map(char => \`<option value="\${char.id}">\${char.name}</option>\`).join('') : ''}
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="forEvent">Pour l'événement</label>
+                <input type="text" class="form-input" id="forEvent">
+            </div>
+        \`;
+    } else if (cardType === 'clue') {
+        html = \`
+            <div class="form-group">
+                <label class="form-label" for="description">Description</label>
+                <textarea class="form-input" id="description" rows="3"></textarea>
+            </div>
+        \`;
+    } else if (cardType === 'motive_means_opportunity') {
+        html = \`
+            <div class="form-group">
+                <label class="form-label" for="characterId">Suspect</label>
+                <select class="form-input" id="characterId">
+                    <option value="">Sélectionner un personnage</option>
+                    \${project.characters ? project.characters.map(char => \`<option value="\${char.id}">\${char.name}</option>\`).join('') : ''}
+                </select>
+            </div>
+        \`;
+    }
+
+    container.innerHTML = html;
+}
+
+function saveNewThrillerCard(event, rowId, columnId) {
+    event.preventDefault();
+
+    const cardType = document.getElementById('cardType').value;
+    const title = document.getElementById('cardTitle').value;
+    const status = document.getElementById('cardStatus').value;
+
+    const data = {};
+
+    if (cardType === 'alibi') {
+        const charId = document.getElementById('characterId') ? document.getElementById('characterId').value : '';
+        data.character_id = charId;
+        data.for_event = document.getElementById('forEvent') ? document.getElementById('forEvent').value : '';
+        if (charId && project.characters) {
+            const char = project.characters.find(c => c.id === charId);
+            if (char) data.character_name = char.name;
+        }
+    } else if (cardType === 'clue') {
+        data.description = document.getElementById('description') ? document.getElementById('description').value : '';
+    } else if (cardType === 'motive_means_opportunity') {
+        const charId = document.getElementById('characterId') ? document.getElementById('characterId').value : '';
+        data.character_id = charId;
+        if (charId && project.characters) {
+            const char = project.characters.find(c => c.id === charId);
+            if (char) data.character_name = char.name;
+        }
+    }
+
+    const newCard = {
+        id: generateId(),
+        rowId: rowId,
+        columnId: columnId,
+        type: cardType,
+        title: title,
+        status: status,
+        data: data,
+        connections: []
+    };
+
+    thrillerBoardState.gridConfig.cards.push(newCard);
+    project.thrillerGridConfig.cards.push(newCard);
+    saveProject();
+
+    document.querySelector('.modal-overlay').remove();
+    renderThrillerBoard();
+}
+
+function editThrillerCard(cardId) {
+    const card = thrillerBoardState.gridConfig.cards.find(c => c.id === cardId);
+    if (!card) return;
+
+    alert('Édition de carte: ' + card.title + '\\nCette fonctionnalité sera améliorée prochainement.');
+}
+
+// ============================================
+// GRID VIEW - CONNECTION MANAGEMENT
+// ============================================
+
+let connectionState = {
+    isDrawing: false,
+    fromCardId: null,
+    fromProperty: null,
+    tempLine: null
+};
+
+function startThrillerConnection(event, cardId, property) {
+    event.stopPropagation();
+    event.preventDefault();
+
+    connectionState.isDrawing = true;
+    connectionState.fromCardId = cardId;
+    connectionState.fromProperty = property;
+
+    event.currentTarget.classList.add('active-socket');
+
+    document.addEventListener('mousemove', handleConnectionDrag);
+    document.addEventListener('mouseup', endThrillerConnection);
+}
+
+function handleConnectionDrag(event) {
+    if (!connectionState.isDrawing) return;
+    // Draw temporary line following cursor - simplified for now
+}
+
+function endThrillerConnection(event) {
+    if (!connectionState.isDrawing) return;
+
+    const targetSocket = event.target.closest('.thriller-card-socket');
+
+    if (targetSocket && targetSocket.dataset.cardId !== connectionState.fromCardId) {
+        createThrillerConnection(
+            connectionState.fromCardId,
+            connectionState.fromProperty,
+            targetSocket.dataset.cardId,
+            targetSocket.dataset.property
+        );
+    }
+
+    connectionState.isDrawing = false;
+    connectionState.fromCardId = null;
+    connectionState.fromProperty = null;
+
+    document.querySelectorAll('.active-socket').forEach(el => el.classList.remove('active-socket'));
+    document.removeEventListener('mousemove', handleConnectionDrag);
+    document.removeEventListener('mouseup', endThrillerConnection);
+}
+
+function createThrillerConnection(fromCardId, fromProperty, toCardId, toProperty) {
+    const connection = {
+        id: generateId(),
+        from: {
+            cardId: fromCardId,
+            property: fromProperty
+        },
+        to: {
+            cardId: toCardId,
+            property: toProperty
+        }
+    };
+
+    if (!thrillerBoardState.gridConfig.connections) {
+        thrillerBoardState.gridConfig.connections = [];
+    }
+    if (!project.thrillerGridConfig.connections) {
+        project.thrillerGridConfig.connections = [];
+    }
+
+    thrillerBoardState.gridConfig.connections.push(connection);
+    project.thrillerGridConfig.connections.push(connection);
+
+    saveProject();
+    renderThrillerBoard();
 }
