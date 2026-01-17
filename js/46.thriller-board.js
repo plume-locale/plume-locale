@@ -2380,7 +2380,175 @@ function editThrillerCard(cardId) {
     const card = thrillerBoardState.gridConfig.cards.find(c => c.id === cardId);
     if (!card) return;
 
-    alert('Édition de carte: ' + card.title + '\\nCette fonctionnalité sera améliorée prochainement.');
+    const typeData = THRILLER_TYPES[card.type];
+
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3>Modifier ${typeData ? typeData.label : 'Carte'}</h3>
+                <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="cardEditForm" onsubmit="saveEditedThrillerCard(event, '${cardId}')">
+                    <div class="form-group">
+                        <label class="form-label" for="cardType">Type de carte</label>
+                        <select class="form-input" id="cardType" onchange="updateCardFieldsForEdit(this.value, '${cardId}')">
+                            ${Object.entries(THRILLER_TYPES).map(([key, data]) => `
+                                <option value="${key}" ${key === card.type ? 'selected' : ''}>${data.label}</option>
+                            `).join('')}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="cardTitle">Titre</label>
+                        <input type="text" class="form-input" id="cardTitle" value="${card.title || ''}" required>
+                    </div>
+                    <div id="cardFieldsContainer"></div>
+                    <div class="form-group">
+                        <label class="form-label" for="cardStatus">Statut</label>
+                        <select class="form-input" id="cardStatus">
+                            ${Object.entries(THRILLER_CARD_STATUS).map(([key, data]) => `
+                                <option value="${key}" ${key === card.status ? 'selected' : ''}>${data.label}</option>
+                            `).join('')}
+                        </select>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-danger" onclick="deleteThrillerCard('${cardId}')">
+                            <i data-lucide="trash-2"></i> Supprimer
+                        </button>
+                        <div style="flex: 1;"></div>
+                        <button type="button" class="btn btn-secondary" onclick="this.closest('.modal-overlay').remove()">Annuler</button>
+                        <button type="submit" class="btn btn-primary">Enregistrer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    // Pre-populate fields based on card type
+    updateCardFieldsForEdit(card.type, cardId);
+
+    setTimeout(() => {
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    }, 50);
+}
+
+function updateCardFieldsForEdit(cardType, cardId) {
+    const container = document.getElementById('cardFieldsContainer');
+    const card = thrillerBoardState.gridConfig.cards.find(c => c.id === cardId);
+    if (!card) return;
+
+    const data = card.data || {};
+    let html = '';
+
+    if (cardType === 'alibi') {
+        html = `
+            <div class="form-group">
+                <label class="form-label" for="characterId">Personnage</label>
+                <select class="form-input" id="characterId">
+                    <option value="">Sélectionner un personnage</option>
+                    ${project.characters ? project.characters.map(char => `
+                        <option value="${char.id}" ${data.character_id === char.id ? 'selected' : ''}>${char.name}</option>
+                    `).join('') : ''}
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="forEvent">Pour l'événement</label>
+                <input type="text" class="form-input" id="forEvent" value="${data.for_event || ''}">
+            </div>
+        `;
+    } else if (cardType === 'clue') {
+        html = `
+            <div class="form-group">
+                <label class="form-label" for="description">Description</label>
+                <textarea class="form-input" id="description" rows="3">${data.description || ''}</textarea>
+            </div>
+        `;
+    } else if (cardType === 'motive_means_opportunity') {
+        html = `
+            <div class="form-group">
+                <label class="form-label" for="characterId">Suspect</label>
+                <select class="form-input" id="characterId">
+                    <option value="">Sélectionner un personnage</option>
+                    ${project.characters ? project.characters.map(char => `
+                        <option value="${char.id}" ${data.character_id === char.id ? 'selected' : ''}>${char.name}</option>
+                    `).join('') : ''}
+                </select>
+            </div>
+        `;
+    }
+
+    container.innerHTML = html;
+}
+
+function saveEditedThrillerCard(event, cardId) {
+    event.preventDefault();
+
+    const card = thrillerBoardState.gridConfig.cards.find(c => c.id === cardId);
+    if (!card) return;
+
+    const cardType = document.getElementById('cardType').value;
+    const title = document.getElementById('cardTitle').value;
+    const status = document.getElementById('cardStatus').value;
+
+    const data = {};
+
+    if (cardType === 'alibi') {
+        const charId = document.getElementById('characterId') ? document.getElementById('characterId').value : '';
+        data.character_id = charId;
+        data.for_event = document.getElementById('forEvent') ? document.getElementById('forEvent').value : '';
+        if (charId && project.characters) {
+            const char = project.characters.find(c => c.id === charId);
+            if (char) data.character_name = char.name;
+        }
+    } else if (cardType === 'clue') {
+        data.description = document.getElementById('description') ? document.getElementById('description').value : '';
+    } else if (cardType === 'motive_means_opportunity') {
+        const charId = document.getElementById('characterId') ? document.getElementById('characterId').value : '';
+        data.character_id = charId;
+        if (charId && project.characters) {
+            const char = project.characters.find(c => c.id === charId);
+            if (char) data.character_name = char.name;
+        }
+    }
+
+    // Update the card
+    card.type = cardType;
+    card.title = title;
+    card.status = status;
+    card.data = data;
+
+    saveProject();
+
+    document.querySelector('.modal-overlay').remove();
+    renderThrillerBoard();
+}
+
+function deleteThrillerCard(cardId) {
+    if (!confirm('Supprimer cette carte et toutes ses connexions ?')) return;
+
+    // Remove the card
+    thrillerBoardState.gridConfig.cards = thrillerBoardState.gridConfig.cards.filter(c => c.id !== cardId);
+
+    // Remove all connections to/from this card
+    if (thrillerBoardState.gridConfig.connections) {
+        thrillerBoardState.gridConfig.connections = thrillerBoardState.gridConfig.connections.filter(
+            conn => conn.from.cardId !== cardId && conn.to.cardId !== cardId
+        );
+    }
+
+    saveProject();
+
+    // Close modal if open
+    const modal = document.querySelector('.modal-overlay');
+    if (modal) modal.remove();
+
+    renderThrillerBoard();
 }
 
 // ============================================
