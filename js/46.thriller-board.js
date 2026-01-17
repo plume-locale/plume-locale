@@ -133,36 +133,42 @@ function renderThrillerBoard() {
 
     initThrillerBoard();
 
+    // Calculate element counts
+    const elementCounts = {};
+    thrillerBoardState.elements.forEach(element => {
+        elementCounts[element.type] = (elementCounts[element.type] || 0) + 1;
+    });
+
     container.innerHTML = `
         <div class="thriller-board-container">
             <!-- Tabs Navigation -->
             <div class="thriller-board-tabs">
                 <button class="thriller-tab ${thrillerBoardState.currentFilter === 'clue' ? 'active' : ''}" onclick="selectThrillerTab('clue')">
-                    <i data-lucide="search"></i> Indices
+                    <i data-lucide="search"></i> Indices <span class="tab-counter">(${elementCounts['clue'] || 0})</span>
                 </button>
                 <button class="thriller-tab ${thrillerBoardState.currentFilter === 'secret' ? 'active' : ''}" onclick="selectThrillerTab('secret')">
-                    <i data-lucide="lock"></i> Secrets
+                    <i data-lucide="lock"></i> Secrets <span class="tab-counter">(${elementCounts['secret'] || 0})</span>
                 </button>
                 <button class="thriller-tab ${thrillerBoardState.currentFilter === 'alibi' ? 'active' : ''}" onclick="selectThrillerTab('alibi')">
-                    <i data-lucide="shield-check"></i> Alibis
+                    <i data-lucide="shield-check"></i> Alibis <span class="tab-counter">(${elementCounts['alibi'] || 0})</span>
                 </button>
                 <button class="thriller-tab ${thrillerBoardState.currentFilter === 'red_herring' ? 'active' : ''}" onclick="selectThrillerTab('red_herring')">
-                    <i data-lucide="fish"></i> Fausses pistes
+                    <i data-lucide="fish"></i> Fausses pistes <span class="tab-counter">(${elementCounts['red_herring'] || 0})</span>
                 </button>
                 <button class="thriller-tab ${thrillerBoardState.currentFilter === 'question' ? 'active' : ''}" onclick="selectThrillerTab('question')">
-                    <i data-lucide="help-circle"></i> Questions
+                    <i data-lucide="help-circle"></i> Questions <span class="tab-counter">(${elementCounts['question'] || 0})</span>
                 </button>
                 <button class="thriller-tab ${thrillerBoardState.currentFilter === 'reversal' ? 'active' : ''}" onclick="selectThrillerTab('reversal')">
-                    <i data-lucide="rotate-ccw"></i> Révélations
+                    <i data-lucide="rotate-ccw"></i> Révélations <span class="tab-counter">(${elementCounts['reversal'] || 0})</span>
                 </button>
                 <button class="thriller-tab ${thrillerBoardState.currentFilter === 'location' ? 'active' : ''}" onclick="selectThrillerTab('location')">
-                    <i data-lucide="map-pin"></i> Lieux
+                    <i data-lucide="map-pin"></i> Lieux <span class="tab-counter">(${elementCounts['location'] || 0})</span>
                 </button>
                 <button class="thriller-tab ${thrillerBoardState.currentFilter === 'backstory' ? 'active' : ''}" onclick="selectThrillerTab('backstory')">
-                    <i data-lucide="history"></i> Événements passés
+                    <i data-lucide="history"></i> Événements passés <span class="tab-counter">(${elementCounts['backstory'] || 0})</span>
                 </button>
                 <button class="thriller-tab ${thrillerBoardState.currentFilter === 'motive_means_opportunity' ? 'active' : ''}" onclick="selectThrillerTab('motive_means_opportunity')">
-                    <i data-lucide="target"></i> Suspects
+                    <i data-lucide="target"></i> Suspects <span class="tab-counter">(${elementCounts['motive_means_opportunity'] || 0})</span>
                 </button>
             </div>
 
@@ -177,25 +183,16 @@ function renderThrillerBoard() {
                         <!-- Elements will be rendered here -->
                     </div>
                 </div>
-            </div>
 
-            <!-- Context Panel -->
-            <div class="thriller-board-context-panel ${thrillerBoardState.contextPanelOpen ? '' : 'collapsed'}" id="thrillerContextPanel">
-                <div class="thriller-context-header">
-                    <h3>Éléments Thriller</h3>
-                    <button class="btn btn-ghost btn-sm" onclick="toggleThrillerContextPanel()">
-                        <i data-lucide="chevron-right"></i>
-                    </button>
-                </div>
-                <div class="thriller-context-content" id="thrillerContextContent">
-                    <!-- Context content will be populated here -->
-                </div>
+                <!-- Floating Add Button -->
+                <button class="floating-add-button" onclick="addThrillerElement()" title="Ajouter un nouvel élément">
+                    <i data-lucide="plus"></i>
+                </button>
             </div>
         </div>
     `;
 
     renderThrillerElements();
-    updateThrillerContextPanel();
 
     // Refresh Lucide icons
     setTimeout(() => {

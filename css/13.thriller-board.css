@@ -56,6 +56,17 @@
     height: 18px;
 }
 
+.tab-counter {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--text-muted);
+    margin-left: 4px;
+}
+
+.thriller-tab.active .tab-counter {
+    color: var(--accent-gold);
+}
+
 /* ============================================
    CANVAS AREA
    ============================================ */
@@ -128,6 +139,44 @@
     font-size: 14px;
     color: var(--text-secondary);
     line-height: 1.5;
+}
+
+/* ============================================
+   FLOATING ADD BUTTON
+   ============================================ */
+
+.floating-add-button {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--accent-gold);
+    color: white;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    z-index: 100;
+}
+
+.floating-add-button:hover {
+    background: #f0a000;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    transform: scale(1.05);
+}
+
+.floating-add-button:active {
+    transform: scale(0.95);
+}
+
+.floating-add-button svg {
+    width: 28px;
+    height: 28px;
 }
 
 /* ============================================
