@@ -1254,11 +1254,14 @@ function renderCharacterPills(selectedCharacters, fieldName) {
         return '<p style="color: #999; font-size: 13px;">Aucun personnage disponible. Créez d\'abord des personnages dans votre projet.</p>';
     }
 
+    // Ensure selectedCharacters is an array of strings for consistent comparison
+    const selectedCharsStr = selectedCharacters.map(id => String(id));
+
     let html = '<div class="pills-wrapper">';
 
     // Render selected character pills
-    selectedCharacters.forEach(charId => {
-        const char = project.characters.find(c => c.id === charId);
+    selectedCharsStr.forEach(charId => {
+        const char = project.characters.find(c => String(c.id) === charId);
         if (char) {
             html += `
                 <span class="character-pill" data-char-id="${charId}">
@@ -1275,7 +1278,7 @@ function renderCharacterPills(selectedCharacters, fieldName) {
     html += `
         <select class="pill-selector form-input" onchange="if(this.value) { addCharacterPill('${fieldName}', this.value); this.value=''; }">
             <option value="">Ajouter un personnage...</option>
-            ${project.characters.filter(c => !selectedCharacters.includes(c.id)).map(char =>
+            ${project.characters.filter(c => !selectedCharsStr.includes(String(c.id))).map(char =>
                 `<option value="${char.id}">${char.name}</option>`
             ).join('')}
         </select>
@@ -1317,14 +1320,17 @@ function renderScenePills(selectedScenes, fieldName) {
         return '<p style="color: #999; font-size: 13px;">Aucune scène disponible. Créez d\'abord des chapitres et des scènes dans votre projet.</p>';
     }
 
+    // Ensure selectedScenes is an array of strings for consistent comparison
+    const selectedScenesStr = selectedScenes.map(id => String(id));
+
     let html = '<div class="pills-wrapper">';
 
     // Render selected scene pills
-    selectedScenes.forEach(sceneId => {
+    selectedScenesStr.forEach(sceneId => {
         let sceneLabel = '';
         project.chapters.forEach(chapter => {
             if (chapter.scenes) {
-                const scene = chapter.scenes.find(s => s.id === sceneId);
+                const scene = chapter.scenes.find(s => String(s.id) === sceneId);
                 if (scene) {
                     sceneLabel = `${chapter.title}: Scène ${chapter.scenes.indexOf(scene) + 1}`;
                 }
@@ -1352,7 +1358,7 @@ function renderScenePills(selectedScenes, fieldName) {
     project.chapters.forEach(chapter => {
         if (chapter.scenes && chapter.scenes.length > 0) {
             chapter.scenes.forEach(scene => {
-                if (!selectedScenes.includes(scene.id)) {
+                if (!selectedScenesStr.includes(String(scene.id))) {
                     const sceneLabel = `${chapter.title}: Scène ${chapter.scenes.indexOf(scene) + 1}`;
                     html += `<option value="${scene.id}">${sceneLabel}</option>`;
                 }
@@ -1386,11 +1392,19 @@ function addCharacterPill(fieldName, charId) {
     if (!charId) return;
 
     const container = document.getElementById(fieldName + 'Container');
-    if (!container) return;
+    if (!container) {
+        console.error('Container not found:', fieldName + 'Container');
+        return;
+    }
 
     // Get current selected characters
     const currentPills = Array.from(container.querySelectorAll('.character-pill')).map(pill => pill.dataset.charId);
-    currentPills.push(charId);
+
+    // Ensure charId is string for consistency
+    const charIdStr = String(charId);
+    if (!currentPills.includes(charIdStr)) {
+        currentPills.push(charIdStr);
+    }
 
     // Re-render pills
     container.innerHTML = renderCharacterPills(currentPills, fieldName);
@@ -1424,11 +1438,19 @@ function addScenePill(fieldName, sceneId) {
     if (!sceneId) return;
 
     const container = document.getElementById(fieldName + 'Container');
-    if (!container) return;
+    if (!container) {
+        console.error('Container not found:', fieldName + 'Container');
+        return;
+    }
 
     // Get current selected scenes
     const currentPills = Array.from(container.querySelectorAll('.scene-pill')).map(pill => pill.dataset.sceneId);
-    currentPills.push(sceneId);
+
+    // Ensure sceneId is string for consistency
+    const sceneIdStr = String(sceneId);
+    if (!currentPills.includes(sceneIdStr)) {
+        currentPills.push(sceneIdStr);
+    }
 
     // Re-render pills
     container.innerHTML = renderScenePills(currentPills, fieldName);
