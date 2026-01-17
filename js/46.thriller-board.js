@@ -431,52 +431,69 @@ function getCardTypeProperties(cardType) {
     // Define which properties to show for each card type
     const propertyMap = {
         alibi: [
-            { key: 'character_name', label: 'Personnage', type: 'text', showEmpty: true },
+            { key: 'character_name', label: 'Personnage', type: 'character', showEmpty: true },
             { key: 'for_event', label: 'Pour événement', type: 'text', showEmpty: false },
+            { key: 'is_true', label: 'Alibi vrai', type: 'boolean', showEmpty: true },
             { key: 'claimed_location', label: 'Lieu déclaré', type: 'text', showEmpty: false },
-            { key: 'actual_location', label: 'Vrai lieu', type: 'text', showEmpty: false },
-            { key: 'is_true', label: 'Véracité', type: 'boolean', showEmpty: true }
+            { key: 'real_location', label: 'Lieu réel', type: 'text', showEmpty: false },
+            { key: 'weaknesses', label: 'Faiblesses', type: 'array', showEmpty: false }
         ],
         clue: [
-            { key: 'description', label: 'Description', type: 'text', showEmpty: false },
-            { key: 'points_to', label: 'Pointe vers', type: 'text', showEmpty: false },
-            { key: 'visibility', label: 'Visibilité', type: 'text', showEmpty: false }
+            { key: 'clue_type', label: 'Type', type: 'select', showEmpty: false },
+            { key: 'significance', label: 'Importance', type: 'select', showEmpty: false },
+            { key: 'what_it_suggests', label: 'Ce que ça suggère', type: 'text', showEmpty: false },
+            { key: 'is_genuine', label: 'Preuve authentique', type: 'boolean', showEmpty: true },
+            { key: 'points_to_characters', label: 'Pointe vers', type: 'characters', showEmpty: false }
         ],
         motive_means_opportunity: [
-            { key: 'character_name', label: 'Suspect', type: 'text', showEmpty: true },
-            { key: 'motive', label: 'Mobile', type: 'text', showEmpty: false },
-            { key: 'means', label: 'Moyens', type: 'text', showEmpty: false },
-            { key: 'opportunity', label: 'Opportunité', type: 'text', showEmpty: false }
+            { key: 'character_name', label: 'Suspect', type: 'character', showEmpty: true },
+            { key: 'for_crime', label: 'Pour crime', type: 'text', showEmpty: false },
+            { key: 'actual_guilt', label: 'Culpabilité', type: 'select', showEmpty: false },
+            { key: 'motive_strength', label: 'Mobile', type: 'select', showEmpty: false },
+            { key: 'has_means', label: 'A les moyens', type: 'boolean', showEmpty: true },
+            { key: 'has_opportunity', label: 'A l\'opportunité', type: 'boolean', showEmpty: true }
         ],
         red_herring: [
             { key: 'what_it_suggests', label: 'Ce que ça suggère', type: 'text', showEmpty: false },
-            { key: 'misdirects_to', label: 'Dirige vers', type: 'text', showEmpty: false }
+            { key: 'misdirects_to_name', label: 'Dirige vers', type: 'character', showEmpty: false },
+            { key: 'misleading_clues', label: 'Indices trompeurs', type: 'array', showEmpty: false },
+            { key: 'intended_reader_impact', label: 'Impact lecteur', type: 'text', showEmpty: false }
         ],
         secret: [
-            { key: 'keeper', label: 'Gardien', type: 'text', showEmpty: true },
-            { key: 'nature', label: 'Nature', type: 'text', showEmpty: false },
-            { key: 'if_revealed', label: 'Si révélé', type: 'text', showEmpty: false }
+            { key: 'secret_type', label: 'Type', type: 'select', showEmpty: false },
+            { key: 'importance', label: 'Importance', type: 'select', showEmpty: false },
+            { key: 'holder_name', label: 'Détenu par', type: 'character', showEmpty: false },
+            { key: 'about_name', label: 'Concernant', type: 'character', showEmpty: false },
+            { key: 'current_status', label: 'Statut', type: 'select', showEmpty: false }
         ],
         question: [
-            { key: 'mystery', label: 'Mystère', type: 'text', showEmpty: false },
+            { key: 'question', label: 'Question', type: 'text', showEmpty: false },
+            { key: 'question_type', label: 'Type', type: 'select', showEmpty: false },
+            { key: 'importance', label: 'Importance', type: 'select', showEmpty: false },
+            { key: 'status', label: 'Statut', type: 'select', showEmpty: false },
             { key: 'answer', label: 'Réponse', type: 'text', showEmpty: false }
         ],
         knowledge_state: [
-            { key: 'character_name', label: 'Personnage', type: 'text', showEmpty: true },
-            { key: 'knows', label: 'Ce qu\'il sait', type: 'text', showEmpty: false },
-            { key: 'believes', label: 'Ce qu\'il croit', type: 'text', showEmpty: false }
+            { key: 'character_name', label: 'Personnage', type: 'character', showEmpty: true },
+            { key: 'about', label: 'Concernant', type: 'text', showEmpty: false },
+            { key: 'details', label: 'Détails', type: 'text', showEmpty: false }
         ],
         reversal: [
+            { key: 'reversal_type', label: 'Type', type: 'select', showEmpty: false },
             { key: 'setup_belief', label: 'Croyance établie', type: 'text', showEmpty: false },
-            { key: 'actual_truth', label: 'Vérité réelle', type: 'text', showEmpty: false }
+            { key: 'actual_truth', label: 'Vérité réelle', type: 'text', showEmpty: false },
+            { key: 'impact', label: 'Impact', type: 'select', showEmpty: false }
         ],
         backstory: [
-            { key: 'event', label: 'Événement', type: 'text', showEmpty: false },
-            { key: 'impact', label: 'Impact', type: 'text', showEmpty: false }
+            { key: 'when_it_happened', label: 'Quand', type: 'text', showEmpty: false },
+            { key: 'event_type', label: 'Type', type: 'select', showEmpty: false },
+            { key: 'importance', label: 'Importance', type: 'select', showEmpty: false },
+            { key: 'characters_involved', label: 'Personnages', type: 'characters', showEmpty: false }
         ],
         location: [
             { key: 'name', label: 'Nom', type: 'text', showEmpty: true },
-            { key: 'significance', label: 'Signification', type: 'text', showEmpty: false }
+            { key: 'coordinates', label: 'Coordonnées', type: 'text', showEmpty: false },
+            { key: 'description', label: 'Description', type: 'text', showEmpty: false }
         ]
     };
 
@@ -484,16 +501,104 @@ function getCardTypeProperties(cardType) {
 }
 
 function formatPropertyValue(value, type) {
+    if (!value && type !== 'boolean') {
+        return '<em>Non défini</em>';
+    }
+
     if (type === 'boolean') {
         return value ? '<span style="color: #27ae60;">✓ Vrai</span>' : '<span style="color: #e74c3c;">✗ Faux</span>';
     }
-    if (Array.isArray(value)) {
-        return value.length > 0 ? value.join(', ') : '<em>Aucun</em>';
+
+    if (type === 'array') {
+        if (Array.isArray(value)) {
+            return value.length > 0 ? value.slice(0, 3).join(', ') + (value.length > 3 ? '...' : '') : '<em>Aucun</em>';
+        }
+        return '<em>Aucun</em>';
     }
-    if (typeof value === 'string' && value.length > 60) {
-        return value.substring(0, 60) + '...';
+
+    if (type === 'character' || type === 'characters') {
+        // Value should already be the character name(s) from the data
+        if (Array.isArray(value)) {
+            return value.length > 0 ? value.slice(0, 2).join(', ') + (value.length > 2 ? '...' : '') : '<em>Aucun</em>';
+        }
+        return value || '<em>Non défini</em>';
     }
-    return value || '<em>Non défini</em>';
+
+    if (type === 'select') {
+        // Format select values for better display
+        const translations = {
+            // Clue types
+            'physical': 'Physique',
+            'testimonial': 'Témoignage',
+            'circumstantial': 'Circonstanciel',
+            'digital': 'Numérique',
+            'forensic': 'Médico-légal',
+            'documentary': 'Documentaire',
+            // Importance
+            'minor': 'Mineur',
+            'major': 'Majeur',
+            'critical': 'Critique',
+            // Motive strength
+            'none': 'Aucun',
+            'weak': 'Faible',
+            'moderate': 'Modéré',
+            'strong': 'Fort',
+            'compelling': 'Convaincant',
+            // Guilt
+            'innocent': 'Innocent',
+            'guilty': 'Coupable',
+            'accomplice': 'Complice',
+            'unknowing_participant': 'Involontaire',
+            // Secret types
+            'relationship': 'Relation',
+            'identity': 'Identité',
+            'crime': 'Crime',
+            'past': 'Passé',
+            'ability': 'Capacité',
+            // Secret status
+            'hidden': 'Caché',
+            'partially_revealed': 'Partiellement révélé',
+            'fully_revealed': 'Révélé',
+            // Question types
+            'whodunit': 'Qui l\'a fait',
+            'how': 'Comment',
+            'why': 'Pourquoi',
+            'when': 'Quand',
+            'where': 'Où',
+            'what': 'Quoi',
+            // Question status
+            'open': 'Ouvert',
+            'answered': 'Répondu',
+            'partially_answered': 'Partiellement répondu',
+            // Reversal types
+            'motive': 'Mobile',
+            'victim': 'Victime',
+            'ally_is_enemy': 'Allié = Ennemi',
+            'enemy_is_ally': 'Ennemi = Allié',
+            'timeline': 'Chronologie',
+            'method': 'Méthode',
+            'location': 'Lieu',
+            // Reversal impact
+            'twist': 'Rebondissement',
+            'revelation': 'Révélation',
+            'game_changer': 'Changement majeur',
+            // Backstory types
+            'other': 'Autre',
+            'original_crime': 'Crime d\'origine',
+            'trauma': 'Traumatisme',
+            'betrayal': 'Trahison',
+            'relationship_start': 'Début relation',
+            'death': 'Décès',
+            'secret_formed': 'Secret formé'
+        };
+        return translations[value] || value;
+    }
+
+    if (typeof value === 'string' && value.length > 80) {
+        return value.substring(0, 80) + '...';
+    }
+
+    return value;
 }
 
 function getNarrativeColumns() {
