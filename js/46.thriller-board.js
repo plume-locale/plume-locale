@@ -272,6 +272,19 @@ function renderThrillerGridView() {
             </div>
         </div>
     `;
+
+    // Render connections after DOM is ready
+    setTimeout(() => {
+        renderThrillerConnections();
+
+        // Add scroll listener to update connections on scroll
+        const gridContainer = document.getElementById('thrillerGridContainer');
+        if (gridContainer) {
+            gridContainer.addEventListener('scroll', () => {
+                renderThrillerConnections();
+            });
+        }
+    }, 100);
 }
 
 function renderThrillerGrid() {
@@ -294,31 +307,43 @@ function renderThrillerGrid() {
     }
 
     let html = `
-        <div class="thriller-grid-table">
-            <!-- Header Row -->
-            <div class="thriller-grid-header-row">
-                <div class="thriller-grid-row-header-cell">
-                    <span>Lignes / Colonnes</span>
-                </div>
-                ${columns.map(col => `
-                    <div class="thriller-grid-column-header" data-column-id="${col.id}">
-                        <div class="thriller-grid-column-title">
-                            ${col.title}
-                            ${gridConfig.columnMode === 'free' ? `
-                                <button class="btn-icon-sm" onclick="editThrillerColumn('${col.id}')" title="Modifier">
-                                    <i data-lucide="edit-2"></i>
-                                </button>
-                                <button class="btn-icon-sm" onclick="deleteThrillerColumn('${col.id}')" title="Supprimer">
-                                    <i data-lucide="trash-2"></i>
-                                </button>
-                            ` : ''}
-                        </div>
-                    </div>
-                `).join('')}
-            </div>
+        <div class="thriller-grid-wrapper" style="position: relative;">
+            <!-- SVG Connections Layer -->
+            <svg class="thriller-grid-connections" id="thrillerGridConnections" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1;">
+                <defs>
+                    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                        <polygon points="0 0, 10 3.5, 0 7" fill="var(--accent-gold)" />
+                    </marker>
+                </defs>
+            </svg>
 
-            <!-- Swimlane Rows -->
-            ${gridConfig.rows.map(row => renderThrillerSwimlaneRow(row, columns)).join('')}
+            <!-- Grid Table -->
+            <div class="thriller-grid-table" style="position: relative; z-index: 2;">
+                <!-- Header Row -->
+                <div class="thriller-grid-header-row">
+                    <div class="thriller-grid-row-header-cell">
+                        <span>Lignes / Colonnes</span>
+                    </div>
+                    ${columns.map(col => `
+                        <div class="thriller-grid-column-header" data-column-id="${col.id}">
+                            <div class="thriller-grid-column-title">
+                                ${col.title}
+                                ${gridConfig.columnMode === 'free' ? `
+                                    <button class="btn-icon-sm" onclick="editThrillerColumn('${col.id}')" title="Modifier">
+                                        <i data-lucide="edit-2"></i>
+                                    </button>
+                                    <button class="btn-icon-sm" onclick="deleteThrillerColumn('${col.id}')" title="Supprimer">
+                                        <i data-lucide="trash-2"></i>
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <!-- Swimlane Rows -->
+                ${gridConfig.rows.map(row => renderThrillerSwimlaneRow(row, columns)).join('')}
+            </div>
         </div>
     `;
 
@@ -2366,7 +2391,8 @@ let connectionState = {
     isDrawing: false,
     fromCardId: null,
     fromProperty: null,
-    tempLine: null
+    tempLine: null,
+    startPos: null
 };
 
 function startThrillerConnection(event, cardId, property) {
@@ -2377,19 +2403,54 @@ function startThrillerConnection(event, cardId, property) {
     connectionState.fromCardId = cardId;
     connectionState.fromProperty = property;
 
-    event.currentTarget.classList.add('active-socket');
+    // Get starting socket position
+    const socket = event.currentTarget;
+    socket.classList.add('active-socket');
+    connectionState.startPos = getSocketPosition(socket);
+
+    // Create temporary line
+    const svg = document.getElementById('thrillerGridConnections');
+    if (svg) {
+        const tempLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        tempLine.setAttribute('class', 'temp-connection');
+        tempLine.setAttribute('x1', connectionState.startPos.x);
+        tempLine.setAttribute('y1', connectionState.startPos.y);
+        tempLine.setAttribute('x2', connectionState.startPos.x);
+        tempLine.setAttribute('y2', connectionState.startPos.y);
+        tempLine.setAttribute('stroke', 'var(--accent-gold)');
+        tempLine.setAttribute('stroke-width', '2');
+        tempLine.setAttribute('stroke-dasharray', '5,5');
+        svg.appendChild(tempLine);
+        connectionState.tempLine = tempLine;
+    }
 
     document.addEventListener('mousemove', handleConnectionDrag);
     document.addEventListener('mouseup', endThrillerConnection);
 }
 
 function handleConnectionDrag(event) {
-    if (!connectionState.isDrawing) return;
-    // Draw temporary line following cursor - simplified for now
+    if (!connectionState.isDrawing || !connectionState.tempLine) return;
+
+    // Update temporary line to follow cursor
+    const container = document.getElementById('thrillerGridContainer');
+    if (!container) return;
+
+    const rect = container.getBoundingClientRect();
+    const x = event.clientX - rect.left + container.scrollLeft;
+    const y = event.clientY - rect.top + container.scrollTop;
+
+    connectionState.tempLine.setAttribute('x2', x);
+    connectionState.tempLine.setAttribute('y2', y);
 }
 
 function endThrillerConnection(event) {
     if (!connectionState.isDrawing) return;
+
+    // Remove temporary line
+    if (connectionState.tempLine) {
+        connectionState.tempLine.remove();
+        connectionState.tempLine = null;
+    }
 
     const targetSocket = event.target.closest('.thriller-card-socket');
 
@@ -2402,9 +2463,11 @@ function endThrillerConnection(event) {
         );
     }
 
+    // Cleanup
     connectionState.isDrawing = false;
     connectionState.fromCardId = null;
     connectionState.fromProperty = null;
+    connectionState.startPos = null;
 
     document.querySelectorAll('.active-socket').forEach(el => el.classList.remove('active-socket'));
     document.removeEventListener('mousemove', handleConnectionDrag);
@@ -2412,6 +2475,19 @@ function endThrillerConnection(event) {
 }
 
 function createThrillerConnection(fromCardId, fromProperty, toCardId, toProperty) {
+    // Check if connection already exists
+    const exists = thrillerBoardState.gridConfig.connections &&
+        thrillerBoardState.gridConfig.connections.some(conn =>
+            conn.from.cardId === fromCardId &&
+            conn.from.property === fromProperty &&
+            conn.to.cardId === toCardId &&
+            conn.to.property === toProperty
+        );
+
+    if (exists) {
+        return; // Don't create duplicate connections
+    }
+
     const connection = {
         id: generateId(),
         from: {
@@ -2432,4 +2508,111 @@ function createThrillerConnection(fromCardId, fromProperty, toCardId, toProperty
 
     saveProject();
     renderThrillerBoard();
+}
+
+function deleteThrillerConnection(connectionId) {
+    if (!thrillerBoardState.gridConfig.connections) return;
+
+    thrillerBoardState.gridConfig.connections = thrillerBoardState.gridConfig.connections.filter(
+        conn => conn.id !== connectionId
+    );
+
+    saveProject();
+    renderThrillerBoard();
+}
+
+// ============================================
+// SVG CONNECTION RENDERING
+// ============================================
+
+function renderThrillerConnections() {
+    const svg = document.getElementById('thrillerGridConnections');
+    if (!svg) return;
+
+    // Clear existing connections (except defs)
+    const existingLines = svg.querySelectorAll('path, line:not(.temp-connection)');
+    existingLines.forEach(line => line.remove());
+
+    if (!thrillerBoardState.gridConfig.connections) return;
+
+    // Draw each connection
+    thrillerBoardState.gridConfig.connections.forEach(connection => {
+        drawConnectionLine(svg, connection);
+    });
+}
+
+function drawConnectionLine(svg, connection) {
+    // Find source and target sockets
+    const fromSocket = document.querySelector(
+        `.thriller-card-socket[data-card-id="${connection.from.cardId}"][data-property="${connection.from.property}"]`
+    );
+    const toSocket = document.querySelector(
+        `.thriller-card-socket[data-card-id="${connection.to.cardId}"][data-property="${connection.to.property}"]`
+    );
+
+    if (!fromSocket || !toSocket) return;
+
+    const fromPos = getSocketPosition(fromSocket);
+    const toPos = getSocketPosition(toSocket);
+
+    // Create curved path
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+
+    // Calculate control points for cubic bezier curve
+    const dx = toPos.x - fromPos.x;
+    const dy = toPos.y - fromPos.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    const offset = Math.min(distance * 0.3, 100);
+
+    const cp1x = fromPos.x + offset;
+    const cp1y = fromPos.y;
+    const cp2x = toPos.x - offset;
+    const cp2y = toPos.y;
+
+    const pathData = `M ${fromPos.x} ${fromPos.y} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${toPos.x} ${toPos.y}`;
+
+    path.setAttribute('d', pathData);
+    path.setAttribute('stroke', 'var(--accent-gold)');
+    path.setAttribute('stroke-width', '2');
+    path.setAttribute('fill', 'none');
+    path.setAttribute('marker-end', 'url(#arrowhead)');
+    path.setAttribute('class', 'thriller-connection-line');
+    path.setAttribute('data-connection-id', connection.id);
+    path.style.cursor = 'pointer';
+    path.style.pointerEvents = 'stroke';
+
+    // Add hover effect
+    path.addEventListener('mouseenter', function() {
+        this.setAttribute('stroke-width', '3');
+        this.setAttribute('stroke', '#f0a000');
+    });
+
+    path.addEventListener('mouseleave', function() {
+        this.setAttribute('stroke-width', '2');
+        this.setAttribute('stroke', 'var(--accent-gold)');
+    });
+
+    // Add click to delete
+    path.addEventListener('click', function(e) {
+        e.stopPropagation();
+        if (confirm('Supprimer cette connexion ?')) {
+            deleteThrillerConnection(connection.id);
+        }
+    });
+
+    svg.appendChild(path);
+}
+
+function getSocketPosition(socket) {
+    const container = document.getElementById('thrillerGridContainer');
+    if (!container) return { x: 0, y: 0 };
+
+    const containerRect = container.getBoundingClientRect();
+    const socketRect = socket.getBoundingClientRect();
+
+    // Calculate position relative to container, accounting for scroll
+    const x = socketRect.left - containerRect.left + container.scrollLeft + socketRect.width / 2;
+    const y = socketRect.top - containerRect.top + container.scrollTop + socketRect.height / 2;
+
+    return { x, y };
 }

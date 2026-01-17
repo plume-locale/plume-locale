@@ -967,3 +967,26 @@
         max-width: 140px;
     }
 }
+
+/* Connection SVG Styles */
+.thriller-grid-connections {
+    pointer-events: none;
+}
+
+.thriller-connection-line {
+    pointer-events: stroke;
+    transition: all 0.2s ease;
+}
+
+.temp-connection {
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.thriller-grid-wrapper {
+    position: relative;
+}
+
+.thriller-grid-table {
+    position: relative;
+}
