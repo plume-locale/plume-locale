@@ -28,7 +28,7 @@ const THRILLER_TYPES = {
         description: 'Character alibi for an event'
     },
     backstory: {
-        label: 'Backstory',
+        label: 'Backstory Event',
         icon: 'history',
         color: '#8e44ad',
         description: 'Character background information'
@@ -52,7 +52,7 @@ const THRILLER_TYPES = {
         description: 'Important location in the story'
     },
     motive_means_opportunity: {
-        label: 'Motive/Means/Opportunity',
+        label: 'Suspect Analysis',
         icon: 'target',
         color: '#e74c3c',
         description: 'Suspect\'s potential for committing crime'
@@ -627,19 +627,36 @@ function renderThrillerElementFields(element) {
         case 'backstory':
             return `
                 <div class="form-group">
-                    <label for="bsCharacterId">Personnage</label>
-                    <select id="bsCharacterId">
-                        <option value="">Sélectionner un personnage</option>
-                        ${project.characters.map(char => `<option value="${char.id}" ${element.data.character_id === char.id ? 'selected' : ''}>${char.name}</option>`).join('')}
-                    </select>
+                    <label for="whenItHappened">When It Happened *</label>
+                    <input type="text" id="whenItHappened" placeholder="e.g., 5 years ago, June 2019" value="${element.data.when_it_happened || ''}" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group" style="flex: 1;">
+                        <label for="backstoryType">Type</label>
+                        <select id="backstoryType">
+                            <option value="other" ${element.data.event_type === 'other' ? 'selected' : ''}>Other</option>
+                            <option value="original_crime" ${element.data.event_type === 'original_crime' ? 'selected' : ''}>Original Crime</option>
+                            <option value="trauma" ${element.data.event_type === 'trauma' ? 'selected' : ''}>Trauma</option>
+                            <option value="betrayal" ${element.data.event_type === 'betrayal' ? 'selected' : ''}>Betrayal</option>
+                            <option value="relationship_start" ${element.data.event_type === 'relationship_start' ? 'selected' : ''}>Relationship Start</option>
+                            <option value="death" ${element.data.event_type === 'death' ? 'selected' : ''}>Death</option>
+                            <option value="secret_formed" ${element.data.event_type === 'secret_formed' ? 'selected' : ''}>Secret Formed</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="backstoryImportance">Importance</label>
+                        <select id="backstoryImportance">
+                            <option value="minor" ${element.data.importance === 'minor' ? 'selected' : ''}>Minor</option>
+                            <option value="major" ${element.data.importance === 'major' ? 'selected' : ''}>Major</option>
+                            <option value="critical" ${element.data.importance === 'critical' ? 'selected' : ''}>Critical</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label for="bsPeriod">Période / Date</label>
-                    <input type="text" id="bsPeriod" value="${element.data.period || ''}">
-                </div>
-                <div class="form-group">
-                    <label for="bsSummary">Résumé</label>
-                    <textarea id="bsSummary" rows="4">${element.data.summary || ''}</textarea>
+                    <label>Characters Involved</label>
+                    <div class="character-pills-container" id="backstoryCharactersContainer">
+                        ${renderCharacterPills(element.data.characters_involved || [], 'backstoryCharacters')}
+                    </div>
                 </div>
             `;
 
@@ -680,24 +697,60 @@ function renderThrillerElementFields(element) {
 
         case 'motive_means_opportunity':
             return `
+                <div class="form-row">
+                    <div class="form-group" style="flex: 1;">
+                        <label for="mmCharacterId">Character *</label>
+                        <select id="mmCharacterId" required>
+                            <option value="">Select character</option>
+                            ${project.characters.map(char => `<option value="${char.id}" ${element.data.character_id === char.id ? 'selected' : ''}>${char.name}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="forCrimeEvent">For Crime/Event *</label>
+                        <input type="text" id="forCrimeEvent" placeholder="e.g., Murder of John Doe" value="${element.data.for_crime || ''}" required>
+                    </div>
+                </div>
                 <div class="form-group">
-                    <label for="mmCharacterId">Suspect</label>
-                    <select id="mmCharacterId">
-                        <option value="">Sélectionner un personnage</option>
-                        ${project.characters.map(char => `<option value="${char.id}" ${element.data.character_id === char.id ? 'selected' : ''}>${char.name}</option>`).join('')}
+                    <label for="actualGuilt">Actual Guilt</label>
+                    <select id="actualGuilt">
+                        <option value="innocent" ${element.data.actual_guilt === 'innocent' ? 'selected' : ''}>Innocent</option>
+                        <option value="guilty" ${element.data.actual_guilt === 'guilty' ? 'selected' : ''}>Guilty</option>
+                        <option value="accomplice" ${element.data.actual_guilt === 'accomplice' ? 'selected' : ''}>Accomplice</option>
+                        <option value="unknowing_participant" ${element.data.actual_guilt === 'unknowing_participant' ? 'selected' : ''}>Unknowing Participant</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label for="mmMotive">Mobile</label>
-                    <textarea id="mmMotive" rows="2">${element.data.motive || ''}</textarea>
+                <div class="form-section" style="background-color: #fef5e7;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <h4 style="margin: 0;">Motive</h4>
+                        <select id="motiveStrength" style="width: auto; font-size: 14px;">
+                            <option value="none" ${element.data.motive_strength === 'none' ? 'selected' : ''}>None</option>
+                            <option value="weak" ${element.data.motive_strength === 'weak' ? 'selected' : ''}>Weak</option>
+                            <option value="moderate" ${element.data.motive_strength === 'moderate' ? 'selected' : ''}>Moderate</option>
+                            <option value="strong" ${element.data.motive_strength === 'strong' ? 'selected' : ''}>Strong</option>
+                            <option value="compelling" ${element.data.motive_strength === 'compelling' ? 'selected' : ''}>Compelling</option>
+                        </select>
+                    </div>
+                    <textarea id="mmMotive" rows="3" placeholder="Why they would do it...">${element.data.motive || ''}</textarea>
                 </div>
-                <div class="form-group">
-                    <label for="mmMeans">Moyens</label>
-                    <textarea id="mmMeans" rows="2">${element.data.means || ''}</textarea>
+                <div class="form-section" style="background-color: #ebf5fb;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <h4 style="margin: 0;">Means</h4>
+                        <label style="display: flex; align-items: center; gap: 8px; margin: 0;">
+                            <input type="checkbox" id="hasMeans" ${element.data.has_means ? 'checked' : ''}>
+                            Has Means
+                        </label>
+                    </div>
+                    <textarea id="mmMeans" rows="3" placeholder="Tools, knowledge, ability to do it...">${element.data.means || ''}</textarea>
                 </div>
-                <div class="form-group">
-                    <label for="mmOpportunity">Opportunité</label>
-                    <textarea id="mmOpportunity" rows="2">${element.data.opportunity || ''}</textarea>
+                <div class="form-section" style="background-color: #e8f8f5;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <h4 style="margin: 0;">Opportunity</h4>
+                        <label style="display: flex; align-items: center; gap: 8px; margin: 0;">
+                            <input type="checkbox" id="hasOpportunity" ${element.data.has_opportunity ? 'checked' : ''}>
+                            Has Opportunity
+                        </label>
+                    </div>
+                    <textarea id="mmOpportunity" rows="3" placeholder="When/where they could have done it...">${element.data.opportunity || ''}</textarea>
                 </div>
             `;
 
@@ -819,20 +872,61 @@ function renderThrillerElementFields(element) {
         case 'reversal':
             return `
                 <div class="form-group">
-                    <label for="rvAbout">Révélation concernant</label>
-                    <input type="text" id="rvAbout" value="${element.data.about || ''}">
+                    <label for="setupBelief">Setup Belief *</label>
+                    <textarea id="setupBelief" rows="3" placeholder="What readers were led to believe..." required>${element.data.setup_belief || ''}</textarea>
                 </div>
                 <div class="form-group">
-                    <label for="rvDesc">Description de la révélation</label>
-                    <textarea id="rvDesc" rows="3">${element.data.description || ''}</textarea>
+                    <label for="actualTruth">Actual Truth *</label>
+                    <textarea id="actualTruth" rows="3" placeholder="What's actually true..." required>${element.data.actual_truth || ''}</textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group" style="flex: 1;">
+                        <label for="reversalType">Type</label>
+                        <select id="reversalType">
+                            <option value="identity" ${element.data.reversal_type === 'identity' ? 'selected' : ''}>Identity</option>
+                            <option value="motive" ${element.data.reversal_type === 'motive' ? 'selected' : ''}>Motive</option>
+                            <option value="victim" ${element.data.reversal_type === 'victim' ? 'selected' : ''}>Victim</option>
+                            <option value="ally_is_enemy" ${element.data.reversal_type === 'ally_is_enemy' ? 'selected' : ''}>Ally is Enemy</option>
+                            <option value="enemy_is_ally" ${element.data.reversal_type === 'enemy_is_ally' ? 'selected' : ''}>Enemy is Ally</option>
+                            <option value="timeline" ${element.data.reversal_type === 'timeline' ? 'selected' : ''}>Timeline</option>
+                            <option value="method" ${element.data.reversal_type === 'method' ? 'selected' : ''}>Method</option>
+                            <option value="location" ${element.data.reversal_type === 'location' ? 'selected' : ''}>Location</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="reversalImpact">Impact</label>
+                        <select id="reversalImpact">
+                            <option value="minor" ${element.data.impact === 'minor' ? 'selected' : ''}>Minor</option>
+                            <option value="medium" ${element.data.impact === 'medium' ? 'selected' : ''}>Medium</option>
+                            <option value="major_twist" ${element.data.impact === 'major_twist' ? 'selected' : ''}>Major Twist</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex: 1; display: flex; align-items: center; padding-top: 24px;">
+                        <label style="display: flex; align-items: center; gap: 8px; margin: 0;">
+                            <input type="checkbox" id="isEarned" ${element.data.is_earned ? 'checked' : ''}>
+                            Properly Earned
+                        </label>
+                    </div>
+                </div>
+                <div class="form-section">
+                    <h4>Setup Scenes</h4>
+                    <div class="form-group">
+                        <label>Scenes that established the false belief</label>
+                        <div class="scene-pills-container" id="setupScenesContainer">
+                            ${renderScenePills(element.data.setup_scenes || [], 'setupScenes')}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="reversalScene">Reversal Scene</label>
+                        <select id="reversalScene">
+                            <option value="">Select scene</option>
+                            ${renderSceneOptions(element.data.reversal_scene_id)}
+                        </select>
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label for="rvImpact">Impact</label>
-                    <select id="rvImpact">
-                        <option value="low" ${element.data.impact === 'low' ? 'selected' : ''}>Faible</option>
-                        <option value="medium" ${element.data.impact === 'medium' ? 'selected' : ''}>Moyen</option>
-                        <option value="high" ${element.data.impact === 'high' ? 'selected' : ''}>Élevé</option>
-                    </select>
+                    <label for="foreshadowingNotes">Foreshadowing Notes</label>
+                    <textarea id="foreshadowingNotes" rows="4" placeholder="How this was foreshadowed...">${element.data.foreshadowing_notes || ''}</textarea>
                 </div>
             `;
 
@@ -905,10 +999,15 @@ function saveThrillerElement(event, elementId) {
             };
             break;
         case 'backstory':
+            const backstoryCharactersContainer = document.getElementById('backstoryCharactersContainer');
+            const backstoryCharacters = backstoryCharactersContainer ?
+                Array.from(backstoryCharactersContainer.querySelectorAll('.character-pill')).map(pill => pill.dataset.charId) : [];
+
             element.data = {
-                character_id: document.getElementById('bsCharacterId') ? document.getElementById('bsCharacterId').value : '',
-                period: document.getElementById('bsPeriod') ? document.getElementById('bsPeriod').value : '',
-                summary: document.getElementById('bsSummary') ? document.getElementById('bsSummary').value : ''
+                when_it_happened: document.getElementById('whenItHappened') ? document.getElementById('whenItHappened').value : '',
+                event_type: document.getElementById('backstoryType') ? document.getElementById('backstoryType').value : 'other',
+                importance: document.getElementById('backstoryImportance') ? document.getElementById('backstoryImportance').value : 'minor',
+                characters_involved: backstoryCharacters
             };
             break;
 
@@ -931,9 +1030,14 @@ function saveThrillerElement(event, elementId) {
         case 'motive_means_opportunity':
             element.data = {
                 character_id: document.getElementById('mmCharacterId') ? document.getElementById('mmCharacterId').value : '',
+                for_crime: document.getElementById('forCrimeEvent') ? document.getElementById('forCrimeEvent').value : '',
+                actual_guilt: document.getElementById('actualGuilt') ? document.getElementById('actualGuilt').value : 'innocent',
                 motive: document.getElementById('mmMotive') ? document.getElementById('mmMotive').value : '',
+                motive_strength: document.getElementById('motiveStrength') ? document.getElementById('motiveStrength').value : 'none',
                 means: document.getElementById('mmMeans') ? document.getElementById('mmMeans').value : '',
-                opportunity: document.getElementById('mmOpportunity') ? document.getElementById('mmOpportunity').value : ''
+                has_means: document.getElementById('hasMeans') ? document.getElementById('hasMeans').checked : false,
+                opportunity: document.getElementById('mmOpportunity') ? document.getElementById('mmOpportunity').value : '',
+                has_opportunity: document.getElementById('hasOpportunity') ? document.getElementById('hasOpportunity').checked : false
             };
             break;
 
@@ -971,10 +1075,19 @@ function saveThrillerElement(event, elementId) {
             break;
 
         case 'reversal':
+            const setupScenesContainer = document.getElementById('setupScenesContainer');
+            const setupScenes = setupScenesContainer ?
+                Array.from(setupScenesContainer.querySelectorAll('.scene-pill')).map(pill => pill.dataset.sceneId) : [];
+
             element.data = {
-                about: document.getElementById('rvAbout') ? document.getElementById('rvAbout').value : '',
-                description: document.getElementById('rvDesc') ? document.getElementById('rvDesc').value : '',
-                impact: document.getElementById('rvImpact') ? document.getElementById('rvImpact').value : 'medium'
+                setup_belief: document.getElementById('setupBelief') ? document.getElementById('setupBelief').value : '',
+                actual_truth: document.getElementById('actualTruth') ? document.getElementById('actualTruth').value : '',
+                reversal_type: document.getElementById('reversalType') ? document.getElementById('reversalType').value : 'identity',
+                impact: document.getElementById('reversalImpact') ? document.getElementById('reversalImpact').value : 'medium',
+                is_earned: document.getElementById('isEarned') ? document.getElementById('isEarned').checked : false,
+                setup_scenes: setupScenes,
+                reversal_scene_id: document.getElementById('reversalScene') ? document.getElementById('reversalScene').value : '',
+                foreshadowing_notes: document.getElementById('foreshadowingNotes') ? document.getElementById('foreshadowingNotes').value : ''
             };
             break;
     }
