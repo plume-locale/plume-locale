@@ -106,7 +106,7 @@ let thrillerBoardState = {
     zoom: 1,
     selectedElements: [],
     contextPanelOpen: true,
-    currentFilter: 'all',
+    currentFilter: 'clue', // Default to clues tab
     snapToGrid: true
 };
 
@@ -135,46 +135,35 @@ function renderThrillerBoard() {
 
     container.innerHTML = `
         <div class="thriller-board-container">
-            <!-- Toolbar -->
-            <div class="thriller-board-toolbar">
-                <div class="thriller-toolbar-left">
-                    <button class="btn btn-secondary" onclick="addThrillerElement()">
-                        <i data-lucide="plus"></i>
-                        Ajouter élément
-                    </button>
-                    <div class="thriller-filter">
-                        <select id="thrillerFilter" onchange="filterThrillerElements(this.value)">
-                            <option value="all">Tous les éléments</option>
-                            <option value="alibi">Alibis</option>
-                            <option value="clue">Indices</option>
-                            <option value="secret">Secrets</option>
-                            <option value="question">Questions</option>
-                            <option value="motive_means_opportunity">Motive/Means/Opportunity</option>
-                            <option value="location">Lieux</option>
-                            <option value="backstory">Backstories</option>
-                            <option value="knowledge_state">États de connaissance</option>
-                            <option value="red_herring">Fausses pistes</option>
-                            <option value="reversal">Reversements</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="thriller-toolbar-center">
-                    <button class="btn btn-ghost" onclick="zoomThrillerBoard(-1)">
-                        <i data-lucide="zoom-out"></i>
-                    </button>
-                    <span id="thrillerZoomLevel">100%</span>
-                    <button class="btn btn-ghost" onclick="zoomThrillerBoard(1)">
-                        <i data-lucide="zoom-in"></i>
-                    </button>
-                    <button class="btn btn-ghost" onclick="fitThrillerBoardToScreen()">
-                        <i data-lucide="maximize"></i>
-                    </button>
-                </div>
-                <div class="thriller-toolbar-right">
-                    <button class="btn btn-ghost" onclick="toggleThrillerContextPanel()">
-                        <i data-lucide="sidebar"></i>
-                    </button>
-                </div>
+            <!-- Tabs Navigation -->
+            <div class="thriller-board-tabs">
+                <button class="thriller-tab ${thrillerBoardState.currentFilter === 'clue' ? 'active' : ''}" onclick="selectThrillerTab('clue')">
+                    <i data-lucide="search"></i> Indices
+                </button>
+                <button class="thriller-tab ${thrillerBoardState.currentFilter === 'secret' ? 'active' : ''}" onclick="selectThrillerTab('secret')">
+                    <i data-lucide="lock"></i> Secrets
+                </button>
+                <button class="thriller-tab ${thrillerBoardState.currentFilter === 'alibi' ? 'active' : ''}" onclick="selectThrillerTab('alibi')">
+                    <i data-lucide="shield-check"></i> Alibis
+                </button>
+                <button class="thriller-tab ${thrillerBoardState.currentFilter === 'red_herring' ? 'active' : ''}" onclick="selectThrillerTab('red_herring')">
+                    <i data-lucide="fish"></i> Fausses pistes
+                </button>
+                <button class="thriller-tab ${thrillerBoardState.currentFilter === 'question' ? 'active' : ''}" onclick="selectThrillerTab('question')">
+                    <i data-lucide="help-circle"></i> Questions
+                </button>
+                <button class="thriller-tab ${thrillerBoardState.currentFilter === 'reversal' ? 'active' : ''}" onclick="selectThrillerTab('reversal')">
+                    <i data-lucide="rotate-ccw"></i> Révélations
+                </button>
+                <button class="thriller-tab ${thrillerBoardState.currentFilter === 'location' ? 'active' : ''}" onclick="selectThrillerTab('location')">
+                    <i data-lucide="map-pin"></i> Lieux
+                </button>
+                <button class="thriller-tab ${thrillerBoardState.currentFilter === 'backstory' ? 'active' : ''}" onclick="selectThrillerTab('backstory')">
+                    <i data-lucide="history"></i> Événements passés
+                </button>
+                <button class="thriller-tab ${thrillerBoardState.currentFilter === 'motive_means_opportunity' ? 'active' : ''}" onclick="selectThrillerTab('motive_means_opportunity')">
+                    <i data-lucide="target"></i> Suspects
+                </button>
             </div>
 
             <!-- Canvas Area -->
@@ -219,19 +208,21 @@ function renderThrillerBoard() {
 // ============================================
 
 function addThrillerElement(type = null) {
+    // Use current filter if no type specified
     if (!type) {
-        // Show type selection modal
-        showThrillerTypeSelector();
-        return;
+        type = thrillerBoardState.currentFilter;
     }
 
     const elementType = THRILLER_TYPES[type];
     if (!elementType) return;
 
+    // Count existing elements of this type
+    const existingCount = thrillerBoardState.elements.filter(el => el.type === type).length;
+
     const newElement = {
         id: generateId(),
         type: type,
-        title: `${elementType.label} ${thrillerBoardState.elements.length + 1}`,
+        title: `${elementType.label} ${existingCount + 1}`,
         description: '',
         position: { x: 100, y: 100 },
         size: { width: 280, height: 200 },
@@ -252,47 +243,39 @@ function addThrillerElement(type = null) {
     editThrillerElement(newElement.id);
 }
 
-function showThrillerTypeSelector() {
-    const modal = document.createElement('div');
-    modal.className = 'modal-overlay';
-    modal.innerHTML = `
-        <div class="modal-content" style="max-width: 600px;">
-            <div class="modal-header">
-                <h3>Choisir un type d'élément</h3>
-                <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">
-                    <i data-lucide="x"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="thriller-type-grid">
-                    ${Object.entries(THRILLER_TYPES).map(([key, type]) => `
-                        <button class="thriller-type-card" onclick="addThrillerElement('${key}'); this.closest('.modal-overlay').remove();">
-                            <div class="thriller-type-icon" style="color: ${type.color}">
-                                <i data-lucide="${type.icon}"></i>
-                            </div>
-                            <div class="thriller-type-label">${type.label}</div>
-                            <div class="thriller-type-desc">${type.description}</div>
-                        </button>
-                    `).join('')}
-                </div>
-            </div>
-        </div>
-    `;
-
-    document.body.appendChild(modal);
-
-    setTimeout(() => {
-        if (typeof lucide !== 'undefined') lucide.createIcons();
-    }, 50);
+function selectThrillerTab(type) {
+    thrillerBoardState.currentFilter = type;
+    renderThrillerBoard();
 }
 
 function renderThrillerElements() {
     const content = document.getElementById('thrillerBoardContent');
     if (!content) return;
 
-    const filteredElements = thrillerBoardState.currentFilter === 'all'
-        ? thrillerBoardState.elements
-        : thrillerBoardState.elements.filter(el => el.type === thrillerBoardState.currentFilter);
+    const filteredElements = thrillerBoardState.elements.filter(el => el.type === thrillerBoardState.currentFilter);
+    const currentType = THRILLER_TYPES[thrillerBoardState.currentFilter];
+
+    // Show empty state if no elements
+    if (filteredElements.length === 0) {
+        content.innerHTML = `
+            <div class="thriller-empty-state">
+                <div class="thriller-empty-icon" style="color: ${currentType.color}">
+                    <i data-lucide="${currentType.icon}"></i>
+                </div>
+                <h3>Aucun ${currentType.label.toLowerCase()} pour le moment</h3>
+                <p>${currentType.description}</p>
+                <button class="btn btn-primary" onclick="addThrillerElement()">
+                    <i data-lucide="plus"></i>
+                    Ajouter premier ${currentType.label.toLowerCase()}
+                </button>
+            </div>
+        `;
+
+        setTimeout(() => {
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        }, 50);
+        return;
+    }
 
     content.innerHTML = filteredElements.map(element => {
         const typeData = THRILLER_TYPES[element.type];
@@ -1114,9 +1097,9 @@ function deleteThrillerElement(elementId) {
     saveProject();
 }
 
+// Kept for backwards compatibility, redirects to selectThrillerTab
 function filterThrillerElements(filterType) {
-    thrillerBoardState.currentFilter = filterType;
-    renderThrillerElements();
+    selectThrillerTab(filterType);
 }
 
 // ============================================
