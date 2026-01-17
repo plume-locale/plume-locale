@@ -383,15 +383,15 @@ function editThrillerElement(elementId) {
             <div class="modal-body">
                 <form id="thrillerElementForm" onsubmit="saveThrillerElement(event, '${elementId}')">
                     <div class="form-group">
-                        <label for="elementTitle">Titre</label>
-                        <input type="text" id="elementTitle" value="${element.title}" required>
+                        <label class="form-label" for="elementTitle">Titre</label>
+                        <input type="text" class="form-input" id="elementTitle" value="${element.title}" required>
                     </div>
                     <div class="form-group">
-                        <label for="elementDescription">Description</label>
-                        <textarea id="elementDescription" rows="4">${element.description}</textarea>
+                        <label class="form-label" for="elementDescription">Description</label>
+                        <textarea class="form-input" id="elementDescription" rows="4">${element.description}</textarea>
                     </div>
                     ${renderThrillerElementFields(element)}
-                    <div class="form-actions">
+                    <div class="modal-actions">
                         <button type="button" class="btn btn-secondary" onclick="this.closest('.modal-overlay').remove()">Annuler</button>
                         <button type="submit" class="btn btn-primary">Sauvegarder</button>
                     </div>
@@ -414,19 +414,19 @@ function renderThrillerElementFields(element) {
             return `
                 <div class="form-row">
                     <div class="form-group" style="flex: 1;">
-                        <label for="characterId">Personnage</label>
-                        <select id="characterId">
+                        <label class="form-label" for="characterId">Personnage</label>
+                        <select class="form-input" id="characterId">
                             <option value="">Sélectionner un personnage</option>
                             ${project.characters.map(char => `<option value="${char.id}" ${element.data.character_id === char.id ? 'selected' : ''}>${char.name}</option>`).join('')}
                         </select>
                     </div>
                     <div class="form-group" style="flex: 1;">
-                        <label for="forEvent">Pour l'événement</label>
-                        <input type="text" id="forEvent" value="${element.data.for_event || ''}">
+                        <label class="form-label" for="forEvent">Pour l'événement</label>
+                        <input type="text" class="form-input" id="forEvent" value="${element.data.for_event || ''}">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label style="display: flex; align-items: center; gap: 8px;">
+                    <label class="form-label" style="display: flex; align-items: center; gap: 8px;">
                         <input type="checkbox" id="isTrue" ${element.data.is_true ? 'checked' : ''}>
                         Cet alibi est-il vrai ?
                     </label>
@@ -436,12 +436,12 @@ function renderThrillerElementFields(element) {
                     <h4>Alibi déclaré</h4>
                     <div class="form-row">
                         <div class="form-group" style="flex: 1;">
-                            <label for="claimedLocation">Lieu déclaré</label>
-                            <input type="text" id="claimedLocation" placeholder="Où ils prétendent avoir été" value="${element.data.claimed_location || ''}">
+                            <label class="form-label" for="claimedLocation">Lieu déclaré</label>
+                            <input type="text" class="form-input" id="claimedLocation" placeholder="Où ils prétendent avoir été" value="${element.data.claimed_location || ''}">
                         </div>
                         <div class="form-group" style="flex: 1;">
-                            <label for="claimedActivity">Activité déclarée</label>
-                            <input type="text" id="claimedActivity" placeholder="Ce qu'ils prétendent avoir fait" value="${element.data.claimed_activity || ''}">
+                            <label class="form-label" for="claimedActivity">Activité déclarée</label>
+                            <input type="text" class="form-input" id="claimedActivity" placeholder="Ce qu'ils prétendent avoir fait" value="${element.data.claimed_activity || ''}">
                         </div>
                     </div>
                 </div>
@@ -449,23 +449,23 @@ function renderThrillerElementFields(element) {
                     <h4 style="color: #c0392b;">Réalité (cachée)</h4>
                     <div class="form-row">
                         <div class="form-group" style="flex: 1;">
-                            <label for="realLocation">Lieu réel</label>
-                            <input type="text" id="realLocation" placeholder="Où ils étaient réellement" value="${element.data.real_location || ''}">
+                            <label class="form-label" for="realLocation">Lieu réel</label>
+                            <input type="text" class="form-input" id="realLocation" placeholder="Où ils étaient réellement" value="${element.data.real_location || ''}">
                         </div>
                         <div class="form-group" style="flex: 1;">
-                            <label for="realActivity">Activité réelle</label>
-                            <input type="text" id="realActivity" placeholder="Ce qu'ils ont réellement fait" value="${element.data.real_activity || ''}">
+                            <label class="form-label" for="realActivity">Activité réelle</label>
+                            <input type="text" class="form-input" id="realActivity" placeholder="Ce qu'ils ont réellement fait" value="${element.data.real_activity || ''}">
                         </div>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Témoins</label>
+                    <label class="form-label">Témoins</label>
                     <div class="character-pills-container" id="alibiWitnessesContainer">
                         ${renderCharacterPills(element.data.witnesses || [], 'alibiWitnesses')}
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Faiblesses / Failles de l'alibi</label>
+                    <label class="form-label">Faiblesses / Failles de l'alibi</label>
                     <div id="weaknessesContainer">
                         ${renderListItems(element.data.weaknesses || [], 'weaknesses')}
                     </div>
@@ -475,15 +475,15 @@ function renderThrillerElementFields(element) {
                 </div>
                 <div class="form-row">
                     <div class="form-group" style="flex: 1;">
-                        <label for="verifiedScene">Vérifié dans la scène</label>
-                        <select id="verifiedScene">
+                        <label class="form-label" for="verifiedScene">Vérifié dans la scène</label>
+                        <select class="form-input" id="verifiedScene">
                             <option value="">Sélectionner une scène</option>
                             ${renderSceneOptions(element.data.verified_scene)}
                         </select>
                     </div>
                     <div class="form-group" style="flex: 1;">
-                        <label for="brokenScene">Brisé dans la scène</label>
-                        <select id="brokenScene">
+                        <label class="form-label" for="brokenScene">Brisé dans la scène</label>
+                        <select class="form-input" id="brokenScene">
                             <option value="">Quand l'alibi est brisé</option>
                             ${renderSceneOptions(element.data.broken_scene)}
                         </select>
@@ -495,8 +495,8 @@ function renderThrillerElementFields(element) {
             return `
                 <div class="form-row">
                     <div class="form-group" style="flex: 1;">
-                        <label for="clueType">Type *</label>
-                        <select id="clueType">
+                        <label class="form-label" for="clueType">Type *</label>
+                        <select class="form-input" id="clueType">
                             <option value="physical" ${element.data.clue_type === 'physical' ? 'selected' : ''}>Physique</option>
                             <option value="testimonial" ${element.data.clue_type === 'testimonial' ? 'selected' : ''}>Témoignage</option>
                             <option value="circumstantial" ${element.data.clue_type === 'circumstantial' ? 'selected' : ''}>Circonstanciel</option>
@@ -508,8 +508,8 @@ function renderThrillerElementFields(element) {
                 </div>
                 <div class="form-row">
                     <div class="form-group" style="flex: 1;">
-                        <label for="clueSignificance">Importance</label>
-                        <select id="clueSignificance">
+                        <label class="form-label" for="clueSignificance">Importance</label>
+                        <select class="form-input" id="clueSignificance">
                             <option value="minor" ${element.data.significance === 'minor' ? 'selected' : ''}>Mineur</option>
                             <option value="major" ${element.data.significance === 'major' ? 'selected' : ''}>Majeur</option>
                             <option value="critical" ${element.data.significance === 'critical' ? 'selected' : ''}>Critique</option>
@@ -523,8 +523,8 @@ function renderThrillerElementFields(element) {
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="whatItSuggests">Ce qu'il suggère</label>
-                    <textarea id="whatItSuggests" rows="3">${element.data.what_it_suggests || ''}</textarea>
+                    <label class="form-label" for="whatItSuggests">Ce qu'il suggère</label>
+                    <textarea class="form-input" id="whatItSuggests" rows="3">${element.data.what_it_suggests || ''}</textarea>
                 </div>
                 <div class="form-group">
                     <label>Pointe vers les personnages</label>
@@ -534,22 +534,22 @@ function renderThrillerElementFields(element) {
                 </div>
                 <div class="form-row">
                     <div class="form-group" style="flex: 1;">
-                        <label for="plantedScene">Scène où il est planté</label>
-                        <select id="plantedScene">
+                        <label class="form-label" for="plantedScene">Scène où il est planté</label>
+                        <select class="form-input" id="plantedScene">
                             <option value="">Sélectionner</option>
                             ${renderSceneOptions(element.data.planted_scene)}
                         </select>
                     </div>
                     <div class="form-group" style="flex: 1;">
-                        <label for="discoveredScene">Scène de découverte</label>
-                        <select id="discoveredScene">
+                        <label class="form-label" for="discoveredScene">Scène de découverte</label>
+                        <select class="form-input" id="discoveredScene">
                             <option value="">Sélectionner</option>
                             ${renderSceneOptions(element.data.discovered_scene)}
                         </select>
                     </div>
                     <div class="form-group" style="flex: 1;">
-                        <label for="readerSeesAt">Le lecteur voit à</label>
-                        <select id="readerSeesAt">
+                        <label class="form-label" for="readerSeesAt">Le lecteur voit à</label>
+                        <select class="form-input" id="readerSeesAt">
                             <option value="">Sélectionner</option>
                             ${renderSceneOptions(element.data.reader_sees_at)}
                         </select>
@@ -560,13 +560,13 @@ function renderThrillerElementFields(element) {
         case 'secret':
             return `
                 <div class="form-group">
-                    <label for="secretFullDescription">Description complète</label>
-                    <textarea id="secretFullDescription" rows="3" placeholder="Décrire le secret en détail...">${element.data.full_description || ''}</textarea>
+                    <label class="form-label" for="secretFullDescription">Description complète</label>
+                    <textarea class="form-input" id="secretFullDescription" rows="3" placeholder="Décrire le secret en détail...">${element.data.full_description || ''}</textarea>
                 </div>
                 <div class="form-row">
                     <div class="form-group" style="flex: 1;">
-                        <label for="secretType">Type de secret</label>
-                        <select id="secretType">
+                        <label class="form-label" for="secretType">Type de secret</label>
+                        <select class="form-input" id="secretType">
                             <option value="relationship" ${element.data.secret_type === 'relationship' ? 'selected' : ''}>Relation</option>
                             <option value="identity" ${element.data.secret_type === 'identity' ? 'selected' : ''}>Identité</option>
                             <option value="crime" ${element.data.secret_type === 'crime' ? 'selected' : ''}>Crime</option>
@@ -575,8 +575,8 @@ function renderThrillerElementFields(element) {
                         </select>
                     </div>
                     <div class="form-group" style="flex: 1;">
-                        <label for="secretImportance">Importance</label>
-                        <select id="secretImportance">
+                        <label class="form-label" for="secretImportance">Importance</label>
+                        <select class="form-input" id="secretImportance">
                             <option value="minor" ${element.data.importance === 'minor' ? 'selected' : ''}>Mineur</option>
                             <option value="major" ${element.data.importance === 'major' ? 'selected' : ''}>Majeur</option>
                             <option value="critical" ${element.data.importance === 'critical' ? 'selected' : ''}>Critique</option>
@@ -585,15 +585,15 @@ function renderThrillerElementFields(element) {
                 </div>
                 <div class="form-row">
                     <div class="form-group" style="flex: 1;">
-                        <label for="holderCharacterId">Détenu par le personnage</label>
-                        <select id="holderCharacterId">
+                        <label class="form-label" for="holderCharacterId">Détenu par le personnage</label>
+                        <select class="form-input" id="holderCharacterId">
                             <option value="">Qui connaît ce secret</option>
                             ${project.characters.map(char => `<option value="${char.id}" ${element.data.holder_character_id === char.id ? 'selected' : ''}>${char.name}</option>`).join('')}
                         </select>
                     </div>
                     <div class="form-group" style="flex: 1;">
-                        <label for="aboutCharacterId">Concernant le personnage</label>
-                        <select id="aboutCharacterId">
+                        <label class="form-label" for="aboutCharacterId">Concernant le personnage</label>
+                        <select class="form-input" id="aboutCharacterId">
                             <option value="">Sélectionner</option>
                             ${project.characters.map(char => `<option value="${char.id}" ${element.data.about_character_id === char.id ? 'selected' : ''}>${char.name}</option>`).join('')}
                         </select>
@@ -601,23 +601,23 @@ function renderThrillerElementFields(element) {
                 </div>
                 <div class="form-row">
                     <div class="form-group" style="flex: 1;">
-                        <label for="secretPlantedScene">Planté dans la scène</label>
-                        <select id="secretPlantedScene">
+                        <label class="form-label" for="secretPlantedScene">Planté dans la scène</label>
+                        <select class="form-input" id="secretPlantedScene">
                             <option value="">Premiers indices apparaissent</option>
                             ${renderSceneOptions(element.data.planted_scene)}
                         </select>
                     </div>
                     <div class="form-group" style="flex: 1;">
-                        <label for="secretRevealedScene">Révélé dans la scène</label>
-                        <select id="secretRevealedScene">
+                        <label class="form-label" for="secretRevealedScene">Révélé dans la scène</label>
+                        <select class="form-input" id="secretRevealedScene">
                             <option value="">Le secret est révélé</option>
                             ${renderSceneOptions(element.data.revealed_scene)}
                         </select>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="secretCurrentStatus">Statut actuel</label>
-                    <select id="secretCurrentStatus">
+                    <label class="form-label" for="secretCurrentStatus">Statut actuel</label>
+                    <select class="form-input" id="secretCurrentStatus">
                         <option value="hidden" ${element.data.current_status === 'hidden' ? 'selected' : ''}>Caché</option>
                         <option value="partially_revealed" ${element.data.current_status === 'partially_revealed' ? 'selected' : ''}>Partiellement révélé</option>
                         <option value="fully_revealed" ${element.data.current_status === 'fully_revealed' ? 'selected' : ''}>Complètement révélé</option>
@@ -628,13 +628,13 @@ function renderThrillerElementFields(element) {
         case 'backstory':
             return `
                 <div class="form-group">
-                    <label for="whenItHappened">Quand c'est arrivé *</label>
-                    <input type="text" id="whenItHappened" placeholder="ex: il y a 5 ans, juin 2019" value="${element.data.when_it_happened || ''}" required>
+                    <label class="form-label" for="whenItHappened">Quand c'est arrivé *</label>
+                    <input type="text" class="form-input" id="whenItHappened" placeholder="ex: il y a 5 ans, juin 2019" value="${element.data.when_it_happened || ''}" required>
                 </div>
                 <div class="form-row">
                     <div class="form-group" style="flex: 1;">
-                        <label for="backstoryType">Type</label>
-                        <select id="backstoryType">
+                        <label class="form-label" for="backstoryType">Type</label>
+                        <select class="form-input" id="backstoryType">
                             <option value="other" ${element.data.event_type === 'other' ? 'selected' : ''}>Autre</option>
                             <option value="original_crime" ${element.data.event_type === 'original_crime' ? 'selected' : ''}>Crime d'origine</option>
                             <option value="trauma" ${element.data.event_type === 'trauma' ? 'selected' : ''}>Traumatisme</option>
@@ -645,8 +645,8 @@ function renderThrillerElementFields(element) {
                         </select>
                     </div>
                     <div class="form-group" style="flex: 1;">
-                        <label for="backstoryImportance">Importance</label>
-                        <select id="backstoryImportance">
+                        <label class="form-label" for="backstoryImportance">Importance</label>
+                        <select class="form-input" id="backstoryImportance">
                             <option value="minor" ${element.data.importance === 'minor' ? 'selected' : ''}>Mineur</option>
                             <option value="major" ${element.data.importance === 'major' ? 'selected' : ''}>Majeur</option>
                             <option value="critical" ${element.data.importance === 'critical' ? 'selected' : ''}>Critique</option>
@@ -664,35 +664,35 @@ function renderThrillerElementFields(element) {
         case 'knowledge_state':
             return `
                 <div class="form-group">
-                    <label for="ksCharacterId">Personnage</label>
-                    <select id="ksCharacterId">
+                    <label class="form-label" for="ksCharacterId">Personnage</label>
+                    <select class="form-input" id="ksCharacterId">
                         <option value="">Sélectionner un personnage</option>
                         ${project.characters.map(char => `<option value="${char.id}" ${element.data.character_id === char.id ? 'selected' : ''}>${char.name}</option>`).join('')}
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="ksAbout">Connaissance concernant</label>
-                    <input type="text" id="ksAbout" value="${element.data.about || ''}">
+                    <label class="form-label" for="ksAbout">Connaissance concernant</label>
+                    <input type="text" class="form-input" id="ksAbout" value="${element.data.about || ''}">
                 </div>
                 <div class="form-group">
-                    <label for="ksDetails">Détails</label>
-                    <textarea id="ksDetails" rows="3">${element.data.details || ''}</textarea>
+                    <label class="form-label" for="ksDetails">Détails</label>
+                    <textarea class="form-input" id="ksDetails" rows="3">${element.data.details || ''}</textarea>
                 </div>
             `;
 
         case 'location':
             return `
                 <div class="form-group">
-                    <label for="locName">Nom du lieu</label>
-                    <input type="text" id="locName" value="${element.data.name || ''}">
+                    <label class="form-label" for="locName">Nom du lieu</label>
+                    <input type="text" class="form-input" id="locName" value="${element.data.name || ''}">
                 </div>
                 <div class="form-group">
-                    <label for="locCoordinates">Coordonnées</label>
-                    <input type="text" id="locCoordinates" value="${element.data.coordinates || ''}">
+                    <label class="form-label" for="locCoordinates">Coordonnées</label>
+                    <input type="text" class="form-input" id="locCoordinates" value="${element.data.coordinates || ''}">
                 </div>
                 <div class="form-group">
-                    <label for="locDesc">Description</label>
-                    <textarea id="locDesc" rows="3">${element.data.description || ''}</textarea>
+                    <label class="form-label" for="locDesc">Description</label>
+                    <textarea class="form-input" id="locDesc" rows="3">${element.data.description || ''}</textarea>
                 </div>
             `;
 
@@ -700,20 +700,20 @@ function renderThrillerElementFields(element) {
             return `
                 <div class="form-row">
                     <div class="form-group" style="flex: 1;">
-                        <label for="mmCharacterId">Personnage *</label>
-                        <select id="mmCharacterId" required>
+                        <label class="form-label" for="mmCharacterId">Personnage *</label>
+                        <select class="form-input" id="mmCharacterId" required>
                             <option value="">Sélectionner un personnage</option>
                             ${project.characters.map(char => `<option value="${char.id}" ${element.data.character_id === char.id ? 'selected' : ''}>${char.name}</option>`).join('')}
                         </select>
                     </div>
                     <div class="form-group" style="flex: 1;">
-                        <label for="forCrimeEvent">Pour crime/événement *</label>
-                        <input type="text" id="forCrimeEvent" placeholder="ex: Meurtre de Jean Dupont" value="${element.data.for_crime || ''}" required>
+                        <label class="form-label" for="forCrimeEvent">Pour crime/événement *</label>
+                        <input type="text" class="form-input" id="forCrimeEvent" placeholder="ex: Meurtre de Jean Dupont" value="${element.data.for_crime || ''}" required>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="actualGuilt">Culpabilité réelle</label>
-                    <select id="actualGuilt">
+                    <label class="form-label" for="actualGuilt">Culpabilité réelle</label>
+                    <select class="form-input" id="actualGuilt">
                         <option value="innocent" ${element.data.actual_guilt === 'innocent' ? 'selected' : ''}>Innocent</option>
                         <option value="guilty" ${element.data.actual_guilt === 'guilty' ? 'selected' : ''}>Coupable</option>
                         <option value="accomplice" ${element.data.actual_guilt === 'accomplice' ? 'selected' : ''}>Complice</option>
@@ -723,7 +723,7 @@ function renderThrillerElementFields(element) {
                 <div class="form-section" style="background-color: #fef5e7;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                         <h4 style="margin: 0;">Mobile</h4>
-                        <select id="motiveStrength" style="width: auto; font-size: 14px;">
+                        <select class="form-input" id="motiveStrength" style="width: auto; font-size: 14px;">
                             <option value="none" ${element.data.motive_strength === 'none' ? 'selected' : ''}>Aucun</option>
                             <option value="weak" ${element.data.motive_strength === 'weak' ? 'selected' : ''}>Faible</option>
                             <option value="moderate" ${element.data.motive_strength === 'moderate' ? 'selected' : ''}>Modéré</option>
@@ -731,7 +731,7 @@ function renderThrillerElementFields(element) {
                             <option value="compelling" ${element.data.motive_strength === 'compelling' ? 'selected' : ''}>Convaincant</option>
                         </select>
                     </div>
-                    <textarea id="mmMotive" rows="3" placeholder="Pourquoi ils le feraient...">${element.data.motive || ''}</textarea>
+                    <textarea class="form-input" id="mmMotive" rows="3" placeholder="Pourquoi ils le feraient...">${element.data.motive || ''}</textarea>
                 </div>
                 <div class="form-section" style="background-color: #ebf5fb;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
@@ -741,7 +741,7 @@ function renderThrillerElementFields(element) {
                             A les moyens
                         </label>
                     </div>
-                    <textarea id="mmMeans" rows="3" placeholder="Outils, connaissances, capacité à le faire...">${element.data.means || ''}</textarea>
+                    <textarea class="form-input" id="mmMeans" rows="3" placeholder="Outils, connaissances, capacité à le faire...">${element.data.means || ''}</textarea>
                 </div>
                 <div class="form-section" style="background-color: #e8f8f5;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
@@ -751,20 +751,20 @@ function renderThrillerElementFields(element) {
                             A l'opportunité
                         </label>
                     </div>
-                    <textarea id="mmOpportunity" rows="3" placeholder="Quand/où ils auraient pu le faire...">${element.data.opportunity || ''}</textarea>
+                    <textarea class="form-input" id="mmOpportunity" rows="3" placeholder="Quand/où ils auraient pu le faire...">${element.data.opportunity || ''}</textarea>
                 </div>
             `;
 
         case 'question':
             return `
                 <div class="form-group">
-                    <label for="qText">Question *</label>
-                    <textarea id="qText" rows="2" placeholder="Quelle question mystérieuse cela soulève-t-il ?" required>${element.data.question || ''}</textarea>
+                    <label class="form-label" for="qText">Question *</label>
+                    <textarea class="form-input" id="qText" rows="2" placeholder="Quelle question mystérieuse cela soulève-t-il ?" required>${element.data.question || ''}</textarea>
                 </div>
                 <div class="form-row">
                     <div class="form-group" style="flex: 1;">
-                        <label for="qType">Type</label>
-                        <select id="qType">
+                        <label class="form-label" for="qType">Type</label>
+                        <select class="form-input" id="qType">
                             <option value="whodunit" ${element.data.question_type === 'whodunit' ? 'selected' : ''}>Qui l'a fait</option>
                             <option value="how" ${element.data.question_type === 'how' ? 'selected' : ''}>Comment</option>
                             <option value="why" ${element.data.question_type === 'why' ? 'selected' : ''}>Pourquoi</option>
@@ -774,16 +774,16 @@ function renderThrillerElementFields(element) {
                         </select>
                     </div>
                     <div class="form-group" style="flex: 1;">
-                        <label for="qImportance">Importance</label>
-                        <select id="qImportance">
+                        <label class="form-label" for="qImportance">Importance</label>
+                        <select class="form-input" id="qImportance">
                             <option value="minor" ${element.data.importance === 'minor' ? 'selected' : ''}>Mineur</option>
                             <option value="major" ${element.data.importance === 'major' ? 'selected' : ''}>Majeur</option>
                             <option value="critical" ${element.data.importance === 'critical' ? 'selected' : ''}>Critique</option>
                         </select>
                     </div>
                     <div class="form-group" style="flex: 1;">
-                        <label for="qStatus">Statut</label>
-                        <select id="qStatus">
+                        <label class="form-label" for="qStatus">Statut</label>
+                        <select class="form-input" id="qStatus">
                             <option value="open" ${element.data.status === 'open' ? 'selected' : ''}>Ouvert</option>
                             <option value="answered" ${element.data.status === 'answered' ? 'selected' : ''}>Répondu</option>
                             <option value="partially_answered" ${element.data.status === 'partially_answered' ? 'selected' : ''}>Partiellement répondu</option>
@@ -792,15 +792,15 @@ function renderThrillerElementFields(element) {
                 </div>
                 <div class="form-row">
                     <div class="form-group" style="flex: 1;">
-                        <label for="qRaisedScene">Soulevée dans la scène</label>
-                        <select id="qRaisedScene">
+                        <label class="form-label" for="qRaisedScene">Soulevée dans la scène</label>
+                        <select class="form-input" id="qRaisedScene">
                             <option value="">Sélectionner une scène</option>
                             ${renderSceneOptions(element.data.raised_scene)}
                         </select>
                     </div>
                     <div class="form-group" style="flex: 1;">
-                        <label for="qAnsweredScene">Répondue dans la scène</label>
-                        <select id="qAnsweredScene">
+                        <label class="form-label" for="qAnsweredScene">Répondue dans la scène</label>
+                        <select class="form-input" id="qAnsweredScene">
                             <option value="">Sélectionner une scène</option>
                             ${renderSceneOptions(element.data.answered_scene)}
                         </select>
@@ -813,20 +813,20 @@ function renderThrillerElementFields(element) {
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="qAnswer">Réponse</label>
-                    <textarea id="qAnswer" rows="3" placeholder="Quelle est la réponse à cette question ?">${element.data.answer || ''}</textarea>
+                    <label class="form-label" for="qAnswer">Réponse</label>
+                    <textarea class="form-input" id="qAnswer" rows="3" placeholder="Quelle est la réponse à cette question ?">${element.data.answer || ''}</textarea>
                 </div>
             `;
 
         case 'red_herring':
             return `
                 <div class="form-group">
-                    <label for="whatItSuggestsRH">Ce qu'il suggère</label>
-                    <textarea id="whatItSuggestsRH" rows="3" placeholder="À quelle fausse conclusion cela mène-t-il...">${element.data.what_it_suggests || ''}</textarea>
+                    <label class="form-label" for="whatItSuggestsRH">Ce qu'il suggère</label>
+                    <textarea class="form-input" id="whatItSuggestsRH" rows="3" placeholder="À quelle fausse conclusion cela mène-t-il...">${element.data.what_it_suggests || ''}</textarea>
                 </div>
                 <div class="form-group">
-                    <label for="misdirectsTo">Dirige les soupçons vers</label>
-                    <select id="misdirectsTo">
+                    <label class="form-label" for="misdirectsTo">Dirige les soupçons vers</label>
+                    <select class="form-input" id="misdirectsTo">
                         <option value="">Sélectionner un personnage</option>
                         ${project.characters.map(char => `<option value="${char.id}" ${element.data.misdirects_to === char.id ? 'selected' : ''}>${char.name}</option>`).join('')}
                     </select>
@@ -841,28 +841,28 @@ function renderThrillerElementFields(element) {
                     </button>
                 </div>
                 <div class="form-group">
-                    <label for="intendedReaderImpact">Impact prévu sur le lecteur</label>
-                    <textarea id="intendedReaderImpact" rows="3" style="background-color: #f3e8ff;" placeholder="Que doit penser/ressentir le lecteur ?">${element.data.intended_reader_impact || ''}</textarea>
+                    <label class="form-label" for="intendedReaderImpact">Impact prévu sur le lecteur</label>
+                    <textarea class="form-input" id="intendedReaderImpact" rows="3" style="background-color: #f3e8ff;" placeholder="Que doit penser/ressentir le lecteur ?">${element.data.intended_reader_impact || ''}</textarea>
                 </div>
                 <div class="form-row">
                     <div class="form-group" style="flex: 1;">
-                        <label for="introducedScene">Introduit dans la scène</label>
-                        <select id="introducedScene">
+                        <label class="form-label" for="introducedScene">Introduit dans la scène</label>
+                        <select class="form-input" id="introducedScene">
                             <option value="">Sélectionner une scène</option>
                             ${renderSceneOptions(element.data.introduced_scene)}
                         </select>
                     </div>
                     <div class="form-group" style="flex: 1;">
-                        <label for="debunkedScene">Démenti dans la scène</label>
-                        <select id="debunkedScene">
+                        <label class="form-label" for="debunkedScene">Démenti dans la scène</label>
+                        <select class="form-input" id="debunkedScene">
                             <option value="">Quand c'est prouvé faux</option>
                             ${renderSceneOptions(element.data.debunked_scene)}
                         </select>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="rhStatus">Statut</label>
-                    <select id="rhStatus">
+                    <label class="form-label" for="rhStatus">Statut</label>
+                    <select class="form-input" id="rhStatus">
                         <option value="active" ${element.data.status === 'active' ? 'selected' : ''}>Actif</option>
                         <option value="resolved" ${element.data.status === 'resolved' ? 'selected' : ''}>Résolu</option>
                         <option value="abandoned" ${element.data.status === 'abandoned' ? 'selected' : ''}>Abandonné</option>
@@ -873,17 +873,17 @@ function renderThrillerElementFields(element) {
         case 'reversal':
             return `
                 <div class="form-group">
-                    <label for="setupBelief">Croyance établie *</label>
-                    <textarea id="setupBelief" rows="3" placeholder="Ce que les lecteurs ont été amenés à croire..." required>${element.data.setup_belief || ''}</textarea>
+                    <label class="form-label" for="setupBelief">Croyance établie *</label>
+                    <textarea class="form-input" id="setupBelief" rows="3" placeholder="Ce que les lecteurs ont été amenés à croire..." required>${element.data.setup_belief || ''}</textarea>
                 </div>
                 <div class="form-group">
-                    <label for="actualTruth">Vérité réelle *</label>
-                    <textarea id="actualTruth" rows="3" placeholder="Ce qui est réellement vrai..." required>${element.data.actual_truth || ''}</textarea>
+                    <label class="form-label" for="actualTruth">Vérité réelle *</label>
+                    <textarea class="form-input" id="actualTruth" rows="3" placeholder="Ce qui est réellement vrai..." required>${element.data.actual_truth || ''}</textarea>
                 </div>
                 <div class="form-row">
                     <div class="form-group" style="flex: 1;">
-                        <label for="reversalType">Type</label>
-                        <select id="reversalType">
+                        <label class="form-label" for="reversalType">Type</label>
+                        <select class="form-input" id="reversalType">
                             <option value="identity" ${element.data.reversal_type === 'identity' ? 'selected' : ''}>Identité</option>
                             <option value="motive" ${element.data.reversal_type === 'motive' ? 'selected' : ''}>Mobile</option>
                             <option value="victim" ${element.data.reversal_type === 'victim' ? 'selected' : ''}>Victime</option>
@@ -895,8 +895,8 @@ function renderThrillerElementFields(element) {
                         </select>
                     </div>
                     <div class="form-group" style="flex: 1;">
-                        <label for="reversalImpact">Impact</label>
-                        <select id="reversalImpact">
+                        <label class="form-label" for="reversalImpact">Impact</label>
+                        <select class="form-input" id="reversalImpact">
                             <option value="minor" ${element.data.impact === 'minor' ? 'selected' : ''}>Mineur</option>
                             <option value="medium" ${element.data.impact === 'medium' ? 'selected' : ''}>Moyen</option>
                             <option value="major_twist" ${element.data.impact === 'major_twist' ? 'selected' : ''}>Rebondissement majeur</option>
@@ -918,16 +918,16 @@ function renderThrillerElementFields(element) {
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="reversalScene">Scène de révélation</label>
-                        <select id="reversalScene">
+                        <label class="form-label" for="reversalScene">Scène de révélation</label>
+                        <select class="form-input" id="reversalScene">
                             <option value="">Sélectionner une scène</option>
                             ${renderSceneOptions(element.data.reversal_scene_id)}
                         </select>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="foreshadowingNotes">Notes de préfiguration</label>
-                    <textarea id="foreshadowingNotes" rows="4" placeholder="Comment cela a été préfiguré...">${element.data.foreshadowing_notes || ''}</textarea>
+                    <label class="form-label" for="foreshadowingNotes">Notes de préfiguration</label>
+                    <textarea class="form-input" id="foreshadowingNotes" rows="4" placeholder="Comment cela a été préfiguré...">${element.data.foreshadowing_notes || ''}</textarea>
                 </div>
             `;
 
@@ -1273,7 +1273,7 @@ function renderCharacterPills(selectedCharacters, fieldName) {
 
     // Add character selector
     html += `
-        <select class="pill-selector" onchange="if(this.value) { addCharacterPill('${fieldName}', this.value); this.value=''; }">
+        <select class="pill-selector form-input" onchange="if(this.value) { addCharacterPill('${fieldName}', this.value); this.value=''; }">
             <option value="">Ajouter un personnage...</option>
             ${project.characters.filter(c => !selectedCharacters.includes(c.id)).map(char =>
                 `<option value="${char.id}">${char.name}</option>`
@@ -1345,7 +1345,7 @@ function renderScenePills(selectedScenes, fieldName) {
 
     // Add scene selector
     html += `
-        <select class="pill-selector" onchange="if(this.value) { addScenePill('${fieldName}', this.value); this.value=''; }">
+        <select class="pill-selector form-input" onchange="if(this.value) { addScenePill('${fieldName}', this.value); this.value=''; }">
             <option value="">Ajouter une scène...</option>
     `;
 
@@ -1373,7 +1373,7 @@ function renderListItems(items, fieldName) {
 
     return items.map((item, index) => `
         <div class="list-item-row">
-            <input type="text" class="list-item-input" value="${item}" data-field="${fieldName}" data-index="${index}" />
+            <input type="text" class="list-item-input form-input" value="${item}" data-field="${fieldName}" data-index="${index}" />
             <button type="button" class="btn btn-ghost btn-xs" onclick="removeListItem('${fieldName}', ${index})">
                 <i data-lucide="x"></i>
             </button>
@@ -1465,7 +1465,7 @@ function addListItem(fieldName, placeholder) {
     const newItem = document.createElement('div');
     newItem.className = 'list-item-row';
     newItem.innerHTML = `
-        <input type="text" class="list-item-input" placeholder="${placeholder}" data-field="${fieldName}" />
+        <input type="text" class="list-item-input form-input" placeholder="${placeholder}" data-field="${fieldName}" />
         <button type="button" class="btn btn-ghost btn-xs" onclick="this.parentElement.remove()">
             <i data-lucide="x"></i>
         </button>
