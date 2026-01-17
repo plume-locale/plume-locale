@@ -1933,7 +1933,7 @@ function addThrillerSwimlaneRow() {
                         <label class="form-label" for="rowEntity">Personnage</label>
                         <select class="form-input" id="rowEntity">
                             <option value="">Sélectionner un personnage...</option>
-                            ${project.characters ? project.characters.map(char => \`<option value="${char.id}">${char.name}</option>\`).join('') : ''}
+                            ${project.characters ? project.characters.map(char => '<option value="' + char.id + '">' + char.name + '</option>').join('') : ''}
                         </select>
                     </div>
                     <div class="form-group" id="rowTitleField" style="display: none;">
@@ -1971,13 +1971,13 @@ function updateRowTypeFields(type) {
         titleField.style.display = 'none';
         entityLabel.textContent = 'Personnage';
         entitySelect.innerHTML = '<option value="">Sélectionner un personnage...</option>' +
-            (project.characters ? project.characters.map(char => \`<option value="${char.id}">${char.name}</option>\`).join('') : '');
+            (project.characters ? project.characters.map(char => '<option value="' + char.id + '">' + char.name + '</option>').join('') : '');
     } else if (type === 'location') {
         entityField.style.display = 'block';
         titleField.style.display = 'none';
         entityLabel.textContent = 'Lieu';
         entitySelect.innerHTML = '<option value="">Sélectionner un lieu...</option>' +
-            (project.world ? project.world.map(loc => \`<option value="${loc.id}">${loc.name}</option>\`).join('') : '');
+            (project.world ? project.world.map(loc => '<option value="' + loc.id + '">' + loc.name + '</option>').join('') : '');
     } else {
         entityField.style.display = 'none';
         titleField.style.display = 'block';
@@ -2112,7 +2112,7 @@ function deleteThrillerColumn(columnId) {
 function addThrillerCardToCell(rowId, columnId) {
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
-    modal.innerHTML = \`
+    modal.innerHTML = `
         <div class="modal-content" style="max-width: 600px;">
             <div class="modal-header">
                 <h3>Nouvelle carte</h3>
@@ -2121,13 +2121,13 @@ function addThrillerCardToCell(rowId, columnId) {
                 </button>
             </div>
             <div class="modal-body">
-                <form id="cardForm" onsubmit="saveNewThrillerCard(event, '\${rowId}', '\${columnId}')">
+                <form id="cardForm" onsubmit="saveNewThrillerCard(event, '${rowId}', '${columnId}')">
                     <div class="form-group">
                         <label class="form-label" for="cardType">Type de carte</label>
                         <select class="form-input" id="cardType" onchange="updateCardFields(this.value)">
-                            \${Object.entries(THRILLER_TYPES).map(([key, data]) => \`
-                                <option value="\${key}">\${data.label}</option>
-                            \`).join('')}
+                            ${Object.entries(THRILLER_TYPES).map(([key, data]) => `
+                                <option value="${key}">${data.label}</option>
+                            `).join('')}
                         </select>
                     </div>
                     <div class="form-group">
@@ -2138,9 +2138,9 @@ function addThrillerCardToCell(rowId, columnId) {
                     <div class="form-group">
                         <label class="form-label" for="cardStatus">Statut</label>
                         <select class="form-input" id="cardStatus">
-                            \${Object.entries(THRILLER_CARD_STATUS).map(([key, data]) => \`
-                                <option value="\${key}">\${data.label}</option>
-                            \`).join('')}
+                            ${Object.entries(THRILLER_CARD_STATUS).map(([key, data]) => `
+                                <option value="${key}">${data.label}</option>
+                            `).join('')}
                         </select>
                     </div>
                     <div class="modal-actions">
@@ -2150,7 +2150,7 @@ function addThrillerCardToCell(rowId, columnId) {
                 </form>
             </div>
         </div>
-    \`;
+    `;
 
     document.body.appendChild(modal);
 
@@ -2167,36 +2167,36 @@ function updateCardFields(cardType) {
     let html = '';
 
     if (cardType === 'alibi') {
-        html = \`
+        html = `
             <div class="form-group">
                 <label class="form-label" for="characterId">Personnage</label>
                 <select class="form-input" id="characterId">
                     <option value="">Sélectionner un personnage</option>
-                    \${project.characters ? project.characters.map(char => \`<option value="\${char.id}">\${char.name}</option>\`).join('') : ''}
+                    ${project.characters ? project.characters.map(char => `<option value="${char.id}">${char.name}</option>`).join('') : ''}
                 </select>
             </div>
             <div class="form-group">
                 <label class="form-label" for="forEvent">Pour l'événement</label>
                 <input type="text" class="form-input" id="forEvent">
             </div>
-        \`;
+        `;
     } else if (cardType === 'clue') {
-        html = \`
+        html = `
             <div class="form-group">
                 <label class="form-label" for="description">Description</label>
                 <textarea class="form-input" id="description" rows="3"></textarea>
             </div>
-        \`;
+        `;
     } else if (cardType === 'motive_means_opportunity') {
-        html = \`
+        html = `
             <div class="form-group">
                 <label class="form-label" for="characterId">Suspect</label>
                 <select class="form-input" id="characterId">
                     <option value="">Sélectionner un personnage</option>
-                    \${project.characters ? project.characters.map(char => \`<option value="\${char.id}">\${char.name}</option>\`).join('') : ''}
+                    ${project.characters ? project.characters.map(char => `<option value="${char.id}">${char.name}</option>`).join('') : ''}
                 </select>
             </div>
-        \`;
+        `;
     }
 
     container.innerHTML = html;
