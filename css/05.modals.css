@@ -607,7 +607,32 @@
             padding: 0.1rem 0.4rem;
             border-radius: 10px;
         }
-        
+
+        .treeview-add-btn {
+            width: 20px;
+            height: 20px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            border-radius: 4px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            opacity: 0;
+        }
+
+        .treeview-header:hover .treeview-add-btn {
+            opacity: 1;
+        }
+
+        .treeview-add-btn:hover {
+            background: var(--accent-gold);
+            color: white;
+        }
+
         .treeview-children {
             margin-left: 0.5rem;
             border-left: 1px solid var(--border-color);

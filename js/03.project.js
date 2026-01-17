@@ -35,7 +35,7 @@
             
             // Update tree collapse toolbar visibility (for views with collapsible groups)
             const treeCollapseToolbar = document.getElementById('treeCollapseToolbar');
-            const viewsWithGroups = ['editor', 'world', 'notes', 'codex'];
+            const viewsWithGroups = ['editor', 'world', 'notes', 'codex', 'thriller'];
             if (treeCollapseToolbar) {
                 treeCollapseToolbar.style.display = viewsWithGroups.includes(view) ? '' : 'none';
             }
@@ -73,11 +73,12 @@
                 'codex': 'codexList',
                 'arcs': 'arcsList',
                 'mindmap': 'mindmapList',
-                'timelineviz': 'timelineVizList'
+                'timelineviz': 'timelineVizList',
+                'thriller': 'thrillerList'
             };
-            
+
             // Vues qui utilisent editorView entièrement (visualisations plein écran sans sidebar)
-            const editorViewVues = ['stats', 'analysis', 'versions', 'todos', 'timeline', 'corkboard', 'plot', 'relations', 'map', 'thriller'];
+            const editorViewVues = ['stats', 'analysis', 'versions', 'todos', 'timeline', 'corkboard', 'plot', 'relations', 'map'];
             
             // Labels pour les vues sans sidebar
             const viewLabelsNoSidebar = {

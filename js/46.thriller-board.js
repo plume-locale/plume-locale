@@ -133,39 +133,26 @@ function renderThrillerBoard() {
 
     initThrillerBoard();
 
-    // Calculate element counts
-    const elementCounts = {};
-    thrillerBoardState.elements.forEach(element => {
-        elementCounts[element.type] = (elementCounts[element.type] || 0) + 1;
-    });
+    // Render sidebar list
+    renderThrillerList();
 
+    // Render main canvas area
     container.innerHTML = `
-        <div class="thriller-board-container">
-            <!-- Sidebar -->
-            <div class="thriller-board-sidebar" id="thrillerSidebar">
-                ${renderThrillerSidebar(elementCounts)}
-            </div>
-
-            <!-- Main Content -->
-            <div class="thriller-board-main">
-                <!-- Canvas Area -->
-                <div class="thriller-board-canvas-wrapper">
-                    <div class="thriller-board-canvas" id="thrillerBoardCanvas"
-                         onmousedown="handleThrillerCanvasMouseDown(event)"
-                         onmousemove="handleThrillerCanvasMouseMove(event)"
-                         onmouseup="handleThrillerCanvasMouseUp(event)"
-                         onwheel="handleThrillerCanvasWheel(event)">
-                        <div class="thriller-board-content" id="thrillerBoardContent">
-                            <!-- Elements will be rendered here -->
-                        </div>
-                    </div>
-
-                    <!-- Floating Add Button -->
-                    <button class="floating-add-button" onclick="addThrillerElement()" title="Ajouter un nouvel élément">
-                        <i data-lucide="plus"></i>
-                    </button>
+        <div class="thriller-board-canvas-wrapper">
+            <div class="thriller-board-canvas" id="thrillerBoardCanvas"
+                 onmousedown="handleThrillerCanvasMouseDown(event)"
+                 onmousemove="handleThrillerCanvasMouseMove(event)"
+                 onmouseup="handleThrillerCanvasMouseUp(event)"
+                 onwheel="handleThrillerCanvasWheel(event)">
+                <div class="thriller-board-content" id="thrillerBoardContent">
+                    <!-- Elements will be rendered here -->
                 </div>
             </div>
+
+            <!-- Floating Add Button -->
+            <button class="floating-add-button" onclick="addThrillerElement()" title="Ajouter un nouvel élément">
+                <i data-lucide="plus"></i>
+            </button>
         </div>
     `;
 
@@ -181,36 +168,45 @@ function renderThrillerBoard() {
 // SIDEBAR RENDERING
 // ============================================
 
-function renderThrillerSidebar(elementCounts) {
-    if (!thrillerBoardState.collapsedCategories) {
-        thrillerBoardState.collapsedCategories = {};
+function renderThrillerList() {
+    const container = document.getElementById('thrillerList');
+    if (!container) return;
+
+    if (thrillerBoardState.elements.length === 0) {
+        container.innerHTML = '<div style="padding: 1rem; text-align: center; color: var(--text-muted); font-size: 0.85rem;">Aucun élément</div>';
+        return;
     }
+
+    // Get collapsed state from localStorage
+    const collapsedState = JSON.parse(localStorage.getItem('plume_treeview_collapsed') || '{}');
 
     let html = '';
 
     Object.entries(THRILLER_TYPES).forEach(([typeKey, typeData]) => {
         const elements = thrillerBoardState.elements.filter(el => el.type === typeKey);
         const count = elements.length;
-        const isCollapsed = thrillerBoardState.collapsedCategories[typeKey] || false;
+
+        const groupKey = 'thriller_' + typeKey;
+        const isCollapsed = collapsedState[groupKey] === true;
 
         html += `
-            <div class="sidebar-category">
-                <div class="sidebar-category-header" onclick="toggleThrillerCategory('${typeKey}')">
-                    <i data-lucide="chevron-${isCollapsed ? 'right' : 'down'}" class="category-chevron"></i>
-                    <i data-lucide="${typeData.icon}" style="color: ${typeData.color}"></i>
-                    <span class="category-title">${typeData.label}</span>
-                    <span class="category-count">${count}</span>
-                    <button class="category-add-btn" onclick="event.stopPropagation(); addThrillerElement('${typeKey}')" title="Ajouter ${typeData.label.toLowerCase()}">
-                        <i data-lucide="plus"></i>
+            <div class="treeview-group">
+                <div class="treeview-header" onclick="toggleTreeviewGroup('${groupKey}'); event.stopPropagation();">
+                    <i data-lucide="${isCollapsed ? 'chevron-right' : 'chevron-down'}" class="treeview-chevron"></i>
+                    <i data-lucide="${typeData.icon}" style="color: ${typeData.color}; width: 16px; height: 16px;"></i>
+                    <span class="treeview-label">${typeData.label}</span>
+                    <span class="treeview-count">${count}</span>
+                    <button class="treeview-add-btn" onclick="event.stopPropagation(); addThrillerElement('${typeKey}')" title="Ajouter ${typeData.label.toLowerCase()}">
+                        <i data-lucide="plus" style="width: 14px; height: 14px;"></i>
                     </button>
                 </div>
                 ${!isCollapsed && elements.length > 0 ? `
-                    <div class="sidebar-category-items">
+                    <div class="treeview-children">
                         ${elements.map(element => `
-                            <div class="sidebar-item ${thrillerBoardState.selectedElements.includes(element.id) ? 'selected' : ''}"
+                            <div class="treeview-item ${thrillerBoardState.selectedElements.includes(element.id) ? 'selected' : ''}"
                                  onclick="selectAndViewThrillerElement('${element.id}')">
-                                <i data-lucide="${typeData.icon}" style="color: ${typeData.color}"></i>
-                                <span class="item-title">${element.title}</span>
+                                <i data-lucide="${typeData.icon}" style="color: ${typeData.color}; width: 14px; height: 14px;"></i>
+                                <span class="treeview-item-name">${element.title}</span>
                             </div>
                         `).join('')}
                     </div>
@@ -219,16 +215,12 @@ function renderThrillerSidebar(elementCounts) {
         `;
     });
 
-    return html;
-}
+    container.innerHTML = html;
 
-function toggleThrillerCategory(typeKey) {
-    if (!thrillerBoardState.collapsedCategories) {
-        thrillerBoardState.collapsedCategories = {};
-    }
-
-    thrillerBoardState.collapsedCategories[typeKey] = !thrillerBoardState.collapsedCategories[typeKey];
-    renderThrillerBoard();
+    // Refresh icons
+    setTimeout(() => {
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    }, 50);
 }
 
 function selectAndViewThrillerElement(elementId) {
@@ -283,6 +275,7 @@ function addThrillerElement(type = null) {
     thrillerBoardState.elements.push(newElement);
     project.thrillerElements = thrillerBoardState.elements;
 
+    renderThrillerList(); // Update sidebar
     renderThrillerElements();
     saveProject();
 
@@ -1106,6 +1099,7 @@ function saveThrillerElement(event, elementId) {
     }
 
     project.thrillerElements = thrillerBoardState.elements;
+    renderThrillerList(); // Update sidebar
     renderThrillerElements();
     saveProject();
 
@@ -1123,6 +1117,7 @@ function deleteThrillerElement(elementId) {
     project.thrillerElements = thrillerBoardState.elements;
     project.thrillerConnections = thrillerBoardState.connections;
 
+    renderThrillerList(); // Update sidebar
     renderThrillerElements();
     saveProject();
 }
