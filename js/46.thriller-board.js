@@ -1997,14 +1997,14 @@ function saveThrillerSwimlaneRow(event) {
     let entityId = null;
 
     if (type === 'character' && entity) {
-        const char = project.characters.find(c => c.id === entity);
+        const char = project.characters ? project.characters.find(c => String(c.id) === String(entity)) : null;
         if (char) {
             rowTitle = char.name;
             icon = 'user';
             entityId = entity;
         }
     } else if (type === 'location' && entity) {
-        const loc = project.world ? project.world.find(l => l.id === entity) : null;
+        const loc = project.world ? project.world.find(l => String(l.id) === String(entity)) : null;
         if (loc) {
             rowTitle = loc.name;
             icon = 'map-pin';
