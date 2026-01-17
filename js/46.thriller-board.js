@@ -1263,7 +1263,7 @@ function renderCharacterPills(selectedCharacters, fieldName) {
             html += `
                 <span class="character-pill" data-char-id="${charId}">
                     ${char.name}
-                    <button type="button" class="pill-remove" onclick="removeCharacterPill('${fieldName}', '${charId}'); event.stopPropagation();">×</button>
+                    <button type="button" class="pill-remove" onclick="removeCharacterPill('${fieldName}', '${charId}'); return false;">×</button>
                 </span>
             `;
         }
@@ -1273,7 +1273,7 @@ function renderCharacterPills(selectedCharacters, fieldName) {
 
     // Add character selector
     html += `
-        <select class="pill-selector" onchange="addCharacterPill('${fieldName}', this.value); this.value='';">
+        <select class="pill-selector" onchange="if(this.value) { addCharacterPill('${fieldName}', this.value); this.value=''; }">
             <option value="">Ajouter un personnage...</option>
             ${project.characters.filter(c => !selectedCharacters.includes(c.id)).map(char =>
                 `<option value="${char.id}">${char.name}</option>`
@@ -1335,7 +1335,7 @@ function renderScenePills(selectedScenes, fieldName) {
             html += `
                 <span class="scene-pill" data-scene-id="${sceneId}">
                     ${sceneLabel}
-                    <button type="button" class="pill-remove" onclick="removeScenePill('${fieldName}', '${sceneId}'); event.stopPropagation();">×</button>
+                    <button type="button" class="pill-remove" onclick="removeScenePill('${fieldName}', '${sceneId}'); return false;">×</button>
                 </span>
             `;
         }
@@ -1345,7 +1345,7 @@ function renderScenePills(selectedScenes, fieldName) {
 
     // Add scene selector
     html += `
-        <select class="pill-selector" onchange="addScenePill('${fieldName}', this.value); this.value='';">
+        <select class="pill-selector" onchange="if(this.value) { addScenePill('${fieldName}', this.value); this.value=''; }">
             <option value="">Ajouter une scène...</option>
     `;
 
