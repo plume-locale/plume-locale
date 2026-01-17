@@ -1228,7 +1228,7 @@ function generateId() {
 // Helper function to render character pills
 function renderCharacterPills(selectedCharacters, fieldName) {
     if (!project.characters || project.characters.length === 0) {
-        return '<p style="color: #999;">No characters available</p>';
+        return '<p style="color: #999; font-size: 13px;">Aucun personnage disponible. Créez d\'abord des personnages dans votre projet.</p>';
     }
 
     let html = '<div class="pills-wrapper">';
@@ -1240,7 +1240,7 @@ function renderCharacterPills(selectedCharacters, fieldName) {
             html += `
                 <span class="character-pill" data-char-id="${charId}">
                     ${char.name}
-                    <button type="button" class="pill-remove" onclick="removeCharacterPill('${fieldName}', '${charId}')">×</button>
+                    <button type="button" class="pill-remove" onclick="removeCharacterPill('${fieldName}', '${charId}'); event.stopPropagation();">×</button>
                 </span>
             `;
         }
@@ -1251,7 +1251,7 @@ function renderCharacterPills(selectedCharacters, fieldName) {
     // Add character selector
     html += `
         <select class="pill-selector" onchange="addCharacterPill('${fieldName}', this.value); this.value='';">
-            <option value="">Add character...</option>
+            <option value="">Ajouter un personnage...</option>
             ${project.characters.filter(c => !selectedCharacters.includes(c.id)).map(char =>
                 `<option value="${char.id}">${char.name}</option>`
             ).join('')}
@@ -1264,12 +1264,15 @@ function renderCharacterPills(selectedCharacters, fieldName) {
 // Helper function to render scene options
 function renderSceneOptions(selectedSceneId) {
     if (!project.chapters || project.chapters.length === 0) {
-        return '';
+        return '<option value="" disabled>Aucun chapitre créé</option>';
     }
 
     let options = '';
+    let hasScenes = false;
+
     project.chapters.forEach(chapter => {
         if (chapter.scenes && chapter.scenes.length > 0) {
+            hasScenes = true;
             chapter.scenes.forEach(scene => {
                 const sceneLabel = `${chapter.title}: ${scene.title || 'Scène ' + (chapter.scenes.indexOf(scene) + 1)}`;
                 const selected = selectedSceneId === scene.id ? 'selected' : '';
@@ -1278,13 +1281,17 @@ function renderSceneOptions(selectedSceneId) {
         }
     });
 
+    if (!hasScenes) {
+        return '<option value="" disabled>Aucune scène créée dans les chapitres</option>';
+    }
+
     return options;
 }
 
 // Helper function to render scene pills
 function renderScenePills(selectedScenes, fieldName) {
     if (!project.chapters || project.chapters.length === 0) {
-        return '<p style="color: #999;">No scenes available</p>';
+        return '<p style="color: #999; font-size: 13px;">Aucune scène disponible. Créez d\'abord des chapitres et des scènes dans votre projet.</p>';
     }
 
     let html = '<div class="pills-wrapper">';
@@ -1305,7 +1312,7 @@ function renderScenePills(selectedScenes, fieldName) {
             html += `
                 <span class="scene-pill" data-scene-id="${sceneId}">
                     ${sceneLabel}
-                    <button type="button" class="pill-remove" onclick="removeScenePill('${fieldName}', '${sceneId}')">×</button>
+                    <button type="button" class="pill-remove" onclick="removeScenePill('${fieldName}', '${sceneId}'); event.stopPropagation();">×</button>
                 </span>
             `;
         }
@@ -1316,7 +1323,7 @@ function renderScenePills(selectedScenes, fieldName) {
     // Add scene selector
     html += `
         <select class="pill-selector" onchange="addScenePill('${fieldName}', this.value); this.value='';">
-            <option value="">Add scene...</option>
+            <option value="">Ajouter une scène...</option>
     `;
 
     project.chapters.forEach(chapter => {
