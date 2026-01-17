@@ -275,7 +275,7 @@ function addThrillerElement(type = null) {
     saveProject();
 
     // Open edit modal for the new element
-    editThrillerElement(newElement.id);
+    editThrillerElement(newElement.id, true);
 }
 
 function selectThrillerTab(type) {
@@ -364,7 +364,7 @@ function renderThrillerConnections() {
     });
 }
 
-function editThrillerElement(elementId) {
+function editThrillerElement(elementId, isNew = false) {
     const element = thrillerBoardState.elements.find(el => el.id === elementId);
     if (!element) return;
 
@@ -375,7 +375,7 @@ function editThrillerElement(elementId) {
     modal.innerHTML = `
         <div class="modal-content" style="max-width: 700px;">
             <div class="modal-header">
-                <h3>Modifier ${typeData.label}</h3>
+                <h3>${isNew ? 'Nouveau' : 'Modifier'} ${typeData.label}</h3>
                 <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">
                     <i data-lucide="x"></i>
                 </button>
