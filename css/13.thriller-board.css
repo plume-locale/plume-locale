@@ -393,6 +393,121 @@
 }
 
 /* ============================================
+   MODAL FORM ENHANCEMENTS
+   ============================================ */
+
+/* Form rows for side-by-side fields */
+.form-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.form-row .form-group {
+    margin-bottom: 0;
+}
+
+/* Form sections with background */
+.form-section {
+    padding: 16px;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    margin-bottom: 16px;
+}
+
+.form-section h4 {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* Character and Scene Pills */
+.character-pills-container,
+.scene-pills-container {
+    margin-bottom: 8px;
+}
+
+.pills-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+    min-height: 32px;
+}
+
+.character-pill,
+.scene-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background-color: var(--accent-gold);
+    color: white;
+    border-radius: 16px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.character-pill {
+    background-color: #3498db;
+}
+
+.scene-pill {
+    background-color: #9b59b6;
+}
+
+.pill-remove {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0;
+    margin-left: 4px;
+    opacity: 0.8;
+    transition: opacity 0.15s ease;
+}
+
+.pill-remove:hover {
+    opacity: 1;
+}
+
+.pill-selector {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-size: 13px;
+}
+
+/* List items for weaknesses, misleading clues, etc. */
+.list-item-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+    align-items: center;
+}
+
+.list-item-input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-size: 13px;
+}
+
+.list-item-input:focus {
+    outline: none;
+    border-color: var(--accent-gold);
+}
+
+/* ============================================
    DARK MODE SUPPORT
    ============================================ */
 
@@ -403,5 +518,9 @@
 
     .thriller-element-card:hover {
         box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    }
+
+    .form-section {
+        background-color: #2a2a2a;
     }
 }

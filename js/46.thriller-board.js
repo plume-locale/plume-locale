@@ -411,76 +411,215 @@ function renderThrillerElementFields(element) {
     switch (element.type) {
         case 'alibi':
             return `
-                <div class="form-group">
-                    <label for="characterId">Personnage</label>
-                    <select id="characterId">
-                        <option value="">Sélectionner un personnage</option>
-                        ${project.characters.map(char => `<option value="${char.id}" ${element.data.character_id === char.id ? 'selected' : ''}>${char.name}</option>`).join('')}
-                    </select>
+                <div class="form-row">
+                    <div class="form-group" style="flex: 1;">
+                        <label for="characterId">Character</label>
+                        <select id="characterId">
+                            <option value="">Select character</option>
+                            ${project.characters.map(char => `<option value="${char.id}" ${element.data.character_id === char.id ? 'selected' : ''}>${char.name}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="forEvent">For Event</label>
+                        <input type="text" id="forEvent" value="${element.data.for_event || ''}">
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label for="forEvent">Événement couvert</label>
-                    <input type="text" id="forEvent" value="${element.data.for_event || ''}">
+                    <label style="display: flex; align-items: center; gap: 8px;">
+                        <input type="checkbox" id="isTrue" ${element.data.is_true ? 'checked' : ''}>
+                        Is this alibi true?
+                    </label>
+                    <small style="color: #666; margin-left: 24px;">Toggle off if this is a false alibi</small>
+                </div>
+                <div class="form-section">
+                    <h4>Claimed Alibi</h4>
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 1;">
+                            <label for="claimedLocation">Claimed Location</label>
+                            <input type="text" id="claimedLocation" placeholder="Where they claim to have been" value="${element.data.claimed_location || ''}">
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label for="claimedActivity">Claimed Activity</label>
+                            <input type="text" id="claimedActivity" placeholder="What they claim to have done" value="${element.data.claimed_activity || ''}">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-section" style="background-color: #fff5f5;">
+                    <h4 style="color: #c0392b;">Reality (Hidden)</h4>
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 1;">
+                            <label for="realLocation">Real Location</label>
+                            <input type="text" id="realLocation" placeholder="Where they actually were" value="${element.data.real_location || ''}">
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label for="realActivity">Real Activity</label>
+                            <input type="text" id="realActivity" placeholder="What they actually did" value="${element.data.real_activity || ''}">
+                        </div>
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label for="claimedLocation">Lieu prétendu</label>
-                    <input type="text" id="claimedLocation" value="${element.data.claimed_location || ''}">
+                    <label>Witnesses</label>
+                    <div class="character-pills-container" id="alibiWitnessesContainer">
+                        ${renderCharacterPills(element.data.witnesses || [], 'alibiWitnesses')}
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label for="isTrue">Est-ce vrai ?</label>
-                    <select id="isTrue">
-                        <option value="true" ${element.data.is_true ? 'selected' : ''}>Vrai</option>
-                        <option value="false" ${!element.data.is_true ? 'selected' : ''}>Faux</option>
-                    </select>
+                    <label>Weaknesses / Holes in Alibi</label>
+                    <div id="weaknessesContainer">
+                        ${renderListItems(element.data.weaknesses || [], 'weaknesses')}
+                    </div>
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="addListItem('weaknesses', 'Add a weakness...')">
+                        <i data-lucide="plus"></i> Add
+                    </button>
+                </div>
+                <div class="form-row">
+                    <div class="form-group" style="flex: 1;">
+                        <label for="verifiedScene">Verified in Scene</label>
+                        <select id="verifiedScene">
+                            <option value="">Select scene</option>
+                            ${renderSceneOptions(element.data.verified_scene)}
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="brokenScene">Broken in Scene</label>
+                        <select id="brokenScene">
+                            <option value="">When alibi is broken</option>
+                            ${renderSceneOptions(element.data.broken_scene)}
+                        </select>
+                    </div>
                 </div>
             `;
 
         case 'clue':
             return `
-                <div class="form-group">
-                    <label for="clueType">Type d'indice</label>
-                    <select id="clueType">
-                        <option value="physical" ${element.data.clue_type === 'physical' ? 'selected' : ''}>Physique</option>
-                        <option value="testimonial" ${element.data.clue_type === 'testimonial' ? 'selected' : ''}>Témoignage</option>
-                        <option value="circumstantial" ${element.data.clue_type === 'circumstantial' ? 'selected' : ''}>Circonstanciel</option>
-                        <option value="digital" ${element.data.clue_type === 'digital' ? 'selected' : ''}>Numérique</option>
-                        <option value="forensic" ${element.data.clue_type === 'forensic' ? 'selected' : ''}>Scientifique</option>
-                        <option value="documentary" ${element.data.clue_type === 'documentary' ? 'selected' : ''}>Documentaire</option>
-                    </select>
+                <div class="form-row">
+                    <div class="form-group" style="flex: 1;">
+                        <label for="clueType">Type *</label>
+                        <select id="clueType">
+                            <option value="physical" ${element.data.clue_type === 'physical' ? 'selected' : ''}>Physical</option>
+                            <option value="testimonial" ${element.data.clue_type === 'testimonial' ? 'selected' : ''}>Testimonial</option>
+                            <option value="circumstantial" ${element.data.clue_type === 'circumstantial' ? 'selected' : ''}>Circumstantial</option>
+                            <option value="digital" ${element.data.clue_type === 'digital' ? 'selected' : ''}>Digital</option>
+                            <option value="forensic" ${element.data.clue_type === 'forensic' ? 'selected' : ''}>Forensic</option>
+                            <option value="documentary" ${element.data.clue_type === 'documentary' ? 'selected' : ''}>Documentary</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group" style="flex: 1;">
+                        <label for="clueSignificance">Significance</label>
+                        <select id="clueSignificance">
+                            <option value="minor" ${element.data.significance === 'minor' ? 'selected' : ''}>Minor</option>
+                            <option value="major" ${element.data.significance === 'major' ? 'selected' : ''}>Major</option>
+                            <option value="critical" ${element.data.significance === 'critical' ? 'selected' : ''}>Critical</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label style="display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" id="isGenuine" ${element.data.is_genuine !== false ? 'checked' : ''}>
+                            Genuine Evidence
+                        </label>
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label for="isGenuine">Est authentique ?</label>
-                    <select id="isGenuine">
-                        <option value="true" ${element.data.is_genuine !== false ? 'selected' : ''}>Oui</option>
-                        <option value="false" ${element.data.is_genuine === false ? 'selected' : ''}>Non (fabriqué)</option>
-                    </select>
+                    <label for="whatItSuggests">What It Suggests</label>
+                    <textarea id="whatItSuggests" rows="3">${element.data.what_it_suggests || ''}</textarea>
+                </div>
+                <div class="form-group">
+                    <label>Points To Characters</label>
+                    <div class="character-pills-container" id="clueCharactersContainer">
+                        ${renderCharacterPills(element.data.points_to_characters || [], 'clueCharacters')}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group" style="flex: 1;">
+                        <label for="plantedScene">Planted Scene</label>
+                        <select id="plantedScene">
+                            <option value="">Select</option>
+                            ${renderSceneOptions(element.data.planted_scene)}
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="discoveredScene">Discovered Scene</label>
+                        <select id="discoveredScene">
+                            <option value="">Select</option>
+                            ${renderSceneOptions(element.data.discovered_scene)}
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="readerSeesAt">Reader Sees At</label>
+                        <select id="readerSeesAt">
+                            <option value="">Select</option>
+                            ${renderSceneOptions(element.data.reader_sees_at)}
+                        </select>
+                    </div>
                 </div>
             `;
 
         case 'secret':
             return `
                 <div class="form-group">
-                    <label for="holderCharacterId">Détenteur du secret</label>
-                    <select id="holderCharacterId">
-                        <option value="">Sélectionner un personnage</option>
-                        ${project.characters.map(char => `<option value="${char.id}" ${element.data.holder_character_id === char.id ? 'selected' : ''}>${char.name}</option>`).join('')}
-                    </select>
+                    <label for="secretFullDescription">Full Description</label>
+                    <textarea id="secretFullDescription" rows="3" placeholder="Describe the secret in detail...">${element.data.full_description || ''}</textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group" style="flex: 1;">
+                        <label for="secretType">Secret Type</label>
+                        <select id="secretType">
+                            <option value="relationship" ${element.data.secret_type === 'relationship' ? 'selected' : ''}>Relationship</option>
+                            <option value="identity" ${element.data.secret_type === 'identity' ? 'selected' : ''}>Identity</option>
+                            <option value="crime" ${element.data.secret_type === 'crime' ? 'selected' : ''}>Crime</option>
+                            <option value="past" ${element.data.secret_type === 'past' ? 'selected' : ''}>Past</option>
+                            <option value="ability" ${element.data.secret_type === 'ability' ? 'selected' : ''}>Ability</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="secretImportance">Importance</label>
+                        <select id="secretImportance">
+                            <option value="minor" ${element.data.importance === 'minor' ? 'selected' : ''}>Minor</option>
+                            <option value="major" ${element.data.importance === 'major' ? 'selected' : ''}>Major</option>
+                            <option value="critical" ${element.data.importance === 'critical' ? 'selected' : ''}>Critical</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group" style="flex: 1;">
+                        <label for="holderCharacterId">Held by Character</label>
+                        <select id="holderCharacterId">
+                            <option value="">Who knows this secret</option>
+                            ${project.characters.map(char => `<option value="${char.id}" ${element.data.holder_character_id === char.id ? 'selected' : ''}>${char.name}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="aboutCharacterId">About Character</label>
+                        <select id="aboutCharacterId">
+                            <option value="">Select</option>
+                            ${project.characters.map(char => `<option value="${char.id}" ${element.data.about_character_id === char.id ? 'selected' : ''}>${char.name}</option>`).join('')}
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group" style="flex: 1;">
+                        <label for="secretPlantedScene">Planted in Scene</label>
+                        <select id="secretPlantedScene">
+                            <option value="">First clues appear</option>
+                            ${renderSceneOptions(element.data.planted_scene)}
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="secretRevealedScene">Revealed in Scene</label>
+                        <select id="secretRevealedScene">
+                            <option value="">Secret is revealed</option>
+                            ${renderSceneOptions(element.data.revealed_scene)}
+                        </select>
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label for="aboutCharacterId">Secret concernant</label>
-                    <select id="aboutCharacterId">
-                        <option value="">Sélectionner un personnage</option>
-                        ${project.characters.map(char => `<option value="${char.id}" ${element.data.about_character_id === char.id ? 'selected' : ''}>${char.name}</option>`).join('')}
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="secretType">Type de secret</label>
-                    <select id="secretType">
-                        <option value="identity" ${element.data.secret_type === 'identity' ? 'selected' : ''}>Identité</option>
-                        <option value="crime" ${element.data.secret_type === 'crime' ? 'selected' : ''}>Crime</option>
-                        <option value="relationship" ${element.data.secret_type === 'relationship' ? 'selected' : ''}>Relation</option>
-                        <option value="past" ${element.data.secret_type === 'past' ? 'selected' : ''}>Passé</option>
-                        <option value="ability" ${element.data.secret_type === 'ability' ? 'selected' : ''}>Capacité</option>
+                    <label for="secretCurrentStatus">Current Status</label>
+                    <select id="secretCurrentStatus">
+                        <option value="hidden" ${element.data.current_status === 'hidden' ? 'selected' : ''}>Hidden</option>
+                        <option value="partially_revealed" ${element.data.current_status === 'partially_revealed' ? 'selected' : ''}>Partially Revealed</option>
+                        <option value="fully_revealed" ${element.data.current_status === 'fully_revealed' ? 'selected' : ''}>Fully Revealed</option>
                     </select>
                 </div>
             `;
@@ -565,37 +704,114 @@ function renderThrillerElementFields(element) {
         case 'question':
             return `
                 <div class="form-group">
-                    <label for="qText">Question</label>
-                    <input type="text" id="qText" value="${element.data.question || ''}">
+                    <label for="qText">Question *</label>
+                    <textarea id="qText" rows="2" placeholder="What mystery question does this raise?" required>${element.data.question || ''}</textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group" style="flex: 1;">
+                        <label for="qType">Type</label>
+                        <select id="qType">
+                            <option value="whodunit" ${element.data.question_type === 'whodunit' ? 'selected' : ''}>Whodunit</option>
+                            <option value="how" ${element.data.question_type === 'how' ? 'selected' : ''}>How</option>
+                            <option value="why" ${element.data.question_type === 'why' ? 'selected' : ''}>Why</option>
+                            <option value="when" ${element.data.question_type === 'when' ? 'selected' : ''}>When</option>
+                            <option value="where" ${element.data.question_type === 'where' ? 'selected' : ''}>Where</option>
+                            <option value="what" ${element.data.question_type === 'what' ? 'selected' : ''}>What</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="qImportance">Importance</label>
+                        <select id="qImportance">
+                            <option value="minor" ${element.data.importance === 'minor' ? 'selected' : ''}>Minor</option>
+                            <option value="major" ${element.data.importance === 'major' ? 'selected' : ''}>Major</option>
+                            <option value="critical" ${element.data.importance === 'critical' ? 'selected' : ''}>Critical</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="qStatus">Status</label>
+                        <select id="qStatus">
+                            <option value="open" ${element.data.status === 'open' ? 'selected' : ''}>Open</option>
+                            <option value="answered" ${element.data.status === 'answered' ? 'selected' : ''}>Answered</option>
+                            <option value="partially_answered" ${element.data.status === 'partially_answered' ? 'selected' : ''}>Partially Answered</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group" style="flex: 1;">
+                        <label for="qRaisedScene">Raised in Scene</label>
+                        <select id="qRaisedScene">
+                            <option value="">Select scene</option>
+                            ${renderSceneOptions(element.data.raised_scene)}
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="qAnsweredScene">Answered in Scene</label>
+                        <select id="qAnsweredScene">
+                            <option value="">Select scene</option>
+                            ${renderSceneOptions(element.data.answered_scene)}
+                        </select>
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label for="qResolved">Résolue ?</label>
-                    <select id="qResolved">
-                        <option value="false" ${!element.data.resolved ? 'selected' : ''}>Non</option>
-                        <option value="true" ${element.data.resolved ? 'selected' : ''}>Oui</option>
-                    </select>
+                    <label>Foreshadowing Scenes</label>
+                    <div class="scene-pills-container" id="foreshadowingScenesContainer">
+                        ${renderScenePills(element.data.foreshadowing_scenes || [], 'foreshadowingScenes')}
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label for="qAnswer">Réponse (si connue)</label>
-                    <textarea id="qAnswer" rows="3">${element.data.answer || ''}</textarea>
+                    <label for="qAnswer">Answer</label>
+                    <textarea id="qAnswer" rows="3" placeholder="What's the answer to this question?">${element.data.answer || ''}</textarea>
                 </div>
             `;
 
         case 'red_herring':
             return `
                 <div class="form-group">
-                    <label for="rhReason">Raison / Origine</label>
-                    <input type="text" id="rhReason" value="${element.data.reason || ''}">
+                    <label for="whatItSuggestsRH">What it suggests</label>
+                    <textarea id="whatItSuggestsRH" rows="3" placeholder="What false conclusion does this lead to...">${element.data.what_it_suggests || ''}</textarea>
                 </div>
                 <div class="form-group">
-                    <label for="rhNotes">Notes</label>
-                    <textarea id="rhNotes" rows="3">${element.data.notes || ''}</textarea>
+                    <label for="misdirectsTo">Misdirects suspicion to</label>
+                    <select id="misdirectsTo">
+                        <option value="">Select character</option>
+                        ${project.characters.map(char => `<option value="${char.id}" ${element.data.misdirects_to === char.id ? 'selected' : ''}>${char.name}</option>`).join('')}
+                    </select>
                 </div>
                 <div class="form-group">
-                    <label for="rhDeliberate">Délibéré ?</label>
-                    <select id="rhDeliberate">
-                        <option value="false" ${!element.data.deliberate ? 'selected' : ''}>Non</option>
-                        <option value="true" ${element.data.deliberate ? 'selected' : ''}>Oui</option>
+                    <label>False Evidence / Misleading Clues</label>
+                    <div id="misleadingCluesContainer">
+                        ${renderListItems(element.data.misleading_clues || [], 'misleadingClues')}
+                    </div>
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="addListItem('misleadingClues', 'Add misleading clue...')">
+                        <i data-lucide="plus"></i> Add
+                    </button>
+                </div>
+                <div class="form-group">
+                    <label for="intendedReaderImpact">Intended Reader Impact</label>
+                    <textarea id="intendedReaderImpact" rows="3" style="background-color: #f3e8ff;" placeholder="What should the reader think/feel?">${element.data.intended_reader_impact || ''}</textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group" style="flex: 1;">
+                        <label for="introducedScene">Introduced in Scene</label>
+                        <select id="introducedScene">
+                            <option value="">Select scene</option>
+                            ${renderSceneOptions(element.data.introduced_scene)}
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="debunkedScene">Debunked in Scene</label>
+                        <select id="debunkedScene">
+                            <option value="">When it's proven false</option>
+                            ${renderSceneOptions(element.data.debunked_scene)}
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="rhStatus">Status</label>
+                    <select id="rhStatus">
+                        <option value="active" ${element.data.status === 'active' ? 'selected' : ''}>Active</option>
+                        <option value="resolved" ${element.data.status === 'resolved' ? 'selected' : ''}>Resolved</option>
+                        <option value="abandoned" ${element.data.status === 'abandoned' ? 'selected' : ''}>Abandoned</option>
                     </select>
                 </div>
             `;
@@ -638,24 +854,54 @@ function saveThrillerElement(event, elementId) {
     // Save type-specific data
     switch (element.type) {
         case 'alibi':
+            const witnessesContainer = document.getElementById('alibiWitnessesContainer');
+            const witnesses = witnessesContainer ?
+                Array.from(witnessesContainer.querySelectorAll('.character-pill')).map(pill => pill.dataset.charId) : [];
+
+            const weaknessesContainer = document.getElementById('weaknessesContainer');
+            const weaknesses = weaknessesContainer ?
+                Array.from(weaknessesContainer.querySelectorAll('.list-item-input')).map(input => input.value).filter(v => v) : [];
+
             element.data = {
                 character_id: document.getElementById('characterId').value,
                 for_event: document.getElementById('forEvent').value,
+                is_true: document.getElementById('isTrue').checked,
                 claimed_location: document.getElementById('claimedLocation').value,
-                is_true: document.getElementById('isTrue').value === 'true'
+                claimed_activity: document.getElementById('claimedActivity').value,
+                real_location: document.getElementById('realLocation').value,
+                real_activity: document.getElementById('realActivity').value,
+                witnesses: witnesses,
+                weaknesses: weaknesses,
+                verified_scene: document.getElementById('verifiedScene').value,
+                broken_scene: document.getElementById('brokenScene').value
             };
             break;
         case 'clue':
+            const clueCharactersContainer = document.getElementById('clueCharactersContainer');
+            const clueCharacters = clueCharactersContainer ?
+                Array.from(clueCharactersContainer.querySelectorAll('.character-pill')).map(pill => pill.dataset.charId) : [];
+
             element.data = {
                 clue_type: document.getElementById('clueType').value,
-                is_genuine: document.getElementById('isGenuine').value === 'true'
+                significance: document.getElementById('clueSignificance').value,
+                is_genuine: document.getElementById('isGenuine').checked,
+                what_it_suggests: document.getElementById('whatItSuggests').value,
+                points_to_characters: clueCharacters,
+                planted_scene: document.getElementById('plantedScene').value,
+                discovered_scene: document.getElementById('discoveredScene').value,
+                reader_sees_at: document.getElementById('readerSeesAt').value
             };
             break;
         case 'secret':
             element.data = {
+                full_description: document.getElementById('secretFullDescription').value,
+                secret_type: document.getElementById('secretType').value,
+                importance: document.getElementById('secretImportance').value,
                 holder_character_id: document.getElementById('holderCharacterId').value,
                 about_character_id: document.getElementById('aboutCharacterId').value,
-                secret_type: document.getElementById('secretType').value
+                planted_scene: document.getElementById('secretPlantedScene').value,
+                revealed_scene: document.getElementById('secretRevealedScene').value,
+                current_status: document.getElementById('secretCurrentStatus').value
             };
             break;
         case 'backstory':
@@ -692,18 +938,35 @@ function saveThrillerElement(event, elementId) {
             break;
 
         case 'question':
+            const foreshadowingScenesContainer = document.getElementById('foreshadowingScenesContainer');
+            const foreshadowingScenes = foreshadowingScenesContainer ?
+                Array.from(foreshadowingScenesContainer.querySelectorAll('.scene-pill')).map(pill => pill.dataset.sceneId) : [];
+
             element.data = {
                 question: document.getElementById('qText') ? document.getElementById('qText').value : '',
-                resolved: document.getElementById('qResolved') ? document.getElementById('qResolved').value === 'true' : false,
+                question_type: document.getElementById('qType') ? document.getElementById('qType').value : 'whodunit',
+                importance: document.getElementById('qImportance') ? document.getElementById('qImportance').value : 'minor',
+                status: document.getElementById('qStatus') ? document.getElementById('qStatus').value : 'open',
+                raised_scene: document.getElementById('qRaisedScene') ? document.getElementById('qRaisedScene').value : '',
+                answered_scene: document.getElementById('qAnsweredScene') ? document.getElementById('qAnsweredScene').value : '',
+                foreshadowing_scenes: foreshadowingScenes,
                 answer: document.getElementById('qAnswer') ? document.getElementById('qAnswer').value : ''
             };
             break;
 
         case 'red_herring':
+            const misleadingCluesContainer = document.getElementById('misleadingCluesContainer');
+            const misleadingClues = misleadingCluesContainer ?
+                Array.from(misleadingCluesContainer.querySelectorAll('.list-item-input')).map(input => input.value).filter(v => v) : [];
+
             element.data = {
-                reason: document.getElementById('rhReason') ? document.getElementById('rhReason').value : '',
-                notes: document.getElementById('rhNotes') ? document.getElementById('rhNotes').value : '',
-                deliberate: document.getElementById('rhDeliberate') ? document.getElementById('rhDeliberate').value === 'true' : false
+                what_it_suggests: document.getElementById('whatItSuggestsRH') ? document.getElementById('whatItSuggestsRH').value : '',
+                misdirects_to: document.getElementById('misdirectsTo') ? document.getElementById('misdirectsTo').value : '',
+                misleading_clues: misleadingClues,
+                intended_reader_impact: document.getElementById('intendedReaderImpact') ? document.getElementById('intendedReaderImpact').value : '',
+                introduced_scene: document.getElementById('introducedScene') ? document.getElementById('introducedScene').value : '',
+                debunked_scene: document.getElementById('debunkedScene') ? document.getElementById('debunkedScene').value : '',
+                status: document.getElementById('rhStatus') ? document.getElementById('rhStatus').value : 'active'
             };
             break;
 
@@ -867,4 +1130,241 @@ function selectThrillerElement(elementId) {
 
 function generateId() {
     return 'thriller_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+}
+
+// Helper function to render character pills
+function renderCharacterPills(selectedCharacters, fieldName) {
+    if (!project.characters || project.characters.length === 0) {
+        return '<p style="color: #999;">No characters available</p>';
+    }
+
+    let html = '<div class="pills-wrapper">';
+
+    // Render selected character pills
+    selectedCharacters.forEach(charId => {
+        const char = project.characters.find(c => c.id === charId);
+        if (char) {
+            html += `
+                <span class="character-pill" data-char-id="${charId}">
+                    ${char.name}
+                    <button type="button" class="pill-remove" onclick="removeCharacterPill('${fieldName}', '${charId}')">×</button>
+                </span>
+            `;
+        }
+    });
+
+    html += '</div>';
+
+    // Add character selector
+    html += `
+        <select class="pill-selector" onchange="addCharacterPill('${fieldName}', this.value); this.value='';">
+            <option value="">Add character...</option>
+            ${project.characters.filter(c => !selectedCharacters.includes(c.id)).map(char =>
+                `<option value="${char.id}">${char.name}</option>`
+            ).join('')}
+        </select>
+    `;
+
+    return html;
+}
+
+// Helper function to render scene options
+function renderSceneOptions(selectedSceneId) {
+    if (!project.chapters || project.chapters.length === 0) {
+        return '';
+    }
+
+    let options = '';
+    project.chapters.forEach(chapter => {
+        if (chapter.scenes && chapter.scenes.length > 0) {
+            chapter.scenes.forEach(scene => {
+                const sceneLabel = `${chapter.title}: ${scene.title || 'Scène ' + (chapter.scenes.indexOf(scene) + 1)}`;
+                const selected = selectedSceneId === scene.id ? 'selected' : '';
+                options += `<option value="${scene.id}" ${selected}>${sceneLabel}</option>`;
+            });
+        }
+    });
+
+    return options;
+}
+
+// Helper function to render scene pills
+function renderScenePills(selectedScenes, fieldName) {
+    if (!project.chapters || project.chapters.length === 0) {
+        return '<p style="color: #999;">No scenes available</p>';
+    }
+
+    let html = '<div class="pills-wrapper">';
+
+    // Render selected scene pills
+    selectedScenes.forEach(sceneId => {
+        let sceneLabel = '';
+        project.chapters.forEach(chapter => {
+            if (chapter.scenes) {
+                const scene = chapter.scenes.find(s => s.id === sceneId);
+                if (scene) {
+                    sceneLabel = `${chapter.title}: Scène ${chapter.scenes.indexOf(scene) + 1}`;
+                }
+            }
+        });
+
+        if (sceneLabel) {
+            html += `
+                <span class="scene-pill" data-scene-id="${sceneId}">
+                    ${sceneLabel}
+                    <button type="button" class="pill-remove" onclick="removeScenePill('${fieldName}', '${sceneId}')">×</button>
+                </span>
+            `;
+        }
+    });
+
+    html += '</div>';
+
+    // Add scene selector
+    html += `
+        <select class="pill-selector" onchange="addScenePill('${fieldName}', this.value); this.value='';">
+            <option value="">Add scene...</option>
+    `;
+
+    project.chapters.forEach(chapter => {
+        if (chapter.scenes && chapter.scenes.length > 0) {
+            chapter.scenes.forEach(scene => {
+                if (!selectedScenes.includes(scene.id)) {
+                    const sceneLabel = `${chapter.title}: Scène ${chapter.scenes.indexOf(scene) + 1}`;
+                    html += `<option value="${scene.id}">${sceneLabel}</option>`;
+                }
+            });
+        }
+    });
+
+    html += '</select>';
+
+    return html;
+}
+
+// Helper function to render list items (for weaknesses, misleading clues, etc.)
+function renderListItems(items, fieldName) {
+    if (!items || items.length === 0) {
+        return '';
+    }
+
+    return items.map((item, index) => `
+        <div class="list-item-row">
+            <input type="text" class="list-item-input" value="${item}" data-field="${fieldName}" data-index="${index}" />
+            <button type="button" class="btn btn-ghost btn-xs" onclick="removeListItem('${fieldName}', ${index})">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+    `).join('');
+}
+
+// Functions to manage character pills
+function addCharacterPill(fieldName, charId) {
+    if (!charId) return;
+
+    const container = document.getElementById(fieldName + 'Container');
+    if (!container) return;
+
+    // Get current selected characters
+    const currentPills = Array.from(container.querySelectorAll('.character-pill')).map(pill => pill.dataset.charId);
+    currentPills.push(charId);
+
+    // Re-render pills
+    container.innerHTML = renderCharacterPills(currentPills, fieldName);
+
+    // Refresh icons
+    setTimeout(() => {
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    }, 50);
+}
+
+function removeCharacterPill(fieldName, charId) {
+    const container = document.getElementById(fieldName + 'Container');
+    if (!container) return;
+
+    // Get current selected characters
+    const currentPills = Array.from(container.querySelectorAll('.character-pill'))
+        .map(pill => pill.dataset.charId)
+        .filter(id => id !== charId);
+
+    // Re-render pills
+    container.innerHTML = renderCharacterPills(currentPills, fieldName);
+
+    // Refresh icons
+    setTimeout(() => {
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    }, 50);
+}
+
+// Functions to manage scene pills
+function addScenePill(fieldName, sceneId) {
+    if (!sceneId) return;
+
+    const container = document.getElementById(fieldName + 'Container');
+    if (!container) return;
+
+    // Get current selected scenes
+    const currentPills = Array.from(container.querySelectorAll('.scene-pill')).map(pill => pill.dataset.sceneId);
+    currentPills.push(sceneId);
+
+    // Re-render pills
+    container.innerHTML = renderScenePills(currentPills, fieldName);
+
+    // Refresh icons
+    setTimeout(() => {
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    }, 50);
+}
+
+function removeScenePill(fieldName, sceneId) {
+    const container = document.getElementById(fieldName + 'Container');
+    if (!container) return;
+
+    // Get current selected scenes
+    const currentPills = Array.from(container.querySelectorAll('.scene-pill'))
+        .map(pill => pill.dataset.sceneId)
+        .filter(id => id !== sceneId);
+
+    // Re-render pills
+    container.innerHTML = renderScenePills(currentPills, fieldName);
+
+    // Refresh icons
+    setTimeout(() => {
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    }, 50);
+}
+
+// Functions to manage list items
+function addListItem(fieldName, placeholder) {
+    const container = document.getElementById(fieldName + 'Container');
+    if (!container) return;
+
+    const newItem = document.createElement('div');
+    newItem.className = 'list-item-row';
+    newItem.innerHTML = `
+        <input type="text" class="list-item-input" placeholder="${placeholder}" data-field="${fieldName}" />
+        <button type="button" class="btn btn-ghost btn-xs" onclick="this.parentElement.remove()">
+            <i data-lucide="x"></i>
+        </button>
+    `;
+
+    container.appendChild(newItem);
+
+    // Focus the new input
+    newItem.querySelector('input').focus();
+
+    // Refresh icons
+    setTimeout(() => {
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    }, 50);
+}
+
+function removeListItem(fieldName, index) {
+    const container = document.getElementById(fieldName + 'Container');
+    if (!container) return;
+
+    const items = container.querySelectorAll('.list-item-row');
+    if (items[index]) {
+        items[index].remove();
+    }
 }
