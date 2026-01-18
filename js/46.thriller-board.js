@@ -420,7 +420,12 @@ function renderThrillerSwimlaneRow(row, columns) {
 function renderThrillerGridCell(row, column, cards) {
     if (!cards || cards.length === 0) {
         return `
-            <div class="thriller-grid-cell" data-row-id="${row.id}" data-column-id="${column.id}"
+            <div class="thriller-grid-cell"
+                 data-row-id="${row.id}"
+                 data-column-id="${column.id}"
+                 ondragover="handleCellDragOver(event)"
+                 ondragleave="handleCellDragLeave(event)"
+                 ondrop="handleCellDrop(event, '${row.id}', '${column.id}')"
                  onclick="addThrillerCardToCell('${row.id}', '${column.id}')">
                 <div class="thriller-grid-cell-add">
                     <i data-lucide="plus"></i>
@@ -430,7 +435,12 @@ function renderThrillerGridCell(row, column, cards) {
     }
 
     return `
-        <div class="thriller-grid-cell has-card" data-row-id="${row.id}" data-column-id="${column.id}">
+        <div class="thriller-grid-cell has-card"
+             data-row-id="${row.id}"
+             data-column-id="${column.id}"
+             ondragover="handleCellDragOver(event)"
+             ondragleave="handleCellDragLeave(event)"
+             ondrop="handleCellDrop(event, '${row.id}', '${column.id}')">
             ${renderCardStack(cards, row.id, column.id)}
         </div>
     `;
@@ -445,35 +455,143 @@ function renderCardStack(cards, rowId, columnId) {
     return `
         <div class="thriller-card-stack" data-row-id="${rowId}" data-column-id="${columnId}">
             ${sortedCards.slice(0, visibleCount).map((card, index) => {
-                const offset = index * 8; // 8px offset per card
+                const offset = index * 4; // 4px offset (plus compact)
                 const zIndex = visibleCount - index;
+                const rotation = index * 0.5; // Léger effet de rotation
                 return `
                     <div class="thriller-card-wrapper"
-                         style="transform: translate(${offset}px, ${offset}px); z-index: ${zIndex};"
+                         style="transform: translate(${offset}px, ${offset}px) rotate(${rotation}deg); z-index: ${zIndex};"
                          data-card-id="${card.id}"
-                         onclick="bringCardToFront(event, '${card.id}')">
+                         draggable="true"
+                         ondragstart="handleCardDragStart(event, '${card.id}')"
+                         ondragend="handleCardDragEnd(event)"
+                         onclick="handleStackedCardClick(event, '${card.id}', ${index})">
                         ${renderThrillerCard(card)}
                     </div>
                 `;
             }).join('')}
 
-            ${hiddenCount > 0 ? `
-                <div class="thriller-card-count-badge"
-                     style="transform: translate(${visibleCount * 8}px, ${visibleCount * 8}px);"
-                     onclick="showCardStackModal(event, '${rowId}', '${columnId}')">
-                    +${hiddenCount}
+            ${cards.length > 1 ? `
+                <div class="thriller-stack-indicator"
+                     style="transform: translate(${(visibleCount - 1) * 4}px, ${(visibleCount - 1) * 4 + 4}px);">
+                    <span class="thriller-stack-count">${cards.length}</span>
+                    ${hiddenCount > 0 ? `<span class="thriller-stack-more" onclick="showCardStackModal(event, '${rowId}', '${columnId}')" title="Voir toutes les cartes">+${hiddenCount}</span>` : ''}
                 </div>
             ` : ''}
 
-            <!-- Add button in stack -->
+            <!-- Add button -->
             <button class="thriller-stack-add-btn"
-                    style="transform: translate(${visibleCount * 8 + 8}px, ${visibleCount * 8 + 8}px);"
                     onclick="addThrillerCardToCell('${rowId}', '${columnId}')"
                     title="Ajouter une carte">
                 <i data-lucide="plus"></i>
             </button>
         </div>
     `;
+}
+
+// Drag & Drop State
+let cardDragState = {
+    draggedCardId: null,
+    sourceRowId: null,
+    sourceColumnId: null
+};
+
+function handleCardDragStart(event, cardId) {
+    event.stopPropagation();
+
+    const card = thrillerBoardState.gridConfig.cards.find(c => c.id === cardId);
+    if (!card) return;
+
+    cardDragState.draggedCardId = cardId;
+    cardDragState.sourceRowId = card.rowId;
+    cardDragState.sourceColumnId = card.columnId;
+
+    // Visual feedback
+    event.currentTarget.classList.add('dragging');
+    event.dataTransfer.effectAllowed = 'move';
+    event.dataTransfer.setData('text/plain', cardId);
+}
+
+function handleCardDragEnd(event) {
+    event.stopPropagation();
+    event.currentTarget.classList.remove('dragging');
+
+    // Remove all drop highlights
+    document.querySelectorAll('.thriller-grid-cell').forEach(cell => {
+        cell.classList.remove('drop-target-hover');
+    });
+}
+
+function handleCellDragOver(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    event.dataTransfer.dropEffect = 'move';
+
+    // Highlight drop zone
+    event.currentTarget.classList.add('drop-target-hover');
+}
+
+function handleCellDragLeave(event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    // Remove highlight if leaving cell
+    if (!event.currentTarget.contains(event.relatedTarget)) {
+        event.currentTarget.classList.remove('drop-target-hover');
+    }
+}
+
+function handleCellDrop(event, targetRowId, targetColumnId) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    event.currentTarget.classList.remove('drop-target-hover');
+
+    if (!cardDragState.draggedCardId) return;
+
+    const card = thrillerBoardState.gridConfig.cards.find(c => c.id === cardDragState.draggedCardId);
+    if (!card) return;
+
+    // Don't do anything if dropping in same cell
+    if (card.rowId === targetRowId && card.columnId === targetColumnId) {
+        cardDragState.draggedCardId = null;
+        return;
+    }
+
+    // Move card to new cell
+    card.rowId = targetRowId;
+    card.columnId = targetColumnId;
+
+    // Reset zIndex in new cell
+    const cellCards = thrillerBoardState.gridConfig.cards.filter(
+        c => c.rowId === targetRowId && c.columnId === targetColumnId
+    );
+    const maxZIndex = cellCards.length > 0 ? Math.max(...cellCards.map(c => c.zIndex || 0), 0) : 0;
+    card.zIndex = maxZIndex + 1;
+
+    // Save and re-render
+    saveProject();
+    renderThrillerBoard();
+
+    // Reset drag state
+    cardDragState.draggedCardId = null;
+    cardDragState.sourceRowId = null;
+    cardDragState.sourceColumnId = null;
+}
+
+function handleStackedCardClick(event, cardId, index) {
+    event.stopPropagation();
+
+    // If clicking on top card (index 0), edit it
+    if (index === 0) {
+        // Check if we're not clicking on a socket
+        if (!event.target.closest('.thriller-card-socket')) {
+            editThrillerCard(cardId);
+        }
+    } else {
+        // If clicking on a card behind, bring it to front
+        bringCardToFront(event, cardId);
+    }
 }
 
 function renderThrillerCard(card) {

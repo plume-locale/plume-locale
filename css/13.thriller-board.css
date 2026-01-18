@@ -806,11 +806,57 @@
     left: 0;
     width: calc(100% - 24px);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
-    cursor: pointer;
+    cursor: grab;
+}
+
+.thriller-card-wrapper:active {
+    cursor: grabbing;
 }
 
 .thriller-card-wrapper:hover {
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Drag & Drop States */
+.thriller-card-wrapper.dragging {
+    opacity: 0.5;
+    cursor: grabbing;
+    transform: scale(0.95) rotate(2deg);
+    z-index: 9999;
+}
+
+.thriller-grid-cell.drop-target-hover {
+    background: rgba(212, 175, 55, 0.1);
+    border: 2px dashed var(--accent-gold);
+    box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.1);
+}
+
+/* Stack Indicator */
+.thriller-stack-indicator {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    border-radius: 12px;
+    z-index: 1001;
+    pointer-events: none;
+}
+
+.thriller-stack-count {
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.thriller-stack-more {
+    color: var(--accent-gold);
+    font-size: 10px;
+    font-weight: 500;
 }
 
 .thriller-card-count-badge {
