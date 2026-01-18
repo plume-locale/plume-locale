@@ -151,6 +151,9 @@ let thrillerBoardState = {
 // INITIALIZATION
 // ============================================
 
+// Global flag to track if socket event listener is attached
+let socketEventListenerAttached = false;
+
 function initThrillerBoard() {
     // Initialize thriller elements array if not exists
     if (!project.thrillerElements) {
@@ -176,6 +179,22 @@ function initThrillerBoard() {
     const savedViewMode = localStorage.getItem('plume_thriller_view_mode');
     if (savedViewMode) {
         thrillerBoardState.viewMode = savedViewMode;
+    }
+
+    // Attach global socket event listener (only once)
+    if (!socketEventListenerAttached) {
+        document.body.addEventListener('mousedown', function(event) {
+            const socket = event.target.closest('.thriller-card-socket');
+            if (socket && socket.dataset.cardId && socket.dataset.property) {
+                const cardId = socket.dataset.cardId;
+                const property = socket.dataset.property;
+                console.log('Socket clicked:', cardId, property);
+                startThrillerConnection(event, cardId, property);
+            }
+        }, true); // Use capture phase to catch event before others
+
+        socketEventListenerAttached = true;
+        console.log('Global socket event listener attached');
     }
 }
 
@@ -275,9 +294,6 @@ function renderThrillerGridView() {
 
     // Render connections after DOM is ready
     setTimeout(() => {
-        // Attach event listeners to all sockets
-        attachSocketEventListeners();
-
         renderThrillerConnections();
 
         // Add scroll listener to update connections on scroll
@@ -287,19 +303,9 @@ function renderThrillerGridView() {
                 renderThrillerConnections();
             });
         }
+
+        if (typeof lucide !== 'undefined') lucide.createIcons();
     }, 100);
-}
-
-function attachSocketEventListeners() {
-    const sockets = document.querySelectorAll('.thriller-card-socket');
-    sockets.forEach(socket => {
-        const cardId = socket.dataset.cardId;
-        const property = socket.dataset.property;
-
-        socket.addEventListener('mousedown', function(event) {
-            startThrillerConnection(event, cardId, property);
-        });
-    });
 }
 
 function renderThrillerGrid() {
