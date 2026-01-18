@@ -275,6 +275,9 @@ function renderThrillerGridView() {
 
     // Render connections after DOM is ready
     setTimeout(() => {
+        // Attach event listeners to all sockets
+        attachSocketEventListeners();
+
         renderThrillerConnections();
 
         // Add scroll listener to update connections on scroll
@@ -285,6 +288,18 @@ function renderThrillerGridView() {
             });
         }
     }, 100);
+}
+
+function attachSocketEventListeners() {
+    const sockets = document.querySelectorAll('.thriller-card-socket');
+    sockets.forEach(socket => {
+        const cardId = socket.dataset.cardId;
+        const property = socket.dataset.property;
+
+        socket.addEventListener('mousedown', function(event) {
+            startThrillerConnection(event, cardId, property);
+        });
+    });
 }
 
 function renderThrillerGrid() {
@@ -459,7 +474,6 @@ function renderThrillerCardProperties(card) {
                 <div class="thriller-card-socket"
                      data-card-id="${card.id}"
                      data-property="${prop.key}"
-                     onmousedown="startThrillerConnection(event, '${card.id}', '${prop.key}')"
                      title="Créer une connexion">
                     <i data-lucide="circle" style="width: 12px; height: 12px;"></i>
                 </div>
