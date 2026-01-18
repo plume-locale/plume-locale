@@ -374,9 +374,11 @@ function renderThrillerGrid() {
             <!-- SVG Connections Layer (on top) -->
             <svg class="thriller-grid-connections" id="thrillerGridConnections" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10;">
                 <defs>
-                    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                        <polygon points="0 0, 10 3.5, 0 7" fill="var(--accent-gold)" />
-                    </marker>
+                    ${Object.entries(THRILLER_TYPES).map(([key, data]) => `
+                        <marker id="arrowhead-${key}" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="${data.color}" />
+                        </marker>
+                    `).join('')}
                 </defs>
             </svg>
         </div>
@@ -2889,6 +2891,12 @@ function drawConnectionLine(svg, connection) {
         return;
     }
 
+    // Get card type to determine color
+    const fromCard = thrillerBoardState.gridConfig.cards.find(c => c.id === connection.from.cardId);
+    const cardType = fromCard ? fromCard.type : 'clue';
+    const typeData = THRILLER_TYPES[cardType];
+    const connectionColor = typeData ? typeData.color : '#d4af37';
+
     const fromPos = getSocketPosition(fromSocket);
     const toPos = getSocketPosition(toSocket);
 
@@ -2909,30 +2917,40 @@ function drawConnectionLine(svg, connection) {
     const pathData = `M ${fromPos.x} ${fromPos.y} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${toPos.x} ${toPos.y}`;
 
     path.setAttribute('d', pathData);
-    path.setAttribute('stroke', 'var(--accent-gold)');
+    path.setAttribute('stroke', connectionColor);
     path.setAttribute('stroke-width', '2');
     path.setAttribute('fill', 'none');
-    path.setAttribute('marker-end', 'url(#arrowhead)');
+    path.setAttribute('marker-end', 'url(#arrowhead-' + cardType + ')');
     path.setAttribute('class', 'thriller-connection-line');
     path.setAttribute('data-connection-id', connection.id);
+    path.setAttribute('data-card-type', cardType);
     path.style.cursor = 'pointer';
     path.style.pointerEvents = 'stroke';
+    path.style.transition = 'all 0.2s ease';
 
-    // Add hover effect
+    // Add hover effect with tooltip
     path.addEventListener('mouseenter', function() {
-        this.setAttribute('stroke-width', '3');
-        this.setAttribute('stroke', '#f0a000');
+        this.setAttribute('stroke-width', '4');
+        this.style.filter = 'drop-shadow(0 0 6px ' + connectionColor + ')';
+
+        // Highlight connected sockets
+        fromSocket.classList.add('connected-highlight');
+        toSocket.classList.add('connected-highlight');
     });
 
     path.addEventListener('mouseleave', function() {
         this.setAttribute('stroke-width', '2');
-        this.setAttribute('stroke', 'var(--accent-gold)');
+        this.style.filter = 'none';
+
+        // Remove highlight
+        fromSocket.classList.remove('connected-highlight');
+        toSocket.classList.remove('connected-highlight');
     });
 
     // Add click to delete
     path.addEventListener('click', function(e) {
         e.stopPropagation();
-        if (confirm('Supprimer cette connexion ?')) {
+        if (confirm('Supprimer cette connexion ?\n\n' + typeData.label + ': ' + fromCard.title + ' → ' + connection.to.property)) {
             deleteThrillerConnection(connection.id);
         }
     });
@@ -2946,15 +2964,15 @@ function drawConnectionLine(svg, connection) {
 }
 
 function getSocketPosition(socket) {
-    const container = document.getElementById('thrillerGridContainer');
-    if (!container) return { x: 0, y: 0 };
+    const svg = document.getElementById('thrillerGridConnections');
+    if (!svg) return { x: 0, y: 0 };
 
-    const containerRect = container.getBoundingClientRect();
+    const svgRect = svg.getBoundingClientRect();
     const socketRect = socket.getBoundingClientRect();
 
-    // Calculate position relative to container, accounting for scroll
-    const x = socketRect.left - containerRect.left + container.scrollLeft + socketRect.width / 2;
-    const y = socketRect.top - containerRect.top + container.scrollTop + socketRect.height / 2;
+    // Calculate position relative to SVG overlay
+    const x = socketRect.left - svgRect.left + socketRect.width / 2;
+    const y = socketRect.top - svgRect.top + socketRect.height / 2;
 
     return { x, y };
 }

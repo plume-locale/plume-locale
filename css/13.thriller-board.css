@@ -920,6 +920,18 @@
     color: white;
 }
 
+.thriller-card-socket.connected-highlight {
+    background: var(--accent-gold);
+    border-color: var(--accent-gold);
+    transform: scale(1.4);
+    box-shadow: 0 0 0 4px rgba(255, 193, 7, 0.3);
+    z-index: 100;
+}
+
+.thriller-card-socket.connected-highlight i {
+    color: white;
+}
+
 .thriller-card-socket i {
     width: 10px;
     height: 10px;
