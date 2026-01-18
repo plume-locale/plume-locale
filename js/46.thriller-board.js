@@ -489,13 +489,26 @@ function renderThrillerCardProperties(card) {
 
         return `
             <div class="thriller-card-property" data-property="${prop.key}">
+                <!-- Socket Left -->
+                <div class="thriller-card-socket thriller-card-socket-left"
+                     data-card-id="${card.id}"
+                     data-property="${prop.key}"
+                     data-side="left"
+                     title="Créer une connexion">
+                    <i data-lucide="circle" style="width: 12px; height: 12px;"></i>
+                </div>
+
+                <!-- Property Content -->
                 <div class="thriller-card-property-content">
                     <span class="thriller-card-property-label">${prop.label}:</span>
                     <span class="thriller-card-property-value">${formatPropertyValue(value, prop.type)}</span>
                 </div>
-                <div class="thriller-card-socket"
+
+                <!-- Socket Right -->
+                <div class="thriller-card-socket thriller-card-socket-right"
                      data-card-id="${card.id}"
                      data-property="${prop.key}"
+                     data-side="right"
                      title="Créer une connexion">
                     <i data-lucide="circle" style="width: 12px; height: 12px;"></i>
                 </div>
@@ -2873,15 +2886,59 @@ function renderThrillerConnections() {
     });
 }
 
+function chooseBestSocketPair(fromCardId, fromProperty, toCardId, toProperty) {
+    // Find all sockets (left and right) for both properties
+    const fromSockets = {
+        left: document.querySelector(`.thriller-card-socket[data-card-id="${fromCardId}"][data-property="${fromProperty}"][data-side="left"]`),
+        right: document.querySelector(`.thriller-card-socket[data-card-id="${fromCardId}"][data-property="${fromProperty}"][data-side="right"]`)
+    };
+    const toSockets = {
+        left: document.querySelector(`.thriller-card-socket[data-card-id="${toCardId}"][data-property="${toProperty}"][data-side="left"]`),
+        right: document.querySelector(`.thriller-card-socket[data-card-id="${toCardId}"][data-property="${toProperty}"][data-side="right"]`)
+    };
+
+    if (!fromSockets.left || !fromSockets.right || !toSockets.left || !toSockets.right) {
+        console.warn('Not all sockets found, falling back to first available');
+        return {
+            from: fromSockets.left || fromSockets.right,
+            to: toSockets.left || toSockets.right
+        };
+    }
+
+    // Get positions of all sockets
+    const fromLeftPos = getSocketPosition(fromSockets.left);
+    const fromRightPos = getSocketPosition(fromSockets.right);
+    const toLeftPos = getSocketPosition(toSockets.left);
+    const toRightPos = getSocketPosition(toSockets.right);
+
+    // Calculate which combination gives the most horizontal direct path
+    // Option 1: from-right → to-left (destination is to the right)
+    // Option 2: from-left → to-right (destination is to the left)
+
+    const isToTheRight = toLeftPos.x > fromRightPos.x;
+
+    if (isToTheRight) {
+        // Destination is to the right: use from-right → to-left
+        return { from: fromSockets.right, to: toSockets.left };
+    } else {
+        // Destination is to the left: use from-left → to-right
+        return { from: fromSockets.left, to: toSockets.right };
+    }
+}
+
 function drawConnectionLine(svg, connection) {
     console.log('  Drawing line for connection:', connection.id);
-    // Find source and target sockets
-    const fromSocket = document.querySelector(
-        `.thriller-card-socket[data-card-id="${connection.from.cardId}"][data-property="${connection.from.property}"]`
+
+    // Choose best socket pair automatically
+    const sockets = chooseBestSocketPair(
+        connection.from.cardId,
+        connection.from.property,
+        connection.to.cardId,
+        connection.to.property
     );
-    const toSocket = document.querySelector(
-        `.thriller-card-socket[data-card-id="${connection.to.cardId}"][data-property="${connection.to.property}"]`
-    );
+
+    const fromSocket = sockets.from;
+    const toSocket = sockets.to;
 
     console.log('  From socket:', fromSocket);
     console.log('  To socket:', toSocket);
@@ -2903,15 +2960,23 @@ function drawConnectionLine(svg, connection) {
     // Create curved path
     const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
 
-    // Calculate control points for cubic bezier curve
+    // Determine socket sides for horizontal exit/entry
+    const fromSide = fromSocket.dataset.side; // 'left' or 'right'
+    const toSide = toSocket.dataset.side;
+
+    // Calculate control points for horizontal cubic bezier curve
     const dx = toPos.x - fromPos.x;
     const dy = toPos.y - fromPos.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
-    const offset = Math.min(distance * 0.3, 100);
 
-    const cp1x = fromPos.x + offset;
+    // Offset determines how far horizontally the curve extends
+    const minOffset = 50;
+    const offset = Math.max(Math.abs(dx) * 0.4, minOffset);
+
+    // Control points extend horizontally from sockets
+    const cp1x = fromSide === 'right' ? fromPos.x + offset : fromPos.x - offset;
     const cp1y = fromPos.y;
-    const cp2x = toPos.x - offset;
+    const cp2x = toSide === 'left' ? toPos.x - offset : toPos.x + offset;
     const cp2y = toPos.y;
 
     const pathData = `M ${fromPos.x} ${fromPos.y} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${toPos.x} ${toPos.y}`;
