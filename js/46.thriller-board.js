@@ -2841,6 +2841,17 @@ function renderThrillerConnections() {
         return;
     }
 
+    const svgRect = svg.getBoundingClientRect();
+    console.log('SVG bounding rect:', svgRect);
+    console.log('SVG width x height:', svgRect.width, 'x', svgRect.height);
+
+    const wrapper = svg.parentElement;
+    if (wrapper) {
+        const wrapperRect = wrapper.getBoundingClientRect();
+        console.log('Wrapper bounding rect:', wrapperRect);
+        console.log('Wrapper width x height:', wrapperRect.width, 'x', wrapperRect.height);
+    }
+
     // Clear existing connections (except defs)
     const existingLines = svg.querySelectorAll('path, line:not(.temp-connection)');
     existingLines.forEach(line => line.remove());
@@ -2928,6 +2939,10 @@ function drawConnectionLine(svg, connection) {
 
     svg.appendChild(path);
     console.log('  ✅ Path added to SVG:', pathData);
+    console.log('  SVG dimensions:', svg.getBoundingClientRect());
+    console.log('  SVG children count:', svg.children.length);
+    console.log('  Path computed style stroke:', window.getComputedStyle(path).stroke);
+    console.log('  Path computed style stroke-width:', window.getComputedStyle(path).strokeWidth);
 }
 
 function getSocketPosition(socket) {
