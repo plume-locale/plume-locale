@@ -792,6 +792,153 @@
     height: 24px;
 }
 
+/* Card Stack */
+.thriller-card-stack {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 200px;
+}
+
+.thriller-card-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: calc(100% - 24px);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+}
+
+.thriller-card-wrapper:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.thriller-card-count-badge {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 40px;
+    height: 40px;
+    background: var(--accent-gold);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 1000;
+}
+
+.thriller-card-count-badge:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.thriller-stack-add-btn {
+    position: absolute;
+    top: 8px;
+    left: 0;
+    width: 32px;
+    height: 32px;
+    background: var(--bg-secondary);
+    border: 2px dashed var(--border-color);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 1000;
+}
+
+.thriller-stack-add-btn:hover {
+    background: var(--accent-gold);
+    border-color: var(--accent-gold);
+    color: white;
+}
+
+.thriller-stack-add-btn i {
+    width: 16px;
+    height: 16px;
+}
+
+/* Stack Modal */
+.thriller-stack-modal-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.thriller-stack-modal-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.thriller-stack-modal-item:hover {
+    background: var(--bg-hover);
+    border-color: var(--accent-gold);
+}
+
+.thriller-stack-modal-item-header {
+    padding: 8px 12px;
+    border-radius: 6px;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    flex-shrink: 0;
+}
+
+.thriller-stack-modal-item-header i {
+    width: 14px;
+    height: 14px;
+}
+
+.thriller-stack-modal-item-content {
+    flex: 1;
+}
+
+.thriller-stack-modal-item-content h4 {
+    margin: 0 0 4px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.thriller-stack-modal-item-status {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.thriller-stack-modal-item-status i {
+    width: 12px;
+    height: 12px;
+}
+
+.thriller-stack-modal-item-actions {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
 /* Thriller Card */
 .thriller-card {
     background: var(--bg-primary);

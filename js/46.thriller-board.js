@@ -410,15 +410,15 @@ function renderThrillerSwimlaneRow(row, columns) {
 
             <!-- Row Cells -->
             ${columns.map(col => {
-                const card = gridConfig.cards.find(c => c.rowId === row.id && c.columnId === col.id);
-                return renderThrillerGridCell(row, col, card);
+                const cards = gridConfig.cards.filter(c => c.rowId === row.id && c.columnId === col.id);
+                return renderThrillerGridCell(row, col, cards);
             }).join('')}
         </div>
     `;
 }
 
-function renderThrillerGridCell(row, column, card) {
-    if (!card) {
+function renderThrillerGridCell(row, column, cards) {
+    if (!cards || cards.length === 0) {
         return `
             <div class="thriller-grid-cell" data-row-id="${row.id}" data-column-id="${column.id}"
                  onclick="addThrillerCardToCell('${row.id}', '${column.id}')">
@@ -431,7 +431,47 @@ function renderThrillerGridCell(row, column, card) {
 
     return `
         <div class="thriller-grid-cell has-card" data-row-id="${row.id}" data-column-id="${column.id}">
-            ${renderThrillerCard(card)}
+            ${renderCardStack(cards, row.id, column.id)}
+        </div>
+    `;
+}
+
+function renderCardStack(cards, rowId, columnId) {
+    // Sort cards by zIndex (or creation order)
+    const sortedCards = [...cards].sort((a, b) => (b.zIndex || 0) - (a.zIndex || 0));
+    const visibleCount = Math.min(sortedCards.length, 3); // Show max 3 cards in stack
+    const hiddenCount = sortedCards.length - visibleCount;
+
+    return `
+        <div class="thriller-card-stack" data-row-id="${rowId}" data-column-id="${columnId}">
+            ${sortedCards.slice(0, visibleCount).map((card, index) => {
+                const offset = index * 8; // 8px offset per card
+                const zIndex = visibleCount - index;
+                return `
+                    <div class="thriller-card-wrapper"
+                         style="transform: translate(${offset}px, ${offset}px); z-index: ${zIndex};"
+                         data-card-id="${card.id}"
+                         onclick="bringCardToFront(event, '${card.id}')">
+                        ${renderThrillerCard(card)}
+                    </div>
+                `;
+            }).join('')}
+
+            ${hiddenCount > 0 ? `
+                <div class="thriller-card-count-badge"
+                     style="transform: translate(${visibleCount * 8}px, ${visibleCount * 8}px);"
+                     onclick="showCardStackModal(event, '${rowId}', '${columnId}')">
+                    +${hiddenCount}
+                </div>
+            ` : ''}
+
+            <!-- Add button in stack -->
+            <button class="thriller-stack-add-btn"
+                    style="transform: translate(${visibleCount * 8 + 8}px, ${visibleCount * 8 + 8}px);"
+                    onclick="addThrillerCardToCell('${rowId}', '${columnId}')"
+                    title="Ajouter une carte">
+                <i data-lucide="plus"></i>
+            </button>
         </div>
     `;
 }
@@ -477,6 +517,150 @@ function handleThrillerCardClick(event, cardId) {
     }
 
     editThrillerCard(cardId);
+}
+
+function bringCardToFront(event, cardId) {
+    event.stopPropagation();
+
+    // Find the card and update its zIndex to be highest
+    const card = thrillerBoardState.gridConfig.cards.find(c => c.id === cardId);
+    if (!card) return;
+
+    // Get all cards in the same cell
+    const cellCards = thrillerBoardState.gridConfig.cards.filter(
+        c => c.rowId === card.rowId && c.columnId === card.columnId
+    );
+
+    // Find max zIndex
+    const maxZIndex = Math.max(...cellCards.map(c => c.zIndex || 0), 0);
+
+    // Set this card's zIndex to max + 1
+    card.zIndex = maxZIndex + 1;
+
+    saveProject();
+    renderThrillerBoard();
+}
+
+function showCardStackModal(event, rowId, columnId) {
+    event.stopPropagation();
+
+    const cards = thrillerBoardState.gridConfig.cards.filter(
+        c => c.rowId === rowId && c.columnId === columnId
+    );
+
+    if (!cards || cards.length === 0) return;
+
+    // Sort cards by zIndex
+    const sortedCards = [...cards].sort((a, b) => (b.zIndex || 0) - (a.zIndex || 0));
+
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3>Cartes de cette cellule (${cards.length})</h3>
+                <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="thriller-stack-modal-list">
+                    ${sortedCards.map((card, index) => {
+                        const typeData = THRILLER_TYPES[card.type];
+                        const statusData = THRILLER_CARD_STATUS[card.status || 'pending'];
+                        return `
+                            <div class="thriller-stack-modal-item" data-card-id="${card.id}">
+                                <div class="thriller-stack-modal-item-header" style="background: ${typeData.color};">
+                                    <i data-lucide="${typeData.icon}"></i>
+                                    <span>${typeData.label}</span>
+                                </div>
+                                <div class="thriller-stack-modal-item-content">
+                                    <h4>${card.title}</h4>
+                                    <div class="thriller-stack-modal-item-status" style="color: ${statusData.color};">
+                                        <i data-lucide="${statusData.icon}"></i>
+                                        ${statusData.label}
+                                    </div>
+                                </div>
+                                <div class="thriller-stack-modal-item-actions">
+                                    <button class="btn btn-sm btn-secondary" onclick="bringCardToFrontAndClose('${card.id}')" title="Mettre au premier plan">
+                                        <i data-lucide="bring-to-front"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-secondary" onclick="editThrillerCardFromModal('${card.id}')" title="Éditer">
+                                        <i data-lucide="edit-2"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" onclick="deleteThrillerCardFromStack('${card.id}')" title="Supprimer">
+                                        <i data-lucide="trash-2"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="addThrillerCardToCell('${rowId}', '${columnId}'); this.closest('.modal-overlay').remove();">
+                    <i data-lucide="plus"></i> Ajouter une carte
+                </button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    setTimeout(() => {
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    }, 50);
+}
+
+function bringCardToFrontAndClose(cardId) {
+    const modal = document.querySelector('.modal-overlay');
+    if (modal) modal.remove();
+
+    const card = thrillerBoardState.gridConfig.cards.find(c => c.id === cardId);
+    if (!card) return;
+
+    const cellCards = thrillerBoardState.gridConfig.cards.filter(
+        c => c.rowId === card.rowId && c.columnId === card.columnId
+    );
+
+    const maxZIndex = Math.max(...cellCards.map(c => c.zIndex || 0), 0);
+    card.zIndex = maxZIndex + 1;
+
+    saveProject();
+    renderThrillerBoard();
+}
+
+function editThrillerCardFromModal(cardId) {
+    const modal = document.querySelector('.modal-overlay');
+    if (modal) modal.remove();
+    editThrillerCard(cardId);
+}
+
+function deleteThrillerCardFromStack(cardId) {
+    if (!confirm('Supprimer cette carte ?')) return;
+
+    thrillerBoardState.gridConfig.cards = thrillerBoardState.gridConfig.cards.filter(c => c.id !== cardId);
+
+    // Remove connections
+    if (thrillerBoardState.gridConfig.connections) {
+        thrillerBoardState.gridConfig.connections = thrillerBoardState.gridConfig.connections.filter(
+            conn => conn.from.cardId !== cardId && conn.to.cardId !== cardId
+        );
+    }
+
+    saveProject();
+
+    // Update modal or close if no cards left
+    const modal = document.querySelector('.modal-overlay');
+    if (modal) {
+        const modalContent = modal.querySelector('.modal-body');
+        if (modalContent) {
+            // Re-render modal content
+            modal.remove();
+        }
+    }
+
+    renderThrillerBoard();
 }
 
 function renderThrillerCardProperties(card) {
@@ -2423,6 +2607,12 @@ function saveNewThrillerCard(event, rowId, columnId) {
         }
     }
 
+    // Calculate zIndex for new card (should be on top)
+    const cellCards = thrillerBoardState.gridConfig.cards.filter(
+        c => c.rowId === rowId && c.columnId === columnId
+    );
+    const maxZIndex = cellCards.length > 0 ? Math.max(...cellCards.map(c => c.zIndex || 0), 0) : 0;
+
     const newCard = {
         id: generateId(),
         rowId: rowId,
@@ -2431,7 +2621,8 @@ function saveNewThrillerCard(event, rowId, columnId) {
         title: title,
         status: status,
         data: data,
-        connections: []
+        connections: [],
+        zIndex: maxZIndex + 1
     };
 
     thrillerBoardState.gridConfig.cards.push(newCard);
