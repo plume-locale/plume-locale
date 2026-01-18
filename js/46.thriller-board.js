@@ -2,6 +2,8 @@
 // THRILLER BOARD - Canvas System for Mystery Elements
 // ============================================
 
+console.log('📋 Thriller Board script loaded');
+
 // ============================================
 // CONFIGURATION & TYPES
 // ============================================
@@ -199,8 +201,12 @@ function initThrillerBoard() {
 }
 
 function renderThrillerBoard() {
+    console.log('=== RENDER THRILLER BOARD ===');
     const container = document.getElementById('editorView');
-    if (!container) return;
+    if (!container) {
+        console.log('Editor view container not found!');
+        return;
+    }
 
     initThrillerBoard();
 
@@ -294,6 +300,14 @@ function renderThrillerGridView() {
 
     // Render connections after DOM is ready
     setTimeout(() => {
+        console.log('Grid view timeout callback');
+        const sockets = document.querySelectorAll('.thriller-card-socket');
+        console.log('Sockets found in DOM:', sockets.length);
+        if (sockets.length > 0) {
+            console.log('First socket:', sockets[0]);
+            console.log('First socket data:', sockets[0].dataset);
+        }
+
         renderThrillerConnections();
 
         // Add scroll listener to update connections on scroll
