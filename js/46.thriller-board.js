@@ -2601,6 +2601,9 @@ let connectionState = {
 };
 
 function startThrillerConnection(event, cardId, property) {
+    console.log('=== START CONNECTION ===');
+    console.log('From card:', cardId, 'Property:', property);
+
     event.stopPropagation();
     event.preventDefault();
 
@@ -2609,9 +2612,15 @@ function startThrillerConnection(event, cardId, property) {
     connectionState.fromProperty = property;
 
     // Get starting socket position
-    const socket = event.currentTarget;
+    const socket = event.target.closest('.thriller-card-socket');
+    if (!socket) {
+        console.error('Socket not found!');
+        return;
+    }
+
     socket.classList.add('active-socket');
     connectionState.startPos = getSocketPosition(socket);
+    console.log('Start position:', connectionState.startPos);
 
     // Create transparent overlay to prevent cell hover interference
     const overlay = document.createElement('div');
@@ -2629,9 +2638,11 @@ function startThrillerConnection(event, cardId, property) {
     `;
     document.body.appendChild(overlay);
     connectionState.dragOverlay = overlay;
+    console.log('Overlay created');
 
     // Create temporary line
     const svg = document.getElementById('thrillerGridConnections');
+    console.log('SVG found:', !!svg);
     if (svg) {
         const tempLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
         tempLine.setAttribute('class', 'temp-connection');
@@ -2644,10 +2655,12 @@ function startThrillerConnection(event, cardId, property) {
         tempLine.setAttribute('stroke-dasharray', '5,5');
         svg.appendChild(tempLine);
         connectionState.tempLine = tempLine;
+        console.log('Temp line created');
     }
 
     overlay.addEventListener('mousemove', handleConnectionDrag);
     overlay.addEventListener('mouseup', endThrillerConnection);
+    console.log('Event listeners attached to overlay');
 }
 
 function handleConnectionDrag(event) {
@@ -2686,12 +2699,16 @@ function handleConnectionDrag(event) {
 }
 
 function endThrillerConnection(event) {
+    console.log('=== END CONNECTION ===');
+    console.log('Is drawing:', connectionState.isDrawing);
+
     if (!connectionState.isDrawing) return;
 
     // Remove temporary line
     if (connectionState.tempLine) {
         connectionState.tempLine.remove();
         connectionState.tempLine = null;
+        console.log('Temp line removed');
     }
 
     // Hide overlay temporarily to get element underneath
@@ -2701,21 +2718,35 @@ function endThrillerConnection(event) {
 
     // Get the element at the mouse position (since overlay blocks direct access)
     const elementAtPoint = document.elementFromPoint(event.clientX, event.clientY);
+    console.log('Element at point:', elementAtPoint);
     const targetSocket = elementAtPoint ? elementAtPoint.closest('.thriller-card-socket') : null;
+    console.log('Target socket:', targetSocket);
 
-    if (targetSocket && targetSocket.dataset.cardId !== connectionState.fromCardId) {
-        createThrillerConnection(
-            connectionState.fromCardId,
-            connectionState.fromProperty,
-            targetSocket.dataset.cardId,
-            targetSocket.dataset.property
-        );
+    if (targetSocket) {
+        console.log('Target card ID:', targetSocket.dataset.cardId);
+        console.log('Target property:', targetSocket.dataset.property);
+        console.log('From card ID:', connectionState.fromCardId);
+
+        if (targetSocket.dataset.cardId !== connectionState.fromCardId) {
+            console.log('Creating connection...');
+            createThrillerConnection(
+                connectionState.fromCardId,
+                connectionState.fromProperty,
+                targetSocket.dataset.cardId,
+                targetSocket.dataset.property
+            );
+        } else {
+            console.log('Same card - connection not created');
+        }
+    } else {
+        console.log('No target socket found');
     }
 
     // Remove overlay
     if (connectionState.dragOverlay) {
         connectionState.dragOverlay.remove();
         connectionState.dragOverlay = null;
+        console.log('Overlay removed');
     }
 
     // Cleanup
@@ -2726,6 +2757,7 @@ function endThrillerConnection(event) {
 
     document.querySelectorAll('.active-socket').forEach(el => el.classList.remove('active-socket'));
     document.querySelectorAll('.hover-target').forEach(el => el.classList.remove('hover-target'));
+    console.log('Cleanup complete');
 }
 
 function createThrillerConnection(fromCardId, fromProperty, toCardId, toProperty) {
