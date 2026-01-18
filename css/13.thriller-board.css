@@ -800,7 +800,6 @@
     overflow: hidden;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
     transition: all 0.15s ease;
-    cursor: pointer;
 }
 
 .thriller-card:hover {
@@ -817,6 +816,12 @@
     color: white;
     font-size: 12px;
     font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.15s ease;
+}
+
+.thriller-card-header:hover {
+    opacity: 0.9;
 }
 
 .thriller-card-header i {
@@ -843,6 +848,7 @@
 .thriller-card-body {
     padding: 12px;
     background: var(--bg-primary);
+    cursor: default;
 }
 
 .thriller-card-property {
@@ -923,6 +929,12 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.thriller-card-footer:hover {
+    filter: brightness(1.1);
 }
 
 .thriller-card-footer i {

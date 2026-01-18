@@ -404,9 +404,11 @@ function renderThrillerCard(card) {
     const statusData = THRILLER_CARD_STATUS[card.status || 'pending'];
 
     return `
-        <div class="thriller-card" data-card-id="${card.id}" onclick="editThrillerCard('${card.id}')">
+        <div class="thriller-card" data-card-id="${card.id}">
             <!-- Card Header -->
-            <div class="thriller-card-header" style="background-color: ${typeData.color};">
+            <div class="thriller-card-header"
+                 style="background-color: ${typeData.color};"
+                 onclick="handleThrillerCardClick(event, '${card.id}')">
                 <i data-lucide="${typeData.icon}" style="width: 16px; height: 16px;"></i>
                 <span class="thriller-card-type">${typeData.label}</span>
                 <span class="thriller-card-title">${card.title}</span>
@@ -418,12 +420,26 @@ function renderThrillerCard(card) {
             </div>
 
             <!-- Card Footer -->
-            <div class="thriller-card-footer" style="background-color: ${statusData.color}20; border-left: 3px solid ${statusData.color};">
+            <div class="thriller-card-footer"
+                 style="background-color: ${statusData.color}20; border-left: 3px solid ${statusData.color};"
+                 onclick="handleThrillerCardClick(event, '${card.id}')">
                 <i data-lucide="${statusData.icon}" style="width: 14px; height: 14px; color: ${statusData.color};"></i>
                 <span style="color: ${statusData.color};">${statusData.label}</span>
             </div>
         </div>
     `;
+}
+
+function handleThrillerCardClick(event, cardId) {
+    // Don't open edit modal if clicking on a socket or if we're in connection mode
+    if (event.target.closest('.thriller-card-socket')) {
+        return;
+    }
+    if (connectionState.isDrawing) {
+        return;
+    }
+
+    editThrillerCard(cardId);
 }
 
 function renderThrillerCardProperties(card) {
