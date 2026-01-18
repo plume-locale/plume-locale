@@ -2775,6 +2775,10 @@ function endThrillerConnection(event) {
 }
 
 function createThrillerConnection(fromCardId, fromProperty, toCardId, toProperty) {
+    console.log('=== CREATE CONNECTION ===');
+    console.log('From:', fromCardId, fromProperty);
+    console.log('To:', toCardId, toProperty);
+
     // Check if connection already exists
     const exists = thrillerBoardState.gridConfig.connections &&
         thrillerBoardState.gridConfig.connections.some(conn =>
@@ -2785,6 +2789,7 @@ function createThrillerConnection(fromCardId, fromProperty, toCardId, toProperty
         );
 
     if (exists) {
+        console.log('Connection already exists, skipping');
         return; // Don't create duplicate connections
     }
 
@@ -2805,6 +2810,8 @@ function createThrillerConnection(fromCardId, fromProperty, toCardId, toProperty
     }
 
     thrillerBoardState.gridConfig.connections.push(connection);
+    console.log('Connection added. Total connections:', thrillerBoardState.gridConfig.connections.length);
+    console.log('Connections:', thrillerBoardState.gridConfig.connections);
 
     saveProject();
     renderThrillerBoard();
@@ -2826,22 +2833,35 @@ function deleteThrillerConnection(connectionId) {
 // ============================================
 
 function renderThrillerConnections() {
+    console.log('=== RENDER CONNECTIONS ===');
     const svg = document.getElementById('thrillerGridConnections');
-    if (!svg) return;
+    console.log('SVG element:', svg);
+    if (!svg) {
+        console.log('SVG not found!');
+        return;
+    }
 
     // Clear existing connections (except defs)
     const existingLines = svg.querySelectorAll('path, line:not(.temp-connection)');
     existingLines.forEach(line => line.remove());
+    console.log('Cleared existing lines:', existingLines.length);
 
-    if (!thrillerBoardState.gridConfig.connections) return;
+    if (!thrillerBoardState.gridConfig.connections) {
+        console.log('No connections in state');
+        return;
+    }
+
+    console.log('Number of connections to draw:', thrillerBoardState.gridConfig.connections.length);
 
     // Draw each connection
     thrillerBoardState.gridConfig.connections.forEach(connection => {
+        console.log('Drawing connection:', connection);
         drawConnectionLine(svg, connection);
     });
 }
 
 function drawConnectionLine(svg, connection) {
+    console.log('  Drawing line for connection:', connection.id);
     // Find source and target sockets
     const fromSocket = document.querySelector(
         `.thriller-card-socket[data-card-id="${connection.from.cardId}"][data-property="${connection.from.property}"]`
@@ -2850,7 +2870,13 @@ function drawConnectionLine(svg, connection) {
         `.thriller-card-socket[data-card-id="${connection.to.cardId}"][data-property="${connection.to.property}"]`
     );
 
-    if (!fromSocket || !toSocket) return;
+    console.log('  From socket:', fromSocket);
+    console.log('  To socket:', toSocket);
+
+    if (!fromSocket || !toSocket) {
+        console.log('  ❌ Sockets not found, skipping connection');
+        return;
+    }
 
     const fromPos = getSocketPosition(fromSocket);
     const toPos = getSocketPosition(toSocket);
@@ -2901,6 +2927,7 @@ function drawConnectionLine(svg, connection) {
     });
 
     svg.appendChild(path);
+    console.log('  ✅ Path added to SVG:', pathData);
 }
 
 function getSocketPosition(socket) {
