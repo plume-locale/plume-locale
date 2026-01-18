@@ -343,17 +343,8 @@ function renderThrillerGrid() {
 
     let html = `
         <div class="thriller-grid-wrapper" style="position: relative;">
-            <!-- SVG Connections Layer -->
-            <svg class="thriller-grid-connections" id="thrillerGridConnections" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1;">
-                <defs>
-                    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                        <polygon points="0 0, 10 3.5, 0 7" fill="var(--accent-gold)" />
-                    </marker>
-                </defs>
-            </svg>
-
             <!-- Grid Table -->
-            <div class="thriller-grid-table" style="position: relative; z-index: 2;">
+            <div class="thriller-grid-table" style="position: relative; z-index: 1;">
                 <!-- Header Row -->
                 <div class="thriller-grid-header-row">
                     <div class="thriller-grid-row-header-cell">
@@ -379,6 +370,15 @@ function renderThrillerGrid() {
                 <!-- Swimlane Rows -->
                 ${gridConfig.rows.map(row => renderThrillerSwimlaneRow(row, columns)).join('')}
             </div>
+
+            <!-- SVG Connections Layer (on top) -->
+            <svg class="thriller-grid-connections" id="thrillerGridConnections" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10;">
+                <defs>
+                    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                        <polygon points="0 0, 10 3.5, 0 7" fill="var(--accent-gold)" />
+                    </marker>
+                </defs>
+            </svg>
         </div>
     `;
 
