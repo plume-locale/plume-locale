@@ -1026,7 +1026,7 @@ function renderThrillerCardProperties(card) {
                             <i data-lucide="circle" style="width: 12px; height: 12px;"></i>
                         </div>
                         <div class="thriller-card-property-content">
-                            <span class="thriller-card-property-label">${index === 0 ? prop.label : ''}:</span>
+                            ${index === 0 ? `<span class="thriller-card-property-label">${prop.label}:</span>` : ''}
                             <span class="thriller-card-property-value">${witnessName}</span>
                         </div>
                         <div class="thriller-card-socket thriller-card-socket-right"
