@@ -2293,6 +2293,9 @@ function saveThrillerElement(event, elementId, isNew = false) {
 
     project.thrillerElements = thrillerBoardState.elements;
 
+    // Update all associated cards with new element data (except status)
+    updateCardsFromElement(element.id);
+
     // Check if character changed and move cards to new swimlane
     let newCharacterId = null;
     switch (element.type) {
@@ -2327,6 +2330,31 @@ function saveThrillerElement(event, elementId, isNew = false) {
     }
 
     event.target.closest('.modal-overlay').remove();
+}
+
+// Helper function to update all cards associated with an element when element data changes
+function updateCardsFromElement(elementId) {
+    // Find the element
+    const element = thrillerBoardState.elements.find(el => el.id === elementId);
+    if (!element) return;
+
+    // Find all cards associated with this element
+    const associatedCards = thrillerBoardState.gridConfig.cards.filter(
+        card => card.elementId === elementId
+    );
+
+    if (associatedCards.length === 0) return;
+
+    // Update each card with new element data (but keep card's own status)
+    associatedCards.forEach(card => {
+        card.title = element.title;
+        card.type = element.type;
+        card.data = { ...element.data }; // Copy element data
+        // card.status is kept unchanged - each card maintains its own status
+    });
+
+    // Save updated cards
+    project.thrillerGridConfig.cards = thrillerBoardState.gridConfig.cards;
 }
 
 // Helper function to move cards to a new swimlane when character changes
