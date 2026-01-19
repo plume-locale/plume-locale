@@ -983,6 +983,64 @@ function renderThrillerCardProperties(card) {
 
         if (!value && !prop.showEmpty) return '';
 
+        // Special handling for witnesses - create a property for each witness with sockets
+        if (prop.type === 'witnesses') {
+            if (!value || !Array.isArray(value) || value.length === 0) {
+                return `
+                    <div class="thriller-card-property" data-property="${prop.key}">
+                        <div class="thriller-card-socket thriller-card-socket-left"
+                             data-card-id="${card.id}"
+                             data-property="${prop.key}"
+                             data-side="left"
+                             title="Créer une connexion">
+                            <i data-lucide="circle" style="width: 12px; height: 12px;"></i>
+                        </div>
+                        <div class="thriller-card-property-content">
+                            <span class="thriller-card-property-label">${prop.label}:</span>
+                            <span class="thriller-card-property-value"><em>Aucun témoin</em></span>
+                        </div>
+                        <div class="thriller-card-socket thriller-card-socket-right"
+                             data-card-id="${card.id}"
+                             data-property="${prop.key}"
+                             data-side="right"
+                             title="Créer une connexion">
+                            <i data-lucide="circle" style="width: 12px; height: 12px;"></i>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Create a property for each witness
+            return value.map((witnessId, index) => {
+                const char = project.characters.find(c => String(c.id) === String(witnessId));
+                const witnessName = char ? char.name : 'Inconnu';
+                const propertyKey = `${prop.key}_${index}`;
+
+                return `
+                    <div class="thriller-card-property" data-property="${propertyKey}">
+                        <div class="thriller-card-socket thriller-card-socket-left"
+                             data-card-id="${card.id}"
+                             data-property="${propertyKey}"
+                             data-side="left"
+                             title="Créer une connexion">
+                            <i data-lucide="circle" style="width: 12px; height: 12px;"></i>
+                        </div>
+                        <div class="thriller-card-property-content">
+                            <span class="thriller-card-property-label">${index === 0 ? prop.label : ''}:</span>
+                            <span class="thriller-card-property-value">${witnessName}</span>
+                        </div>
+                        <div class="thriller-card-socket thriller-card-socket-right"
+                             data-card-id="${card.id}"
+                             data-property="${propertyKey}"
+                             data-side="right"
+                             title="Créer une connexion">
+                            <i data-lucide="circle" style="width: 12px; height: 12px;"></i>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
         return `
             <div class="thriller-card-property" data-property="${prop.key}">
                 <!-- Socket Left -->
