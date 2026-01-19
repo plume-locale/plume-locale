@@ -698,6 +698,11 @@ function renderThrillerCard(card) {
                 <span class="thriller-card-type">${typeData.label}</span>
                 <span class="thriller-card-title">${card.title}</span>
                 ${headerExtra}
+                <button class="thriller-card-delete-btn"
+                        onclick="event.stopPropagation(); deleteThrillerCard('${card.id}')"
+                        title="Supprimer cette carte">
+                    <i data-lucide="x"></i>
+                </button>
             </div>
 
             <!-- Card Body with Sockets -->

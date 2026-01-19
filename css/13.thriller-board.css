@@ -1041,6 +1041,38 @@
     text-overflow: ellipsis;
 }
 
+.thriller-card-delete-btn {
+    flex-shrink: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 4px;
+    padding: 4px;
+    cursor: pointer;
+    opacity: 0;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    width: 24px;
+    height: 24px;
+}
+
+.thriller-card-delete-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+.thriller-card-header:hover .thriller-card-delete-btn,
+.thriller-card-delete-btn:focus {
+    opacity: 1;
+}
+
+.thriller-card-delete-btn i {
+    width: 14px;
+    height: 14px;
+}
+
 /* Card Body */
 .thriller-card-body {
     padding: 12px;
