@@ -2348,6 +2348,7 @@ function updateCardsFromElement(elementId) {
     // Update each card with new element data (but keep card's own status)
     associatedCards.forEach(card => {
         card.title = element.title;
+        card.description = element.description; // Copy description directly
         card.type = element.type;
         card.data = { ...element.data }; // Copy element data
         // card.status is kept unchanged - each card maintains its own status
@@ -2699,7 +2700,7 @@ function renderSceneOptions(selectedSceneId) {
                     hasScenes = true;
                     chapter.scenes.forEach(scene => {
                         const sceneLabel = `${act.title} > ${chapter.title}: ${scene.title || 'Scène ' + (chapter.scenes.indexOf(scene) + 1)}`;
-                        const selected = selectedSceneId === scene.id ? 'selected' : '';
+                        const selected = String(selectedSceneId) === String(scene.id) ? 'selected' : '';
                         options += `<option value="${scene.id}" ${selected}>${sceneLabel}</option>`;
                     });
                 }
