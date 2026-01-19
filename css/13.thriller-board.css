@@ -451,7 +451,8 @@
 .form-section {
     padding: 16px;
     border-radius: 8px;
-    background-color: #f8f9fa;
+    border: 1px solid var(--border-color)
+    background-color: var(--bg-primary);
     margin-bottom: 16px;
 }
 
@@ -561,7 +562,7 @@
     }
 
     .form-section {
-        background-color: #2a2a2a;
+        background-color: var(--bg-primary);
     }
 }
 /* ============================================
