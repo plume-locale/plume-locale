@@ -1192,6 +1192,9 @@ function renderThrillerList() {
                                  onclick="selectAndViewThrillerElement('${element.id}')">
                                 <i data-lucide="${typeData.icon}" style="color: ${typeData.color}; width: 14px; height: 14px;"></i>
                                 <span class="treeview-item-name">${element.title}</span>
+                                <button class="treeview-item-delete" onclick="event.stopPropagation(); deleteThrillerElement('${element.id}')" title="Supprimer">
+                                    <i data-lucide="trash-2"></i>
+                                </button>
                             </div>
                         `).join('')}
                     </div>
@@ -2175,18 +2178,40 @@ function createCardForElement(element) {
 }
 
 function deleteThrillerElement(elementId) {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer cet élément ?')) return;
+    if (!confirm('Êtes-vous sûr de vouloir supprimer cet élément et toutes ses cartes associées ?')) return;
 
+    // Remove the element
     thrillerBoardState.elements = thrillerBoardState.elements.filter(el => el.id !== elementId);
+
+    // Remove connections to/from this element
     thrillerBoardState.connections = thrillerBoardState.connections.filter(conn =>
         conn.from !== elementId && conn.to !== elementId
     );
 
+    // Remove all cards associated with this element on the grid
+    thrillerBoardState.gridConfig.cards = thrillerBoardState.gridConfig.cards.filter(
+        card => card.elementId !== elementId
+    );
+
+    // Remove all SVG connections to/from cards of this element
+    if (thrillerBoardState.gridConfig.connections) {
+        thrillerBoardState.gridConfig.connections = thrillerBoardState.gridConfig.connections.filter(conn => {
+            const fromCard = thrillerBoardState.gridConfig.cards.find(c => c.id === conn.from.cardId);
+            const toCard = thrillerBoardState.gridConfig.cards.find(c => c.id === conn.to.cardId);
+            return fromCard && toCard; // Keep only if both cards still exist
+        });
+    }
+
     project.thrillerElements = thrillerBoardState.elements;
     project.thrillerConnections = thrillerBoardState.connections;
+    project.thrillerGridConfig.cards = thrillerBoardState.gridConfig.cards;
+    if (thrillerBoardState.gridConfig.connections) {
+        project.thrillerGridConfig.connections = thrillerBoardState.gridConfig.connections;
+    }
 
     renderThrillerList(); // Update sidebar
     renderThrillerElements();
+    renderThrillerBoard(); // Update grid view
     saveProject();
 }
 

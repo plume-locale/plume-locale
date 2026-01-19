@@ -680,7 +680,8 @@
             text-align: center;
         }
         
-        .treeview-item-label {
+        .treeview-item-label,
+        .treeview-item-name {
             font-size: 0.85rem;
             color: var(--text-primary);
             flex: 1;
@@ -688,7 +689,7 @@
             text-overflow: ellipsis;
             white-space: nowrap;
         }
-        
+
         .treeview-item-delete {
             opacity: 0;
             background: none;
@@ -699,8 +700,16 @@
             font-size: 1rem;
             line-height: 1;
             transition: opacity 0.15s, color 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        
+
+        .treeview-item-delete i {
+            width: 14px;
+            height: 14px;
+        }
+
         .treeview-item-delete:hover {
             color: var(--accent-red);
         }
