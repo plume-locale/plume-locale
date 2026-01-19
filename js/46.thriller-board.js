@@ -705,6 +705,8 @@ function renderThrillerCard(card) {
 }
 
 function handleThrillerCardClick(event, cardId) {
+    event.stopPropagation(); // Prevent event from bubbling up to parent wrapper
+
     // Don't open edit modal if clicking on a socket or if we're in connection mode
     if (event.target.closest('.thriller-card-socket')) {
         return;
