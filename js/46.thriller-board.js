@@ -677,6 +677,17 @@ function renderThrillerCard(card) {
     const typeData = THRILLER_TYPES[card.type];
     const statusData = THRILLER_CARD_STATUS[card.status || 'pending'];
 
+    // Special header for alibi with Vrai/Faux badge
+    let headerExtra = '';
+    if (card.type === 'alibi') {
+        const isTrue = card.data.is_true;
+        headerExtra = `
+            <span class="thriller-card-badge" style="background: ${isTrue ? '#27ae60' : '#e74c3c'}; color: white; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; margin-left: auto;">
+                ${isTrue ? 'VRAI' : 'FAUX'}
+            </span>
+        `;
+    }
+
     return `
         <div class="thriller-card" data-card-id="${card.id}">
             <!-- Card Header -->
@@ -686,6 +697,7 @@ function renderThrillerCard(card) {
                 <i data-lucide="${typeData.icon}" style="width: 16px; height: 16px;"></i>
                 <span class="thriller-card-type">${typeData.label}</span>
                 <span class="thriller-card-title">${card.title}</span>
+                ${headerExtra}
             </div>
 
             <!-- Card Body with Sockets -->
@@ -862,7 +874,14 @@ function renderThrillerCardProperties(card) {
     const properties = getCardTypeProperties(card.type);
 
     return properties.map(prop => {
-        const value = card.data[prop.key] || '';
+        // Get value from card.data, or from card directly for special keys like 'description'
+        let value;
+        if (prop.key === 'description') {
+            value = card.description || '';
+        } else {
+            value = card.data[prop.key] || '';
+        }
+
         if (!value && !prop.showEmpty) return '';
 
         return `
@@ -899,12 +918,11 @@ function getCardTypeProperties(cardType) {
     // Define which properties to show for each card type
     const propertyMap = {
         alibi: [
-            { key: 'character_name', label: 'Personnage', type: 'character', showEmpty: true },
-            { key: 'for_event', label: 'Pour événement', type: 'text', showEmpty: false },
-            { key: 'is_true', label: 'Alibi vrai', type: 'boolean', showEmpty: true },
-            { key: 'claimed_location', label: 'Lieu déclaré', type: 'text', showEmpty: false },
-            { key: 'real_location', label: 'Lieu réel', type: 'text', showEmpty: false },
-            { key: 'weaknesses', label: 'Faiblesses', type: 'array', showEmpty: false }
+            { key: 'description', label: 'Description', type: 'description', showEmpty: false },
+            { key: 'for_event', label: 'Événement', type: 'text', showEmpty: false },
+            { key: 'witnesses', label: 'Témoin(s)', type: 'witnesses', showEmpty: false },
+            { key: 'verified_scene', label: 'Vérifié dans', type: 'scene', showEmpty: false },
+            { key: 'broken_scene', label: 'Brisé dans', type: 'scene', showEmpty: false }
         ],
         clue: [
             { key: 'clue_type', label: 'Type', type: 'select', showEmpty: false },
@@ -1060,6 +1078,66 @@ function formatPropertyValue(value, type) {
             'secret_formed': 'Secret formé'
         };
         return translations[value] || value;
+    }
+
+    if (type === 'description') {
+        // Description can be longer
+        if (!value) return '<em>Aucune description</em>';
+        if (typeof value === 'string' && value.length > 150) {
+            return value.substring(0, 150) + '...';
+        }
+        return value;
+    }
+
+    if (type === 'witnesses') {
+        // Format witnesses list with character names
+        if (!value || !Array.isArray(value) || value.length === 0) {
+            return '<em>Aucun témoin</em>';
+        }
+
+        // Get character names from IDs
+        const witnessNames = value.map(witnessId => {
+            const char = project.characters.find(c => String(c.id) === String(witnessId));
+            return char ? char.name : 'Inconnu';
+        });
+
+        return witnessNames.map(name => `<div style="padding: 2px 0;">• ${name}</div>`).join('');
+    }
+
+    if (type === 'scene') {
+        // Format scene reference (Tome>Acte>Chapitre>Scène)
+        if (!value) return '<em>Non défini</em>';
+
+        // Value should be a scene ID
+        let sceneRef = '<em>Scène introuvable</em>';
+
+        if (project.acts) {
+            for (const act of project.acts) {
+                if (act.chapters) {
+                    for (const chapter of act.chapters) {
+                        if (chapter.scenes) {
+                            const scene = chapter.scenes.find(s => String(s.id) === String(value));
+                            if (scene) {
+                                // Build reference string
+                                const parts = [];
+                                if (project.tomes && project.tomes.length > 1) {
+                                    // Find tome containing this act
+                                    const tome = project.tomes.find(t => t.acts && t.acts.includes(act.id));
+                                    if (tome) parts.push(tome.title);
+                                }
+                                parts.push(act.title);
+                                parts.push(chapter.title);
+                                parts.push(scene.title || 'Scène');
+                                sceneRef = `<em>${parts.join(' > ')}</em>`;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return sceneRef;
     }
 
     if (typeof value === 'string' && value.length > 80) {
