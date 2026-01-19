@@ -556,20 +556,10 @@ function handleCellDrop(event, targetRowId, targetColumnId) {
 
     event.currentTarget.classList.remove('drop-target-hover');
 
-    console.log('handleCellDrop called:', {
-        isTreeviewDrag: cardDragState.isTreeviewDrag,
-        draggedElementId: cardDragState.draggedElementId,
-        draggedCardId: cardDragState.draggedCardId,
-        targetRowId,
-        targetColumnId
-    });
-
     // Case 1: Dragging from treeview to create a new card
     if (cardDragState.isTreeviewDrag && cardDragState.draggedElementId) {
-        console.log('Creating card from treeview element');
         const element = thrillerBoardState.elements.find(el => el.id === cardDragState.draggedElementId);
         if (!element) {
-            console.log('Element not found:', cardDragState.draggedElementId);
             cardDragState.draggedElementId = null;
             cardDragState.isTreeviewDrag = false;
             return;
@@ -594,13 +584,8 @@ function handleCellDrop(event, targetRowId, targetColumnId) {
             zIndex: maxZIndex + 1
         };
 
-        console.log('Creating new card:', newCard);
-        console.log('Cards before push:', thrillerBoardState.gridConfig.cards.length);
-
         thrillerBoardState.gridConfig.cards.push(newCard);
         project.thrillerGridConfig.cards = thrillerBoardState.gridConfig.cards;
-
-        console.log('Cards after push:', thrillerBoardState.gridConfig.cards.length);
 
         // Save and re-render
         saveProject();
@@ -669,8 +654,6 @@ function handleTreeviewDragStart(event, elementId) {
     cardDragState.draggedElementId = elementId;
     cardDragState.isTreeviewDrag = true;
 
-    console.log('handleTreeviewDragStart:', { elementId, state: cardDragState });
-
     // Visual feedback
     event.currentTarget.classList.add('dragging');
     event.dataTransfer.effectAllowed = 'copy';
@@ -681,8 +664,6 @@ function handleTreeviewDragEnd(event) {
     event.stopPropagation();
     event.currentTarget.classList.remove('dragging');
 
-    console.log('handleTreeviewDragEnd called');
-
     // Remove all drop highlights
     document.querySelectorAll('.thriller-grid-cell').forEach(cell => {
         cell.classList.remove('drop-target-hover');
@@ -690,8 +671,6 @@ function handleTreeviewDragEnd(event) {
 
     // Don't reset state here - let handleCellDrop do it
     // The dragend event fires BEFORE the drop event, so we can't reset here
-    // cardDragState.draggedElementId = null;
-    // cardDragState.isTreeviewDrag = false;
 }
 
 function renderThrillerCard(card) {
@@ -1439,7 +1418,7 @@ function renderThrillerElementFields(element) {
                         <label class="form-label" for="characterId">Personnage</label>
                         <select class="form-input" id="characterId">
                             <option value="">Sélectionner un personnage</option>
-                            ${project.characters.map(char => `<option value="${char.id}" ${element.data.character_id === char.id ? 'selected' : ''}>${char.name}</option>`).join('')}
+                            ${project.characters.map(char => `<option value="${char.id}" ${String(element.data.character_id) === String(char.id) ? 'selected' : ''}>${char.name}</option>`).join('')}
                         </select>
                     </div>
                     <div class="form-group" style="flex: 1;">
@@ -1610,14 +1589,14 @@ function renderThrillerElementFields(element) {
                         <label class="form-label" for="holderCharacterId">Détenu par le personnage</label>
                         <select class="form-input" id="holderCharacterId">
                             <option value="">Qui connaît ce secret</option>
-                            ${project.characters.map(char => `<option value="${char.id}" ${element.data.holder_character_id === char.id ? 'selected' : ''}>${char.name}</option>`).join('')}
+                            ${project.characters.map(char => `<option value="${char.id}" ${String(element.data.holder_character_id) === String(char.id) ? 'selected' : ''}>${char.name}</option>`).join('')}
                         </select>
                     </div>
                     <div class="form-group" style="flex: 1;">
                         <label class="form-label" for="aboutCharacterId">Concernant le personnage</label>
                         <select class="form-input" id="aboutCharacterId">
                             <option value="">Sélectionner</option>
-                            ${project.characters.map(char => `<option value="${char.id}" ${element.data.about_character_id === char.id ? 'selected' : ''}>${char.name}</option>`).join('')}
+                            ${project.characters.map(char => `<option value="${char.id}" ${String(element.data.about_character_id) === String(char.id) ? 'selected' : ''}>${char.name}</option>`).join('')}
                         </select>
                     </div>
                 </div>
@@ -1689,7 +1668,7 @@ function renderThrillerElementFields(element) {
                     <label class="form-label" for="ksCharacterId">Personnage</label>
                     <select class="form-input" id="ksCharacterId">
                         <option value="">Sélectionner un personnage</option>
-                        ${project.characters.map(char => `<option value="${char.id}" ${element.data.character_id === char.id ? 'selected' : ''}>${char.name}</option>`).join('')}
+                        ${project.characters.map(char => `<option value="${char.id}" ${String(element.data.character_id) === String(char.id) ? 'selected' : ''}>${char.name}</option>`).join('')}
                     </select>
                 </div>
                 <div class="form-group">
@@ -1725,7 +1704,7 @@ function renderThrillerElementFields(element) {
                         <label class="form-label" for="mmCharacterId">Personnage *</label>
                         <select class="form-input" id="mmCharacterId" required>
                             <option value="">Sélectionner un personnage</option>
-                            ${project.characters.map(char => `<option value="${char.id}" ${element.data.character_id === char.id ? 'selected' : ''}>${char.name}</option>`).join('')}
+                            ${project.characters.map(char => `<option value="${char.id}" ${String(element.data.character_id) === String(char.id) ? 'selected' : ''}>${char.name}</option>`).join('')}
                         </select>
                     </div>
                     <div class="form-group" style="flex: 1;">
@@ -1964,6 +1943,24 @@ function saveThrillerElement(event, elementId, isNew = false) {
     const element = thrillerBoardState.elements.find(el => el.id === elementId);
     if (!element) return;
 
+    // Store old character_id before updating (for swimlane change detection)
+    let oldCharacterId = null;
+    switch (element.type) {
+        case 'alibi':
+        case 'knowledge_state':
+        case 'motive_means_opportunity':
+            oldCharacterId = element.data.character_id;
+            break;
+        case 'secret':
+            oldCharacterId = element.data.holder_character_id;
+            break;
+        case 'backstory':
+            if (element.data.characters_involved && element.data.characters_involved.length > 0) {
+                oldCharacterId = element.data.characters_involved[0];
+            }
+            break;
+    }
+
     element.title = document.getElementById('elementTitle').value;
     element.description = document.getElementById('elementDescription').value;
     element.updatedAt = new Date().toISOString();
@@ -2116,8 +2113,33 @@ function saveThrillerElement(event, elementId, isNew = false) {
     }
 
     project.thrillerElements = thrillerBoardState.elements;
+
+    // Check if character changed and move cards to new swimlane
+    let newCharacterId = null;
+    switch (element.type) {
+        case 'alibi':
+        case 'knowledge_state':
+        case 'motive_means_opportunity':
+            newCharacterId = element.data.character_id;
+            break;
+        case 'secret':
+            newCharacterId = element.data.holder_character_id;
+            break;
+        case 'backstory':
+            if (element.data.characters_involved && element.data.characters_involved.length > 0) {
+                newCharacterId = element.data.characters_involved[0];
+            }
+            break;
+    }
+
+    // If character changed and we're not creating a new element, move existing cards
+    if (!isNew && oldCharacterId !== newCharacterId) {
+        moveCardsToNewSwimlane(element.id, oldCharacterId, newCharacterId);
+    }
+
     renderThrillerList(); // Update sidebar
     renderThrillerElements();
+    renderThrillerBoard(); // Update grid view if applicable
     saveProject();
 
     // If this is a new element and we're in grid view mode, create a card on the grid
@@ -2126,6 +2148,46 @@ function saveThrillerElement(event, elementId, isNew = false) {
     }
 
     event.target.closest('.modal-overlay').remove();
+}
+
+// Helper function to move cards to a new swimlane when character changes
+function moveCardsToNewSwimlane(elementId, oldCharacterId, newCharacterId) {
+    // Find all cards associated with this element
+    const associatedCards = thrillerBoardState.gridConfig.cards.filter(
+        card => card.elementId === elementId
+    );
+
+    if (associatedCards.length === 0) return;
+
+    // Determine new row ID based on new character
+    let newRowId = null;
+    if (newCharacterId) {
+        newRowId = `character_${newCharacterId}`;
+    } else {
+        // If no character, use first available row
+        const autoRows = getAutoGeneratedRows();
+        const manualRows = thrillerBoardState.gridConfig.rows;
+        const allRows = [...autoRows, ...manualRows];
+        if (allRows.length > 0) {
+            newRowId = allRows[0].id;
+        }
+    }
+
+    if (!newRowId) return;
+
+    // Move all associated cards to the new row
+    associatedCards.forEach(card => {
+        card.rowId = newRowId;
+        // Keep the same columnId (scene assignment doesn't change)
+        // Recalculate zIndex in new cell
+        const cellCards = thrillerBoardState.gridConfig.cards.filter(
+            c => c.rowId === newRowId && c.columnId === card.columnId && c.id !== card.id
+        );
+        const maxZIndex = cellCards.length > 0 ? Math.max(...cellCards.map(c => c.zIndex || 0), 0) : 0;
+        card.zIndex = maxZIndex + 1;
+    });
+
+    project.thrillerGridConfig.cards = thrillerBoardState.gridConfig.cards;
 }
 
 // Helper function to create a card on the grid for an element
