@@ -625,7 +625,8 @@
 /* Grid Table */
 .thriller-grid-table {
     display: table;
-    width: 100%;
+    width: max-content;
+    min-width: 100%;
     border-collapse: separate;
     border-spacing: 0;
     background: var(--bg-primary);
@@ -663,7 +664,7 @@
     border-right: 1px solid var(--border-color);
     border-bottom: 2px solid var(--border-color);
     min-width: 280px;
-    max-width: 400px;
+    width: 320px;
     vertical-align: middle;
     background: var(--bg-secondary);
 }
@@ -754,7 +755,7 @@
     border-right: 1px solid var(--border-color);
     border-bottom: 1px solid var(--border-color);
     min-width: 280px;
-    max-width: 400px;
+    width: 320px;
     vertical-align: top;
     background: var(--bg-primary);
     position: relative;
