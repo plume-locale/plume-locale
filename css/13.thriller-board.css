@@ -1229,3 +1229,59 @@
 .thriller-grid-table {
     position: relative;
 }
+
+/* ============================================
+   CARD STATUS POPOVER
+   ============================================ */
+
+.thriller-card-status-popover {
+    position: fixed;
+    z-index: 10000;
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+}
+
+.thriller-card-status-popover-content {
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-color);
+    border-radius: 6px;
+    overflow: hidden;
+    min-width: 200px;
+}
+
+.thriller-card-status-popover-header {
+    padding: 10px 14px;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--text-primary);
+    background: var(--bg-tertiary);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.thriller-card-status-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+    border-left: 3px solid transparent;
+    font-size: 13px;
+    color: var(--text-primary);
+}
+
+.thriller-card-status-option:hover {
+    background: var(--bg-tertiary);
+}
+
+.thriller-card-status-option.active {
+    background: var(--bg-tertiary);
+    font-weight: 600;
+}
+
+.thriller-card-status-option i {
+    flex-shrink: 0;
+}
+
+.thriller-card-status-option span {
+    flex: 1;
+}

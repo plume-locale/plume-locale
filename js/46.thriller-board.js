@@ -692,8 +692,8 @@ function renderThrillerCard(card) {
         <div class="thriller-card" data-card-id="${card.id}">
             <!-- Card Header -->
             <div class="thriller-card-header"
-                 style="background-color: ${typeData.color};"
-                 onclick="handleThrillerCardClick(event, '${card.id}')">
+                 style="background-color: ${typeData.color}; cursor: pointer;"
+                 onclick="handleCardHeaderClick(event, '${card.id}')">
                 <i data-lucide="${typeData.icon}" style="width: 16px; height: 16px;"></i>
                 <span class="thriller-card-type">${typeData.label}</span>
                 <span class="thriller-card-title">${card.title}</span>
@@ -707,8 +707,8 @@ function renderThrillerCard(card) {
 
             <!-- Card Footer -->
             <div class="thriller-card-footer"
-                 style="background-color: ${statusData.color}20; border-left: 3px solid ${statusData.color};"
-                 onclick="handleThrillerCardClick(event, '${card.id}')">
+                 style="background-color: ${statusData.color}20; border-left: 3px solid ${statusData.color}; cursor: pointer;"
+                 onclick="handleCardFooterClick(event, '${card.id}')">
                 <i data-lucide="${statusData.icon}" style="width: 14px; height: 14px; color: ${statusData.color};"></i>
                 <span style="color: ${statusData.color};">${statusData.label}</span>
             </div>
@@ -716,18 +716,112 @@ function renderThrillerCard(card) {
     `;
 }
 
-function handleThrillerCardClick(event, cardId) {
-    event.stopPropagation(); // Prevent event from bubbling up to parent wrapper
+// Handle click on card header - opens element modal (same as treeview)
+function handleCardHeaderClick(event, cardId) {
+    event.stopPropagation();
 
-    // Don't open edit modal if clicking on a socket or if we're in connection mode
-    if (event.target.closest('.thriller-card-socket')) {
-        return;
-    }
+    // Don't open modal if we're in connection mode
     if (connectionState.isDrawing) {
         return;
     }
 
-    editThrillerCard(cardId);
+    // Find the card and get its element ID
+    const card = thrillerBoardState.gridConfig.cards.find(c => c.id === cardId);
+    if (!card || !card.elementId) return;
+
+    // Open the element modal (same as treeview)
+    editThrillerElement(card.elementId);
+}
+
+// Handle click on card footer - shows status popover
+function handleCardFooterClick(event, cardId) {
+    event.stopPropagation();
+
+    // Don't open popover if we're in connection mode
+    if (connectionState.isDrawing) {
+        return;
+    }
+
+    // Remove any existing popover
+    const existingPopover = document.querySelector('.thriller-card-status-popover');
+    if (existingPopover) {
+        existingPopover.remove();
+    }
+
+    // Get the card
+    const card = thrillerBoardState.gridConfig.cards.find(c => c.id === cardId);
+    if (!card) return;
+
+    // Create popover
+    const popover = document.createElement('div');
+    popover.className = 'thriller-card-status-popover';
+
+    // Position popover near the clicked footer
+    const footer = event.currentTarget;
+    const rect = footer.getBoundingClientRect();
+
+    popover.innerHTML = `
+        <div class="thriller-card-status-popover-content">
+            <div class="thriller-card-status-popover-header">Changer le statut</div>
+            ${Object.entries(THRILLER_CARD_STATUS).map(([key, data]) => `
+                <div class="thriller-card-status-option ${key === card.status ? 'active' : ''}"
+                     onclick="changeCardStatus('${cardId}', '${key}')"
+                     style="border-left-color: ${data.color};">
+                    <i data-lucide="${data.icon}" style="width: 14px; height: 14px; color: ${data.color};"></i>
+                    <span>${data.label}</span>
+                    ${key === card.status ? '<i data-lucide="check" style="width: 14px; height: 14px; margin-left: auto;"></i>' : ''}
+                </div>
+            `).join('')}
+        </div>
+    `;
+
+    // Position the popover
+    popover.style.position = 'fixed';
+    popover.style.top = `${rect.bottom + 5}px`;
+    popover.style.left = `${rect.left}px`;
+
+    document.body.appendChild(popover);
+
+    // Re-render icons
+    setTimeout(() => {
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    }, 10);
+
+    // Close popover when clicking outside
+    setTimeout(() => {
+        const closePopover = (e) => {
+            if (!popover.contains(e.target)) {
+                popover.remove();
+                document.removeEventListener('click', closePopover);
+            }
+        };
+        document.addEventListener('click', closePopover);
+    }, 100);
+}
+
+// Change card status from popover
+function changeCardStatus(cardId, newStatus) {
+    const card = thrillerBoardState.gridConfig.cards.find(c => c.id === cardId);
+    if (!card) return;
+
+    card.status = newStatus;
+
+    // Also update the element's status if it exists
+    const element = thrillerBoardState.elements.find(el => el.id === card.elementId);
+    if (element) {
+        element.status = newStatus;
+        project.thrillerElements = thrillerBoardState.elements;
+    }
+
+    project.thrillerGridConfig.cards = thrillerBoardState.gridConfig.cards;
+    saveProject();
+    renderThrillerBoard();
+
+    // Close popover
+    const popover = document.querySelector('.thriller-card-status-popover');
+    if (popover) {
+        popover.remove();
+    }
 }
 
 function bringCardToFront(event, cardId) {
@@ -839,7 +933,12 @@ function bringCardToFrontAndClose(cardId) {
 function editThrillerCardFromModal(cardId) {
     const modal = document.querySelector('.modal-overlay');
     if (modal) modal.remove();
-    editThrillerCard(cardId);
+
+    // Find the card and open the element modal instead of card modal
+    const card = thrillerBoardState.gridConfig.cards.find(c => c.id === cardId);
+    if (!card || !card.elementId) return;
+
+    editThrillerElement(card.elementId);
 }
 
 function deleteThrillerCardFromStack(cardId) {
@@ -3145,6 +3244,14 @@ function saveNewThrillerCard(event, rowId, columnId) {
     renderThrillerBoard();
 }
 
+// ============================================================================
+// DEPRECATED CARD-SPECIFIC MODAL FUNCTIONS
+// These functions are no longer used. Cards now use element modals instead.
+// Header click → opens element modal (editThrillerElement)
+// Footer click → opens status popover (handleCardFooterClick)
+// ============================================================================
+
+/*
 function editThrillerCard(cardId) {
     const card = thrillerBoardState.gridConfig.cards.find(c => c.id === cardId);
     if (!card) return;
@@ -3297,6 +3404,7 @@ function saveEditedThrillerCard(event, cardId) {
     document.querySelector('.modal-overlay').remove();
     renderThrillerBoard();
 }
+*/
 
 function deleteThrillerCard(cardId) {
     if (!confirm('Supprimer cette carte et toutes ses connexions ?')) return;
