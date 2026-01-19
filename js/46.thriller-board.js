@@ -1011,7 +1011,13 @@ function renderThrillerCardProperties(card) {
             }
 
             // Create a property for each witness
-            return value.map((witnessId, index) => {
+            const witnessesHeader = `
+                <div class="thriller-card-property-header">
+                    <span class="thriller-card-property-label">${prop.label}:</span>
+                </div>
+            `;
+
+            const witnessItems = value.map((witnessId, index) => {
                 const char = project.characters.find(c => String(c.id) === String(witnessId));
                 const witnessName = char ? char.name : 'Inconnu';
                 const propertyKey = `${prop.key}_${index}`;
@@ -1026,7 +1032,6 @@ function renderThrillerCardProperties(card) {
                             <i data-lucide="circle" style="width: 12px; height: 12px;"></i>
                         </div>
                         <div class="thriller-card-property-content">
-                            ${index === 0 ? `<span class="thriller-card-property-label">${prop.label}:</span>` : ''}
                             <span class="thriller-card-property-value">${witnessName}</span>
                         </div>
                         <div class="thriller-card-socket thriller-card-socket-right"
@@ -1039,6 +1044,8 @@ function renderThrillerCardProperties(card) {
                     </div>
                 `;
             }).join('');
+
+            return witnessesHeader + witnessItems;
         }
 
         return `
@@ -2412,8 +2419,100 @@ function updateCardsFromElement(elementId) {
         // card.status is kept unchanged - each card maintains its own status
     });
 
+    // Duplicate cards to scene columns when element references scenes
+    if (thrillerBoardState.gridConfig.columnMode === 'narrative') {
+        duplicateCardsToScenes(elementId);
+    }
+
     // Save updated cards
     project.thrillerGridConfig.cards = thrillerBoardState.gridConfig.cards;
+}
+
+// Helper function to duplicate cards to scene columns when scenes are referenced
+function duplicateCardsToScenes(elementId) {
+    // Find the element
+    const element = thrillerBoardState.elements.find(el => el.id === elementId);
+    if (!element) return;
+
+    // Extract scene references from element data
+    const sceneRefs = [];
+
+    // Check common scene reference fields
+    const sceneFields = [
+        'verified_scene', 'broken_scene', 'planted_scene', 'discovered_scene',
+        'reader_sees_at', 'raised_scene', 'answered_scene', 'introduced_scene',
+        'debunked_scene', 'reversal_scene_id'
+    ];
+
+    sceneFields.forEach(field => {
+        if (element.data[field]) {
+            sceneRefs.push(element.data[field]);
+        }
+    });
+
+    // Also check for array fields like setup_scenes, foreshadowing_scenes
+    const arrayFields = ['setup_scenes', 'foreshadowing_scenes'];
+    arrayFields.forEach(field => {
+        if (element.data[field] && Array.isArray(element.data[field])) {
+            sceneRefs.push(...element.data[field]);
+        }
+    });
+
+    // Remove duplicates
+    const uniqueSceneRefs = [...new Set(sceneRefs)];
+
+    // For each scene reference, ensure a card exists in that column
+    uniqueSceneRefs.forEach(sceneId => {
+        if (!sceneId) return;
+
+        // Find the column for this scene
+        const sceneColumn = thrillerBoardState.gridConfig.columns.find(col =>
+            col.type === 'scene' && String(col.sceneId) === String(sceneId)
+        );
+
+        if (!sceneColumn) return; // Scene column doesn't exist
+
+        // Find the original card (use the first one we find)
+        const originalCard = thrillerBoardState.gridConfig.cards.find(
+            card => card.elementId === elementId
+        );
+
+        if (!originalCard) return;
+
+        // Check if a card for this element already exists in this scene column
+        const existingCard = thrillerBoardState.gridConfig.cards.find(
+            card => card.elementId === elementId &&
+                    card.columnId === sceneColumn.id
+        );
+
+        if (existingCard) {
+            // Card already exists, just ensure it's on the same swimlane
+            existingCard.rowId = originalCard.rowId;
+            return;
+        }
+
+        // Get max zIndex in this cell
+        const cellCards = thrillerBoardState.gridConfig.cards.filter(
+            c => c.rowId === originalCard.rowId && c.columnId === sceneColumn.id
+        );
+        const maxZIndex = cellCards.length > 0 ? Math.max(...cellCards.map(c => c.zIndex || 0), 0) : 0;
+
+        // Create a duplicate card in this scene column
+        const duplicateCard = {
+            id: 'card_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+            type: originalCard.type,
+            elementId: originalCard.elementId,
+            title: originalCard.title,
+            description: originalCard.description,
+            data: { ...originalCard.data },
+            status: originalCard.status,
+            rowId: originalCard.rowId, // Same swimlane
+            columnId: sceneColumn.id,  // Scene column
+            zIndex: maxZIndex + 1
+        };
+
+        thrillerBoardState.gridConfig.cards.push(duplicateCard);
+    });
 }
 
 // Helper function to move cards to a new swimlane when character changes

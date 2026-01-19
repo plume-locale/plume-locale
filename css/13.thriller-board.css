@@ -1059,6 +1059,16 @@
     margin-bottom: 0;
 }
 
+.thriller-card-property-header {
+    font-size: 12px;
+    margin-bottom: 8px;
+}
+
+.thriller-card-property-header .thriller-card-property-label {
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
 .thriller-card-property-content {
     flex: 1;
     font-size: 12px;
