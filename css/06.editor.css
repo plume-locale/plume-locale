@@ -299,6 +299,9 @@ a/* Main Editor */
             border-radius: 4px;
             max-width: 500px;
             width: 90%;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
             box-shadow: 0 8px 32px var(--shadow);
             border: 2px solid var(--border-color);
         }
@@ -325,6 +328,7 @@ a/* Main Editor */
             padding-bottom: 1rem;
             margin-bottom: 1.5rem;
             border-bottom: 2px solid var(--accent-gold);
+            flex-shrink: 0;
         }
         
         .modal-header h2 {
@@ -367,6 +371,9 @@ a/* Main Editor */
 
 		.modal-body {
             margin-bottom: 1.5rem;
+            overflow-y: auto;
+            flex: 1;
+            min-height: 0;
         }
 
         .modal-footer {
@@ -377,6 +384,7 @@ a/* Main Editor */
             padding-top: 1.5rem;
             margin-top: 1.5rem;
             border-top: 1px solid var(--border-color);
+            flex-shrink: 0;
         }
         
         .form-group {

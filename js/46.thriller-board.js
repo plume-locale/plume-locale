@@ -420,16 +420,12 @@ function renderThrillerSwimlaneRow(row, columns) {
 function renderThrillerGridCell(row, column, cards) {
     if (!cards || cards.length === 0) {
         return `
-            <div class="thriller-grid-cell"
+            <div class="thriller-grid-cell thriller-grid-cell-empty"
                  data-row-id="${row.id}"
                  data-column-id="${column.id}"
                  ondragover="handleCellDragOver(event)"
                  ondragleave="handleCellDragLeave(event)"
-                 ondrop="handleCellDrop(event, '${row.id}', '${column.id}')"
-                 onclick="addThrillerCardToCell('${row.id}', '${column.id}')">
-                <div class="thriller-grid-cell-add">
-                    <i data-lucide="plus"></i>
-                </div>
+                 ondrop="handleCellDrop(event, '${row.id}', '${column.id}')">
             </div>
         `;
     }
@@ -478,13 +474,6 @@ function renderCardStack(cards, rowId, columnId) {
                     ${hiddenCount > 0 ? `<span class="thriller-stack-more" onclick="showCardStackModal(event, '${rowId}', '${columnId}')" title="Voir toutes les cartes">+${hiddenCount}</span>` : ''}
                 </div>
             ` : ''}
-
-            <!-- Add button -->
-            <button class="thriller-stack-add-btn"
-                    onclick="addThrillerCardToCell('${rowId}', '${columnId}')"
-                    title="Ajouter une carte">
-                <i data-lucide="plus"></i>
-            </button>
         </div>
     `;
 }
@@ -493,7 +482,9 @@ function renderCardStack(cards, rowId, columnId) {
 let cardDragState = {
     draggedCardId: null,
     sourceRowId: null,
-    sourceColumnId: null
+    sourceColumnId: null,
+    draggedElementId: null, // For dragging from treeview
+    isTreeviewDrag: false
 };
 
 function handleCardDragStart(event, cardId) {
@@ -547,6 +538,47 @@ function handleCellDrop(event, targetRowId, targetColumnId) {
 
     event.currentTarget.classList.remove('drop-target-hover');
 
+    // Case 1: Dragging from treeview to create a new card
+    if (cardDragState.isTreeviewDrag && cardDragState.draggedElementId) {
+        const element = thrillerBoardState.elements.find(el => el.id === cardDragState.draggedElementId);
+        if (!element) {
+            cardDragState.draggedElementId = null;
+            cardDragState.isTreeviewDrag = false;
+            return;
+        }
+
+        // Calculate zIndex for new card
+        const cellCards = thrillerBoardState.gridConfig.cards.filter(
+            c => c.rowId === targetRowId && c.columnId === targetColumnId
+        );
+        const maxZIndex = cellCards.length > 0 ? Math.max(...cellCards.map(c => c.zIndex || 0), 0) : 0;
+
+        // Create a new card from the element
+        const newCard = {
+            id: 'card_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+            type: element.type,
+            elementId: element.id, // Reference to the original element
+            title: element.title,
+            data: { ...element.data },
+            status: element.status || 'pending',
+            rowId: targetRowId,
+            columnId: targetColumnId,
+            zIndex: maxZIndex + 1
+        };
+
+        thrillerBoardState.gridConfig.cards.push(newCard);
+
+        // Save and re-render
+        saveProject();
+        renderThrillerBoard();
+
+        // Reset drag state
+        cardDragState.draggedElementId = null;
+        cardDragState.isTreeviewDrag = false;
+        return;
+    }
+
+    // Case 2: Dragging an existing card to a new position
     if (!cardDragState.draggedCardId) return;
 
     const card = thrillerBoardState.gridConfig.cards.find(c => c.id === cardDragState.draggedCardId);
@@ -592,6 +624,33 @@ function handleStackedCardClick(event, cardId, index) {
         // If clicking on a card behind, bring it to front
         bringCardToFront(event, cardId);
     }
+}
+
+// Treeview Drag & Drop
+function handleTreeviewDragStart(event, elementId) {
+    event.stopPropagation();
+
+    cardDragState.draggedElementId = elementId;
+    cardDragState.isTreeviewDrag = true;
+
+    // Visual feedback
+    event.currentTarget.classList.add('dragging');
+    event.dataTransfer.effectAllowed = 'copy';
+    event.dataTransfer.setData('text/plain', elementId);
+}
+
+function handleTreeviewDragEnd(event) {
+    event.stopPropagation();
+    event.currentTarget.classList.remove('dragging');
+
+    // Remove all drop highlights
+    document.querySelectorAll('.thriller-grid-cell').forEach(cell => {
+        cell.classList.remove('drop-target-hover');
+    });
+
+    // Reset state
+    cardDragState.draggedElementId = null;
+    cardDragState.isTreeviewDrag = false;
 }
 
 function renderThrillerCard(card) {
@@ -714,11 +773,6 @@ function showCardStackModal(event, rowId, columnId) {
                         `;
                     }).join('')}
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-primary" onclick="addThrillerCardToCell('${rowId}', '${columnId}'); this.closest('.modal-overlay').remove();">
-                    <i data-lucide="plus"></i> Ajouter une carte
-                </button>
             </div>
         </div>
     `;
@@ -1073,6 +1127,11 @@ function renderThrillerList() {
                     <div class="treeview-children">
                         ${elements.map(element => `
                             <div class="treeview-item ${thrillerBoardState.selectedElements.includes(element.id) ? 'selected' : ''}"
+                                 draggable="true"
+                                 data-element-id="${element.id}"
+                                 data-element-type="${typeKey}"
+                                 ondragstart="handleTreeviewDragStart(event, '${element.id}')"
+                                 ondragend="handleTreeviewDragEnd(event)"
                                  onclick="selectAndViewThrillerElement('${element.id}')">
                                 <i data-lucide="${typeData.icon}" style="color: ${typeData.color}; width: 14px; height: 14px;"></i>
                                 <span class="treeview-item-name">${element.title}</span>

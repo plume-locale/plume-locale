@@ -764,32 +764,35 @@
     border-right: none;
 }
 
-.thriller-grid-cell:not(.has-card) {
-    cursor: pointer;
-    transition: background 0.15s ease;
+.thriller-grid-cell-empty {
+    min-height: 150px;
+    background: var(--bg-primary);
+    transition: all 0.2s ease;
+    position: relative;
 }
 
-.thriller-grid-cell:not(.has-card):hover {
-    background: var(--bg-secondary);
-}
-
-.thriller-grid-cell-add {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 120px;
+.thriller-grid-cell-empty::before {
+    content: 'Déposer un élément ici';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     color: var(--text-muted);
+    font-size: 0.8rem;
     opacity: 0;
-    transition: opacity 0.15s ease;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
 }
 
-.thriller-grid-cell:not(.has-card):hover .thriller-grid-cell-add {
+.thriller-grid-cell-empty:hover::before {
+    opacity: 0.5;
+}
+
+.thriller-grid-cell-empty.drop-target-hover::before {
+    content: 'Déposer ici';
     opacity: 1;
-}
-
-.thriller-grid-cell-add i {
-    width: 24px;
-    height: 24px;
+    color: var(--accent-gold);
+    font-weight: 600;
 }
 
 /* Card Stack */

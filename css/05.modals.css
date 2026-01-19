@@ -650,16 +650,25 @@
             align-items: center;
             gap: 0.4rem;
             padding: 0.35rem 0.5rem;
-            cursor: pointer;
+            cursor: grab;
             border-radius: 4px;
             transition: background 0.15s;
             position: relative;
+        }
+
+        .treeview-item:active {
+            cursor: grabbing;
         }
         
         .treeview-item:hover {
             background: var(--bg-secondary);
         }
-        
+
+        .treeview-item.dragging {
+            opacity: 0.5;
+            cursor: grabbing;
+        }
+
         .treeview-item:hover .treeview-item-delete {
             opacity: 1;
         }
