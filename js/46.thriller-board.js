@@ -528,7 +528,13 @@ function handleCardDragEnd(event) {
 function handleCellDragOver(event) {
     event.preventDefault();
     event.stopPropagation();
-    event.dataTransfer.dropEffect = 'move';
+
+    // Set dropEffect based on what's being dragged
+    if (cardDragState.isTreeviewDrag) {
+        event.dataTransfer.dropEffect = 'copy';
+    } else {
+        event.dataTransfer.dropEffect = 'move';
+    }
 
     // Highlight drop zone
     event.currentTarget.classList.add('drop-target-hover');
@@ -550,10 +556,20 @@ function handleCellDrop(event, targetRowId, targetColumnId) {
 
     event.currentTarget.classList.remove('drop-target-hover');
 
+    console.log('handleCellDrop called:', {
+        isTreeviewDrag: cardDragState.isTreeviewDrag,
+        draggedElementId: cardDragState.draggedElementId,
+        draggedCardId: cardDragState.draggedCardId,
+        targetRowId,
+        targetColumnId
+    });
+
     // Case 1: Dragging from treeview to create a new card
     if (cardDragState.isTreeviewDrag && cardDragState.draggedElementId) {
+        console.log('Creating card from treeview element');
         const element = thrillerBoardState.elements.find(el => el.id === cardDragState.draggedElementId);
         if (!element) {
+            console.log('Element not found:', cardDragState.draggedElementId);
             cardDragState.draggedElementId = null;
             cardDragState.isTreeviewDrag = false;
             return;
@@ -578,7 +594,13 @@ function handleCellDrop(event, targetRowId, targetColumnId) {
             zIndex: maxZIndex + 1
         };
 
+        console.log('Creating new card:', newCard);
+        console.log('Cards before push:', thrillerBoardState.gridConfig.cards.length);
+
         thrillerBoardState.gridConfig.cards.push(newCard);
+        project.thrillerGridConfig.cards = thrillerBoardState.gridConfig.cards;
+
+        console.log('Cards after push:', thrillerBoardState.gridConfig.cards.length);
 
         // Save and re-render
         saveProject();
@@ -613,6 +635,8 @@ function handleCellDrop(event, targetRowId, targetColumnId) {
     const maxZIndex = cellCards.length > 0 ? Math.max(...cellCards.map(c => c.zIndex || 0), 0) : 0;
     card.zIndex = maxZIndex + 1;
 
+    project.thrillerGridConfig.cards = thrillerBoardState.gridConfig.cards;
+
     // Save and re-render
     saveProject();
     renderThrillerBoard();
@@ -645,6 +669,8 @@ function handleTreeviewDragStart(event, elementId) {
     cardDragState.draggedElementId = elementId;
     cardDragState.isTreeviewDrag = true;
 
+    console.log('handleTreeviewDragStart:', { elementId, state: cardDragState });
+
     // Visual feedback
     event.currentTarget.classList.add('dragging');
     event.dataTransfer.effectAllowed = 'copy';
@@ -655,14 +681,17 @@ function handleTreeviewDragEnd(event) {
     event.stopPropagation();
     event.currentTarget.classList.remove('dragging');
 
+    console.log('handleTreeviewDragEnd called');
+
     // Remove all drop highlights
     document.querySelectorAll('.thriller-grid-cell').forEach(cell => {
         cell.classList.remove('drop-target-hover');
     });
 
-    // Reset state
-    cardDragState.draggedElementId = null;
-    cardDragState.isTreeviewDrag = false;
+    // Don't reset state here - let handleCellDrop do it
+    // The dragend event fires BEFORE the drop event, so we can't reset here
+    // cardDragState.draggedElementId = null;
+    // cardDragState.isTreeviewDrag = false;
 }
 
 function renderThrillerCard(card) {
