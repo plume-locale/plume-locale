@@ -41,7 +41,7 @@
                                 <input type="number" class="form-input" value="${project.stats.totalGoal}" 
                                        id="totalGoalInput"
                                        style="flex: 1;" placeholder="Objectif total">
-                                <button class="btn btn-small" onclick="updateGoal('totalGoal', document.getElementById('totalGoalInput').value)">Mettre à jour</button>
+                                <button class="btn btn-small" onclick="updateGoal('totalGoal', document.getElementById('totalGoalInput').value)">Mettre Ã  jour</button>
                             </div>
                         </div>
 
@@ -56,7 +56,7 @@
                                 <input type="number" class="form-input" value="${project.stats.dailyGoal}" 
                                        id="dailyGoalInput"
                                        style="flex: 1;" placeholder="Objectif quotidien">
-                                <button class="btn btn-small" onclick="updateGoal('dailyGoal', document.getElementById('dailyGoalInput').value)">Mettre à jour</button>
+                                <button class="btn btn-small" onclick="updateGoal('dailyGoal', document.getElementById('dailyGoalInput').value)">Mettre Ã  jour</button>
                             </div>
                         </div>
                     </div>

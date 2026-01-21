@@ -15,7 +15,7 @@
             a.click();
             URL.revokeObjectURL(url);
             
-            alert(`? Fichier JSON téléchargé !\n\nNom : ${filename}\n\nTu peux maintenant l'uploader sur Google Drive, Dropbox, ou tout autre service cloud.`);
+            alert(`? Fichier JSON tÃ©lÃ©chargÃ© !\n\nNom : ${filename}\n\nTu peux maintenant l'uploader sur Google Drive, Dropbox, ou tout autre service cloud.`);
         }
 
         function importFromFile() {
@@ -27,11 +27,11 @@
             if (!file) return;
 
             if (!file.name.endsWith('.json')) {
-                alert('? Erreur : Le fichier doit être au format JSON');
+                alert('? Erreur : Le fichier doit Ãªtre au format JSON');
                 return;
             }
 
-            if (!confirm('?? ATTENTION : L\'import va remplacer toutes vos données actuelles.\n\nVoulez-vous créer une sauvegarde avant de continuer ?')) {
+            if (!confirm('?? ATTENTION : L\'import va remplacer toutes vos donnÃ©es actuelles.\n\nVoulez-vous crÃ©er une sauvegarde avant de continuer ?')) {
                 event.target.value = ''; // Reset input
                 return;
             }
@@ -71,7 +71,7 @@
                     renderActsList();
                     closeModal('backupModal');
                     
-                    alert('? Import réussi !\n\nToutes vos données ont été restaurées.');
+                    alert('? Import rÃ©ussi !\n\nToutes vos donnÃ©es ont Ã©tÃ© restaurÃ©es.');
                 } catch (error) {
                     alert('? Erreur lors de l\'import : ' + error.message);
                 }
@@ -123,13 +123,13 @@
         }
 
         function openAddChapterModal(actId) {
-            // Si pas d'actId fourni, utiliser le premier acte ou on en créera un
+            // Si pas d'actId fourni, utiliser le premier acte ou on en crÃ©era un
             if (actId) {
                 activeActId = actId;
             } else if (project.acts.length > 0) {
                 activeActId = project.acts[0].id;
             } else {
-                activeActId = null; // Sera créé dans addChapter
+                activeActId = null; // Sera crÃ©Ã© dans addChapter
             }
             document.getElementById('addChapterModal').classList.add('active');
             setTimeout(() => document.getElementById('chapterTitleInput').focus(), 100);

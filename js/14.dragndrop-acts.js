@@ -14,7 +14,7 @@
                     header.classList.add('dragging');
                     e.dataTransfer.effectAllowed = 'move';
                     e.dataTransfer.setData('type', 'act');
-                    e.stopPropagation(); // Empêcher le clic de se propager
+                    e.stopPropagation(); // EmpÃªcher le clic de se propager
                 });
 
                 dragHandle.addEventListener('dragend', (e) => {
@@ -78,7 +78,7 @@
                     header.classList.add('dragging');
                     e.dataTransfer.effectAllowed = 'move';
                     e.dataTransfer.setData('type', 'chapter');
-                    e.stopPropagation(); // Empêcher le clic de se propager
+                    e.stopPropagation(); // EmpÃªcher le clic de se propager
                 });
 
                 dragHandle.addEventListener('dragend', (e) => {

@@ -41,7 +41,7 @@
         }
 
         function deleteTimelineEvent(id) {
-            if (!confirm('Êtes-vous sûr de vouloir supprimer cet événement ?')) return;
+            if (!confirm('ÃŠtes-vous sÃ»r de vouloir supprimer cet Ã©vÃ©nement ?')) return;
             project.timeline = project.timeline.filter(e => e.id !== id);
             saveProject();
             renderTimelineList();
@@ -52,7 +52,7 @@
             const container = document.getElementById('timelineList');
             
             if (project.timeline.length === 0) {
-                container.innerHTML = '<div style="padding: 2rem; text-align: center; color: var(--text-muted);">Aucun événement</div>';
+                container.innerHTML = '<div style="padding: 2rem; text-align: center; color: var(--text-muted);">Aucun Ã©vÃ©nement</div>';
                 return;
             }
 
@@ -74,7 +74,7 @@
                                     </div>
                                     ${event.description ? `<div class="timeline-description">${event.description}</div>` : ''}
                                 </div>
-                                <button class="btn btn-icon btn-small" onclick="event.stopPropagation(); deleteTimelineEvent(${event.id})" title="Supprimer">×</button>
+                                <button class="btn btn-icon btn-small" onclick="event.stopPropagation(); deleteTimelineEvent(${event.id})" title="Supprimer">Ã—</button>
                             </div>
                         </div>
                     `).join('')}
@@ -91,7 +91,7 @@
                 <div class="detail-view">
                     <div class="detail-header">
                         <div class="detail-title">${event.title}</div>
-                        <button class="btn" onclick="switchView('editor')">? Retour à l'éditeur</button>
+                        <button class="btn" onclick="switchView('editor')">? Retour Ã  l'Ã©diteur</button>
                     </div>
                     
                     <div class="detail-section">
@@ -107,7 +107,7 @@
                                    onchange="updateTimelineField(${id}, 'location', this.value)">
                         </div>
                         <div class="detail-field">
-                            <div class="detail-label">Personnages impliqués</div>
+                            <div class="detail-label">Personnages impliquÃ©s</div>
                             <input type="text" class="form-input" value="${event.characters}" 
                                    onchange="updateTimelineField(${id}, 'characters', this.value)">
                         </div>
@@ -120,10 +120,10 @@
                     </div>
 
                     <div class="detail-section">
-                        <div class="detail-section-title">Conséquences</div>
+                        <div class="detail-section-title">ConsÃ©quences</div>
                         <textarea class="form-input" rows="6" 
                                   onchange="updateTimelineField(${id}, 'consequences', this.value)">${event.consequences}</textarea>
-                        <small style="color: var(--text-muted); font-style: italic;">Qu'est-ce que cet événement déclenche ou change dans l'histoire ?</small>
+                        <small style="color: var(--text-muted); font-style: italic;">Qu'est-ce que cet Ã©vÃ©nement dÃ©clenche ou change dans l'histoire ?</small>
                     </div>
 
                     <div class="detail-section">

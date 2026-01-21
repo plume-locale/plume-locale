@@ -18,7 +18,7 @@
                 category: category,
                 tags: tags ? tags.split(',').map(t => t.trim()).filter(t => t) : [],
                 content: content || '',
-                medias: [], // Support pour les médias: {type: 'url'|'image'|'audio', url: '', title: ''}
+                medias: [], // Support pour les mÃ©dias: {type: 'url'|'image'|'audio', url: '', title: ''}
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString()
             };
@@ -36,7 +36,7 @@
         }
 
         function deleteNote(id) {
-            if (!confirm('Êtes-vous sûr de vouloir supprimer cette note ?')) return;
+            if (!confirm('ÃŠtes-vous sÃ»r de vouloir supprimer cette note ?')) return;
             project.notes = project.notes.filter(n => n.id !== id);
             saveProject();
             renderNotesList();
@@ -44,7 +44,7 @@
         }
 
         // Expanded state for notes categories
-        let expandedNoteCategories = new Set(['Idée', 'Recherche', 'Référence', 'A faire', 'Question', 'Autre']);
+        let expandedNoteCategories = new Set(['IdÃ©e', 'Recherche', 'RÃ©fÃ©rence', 'A faire', 'Question', 'Autre']);
 
         function renderNotesList() {
             const container = document.getElementById('notesList');
@@ -56,11 +56,11 @@
 
             // Group notes by category
             const categories = {};
-            // Icônes Lucide pour les catégories
+            // IcÃ´nes Lucide pour les catÃ©gories
             const categoryIcons = {
-                'Idée': 'lightbulb',
+                'IdÃ©e': 'lightbulb',
                 'Recherche': 'search',
-                'Référence': 'bookmark',
+                'RÃ©fÃ©rence': 'bookmark',
                 'A faire': 'check-circle',
                 'Question': 'help-circle',
                 'Autre': 'file-text'
@@ -82,7 +82,7 @@
             let html = '';
 
             // Render each category as a collapsible group
-            const categoryOrder = ['Idée', 'Recherche', 'Référence', 'A faire', 'Question', 'Autre'];
+            const categoryOrder = ['IdÃ©e', 'Recherche', 'RÃ©fÃ©rence', 'A faire', 'Question', 'Autre'];
             categoryOrder.forEach(cat => {
                 if (!categories[cat] || categories[cat].length === 0) return;
                 
@@ -100,13 +100,13 @@
                         <div class="treeview-children ${isExpanded ? '' : 'collapsed'}">
                             ${categories[cat].map(note => {
                                 const hasMedia = note.medias && note.medias.length > 0;
-                                // Remplacement du ?? par l'icône de trombone
+                                // Remplacement du ?? par l'icÃ´ne de trombone
                                 const mediaIcon = hasMedia ? 'paperclip' : ''; 
                                 return `
                                     <div class="treeview-item" onclick="openNoteDetail(${note.id})">
                                         <span class="treeview-item-title">${note.title}</span>
                                         ${mediaIcon ? `<span class="treeview-media-icon"><i data-lucide="${mediaIcon}" style="width:14px; height:14px;"></i></span>` : ''}
-                                        <button class="btn btn-icon btn-small delete-btn" onclick="event.stopPropagation(); deleteNote(${note.id})" title="Supprimer">×</button>
+                                        <button class="btn btn-icon btn-small delete-btn" onclick="event.stopPropagation(); deleteNote(${note.id})" title="Supprimer">Ã—</button>
                                     </div>
                                 `;
                             }).join('')}
@@ -129,7 +129,7 @@
         }
 
         function expandAllNoteCategories() {
-            expandedNoteCategories = new Set(['Idée', 'Recherche', 'Référence', 'A faire', 'Question', 'Autre']);
+            expandedNoteCategories = new Set(['IdÃ©e', 'Recherche', 'RÃ©fÃ©rence', 'A faire', 'Question', 'Autre']);
             renderNotesList();
         }
 
@@ -167,16 +167,16 @@
                                    placeholder="Titre de la note">
                             <span style="font-size: 0.8rem; padding: 0.4rem 0.8rem; background: var(--accent-gold); color: var(--bg-primary); border-radius: 2px;">${note.category}</span>
                         </div>
-                        <button class="btn" onclick="switchView('editor')">? Retour à l'éditeur</button>
+                        <button class="btn" onclick="switchView('editor')">? Retour Ã  l'Ã©diteur</button>
                     </div>
                     
                     <div class="detail-section">
-                        <div class="detail-section-title">Catégorie</div>
+                        <div class="detail-section-title">CatÃ©gorie</div>
                         <select class="form-input" onchange="updateNoteField(${id}, 'category', this.value)">
                             <option value="Recherche" ${note.category === 'Recherche' ? 'selected' : ''}>Recherche</option>
-                            <option value="Idée" ${note.category === 'Idée' ? 'selected' : ''}>Idée</option>
-                            <option value="Référence" ${note.category === 'Référence' ? 'selected' : ''}>Référence</option>
-                            <option value="A faire" ${note.category === 'A faire' ? 'selected' : ''}>À faire</option>
+                            <option value="IdÃ©e" ${note.category === 'IdÃ©e' ? 'selected' : ''}>IdÃ©e</option>
+                            <option value="RÃ©fÃ©rence" ${note.category === 'RÃ©fÃ©rence' ? 'selected' : ''}>RÃ©fÃ©rence</option>
+                            <option value="A faire" ${note.category === 'A faire' ? 'selected' : ''}>Ã€ faire</option>
                             <option value="Question" ${note.category === 'Question' ? 'selected' : ''}>Question</option>
                             <option value="Autre" ${note.category === 'Autre' ? 'selected' : ''}>Autre</option>
                         </select>
@@ -186,7 +186,7 @@
                         <div class="detail-section-title">Tags</div>
                         <input type="text" class="form-input" value="${note.tags.join(', ')}" 
                                onchange="updateNoteTags(${id}, this.value)">
-                        <small style="color: var(--text-muted); font-style: italic;">Séparez les tags par des virgules</small>
+                        <small style="color: var(--text-muted); font-style: italic;">SÃ©parez les tags par des virgules</small>
                     </div>
 
                     <div class="detail-section">
@@ -197,7 +197,7 @@
 
                     <div class="detail-section">
                         <div class="detail-section-title">
-                            Médias
+                            MÃ©dias
                             <button class="btn btn-small" onclick="openAddMediaModal(${id})" style="margin-left: 1rem;">
                                 <i data-lucide="plus" style="width:14px;height:14px;margin-right:0.3rem;"></i>Ajouter
                             </button>
@@ -208,8 +208,8 @@
                     </div>
 
                     <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2rem; font-family: 'Source Code Pro', monospace;">
-                        Créée le ${new Date(note.createdAt).toLocaleDateString('fr-FR')} • 
-                        Modifiée le ${new Date(note.updatedAt).toLocaleDateString('fr-FR')}
+                        CrÃ©Ã©e le ${new Date(note.createdAt).toLocaleDateString('fr-FR')} â€¢ 
+                        ModifiÃ©e le ${new Date(note.updatedAt).toLocaleDateString('fr-FR')}
                     </div>
                 </div>
             `;
@@ -218,7 +218,7 @@
 
         function renderNoteMedias(note) {
             if (!note.medias || note.medias.length === 0) {
-                return '<div style="color: var(--text-muted); font-style: italic; padding: 1rem; text-align: center; border: 1px dashed var(--border-color); border-radius: 8px;">Aucun média ajouté</div>';
+                return '<div style="color: var(--text-muted); font-style: italic; padding: 1rem; text-align: center; border: 1px dashed var(--border-color); border-radius: 8px;">Aucun mÃ©dia ajoutÃ©</div>';
             }
 
             return `<div class="note-medias-grid">${note.medias.map((media, index) => {
@@ -228,7 +228,7 @@
                             <img src="${media.url}" alt="${media.title || 'Image'}" onclick="window.open('${media.url}', '_blank')">
                             <div class="note-media-overlay">
                                 <span class="note-media-title">${media.title || 'Image'}</span>
-                                <button class="note-media-delete" onclick="deleteNoteMedia(${note.id}, ${index})">×</button>
+                                <button class="note-media-delete" onclick="deleteNoteMedia(${note.id}, ${index})">Ã—</button>
                             </div>
                         </div>
                     `;
@@ -240,7 +240,7 @@
                                 <span class="note-media-title">${media.title || 'Audio'}</span>
                                 <audio controls src="${media.url}" style="width: 100%; margin-top: 0.5rem;"></audio>
                             </div>
-                            <button class="note-media-delete" onclick="deleteNoteMedia(${note.id}, ${index})">×</button>
+                            <button class="note-media-delete" onclick="deleteNoteMedia(${note.id}, ${index})">Ã—</button>
                         </div>
                     `;
                 } else if (media.type === 'url') {
@@ -252,7 +252,7 @@
                                 <span class="note-media-title">${media.title || media.url}</span>
                                 <span class="note-media-domain">${domain}</span>
                             </div>
-                            <button class="note-media-delete" onclick="event.stopPropagation(); deleteNoteMedia(${note.id}, ${index})">×</button>
+                            <button class="note-media-delete" onclick="event.stopPropagation(); deleteNoteMedia(${note.id}, ${index})">Ã—</button>
                         </div>
                     `;
                 } else if (media.type === 'youtube') {
@@ -264,8 +264,8 @@
                                 <div class="note-media-youtube-play"><i data-lucide="play" style="width:32px; height:32px; fill: white; stroke: white;"></i></div>
                             </div>
                             <div class="note-media-overlay">
-                                <span class="note-media-title">${media.title || 'Vidéo YouTube'}</span>
-                                <button class="note-media-delete" onclick="deleteNoteMedia(${note.id}, ${index})">×</button>
+                                <span class="note-media-title">${media.title || 'VidÃ©o YouTube'}</span>
+                                <button class="note-media-delete" onclick="deleteNoteMedia(${note.id}, ${index})">Ã—</button>
                             </div>
                         </div>
                     `;
@@ -301,22 +301,22 @@
             modal.innerHTML = `
                 <div class="modal-content" style="max-width: 500px;">
                     <div class="modal-header">
-                        <h3>Ajouter un média</h3>
-                        <button class="modal-close" onclick="closeModal('addMediaModal')">×</button>
+                        <h3>Ajouter un mÃ©dia</h3>
+                        <button class="modal-close" onclick="closeModal('addMediaModal')">Ã—</button>
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                            <label class="form-label">Type de média</label>
+                            <label class="form-label">Type de mÃ©dia</label>
                             <select id="mediaTypeInput" class="form-input" onchange="updateMediaInputPlaceholder()">
                                 <option value="url">Lien URL</option>
                                 <option value="image">Image (URL)</option>
                                 <option value="audio">Audio (URL)</option>
-                                <option value="youtube">Vidéo YouTube</option>
+                                <option value="youtube">VidÃ©o YouTube</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Titre (optionnel)</label>
-                            <input type="text" id="mediaTitleInput" class="form-input" placeholder="Titre du média">
+                            <input type="text" id="mediaTitleInput" class="form-input" placeholder="Titre du mÃ©dia">
                         </div>
                         <div class="form-group">
                             <label class="form-label">URL</label>
@@ -375,7 +375,7 @@
         }
 
         function deleteNoteMedia(noteId, mediaIndex) {
-            if (!confirm('Supprimer ce média ?')) return;
+            if (!confirm('Supprimer ce mÃ©dia ?')) return;
             
             const note = project.notes.find(n => n.id === noteId);
             if (!note || !note.medias) return;

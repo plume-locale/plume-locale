@@ -4,7 +4,7 @@
         let focusPanelOpen = false;
         let focusStartWordCount = 0;
         
-        // Objectif de mots pour le projet (peut être configuré)
+        // Objectif de mots pour le projet (peut Ãªtre configurÃ©)
         let projectWordGoal = 50000;
 
         function updateWritingProgress() {
@@ -24,17 +24,17 @@
                 sum + a.chapters.reduce((s, ch) => 
                     s + ch.scenes.reduce((sc, scene) => sc + (scene.wordCount || 0), 0), 0), 0);
             
-            // Mettre à jour la barre de progression
+            // Mettre Ã  jour la barre de progression
             const progressPercent = Math.min((totalProjectWords / projectWordGoal) * 100, 100);
             const progressFill = document.getElementById('writingProgressFill');
             if (progressFill) {
                 progressFill.style.width = progressPercent + '%';
             }
             
-            // Mettre à jour l'indicateur de position
+            // Mettre Ã  jour l'indicateur de position
             const positionIndicator = document.getElementById('positionIndicator');
             if (positionIndicator) {
-                positionIndicator.textContent = `Mot ${currentWords.toLocaleString()} • Total: ${totalProjectWords.toLocaleString()} / ${projectWordGoal.toLocaleString()}`;
+                positionIndicator.textContent = `Mot ${currentWords.toLocaleString()} â€¢ Total: ${totalProjectWords.toLocaleString()} / ${projectWordGoal.toLocaleString()}`;
             }
         }
 
@@ -60,7 +60,7 @@
                     focusStartWordCount = getWordCount(scene.content);
                 }
                 
-                // Mettre à jour les indicateurs
+                // Mettre Ã  jour les indicateurs
                 updateWritingProgress();
                 
                 // Request fullscreen on app-container
@@ -73,7 +73,7 @@
                 console.log('DEACTIVATING FOCUS MODE');
                 appContainer.classList.remove('focus-mode');
                 
-                // Forcer la réinitialisation des styles inline si nécessaire
+                // Forcer la rÃ©initialisation des styles inline si nÃ©cessaire
                 const sidebar = document.querySelector('.sidebar');
                 const sidebarVersions = document.querySelector('.sidebar-versions');
                 const appContent = document.querySelector('.app-content');
@@ -201,7 +201,7 @@
             playNotificationSound();
             
             // Alert user
-            alert('?? Pomodoro terminé ! Temps de faire une pause de 5 minutes.');
+            alert('?? Pomodoro terminÃ© ! Temps de faire une pause de 5 minutes.');
             
             // Reset for next session
             pomodoroTime = 25 * 60;

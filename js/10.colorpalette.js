@@ -63,7 +63,7 @@
                 }
             });
             
-            // Charger la largeur sauvegardée
+            // Charger la largeur sauvegardÃ©e
             const savedWidth = localStorage.getItem('sidebarWidth');
             if (savedWidth) {
                 const width = parseInt(savedWidth);
@@ -78,7 +78,7 @@
             const textColorGrid = document.getElementById('textColorGrid');
             const bgColorGrid = document.getElementById('backgroundColorGrid');
             
-            // Vérifier que les éléments existent
+            // VÃ©rifier que les Ã©lÃ©ments existent
             if (!textColorGrid || !bgColorGrid) {
                 console.log('Color pickers not found in DOM, skipping initialization');
                 return;
@@ -108,7 +108,7 @@
             const textPicker = document.getElementById('textColorPicker');
             const bgPicker = document.getElementById('backgroundColorPicker');
             
-            // Obtenir le bouton cliqué pour positionner la popup
+            // Obtenir le bouton cliquÃ© pour positionner la popup
             const button = event ? event.currentTarget : null;
             
             if (type === 'text') {

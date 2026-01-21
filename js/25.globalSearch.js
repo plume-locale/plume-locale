@@ -40,7 +40,7 @@
                                 : textContent.substring(0, 150);
 
                             results.push({
-                                type: 'Scène',
+                                type: 'ScÃ¨ne',
                                 title: scene.title,
                                 path: `${act.title} > ${chapter.title}`,
                                 preview: preview,
@@ -86,7 +86,7 @@
                     results.push({
                         type: 'Chronologie',
                         title: event.title,
-                        path: event.date || 'Événement',
+                        path: event.date || 'Ã‰vÃ©nement',
                         preview: event.description || 'Aucune description',
                         action: () => { switchView('timeline'); openTimelineDetail(event.id); }
                     });
@@ -149,7 +149,7 @@
             const container = document.getElementById('searchResults');
             
             if (results.length === 0) {
-                container.innerHTML = '<div class="search-no-results">Aucun résultat trouvé</div>';
+                container.innerHTML = '<div class="search-no-results">Aucun rÃ©sultat trouvÃ©</div>';
                 container.classList.add('active');
                 return;
             }

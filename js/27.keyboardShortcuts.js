@@ -33,7 +33,7 @@
                 e.preventDefault();
                 toggleFocusMode();
             }
-            // Raccourci pour le mode révision (Ctrl+R)
+            // Raccourci pour le mode rÃ©vision (Ctrl+R)
             if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
                 e.preventDefault();
                 if (currentSceneId) {

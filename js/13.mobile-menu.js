@@ -9,7 +9,7 @@
             const overlay = document.querySelector('.sidebar-overlay');
             const handle = document.querySelector('.mobile-menu-handle');
             
-            console.log('?? toggleMobileSidebar appelé');
+            console.log('?? toggleMobileSidebar appelÃ©');
             console.log('Sidebar:', sidebar);
             console.log('Overlay:', overlay);
             console.log('Handle:', handle);
@@ -34,7 +34,7 @@
                 if (handle) handle.classList.remove('hidden');
                 // Restore body scroll
                 document.body.style.overflow = '';
-                console.log('? Sidebar fermée');
+                console.log('? Sidebar fermÃ©e');
             }
         }
         
@@ -61,7 +61,7 @@
             const toggleBtn = document.getElementById('mobileNavToggleBtn');
             const sidebar = document.querySelector('.sidebar');
 
-            // Icône Lucid 'Menu' (pour ouvrir)
+            // IcÃ´ne Lucid 'Menu' (pour ouvrir)
             const menuIcon = `
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu">
                     <line x1="4" x2="20" y1="12" y2="12"/>
@@ -70,7 +70,7 @@
                 </svg>
             `;
 
-            // Icône Lucid 'X' (pour fermer)
+            // IcÃ´ne Lucid 'X' (pour fermer)
             const closeIcon = `
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x">
                     <path d="M18 6 6 18"/>
@@ -78,16 +78,16 @@
                 </svg>
             `;
             
-            // Déterminez si le menu est actif (ouvert)
+            // DÃ©terminez si le menu est actif (ouvert)
             if (dropdown.classList.contains('active')) {
                 // Fermer le menu
                 dropdown.classList.remove('active');
-                toggleBtn.innerHTML = menuIcon; // Remplacer par l'icône 'Menu'
+                toggleBtn.innerHTML = menuIcon; // Remplacer par l'icÃ´ne 'Menu'
                 if (sidebar) sidebar.style.visibility = '';
             } else {
                 // Ouvrir le menu
                 dropdown.classList.add('active');
-                toggleBtn.innerHTML = closeIcon; // Remplacer par l'icône 'X'
+                toggleBtn.innerHTML = closeIcon; // Remplacer par l'icÃ´ne 'X'
                 if (sidebar) sidebar.style.visibility = 'hidden';
             }
         }
@@ -150,12 +150,12 @@
             
             if (panel.classList.contains('expanded')) {
                 panel.classList.remove('expanded');
-                if (toggleText) toggleText.innerHTML = '<i data-lucide="chevron-right" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Afficher personnages & lieux liés';
+                if (toggleText) toggleText.innerHTML = '<i data-lucide="chevron-right" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Afficher personnages & lieux liÃ©s';
                 if (toggleBtn) toggleBtn.classList.remove('expanded');
                 if (typeof lucide !== 'undefined') lucide.createIcons();
             } else {
                 panel.classList.add('expanded');
-                if (toggleText) toggleText.innerHTML = '<i data-lucide="chevron-down" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Masquer personnages & lieux liés';
+                if (toggleText) toggleText.innerHTML = '<i data-lucide="chevron-down" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Masquer personnages & lieux liÃ©s';
                 if (toggleBtn) toggleBtn.classList.add('expanded');
                 if (typeof lucide !== 'undefined') lucide.createIcons();
             }
@@ -230,7 +230,7 @@
             originalSwitchView(view);
         };
         
-        // Détection dynamique du débordement du header
+        // DÃ©tection dynamique du dÃ©bordement du header
         function checkHeaderOverflow() {
             const header = document.querySelector('.app-header');
             const headerNav = document.querySelector('.header-nav');
@@ -262,7 +262,7 @@
         window.addEventListener('resize', function() {
             clearTimeout(resizeTimeout);
             resizeTimeout = setTimeout(function() {
-                // Vérifier le débordement du header
+                // VÃ©rifier le dÃ©bordement du header
                 checkHeaderOverflow();
                 
                 // If resizing to desktop, ensure sidebar is visible and overlay hidden
@@ -282,7 +282,7 @@
             }, 100);
         });
         
-        // Vérifier au chargement
+        // VÃ©rifier au chargement
         window.addEventListener('load', function() {
             setTimeout(checkHeaderOverflow, 100);
         });

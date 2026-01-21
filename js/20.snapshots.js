@@ -1,7 +1,7 @@
 
         // Version Control Management
         function createVersion() {
-            const label = prompt('Nom de la version (ex: "Version 1.0", "Avant révision", etc.)');
+            const label = prompt('Nom de la version (ex: "Version 1.0", "Avant rÃ©vision", etc.)');
             if (!label || !label.trim()) return;
 
             const totalWords = project.acts.reduce((sum, act) => {
@@ -30,18 +30,18 @@
             project.versions.push(version);
             saveProject();
             renderVersionsList();
-            alert('Version créée avec succès !');
+            alert('Version crÃ©Ã©e avec succÃ¨s !');
         }
 
         function deleteVersion(id) {
-            if (!confirm('Êtes-vous sûr de vouloir supprimer cette version ?')) return;
+            if (!confirm('ÃŠtes-vous sÃ»r de vouloir supprimer cette version ?')) return;
             project.versions = project.versions.filter(v => v.id !== id);
             saveProject();
             renderVersionsList();
         }
 
         function restoreVersion(id) {
-            if (!confirm('?? ATTENTION: Restaurer cette version va remplacer votre travail actuel. Voulez-vous créer une sauvegarde avant de continuer ?')) {
+            if (!confirm('?? ATTENTION: Restaurer cette version va remplacer votre travail actuel. Voulez-vous crÃ©er une sauvegarde avant de continuer ?')) {
                 return;
             }
 
@@ -62,7 +62,7 @@
             saveProject();
             switchView('editor');
             renderActsList();
-            alert('Version restaurée avec succès !');
+            alert('Version restaurÃ©e avec succÃ¨s !');
         }
 
         function renderVersionsList() {
@@ -82,20 +82,20 @@
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
                         <h2 style="color: var(--accent-gold);"><i data-lucide="history" style="width:24px;height:24px;vertical-align:middle;margin-right:8px;"></i>Gestion des Versions</h2>
                         <button class="btn btn-primary" onclick="createVersion()">
-                            + Créer une version
+                            + CrÃ©er une version
                         </button>
                     </div>
                     
                     ${project.versions.length === 0 ? `
                         <div style="text-align: center; padding: 4rem 2rem; color: var(--text-muted);">
                             <div style="font-size: 3rem; margin-bottom: 1rem;">??</div>
-                            <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">Aucune version sauvegardée</div>
+                            <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">Aucune version sauvegardÃ©e</div>
                             <div style="font-size: 0.9rem; margin-bottom: 2rem;">
-                                Les versions vous permettent de créer des snapshots de votre projet<br>
-                                pour revenir à un état antérieur si nécessaire.
+                                Les versions vous permettent de crÃ©er des snapshots de votre projet<br>
+                                pour revenir Ã  un Ã©tat antÃ©rieur si nÃ©cessaire.
                             </div>
                             <button class="btn btn-primary" onclick="createVersion()">
-                                Créer votre première version
+                                CrÃ©er votre premiÃ¨re version
                             </button>
                         </div>
                     ` : `
@@ -163,5 +163,5 @@
             const diff = currentWords - version.wordCount;
             const diffText = diff > 0 ? `+${diff}` : diff;
 
-            alert(`Comparaison avec "${version.label}":\n\nVersion sauvegardée: ${version.wordCount.toLocaleString('fr-FR')} mots\nVersion actuelle: ${currentWords.toLocaleString('fr-FR')} mots\nDifférence: ${diffText} mots`);
+            alert(`Comparaison avec "${version.label}":\n\nVersion sauvegardÃ©e: ${version.wordCount.toLocaleString('fr-FR')} mots\nVersion actuelle: ${currentWords.toLocaleString('fr-FR')} mots\nDiffÃ©rence: ${diffText} mots`);
         }
