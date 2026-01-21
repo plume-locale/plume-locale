@@ -1,5 +1,8 @@
 
        // Statistics Management
+        // MVVM: Mixte (ViewModel + View)
+        // Raison: Calcule des métriques à partir du modèle (`project`) — logique
+        // propre au ViewModel — puis génère/injecte du HTML dans le DOM (View).
         function renderStats() {
             const editorView = document.getElementById('editorView');
             if (!editorView) {
@@ -90,6 +93,9 @@
             `;
         }
 
+        // MVVM: View
+        // Raison: Transforme les données d'historique en fragments HTML
+        // pour l'affichage — responsabilité de présentation.
         function renderWritingHistory() {
             const last7Days = [];
             for (let i = 6; i >= 0; i--) {
@@ -118,6 +124,9 @@
             }).join('');
         }
 
+        // MVVM: ViewModel
+        // Raison: Met à jour le modèle (`project.stats`), persiste les données
+        // et déclenche un re-render — coordination entre modèle et vue.
         function updateGoal(type, value) {
             const numValue = parseInt(value);
             if (numValue && numValue > 0) {
@@ -127,6 +136,9 @@
             }
         }
 
+        // MVVM: ViewModel
+        // Raison: Suit et modifie l'état du modèle (`project.stats.writingSessions`),
+        // calculs métier pour sessions d'écriture (pas d'accès DOM direct).
         function trackWritingSession() {
             // Track writing session for stats
             const today = new Date().toDateString();
