@@ -1,431 +1,197 @@
-// [MVVM : ViewModel]
-// Logique métier pour récupérer tous les actes (Read)
-function getAllActsViewModel() {
+/**
+ * [MVVM : Structure ViewModel]
+ * Logique métier pour la navigation et l'organisation du projet (Actes/Chapitres/Scènes).
+ */
+
+/**
+ * Prépare toutes les données de structure pour l'affichage de l'arborescence.
+ * Centralise le Read pour éviter que la View ne boucle directement sur project.acts.
+ */
+function getStructureViewModel() {
     return {
         success: true,
-        data: ActRepository.getAll()
+        acts: ActRepository.getAll().map(act => ({
+            ...act,
+            chaptersCount: (act.chapters || []).length,
+            chapters: (act.chapters || []).map(chapter => ({
+                ...chapter,
+                scenesCount: (chapter.scenes || []).length
+            }))
+        }))
     };
 }
 
-// [MVVM : ViewModel]
-// Logique métier pour récupérer un acte par ID (Read)
-function getActViewModel(actId) {
-    const act = ActRepository.getById(actId);
-    if (!act) {
-        return {
-            success: false,
-            error: 'NOT_FOUND',
-            message: 'Acte introuvable'
-        };
-    }
-    return {
-        success: true,
-        data: act
-    };
-}
-
-// [MVVM : ViewModel]
-// Logique métier pour ajouter un acte (Create)
+/**
+ * Coordination pour ajouter un acte.
+ */
 function addActViewModel(title) {
-    // Validation du titre
     const validation = ValidationHelper.validateTitle(title);
-    if (!validation.isValid) {
-        return {
-            success: false,
-            error: validation.error,
-            message: validation.message
-        };
-    }
+    if (!validation.isValid) return { success: false, message: validation.message, error: validation.error };
 
     const trimmedTitle = validation.value;
-
-    // Vérifier les doublons
     const duplicateCheck = ValidationHelper.checkDuplicate(trimmedTitle, ActRepository.getAll());
-    if (duplicateCheck.isDuplicate) {
-        return {
-            success: false,
-            error: duplicateCheck.error,
-            message: duplicateCheck.message
-        };
-    }
+    if (duplicateCheck.isDuplicate) return { success: false, message: duplicateCheck.message, error: duplicateCheck.error };
 
     try {
         const act = createAct(trimmedTitle);
-        // On ne fait plus project.acts.push(act) ici !
-        // On le délègue à la View via sideEffects
-
         return {
             success: true,
             data: act,
-            message: `Acte "${trimmedTitle}" créé avec succès`,
+            message: `Acte "${trimmedTitle}" créé`,
             sideEffects: {
-                repository: {
-                    action: 'ADD',
-                    collection: 'acts',
-                    data: act
-                },
+                repository: { action: 'ADD', collection: 'acts', data: act },
                 shouldExpand: act.id,
                 shouldSave: true
             }
         };
     } catch (error) {
-        return {
-            success: false,
-            error: 'CREATION_FAILED',
-            message: 'Erreur lors de la création de l\'acte',
-            details: error.message
-        };
+        return { success: false, error: 'CREATION_FAILED', message: error.message };
     }
 }
 
-// [MVVM : ViewModel]
-// Logique métier pour supprimer un acte (Delete)
-function deleteActViewModel(actId) {
+/**
+ * Coordination pour supprimer un acte.
+ */
+function deleteActViewModel(actId, currentActId) {
     const act = ActRepository.getById(actId);
-    if (!act) {
-        return {
-            success: false,
-            error: 'NOT_FOUND',
-            message: 'Acte introuvable'
-        };
-    }
+    if (!act) return { success: false, message: 'Acte introuvable' };
 
-    const actTitle = act.title;
-    // On ne fait plus project.acts = project.acts.filter(...) ici !
-
-    let needsEmptyState = false;
-    if (currentActId === actId) {
-        needsEmptyState = true;
-    }
+    const isCurrent = actId === currentActId;
 
     return {
         success: true,
-        message: `Acte "${actTitle}" supprimé`,
-        needsEmptyState,
+        message: `Acte "${act.title}" supprimé`,
         sideEffects: {
-            repository: {
-                action: 'REMOVE',
-                collection: 'acts',
-                id: actId
-            },
+            repository: { action: 'REMOVE', collection: 'acts', id: actId },
             shouldSave: true,
-            shouldResetState: needsEmptyState
+            shouldResetState: isCurrent
         }
     };
 }
 
-// [MVVM : ViewModel]
-// Logique métier pour mettre à jour un acte (Update)
+/**
+ * Coordination pour mettre à jour un acte.
+ */
 function updateActViewModel(actId, updates) {
-    const act = ActRepository.getById(actId);
-    if (!act) {
-        return {
-            success: false,
-            error: 'NOT_FOUND',
-            message: 'Acte introuvable'
-        };
-    }
-
     if (updates.title) {
         const validation = ValidationHelper.validateTitle(updates.title);
-        if (!validation.isValid) {
-            return {
-                success: false,
-                error: validation.error,
-                message: validation.message
-            };
-        }
+        if (!validation.isValid) return { success: false, message: validation.message };
         updates.title = validation.value;
     }
 
     return {
         success: true,
-        message: 'Acte mis à jour',
         sideEffects: {
-            repository: {
-                action: 'UPDATE',
-                collection: 'acts',
-                id: actId,
-                updates: updates
-            },
+            repository: { action: 'UPDATE', collection: 'acts', id: actId, updates },
             shouldSave: true
         }
     };
 }
 
-// [MVVM : ViewModel]
-// Logique métier pour récupérer tous les chapitres d'un acte (Read)
-function getAllChaptersViewModel(actId) {
-    const chapters = ChapterRepository.getAll(actId);
-    return {
-        success: true,
-        data: chapters
-    };
-}
-
-// [MVVM : ViewModel]
-// Logique métier pour récupérer un chapitre (Read)
-function getChapterViewModel(actId, chapterId) {
-    const chapter = ChapterRepository.getById(actId, chapterId);
-    if (!chapter) {
-        return {
-            success: false,
-            error: 'NOT_FOUND',
-            message: 'Chapitre introuvable'
-        };
-    }
-    return {
-        success: true,
-        data: chapter
-    };
-}
-
-// [MVVM : ViewModel]
-// Logique métier pour ajouter un chapitre (Create)
-function addChapterViewModel(title) {
-    // Validation du titre
+/**
+ * Coordination pour ajouter un chapitre.
+ */
+function addChapterViewModel(title, targetActId) {
     const validation = ValidationHelper.validateTitle(title);
-    if (!validation.isValid) {
-        return {
-            success: false,
-            error: validation.error,
-            message: validation.message
-        };
-    }
+    if (!validation.isValid) return { success: false, message: validation.message };
 
     const trimmedTitle = validation.value;
+    let actId = targetActId;
     let autoCreatedAct = null;
 
-    // Si pas d'acte, en créer un par défaut
-    if (!activeActId || !ActRepository.getById(activeActId)) {
-        if (ActRepository.getAll().length === 0) {
-            try {
-                autoCreatedAct = createAct('Roman');
-                // On délèguera la création de l'acte par défaut à la View via sideEffects
-                activeActId = autoCreatedAct.id;
-            } catch (error) {
-                return {
-                    success: false,
-                    error: 'ACT_CREATION_FAILED',
-                    message: 'Impossible de créer l\'acte par défaut'
-                };
-            }
+    // Fallback si pas d'acte cible
+    if (!actId) {
+        const acts = ActRepository.getAll();
+        if (acts.length === 0) {
+            autoCreatedAct = createAct('Roman');
+            actId = autoCreatedAct.id;
         } else {
-            activeActId = ActRepository.getAll()[0].id;
+            actId = acts[0].id;
         }
     }
 
-    const act = ActRepository.getById(activeActId);
-    if (!act) {
-        return {
-            success: false,
-            error: 'ACT_NOT_FOUND',
-            message: 'Acte introuvable'
-        };
-    }
-
-    // Vérifier les doublons dans les chapitres de cet acte
-    const duplicateCheck = ValidationHelper.checkDuplicate(trimmedTitle, ChapterRepository.getAll(activeActId));
-    if (duplicateCheck.isDuplicate) {
-        return {
-            success: false,
-            error: duplicateCheck.error,
-            message: 'Un chapitre avec ce titre existe déjà dans cet acte'
-        };
-    }
+    const duplicateCheck = ValidationHelper.checkDuplicate(trimmedTitle, ChapterRepository.getAll(actId));
+    if (duplicateCheck.isDuplicate) return { success: false, message: 'Ce titre existe déjà dans cet acte' };
 
     try {
         const chapter = createChapter(trimmedTitle);
+        const repoActions = [];
+        if (autoCreatedAct) repoActions.push({ action: 'ADD', collection: 'acts', data: autoCreatedAct });
+        repoActions.push({ action: 'ADD', collection: 'chapters', actId: actId, data: chapter });
 
         return {
             success: true,
-            data: { act, chapter },
-            message: `Chapitre "${trimmedTitle}" créé avec succès`,
+            data: { actId, chapter },
+            message: `Chapitre "${trimmedTitle}" créé`,
             sideEffects: {
-                repository: [
-                    // Si on a créé un acte par défaut, il faut le rajouter
-                    ...(autoCreatedAct ? [{ action: 'ADD', collection: 'acts', data: autoCreatedAct }] : []),
-                    {
-                        action: 'ADD',
-                        collection: 'chapters',
-                        actId: activeActId,
-                        data: chapter
-                    }
-                ],
-                shouldExpandAct: activeActId,
+                repository: repoActions,
+                shouldExpandAct: actId,
                 shouldExpandChapter: chapter.id,
                 shouldSave: true
             }
         };
     } catch (error) {
-        return {
-            success: false,
-            error: 'CREATION_FAILED',
-            message: 'Erreur lors de la création du chapitre',
-            details: error.message
-        };
+        return { success: false, error: 'CREATION_FAILED', message: error.message };
     }
 }
 
-// [MVVM : ViewModel]
-// Logique métier pour supprimer un chapitre (Delete)
-function deleteChapterViewModel(actId, chapterId) {
+/**
+ * Coordination pour supprimer un chapitre.
+ */
+function deleteChapterViewModel(actId, chapterId, currentChapterId) {
     const chapter = ChapterRepository.getById(actId, chapterId);
-    if (!chapter) {
-        return {
-            success: false,
-            error: 'CHAPTER_NOT_FOUND',
-            message: 'Chapitre introuvable'
-        };
-    }
-
-    const chapterTitle = chapter.title;
-
-    let needsEmptyState = false;
-    if (currentChapterId === chapterId) {
-        needsEmptyState = true;
-    }
+    if (!chapter) return { success: false, message: 'Chapitre introuvable' };
 
     return {
         success: true,
-        message: `Chapitre "${chapterTitle}" supprimé`,
-        needsEmptyState,
+        message: `Chapitre "${chapter.title}" supprimé`,
         sideEffects: {
-            repository: {
-                action: 'REMOVE',
-                collection: 'chapters',
-                actId: actId,
-                id: chapterId
-            },
+            repository: { action: 'REMOVE', collection: 'chapters', actId, id: chapterId },
             shouldSave: true,
-            shouldResetState: needsEmptyState
+            shouldResetState: chapterId === currentChapterId
         }
     };
 }
 
-// [MVVM : ViewModel]
-// Logique métier pour mettre à jour un chapitre (Update)
+/**
+ * Coordination pour mettre à jour un chapitre.
+ */
 function updateChapterViewModel(actId, chapterId, updates) {
-    const chapter = ChapterRepository.getById(actId, chapterId);
-    if (!chapter) {
-        return {
-            success: false,
-            error: 'NOT_FOUND',
-            message: 'Chapitre introuvable'
-        };
-    }
-
     if (updates.title) {
         const validation = ValidationHelper.validateTitle(updates.title);
-        if (!validation.isValid) {
-            return {
-                success: false,
-                error: validation.error,
-                message: validation.message
-            };
-        }
+        if (!validation.isValid) return { success: false, message: validation.message };
         updates.title = validation.value;
     }
 
     return {
         success: true,
-        message: 'Chapitre mis à jour',
         sideEffects: {
-            repository: {
-                action: 'UPDATE',
-                collection: 'chapters',
-                actId: actId,
-                id: chapterId,
-                updates: updates
-            },
+            repository: { action: 'UPDATE', collection: 'chapters', actId, id: chapterId, updates },
             shouldSave: true
         }
     };
 }
 
-// [MVVM : ViewModel]
-// Logique métier pour récupérer toutes les scènes (Read)
-function getAllScenesViewModel(actId, chapterId) {
-    return {
-        success: true,
-        data: SceneRepository.getAll(actId, chapterId)
-    };
-}
-
-// [MVVM : ViewModel]
-// Logique métier pour récupérer une scène (Read)
-function getSceneViewModel(actId, chapterId, sceneId) {
-    const scene = SceneRepository.getById(actId, chapterId, sceneId);
-    if (!scene) {
-        return {
-            success: false,
-            error: 'NOT_FOUND',
-            message: 'Scène introuvable'
-        };
-    }
-    return {
-        success: true,
-        data: scene
-    };
-}
-
-// [MVVM : ViewModel]
-// Logique métier pour ajouter une scène (Create)
+/**
+ * Coordination pour ajouter une scène.
+ */
 function addSceneViewModel(title, actId, chapterId) {
-    // Validation du titre
     const validation = ValidationHelper.validateTitle(title);
-    if (!validation.isValid) {
-        return {
-            success: false,
-            error: validation.error,
-            message: validation.message
-        };
-    }
+    if (!validation.isValid) return { success: false, message: validation.message };
 
-    if (!actId || !chapterId) {
-        return {
-            success: false,
-            error: 'MISSING_PARAMETERS',
-            message: 'Acte et chapitre requis'
-        };
-    }
+    if (!actId || !chapterId) return { success: false, message: 'Sélectionnez d\'abord un chapitre' };
 
-    const trimmedTitle = validation.value;
-
-    const chapter = ChapterRepository.getById(actId, chapterId);
-    if (!chapter) {
-        return {
-            success: false,
-            error: 'CHAPTER_NOT_FOUND',
-            message: 'Chapitre introuvable'
-        };
-    }
-
-    // Vérifier les doublons dans les scènes de ce chapitre
-    const duplicateCheck = ValidationHelper.checkDuplicate(trimmedTitle, SceneRepository.getAll(actId, chapterId));
-    if (duplicateCheck.isDuplicate) {
-        return {
-            success: false,
-            error: duplicateCheck.error,
-            message: 'Une scène avec ce titre existe déjà dans ce chapitre'
-        };
-    }
+    const duplicateCheck = ValidationHelper.checkDuplicate(validation.value, SceneRepository.getAll(actId, chapterId));
+    if (duplicateCheck.isDuplicate) return { success: false, message: 'Ce titre existe déjà dans ce chapitre' };
 
     try {
-        const scene = createScene(trimmedTitle);
-
+        const scene = createScene(validation.value);
         return {
             success: true,
             data: scene,
-            message: `Scène "${trimmedTitle}" créée avec succès`,
+            message: `Scène "${scene.title}" créée`,
             sideEffects: {
-                repository: {
-                    action: 'ADD',
-                    collection: 'scenes',
-                    actId: actId,
-                    chapterId: chapterId,
-                    data: scene
-                },
+                repository: { action: 'ADD', collection: 'scenes', actId, chapterId, data: scene },
                 shouldExpandAct: actId,
                 shouldExpandChapter: chapterId,
                 shouldSave: true,
@@ -433,129 +199,81 @@ function addSceneViewModel(title, actId, chapterId) {
             }
         };
     } catch (error) {
-        return {
-            success: false,
-            error: 'CREATION_FAILED',
-            message: 'Erreur lors de la création de la scène',
-            details: error.message
-        };
+        return { success: false, error: 'CREATION_FAILED', message: error.message };
     }
 }
 
-// [MVVM : ViewModel]
-// Logique métier pour mettre à jour le statut d'une scène (Update)
-function setSceneStatusViewModel(actId, chapterId, sceneId, status) {
-    const validStatuses = ['draft', 'progress', 'complete', 'review'];
-    if (!validStatuses.includes(status)) {
-        return {
-            success: false,
-            error: 'INVALID_STATUS',
-            message: `Statut invalide. Valeurs acceptées : ${validStatuses.join(', ')}`
-        };
-    }
-
+/**
+ * Coordination pour supprimer une scène.
+ */
+function deleteSceneViewModel(actId, chapterId, sceneId, currentSceneId) {
     const scene = SceneRepository.getById(actId, chapterId, sceneId);
-    if (!scene) {
-        return {
-            success: false,
-            error: 'SCENE_NOT_FOUND',
-            message: 'Scène introuvable'
-        };
-    }
-
-    const oldStatus = scene.status;
+    if (!scene) return { success: false, message: 'Scène introuvable' };
 
     return {
         success: true,
-        message: `Statut mis à jour : ${oldStatus} → ${status}`,
+        message: `Scène "${scene.title}" supprimée`,
         sideEffects: {
-            repository: {
-                action: 'UPDATE',
-                collection: 'scenes',
-                actId: actId,
-                chapterId: chapterId,
-                id: sceneId,
-                updates: { status: status }
-            },
-            shouldSave: true
+            repository: { action: 'REMOVE', collection: 'scenes', actId, chapterId, id: sceneId },
+            shouldSave: true,
+            shouldResetState: sceneId === currentSceneId
         }
     };
 }
 
-// [MVVM : ViewModel]
-// Logique métier pour mettre à jour une scène (Update général)
+/**
+ * Coordination pour mettre à jour une scène.
+ */
 function updateSceneViewModel(actId, chapterId, sceneId, updates) {
-    const scene = SceneRepository.getById(actId, chapterId, sceneId);
-    if (!scene) {
-        return {
-            success: false,
-            error: 'NOT_FOUND',
-            message: 'Scène introuvable'
-        };
-    }
-
     if (updates.title) {
         const validation = ValidationHelper.validateTitle(updates.title);
-        if (!validation.isValid) {
-            return {
-                success: false,
-                error: validation.error,
-                message: validation.message
-            };
-        }
+        if (!validation.isValid) return { success: false, message: validation.message };
         updates.title = validation.value;
     }
 
     return {
         success: true,
-        message: 'Scène mise à jour',
         sideEffects: {
-            repository: {
-                action: 'UPDATE',
-                collection: 'scenes',
-                actId: actId,
-                chapterId: chapterId,
-                id: sceneId,
-                updates: updates
-            },
+            repository: { action: 'UPDATE', collection: 'scenes', actId, chapterId, id: sceneId, updates },
             shouldSave: true
         }
     };
 }
 
-// [MVVM : ViewModel]
-// Logique métier pour supprimer une scène (Delete)
-function deleteSceneViewModel(actId, chapterId, sceneId) {
-    const scene = SceneRepository.getById(actId, chapterId, sceneId);
-    if (!scene) {
-        return {
-            success: false,
-            error: 'SCENE_NOT_FOUND',
-            message: 'Scène introuvable'
-        };
-    }
+/**
+ * Coordination pour mettre à jour le statut d'une scène.
+ */
+function setSceneStatusViewModel(actId, chapterId, sceneId, status) {
+    const validStatuses = ['draft', 'progress', 'complete', 'review'];
+    if (!validStatuses.includes(status)) return { success: false, message: 'Statut invalide' };
 
-    const sceneTitle = scene.title;
+    return updateSceneViewModel(actId, chapterId, sceneId, { status });
+}
 
-    let needsEmptyState = false;
-    if (currentSceneId === sceneId) {
-        needsEmptyState = true;
+/**
+ * Coordination pour réorganiser les éléments (drag & drop).
+ */
+function reorderStructureViewModel(type, ids, actId, chapterId) {
+    let result = false;
+    let collection = '';
+
+    if (type === 'acts') {
+        result = ActRepository.reorder(ids);
+        collection = 'acts';
+    } else if (type === 'chapters') {
+        result = ChapterRepository.reorder(actId, ids);
+        collection = 'chapters';
+    } else if (type === 'scenes') {
+        result = SceneRepository.reorder(actId, chapterId, ids);
+        collection = 'scenes';
     }
 
     return {
-        success: true,
-        message: `Scène "${sceneTitle}" supprimée`,
-        needsEmptyState,
+        success: result,
         sideEffects: {
-            repository: {
-                action: 'REMOVE',
-                collection: 'scenes',
-                actId: actId,
-                chapterId: chapterId,
-                id: sceneId
-            },
             shouldSave: true,
-            shouldResetState: needsEmptyState
+            shouldRefresh: true
         }
     };
 }
+

@@ -1,274 +1,116 @@
+/**
+ * [MVVM : Structure View]
+ * Gestionnaire d'affichage de l'arborescence (Actes/Chapitres/Scènes).
+ */
 
+// --- ACTIONS UI ---
 
-// Act Management
-// [MVVM : View]
-// Group: Use Case | Naming: AddActUseCase
-// Coordination UI pour ajouter un acte
 function addAct() {
-    const title = document.getElementById('actTitleInput').value.trim();
-
-    const result = addActViewModel(title);
+    const titleInput = document.getElementById('actTitleInput');
+    const result = addActViewModel((titleInput.value || '').trim());
 
     if (result.success) {
-        // Gérer les effets de bord
-        if (result.sideEffects) {
-            executeRepositorySideEffect(result.sideEffects.repository);
-
-            if (result.sideEffects.shouldExpand) {
-                expandedActs.add(result.sideEffects.shouldExpand);
-            }
-            if (result.sideEffects.shouldSave) {
-                saveProject();
-            }
-        }
-
-        document.getElementById('actTitleInput').value = '';
+        processStructureSideEffects(result.sideEffects);
+        titleInput.value = '';
         closeModal('addActModal');
         renderActsList();
-
-        if (result.message) {
-            showNotification(result.message, 'success');
-        }
+        if (result.message) showNotification(result.message, 'success');
     } else {
-        showNotification(result.message || 'Erreur lors de l\'ajout de l\'acte', 'error');
+        showNotification(result.message || 'Erreur lors de l\'ajout', 'error');
     }
 }
 
-// [MVVM : View]
-// Coordination UI pour supprimer un acte
 function deleteAct(actId) {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer cet acte et tous ses chapitres ?')) return;
+    if (!confirm('Êtes-vous sûr de vouloir supprimer cet acte et tout son contenu ?')) return;
 
-    const result = deleteActViewModel(actId);
+    const result = deleteActViewModel(actId, typeof currentActId !== 'undefined' ? currentActId : null);
 
     if (result.success) {
-        // Gérer les effets de bord
-        if (result.sideEffects) {
-            executeRepositorySideEffect(result.sideEffects.repository);
-
-            if (result.sideEffects.shouldSave) {
-                saveProject();
-            }
-            if (result.sideEffects.shouldResetState) {
-                currentActId = null;
-                currentChapterId = null;
-                currentSceneId = null;
-            }
-        }
-
-        if (result.needsEmptyState) {
-            showEmptyState();
-        }
+        processStructureSideEffects(result.sideEffects);
         renderActsList();
-
-        if (result.message) {
-            showNotification(result.message, 'success');
-        }
+        if (result.message) showNotification(result.message, 'success');
     } else {
         showNotification(result.message || 'Erreur lors de la suppression', 'error');
     }
 }
 
-// Chapter Management
-// [MVVM : View]
-// Coordination UI pour ajouter un chapitre
 function addChapter() {
-    const title = document.getElementById('chapterTitleInput').value.trim();
-
-    const result = addChapterViewModel(title);
+    const titleInput = document.getElementById('chapterTitleInput');
+    const result = addChapterViewModel((titleInput.value || '').trim(), typeof activeActId !== 'undefined' ? activeActId : null);
 
     if (result.success) {
-        // Gérer les effets de bord
-        if (result.sideEffects) {
-            executeRepositorySideEffect(result.sideEffects.repository);
-
-            if (result.sideEffects.shouldExpandAct) {
-                expandedActs.add(result.sideEffects.shouldExpandAct);
-            }
-            if (result.sideEffects.shouldExpandChapter) {
-                expandedChapters.add(result.sideEffects.shouldExpandChapter);
-            }
-            if (result.sideEffects.shouldSave) {
-                saveProject();
-            }
-        }
-
-        document.getElementById('chapterTitleInput').value = '';
+        processStructureSideEffects(result.sideEffects);
+        titleInput.value = '';
         closeModal('addChapterModal');
         renderActsList();
-
-        if (result.message) {
-            showNotification(result.message, 'success');
-        }
+        if (result.message) showNotification(result.message, 'success');
     } else {
-        showNotification(result.message || 'Erreur lors de l\'ajout du chapitre', 'error');
+        showNotification(result.message || 'Erreur lors de l\'ajout', 'error');
     }
 }
 
-// [MVVM : View]
-// Coordination UI pour supprimer un chapitre
 function deleteChapter(actId, chapterId) {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer ce chapitre et toutes ses scènes ?')) return;
+    if (!confirm('Êtes-vous sûr de vouloir supprimer ce chapitre et ses scènes ?')) return;
 
-    const result = deleteChapterViewModel(actId, chapterId);
+    const result = deleteChapterViewModel(actId, chapterId, typeof currentChapterId !== 'undefined' ? currentChapterId : null);
 
     if (result.success) {
-        // Gérer les effets de bord
-        if (result.sideEffects) {
-            executeRepositorySideEffect(result.sideEffects.repository);
-
-            if (result.sideEffects.shouldSave) {
-                saveProject();
-            }
-            if (result.sideEffects.shouldResetState) {
-                currentChapterId = null;
-                currentSceneId = null;
-            }
-        }
-
-        if (result.needsEmptyState) {
-            showEmptyState();
-        }
+        processStructureSideEffects(result.sideEffects);
         renderActsList();
-
-        if (result.message) {
-            showNotification(result.message, 'success');
-        }
+        if (result.message) showNotification(result.message, 'success');
     } else {
         showNotification(result.message || 'Erreur lors de la suppression', 'error');
     }
 }
 
-// Scene Management
-// [MVVM : View]
-// Coordination UI pour ajouter une scène
 function addScene() {
-    const title = document.getElementById('sceneTitleInput').value.trim();
-
-    const result = addSceneViewModel(title, activeActId, activeChapterId);
+    const titleInput = document.getElementById('sceneTitleInput');
+    const result = addSceneViewModel(
+        (titleInput.value || '').trim(),
+        typeof activeActId !== 'undefined' ? activeActId : null,
+        typeof activeChapterId !== 'undefined' ? activeChapterId : null
+    );
 
     if (result.success) {
-        // Gérer les effets de bord
-        if (result.sideEffects) {
-            executeRepositorySideEffect(result.sideEffects.repository);
-
-            if (result.sideEffects.shouldExpandAct) {
-                expandedActs.add(result.sideEffects.shouldExpandAct);
-            }
-            if (result.sideEffects.shouldExpandChapter) {
-                expandedChapters.add(result.sideEffects.shouldExpandChapter);
-            }
-            if (result.sideEffects.shouldSave) {
-                saveProject();
-            }
-            if (result.sideEffects.shouldOpenScene) {
-                const { actId, chapterId, sceneId } = result.sideEffects.shouldOpenScene;
-                openScene(actId, chapterId, sceneId);
-            }
-        }
-
-        document.getElementById('sceneTitleInput').value = '';
+        processStructureSideEffects(result.sideEffects);
+        titleInput.value = '';
         closeModal('addSceneModal');
         renderActsList();
-
-        if (result.message) {
-            showNotification(result.message, 'success');
-        }
+        if (result.message) showNotification(result.message, 'success');
     } else {
-        showNotification(result.message || 'Erreur lors de l\'ajout de la scène', 'error');
+        showNotification(result.message || 'Erreur lors de l\'ajout', 'error');
     }
 }
 
-// [MVVM : View]
-// Coordination UI pour mettre à jour le statut d'une scène
+function deleteScene(actId, chapterId, sceneId) {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer cette scène ?')) return;
+
+    const result = deleteSceneViewModel(actId, chapterId, sceneId, typeof currentSceneId !== 'undefined' ? currentSceneId : null);
+
+    if (result.success) {
+        processStructureSideEffects(result.sideEffects);
+        renderActsList();
+        if (result.message) showNotification(result.message, 'success');
+    } else {
+        showNotification(result.message || 'Erreur lors de la suppression', 'error');
+    }
+}
+
 function setSceneStatus(actId, chapterId, sceneId, status) {
     const result = setSceneStatusViewModel(actId, chapterId, sceneId, status);
 
     if (result.success) {
-        // Gérer les effets de bord
-        if (result.sideEffects) {
-            executeRepositorySideEffect(result.sideEffects.repository);
-
-            if (result.sideEffects.shouldSave) {
-                saveProject();
-            }
-        }
-
+        processStructureSideEffects(result.sideEffects);
         closeStatusMenu();
         renderActsList();
         updateProgressBar();
-
-        if (result.message) {
-            showNotification(result.message, 'info');
-        }
-    } else {
-        showNotification(result.message || 'Erreur lors de la mise à jour du statut', 'error');
     }
 }
 
-// [MVVM : View]
-// Coordination UI pour supprimer une scène
-function deleteScene(actId, chapterId, sceneId) {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer cette scène ?')) return;
+// --- ÉDITION DIRECTE (RENOMMAGE) ---
 
-    const result = deleteSceneViewModel(actId, chapterId, sceneId);
-
-    if (result.success) {
-        // Gérer les effets de bord
-        if (result.sideEffects) {
-            executeRepositorySideEffect(result.sideEffects.repository);
-
-            if (result.sideEffects.shouldSave) {
-                saveProject();
-            }
-            if (result.sideEffects.shouldResetState) {
-                currentSceneId = null;
-            }
-        }
-
-        if (result.needsEmptyState) {
-            showEmptyState();
-        }
-        renderActsList();
-
-        if (result.message) {
-            showNotification(result.message, 'success');
-        }
-    } else {
-        showNotification(result.message || 'Erreur lors de la suppression', 'error');
-    }
-}
-
-
-// [MVVM : View]
-// Alterne l'affichage d'un acte (déplié/replié)
-function toggleAct(actId) {
-    const element = document.getElementById(`act-${actId}`);
-    const icon = element.querySelector('.act-icon');
-    const chaptersContainer = element.querySelector('.act-chapters');
-
-    const isExpanded = icon.classList.contains('expanded');
-
-    icon.classList.toggle('expanded');
-    chaptersContainer.classList.toggle('visible');
-
-    // Sauvegarder l'état
-    if (isExpanded) {
-        expandedActs.delete(actId);
-    } else {
-        expandedActs.add(actId);
-    }
-    saveTreeState();
-}
-
-
-// [MVVM : View]
-// Active l'édition du titre d'un acte dans le DOM
 function startEditingAct(actId, element) {
-    const act = project.acts.find(a => a.id === actId);
-    if (!act) return;
-
-    const originalText = act.title;
+    const originalText = element.textContent.trim();
     const input = document.createElement('input');
     input.type = 'text';
     input.className = 'editing-input';
@@ -279,58 +121,21 @@ function startEditingAct(actId, element) {
     input.focus();
     input.select();
 
-    const finishEditing = () => {
+    const finish = () => {
         const newTitle = input.value.trim();
         if (newTitle && newTitle !== originalText) {
-            act.title = newTitle;
-            saveProject();
+            const result = updateActViewModel(actId, { title: newTitle });
+            if (result.success) processStructureSideEffects(result.sideEffects);
         }
         renderActsList();
     };
 
-    input.addEventListener('blur', finishEditing);
-    input.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-            finishEditing();
-        } else if (e.key === 'Escape') {
-            renderActsList();
-        }
-    });
+    input.onblur = finish;
+    input.onkeydown = (e) => { e.key === 'Enter' && finish(); e.key === 'Escape' && renderActsList(); };
 }
 
-// [MVVM : View]
-// Alterne l'affichage d'un chapitre (déplié/replié)
-function toggleChapter(actId, chapterId) {
-    const element = document.getElementById(`chapter-${chapterId}`);
-    const icon = element.querySelector('.chapter-icon');
-    const scenesList = element.querySelector('.scenes-list');
-
-    const isExpanded = icon.classList.contains('expanded');
-
-    icon.classList.toggle('expanded');
-    scenesList.classList.toggle('visible');
-
-    // Sauvegarder l'état
-    if (isExpanded) {
-        expandedChapters.delete(chapterId);
-    } else {
-        expandedChapters.add(chapterId);
-    }
-    saveTreeState();
-}
-
-
-
-// [MVVM : View]
-// Active l'édition du titre d'un chapitre dans le DOM
 function startEditingChapter(actId, chapterId, element) {
-    const act = project.acts.find(a => a.id === actId);
-    if (!act) return;
-
-    const chapter = act.chapters.find(c => c.id === chapterId);
-    if (!chapter) return;
-
-    const originalText = chapter.title;
+    const originalText = element.textContent.trim();
     const input = document.createElement('input');
     input.type = 'text';
     input.className = 'editing-input';
@@ -341,54 +146,405 @@ function startEditingChapter(actId, chapterId, element) {
     input.focus();
     input.select();
 
-    const finishEditing = () => {
+    const finish = () => {
         const newTitle = input.value.trim();
         if (newTitle && newTitle !== originalText) {
-            chapter.title = newTitle;
-            saveProject();
-
-            // Update editor if this chapter is currently open
-            if (currentChapterId === chapterId) {
-                const breadcrumb = document.querySelector('.editor-breadcrumb');
-                if (breadcrumb) breadcrumb.textContent = `${act.title} > ${newTitle}`;
+            const result = updateChapterViewModel(actId, chapterId, { title: newTitle });
+            if (result.success) {
+                processStructureSideEffects(result.sideEffects);
+                // Update editor if this chapter is currently open
+                if (typeof currentChapterId !== 'undefined' && currentChapterId === chapterId) {
+                    const breadcrumb = document.querySelector('.editor-breadcrumb');
+                    if (breadcrumb) breadcrumb.textContent = `${result.updatedActTitle} > ${newTitle}`;
+                }
             }
         }
         renderActsList();
     };
 
-    input.addEventListener('blur', finishEditing);
-    input.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-            finishEditing();
-        } else if (e.key === 'Escape') {
-            renderActsList();
+    input.onblur = finish;
+    input.onkeydown = (e) => { e.key === 'Enter' && finish(); e.key === 'Escape' && renderActsList(); };
+}
+
+function startEditingScene(actId, chapterId, sceneId, element) {
+    const originalText = element.textContent.trim();
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'editing-input';
+    input.value = originalText;
+
+    element.textContent = '';
+    element.appendChild(input);
+    input.focus();
+    input.select();
+
+    const finish = () => {
+        const newTitle = input.value.trim();
+        if (newTitle && newTitle !== originalText) {
+            const result = updateSceneViewModel(actId, chapterId, sceneId, { title: newTitle });
+            if (result.success) {
+                processStructureSideEffects(result.sideEffects);
+                // Update editor title if open
+                if (typeof currentSceneId !== 'undefined' && currentSceneId === sceneId) {
+                    const editorTitle = document.querySelector('.editor-title');
+                    if (editorTitle) editorTitle.textContent = newTitle;
+                }
+            }
+        }
+        renderActsList();
+    };
+
+    input.onblur = finish;
+    input.onkeydown = (e) => { e.key === 'Enter' && finish(); e.key === 'Escape' && renderActsList(); };
+}
+
+// --- RENDU (ARBORESCENCE) ---
+
+function renderActsList() {
+    const container = document.getElementById('chaptersList');
+    if (!container) return;
+
+    const vm = getStructureViewModel();
+    if (!vm.acts || vm.acts.length === 0) {
+        container.innerHTML = `
+            <div style="padding: 2rem; text-align: center; color: var(--text-muted);">
+                <div style="margin-bottom: 1rem;">Aucun chapitre</div>
+                <button class="btn btn-primary" onclick="openAddChapterModal()">+ Créer un chapitre</button>
+            </div>`;
+        if (typeof updateStats === 'function') updateStats();
+        return;
+    }
+
+    let html = '<div style="padding: 0 0.5rem;">';
+
+    vm.acts.forEach((act, actIndex) => {
+        const actStats = typeof getActStats === 'function' ? getActStats(act) : { totalWords: 0 };
+        const actExpanded = typeof expandedActs !== 'undefined' && expandedActs.has(act.id);
+
+        html += `<div class="act-group" id="act-${act.id}" data-act-id="${act.id}">
+            <div class="act-header ${typeof currentActId !== 'undefined' && currentActId === act.id ? 'active' : ''}" data-act-id="${act.id}">
+                <span class="drag-handle" draggable="true" onclick="event.stopPropagation()">⋮⋮</span>
+                <span class="act-icon ${actExpanded ? 'expanded' : ''}" onclick="toggleAct(${act.id}); event.stopPropagation();" style="cursor: pointer;">▶</span>
+                <span class="auto-number">${actIndex + 1}.</span>
+                <span class="act-title" ondblclick="event.stopPropagation(); startEditingAct(${act.id}, this)" onclick="toggleAct(${act.id})">${act.title}</span>
+                <span class="edit-hint">✏️</span>
+                <span class="word-count-badge" title="${actStats.totalWords.toLocaleString()} mots">${typeof formatWordCount === 'function' ? formatWordCount(actStats.totalWords) : actStats.totalWords}</span>
+                <button class="btn btn-icon btn-small delete-btn" onclick="event.stopPropagation(); deleteAct(${act.id})">×</button>
+            </div>
+            <div class="act-chapters ${actExpanded ? 'visible' : ''}">`;
+
+        act.chapters.forEach((chapter, chapterIndex) => {
+            const chStats = typeof getChapterStats === 'function' ? getChapterStats(chapter) : { totalWords: 0, progressPercent: 0 };
+            const chStatus = chStats.progressPercent === 100 ? 'complete' : chStats.progressPercent > 0 ? 'progress' : 'draft';
+            const chExpanded = typeof expandedChapters !== 'undefined' && expandedChapters.has(chapter.id);
+            const chNumber = `${actIndex + 1}.${chapterIndex + 1}`;
+
+            html += `<div class="chapter-group" id="chapter-${chapter.id}" data-chapter-id="${chapter.id}" data-act-id="${act.id}">
+                <div class="chapter-header ${typeof currentChapterId !== 'undefined' && currentChapterId === chapter.id ? 'active' : ''}" data-chapter-id="${chapter.id}" data-act-id="${act.id}">
+                    <span class="drag-handle" draggable="true" onclick="event.stopPropagation()">⋮⋮</span>
+                    <span class="chapter-icon ${chExpanded ? 'expanded' : ''}" onclick="toggleChapter(${act.id}, ${chapter.id}); event.stopPropagation();" style="cursor: pointer;">▶</span>
+                    <span class="auto-number">${chNumber}</span>
+                    <span class="chapter-title" ondblclick="event.stopPropagation(); startEditingChapter(${act.id}, ${chapter.id}, this)" onclick="toggleChapter(${act.id}, ${chapter.id})">${chapter.title}</span>
+                    <span class="edit-hint">✏️</span>
+                    <span class="word-count-badge" title="${chStats.totalWords.toLocaleString()} mots">${typeof formatWordCount === 'function' ? formatWordCount(chStats.totalWords) : chStats.totalWords}</span>
+                    <span class="status-badge status-${chStatus}" title="${chStats.progressPercent}%"></span>
+                    <span class="chapter-count">${chapter.scenes.length}</span>
+                    <button class="btn btn-icon btn-small delete-btn" onclick="event.stopPropagation(); deleteChapter(${act.id}, ${chapter.id})">×</button>
+                </div>
+                <div class="scenes-list ${chExpanded ? 'visible' : ''}">`;
+
+            chapter.scenes.forEach((scene, sceneIndex) => {
+                const sStatus = scene.status || 'draft';
+                const sWords = scene.wordCount || 0;
+                const synopsis = scene.synopsis ? (scene.synopsis.substring(0, 100) + (scene.synopsis.length > 100 ? '...' : '')) : '';
+                const tooltip = scene.synopsis ? scene.synopsis.replace(/"/g, '&quot;').replace(/'/g, '&#39;') : '';
+                const sNumber = `${actIndex + 1}.${chapterIndex + 1}.${sceneIndex + 1}`;
+                const isActive = typeof currentSceneId !== 'undefined' && currentSceneId === scene.id;
+
+                html += `<div class="scene-item draggable ${isActive ? 'active' : ''}" draggable="true" data-scene-id="${scene.id}" data-chapter-id="${chapter.id}" data-act-id="${act.id}" onclick="openScene(${act.id}, ${chapter.id}, ${scene.id})" ${tooltip ? `title="${tooltip}"` : ''}>
+                    <div style="display: flex; align-items: center; gap: 0.4rem; flex: 1; min-width: 0;">
+                        <span class="drag-handle">⋮⋮</span>
+                        <span class="auto-number">${sNumber}</span>
+                        <div style="flex: 1; min-width: 0; overflow: hidden;">
+                            <span ondblclick="event.stopPropagation(); startEditingScene(${act.id}, ${chapter.id}, ${scene.id}, this)" style="display: block;">${scene.title}</span>
+                            ${synopsis ? `<span class="scene-synopsis">${synopsis}</span>` : ''}
+                        </div>
+                        <span class="edit-hint">✏️</span>
+                    </div>
+                    <span class="word-count-badge" title="${sWords.toLocaleString()} mots">${typeof formatWordCount === 'function' ? formatWordCount(sWords) : sWords}</span>
+                    <span class="status-badge status-${sStatus}" onclick="event.stopPropagation(); toggleSceneStatus(${act.id}, ${chapter.id}, ${scene.id}, event)" style="cursor: pointer;" title="Cliquez pour changer le statut"></span>
+                    <button class="btn btn-icon btn-small delete-btn" onclick="event.stopPropagation(); deleteScene(${act.id}, ${chapter.id}, ${scene.id})">×</button>
+                </div>`;
+            });
+
+            html += `<div class="scene-item" onclick="openAddSceneModal(${act.id}, ${chapter.id})" style="opacity: 0.6; font-style: italic;">+ Ajouter une scène</div>
+                </div></div>`;
+        });
+
+        html += `<div class="scene-item" onclick="openAddChapterModal(${act.id})" style="opacity: 0.6; font-style: italic; margin-left: 1rem;">+ Ajouter un chapitre</div>
+            </div></div>`;
+    });
+
+    html += '</div>';
+    container.innerHTML = html;
+
+    // Post-rendu
+    if (typeof setupActDragAndDrop === 'function') setupActDragAndDrop();
+    if (typeof setupChapterDragAndDrop === 'function') setupChapterDragAndDrop();
+    if (typeof setupSceneDragAndDrop === 'function') setupSceneDragAndDrop();
+    if (typeof updateStats === 'function') updateStats();
+    if (typeof updateProgressBar === 'function') updateProgressBar();
+    if (typeof applyStatusFilters === 'function') applyStatusFilters();
+    if (typeof restoreTreeState === 'function') setTimeout(() => restoreTreeState(), 50);
+}
+
+// --- ORCHESTRATION ---
+
+function processStructureSideEffects(sideEffects) {
+    if (!sideEffects) return;
+
+    // 1. Repository
+    if (sideEffects.repository) {
+        const actions = Array.isArray(sideEffects.repository) ? sideEffects.repository : [sideEffects.repository];
+        actions.forEach(action => executeRepositorySideEffect(action));
+    }
+
+    // 2. Expansion
+    if (sideEffects.shouldExpand && typeof expandedActs !== 'undefined') expandedActs.add(sideEffects.shouldExpand);
+    if (sideEffects.shouldExpandAct && typeof expandedActs !== 'undefined') expandedActs.add(sideEffects.shouldExpandAct);
+    if (sideEffects.shouldExpandChapter && typeof expandedChapters !== 'undefined') expandedChapters.add(sideEffects.shouldExpandChapter);
+
+    // 3. Navigation State
+    if (sideEffects.shouldResetState) {
+        if (typeof currentActId !== 'undefined') currentActId = null;
+        if (typeof currentChapterId !== 'undefined') currentChapterId = null;
+        if (typeof currentSceneId !== 'undefined') currentSceneId = null;
+        if (typeof showEmptyState === 'function') showEmptyState();
+    }
+
+    // 4. Persistence
+    if (sideEffects.shouldSave && typeof saveProject === 'function') saveProject();
+    if (sideEffects.shouldOpenScene) {
+        const { actId, chapterId, sceneId } = sideEffects.shouldOpenScene;
+        if (typeof openScene === 'function') openScene(actId, chapterId, sceneId);
+    }
+}
+
+function executeRepositorySideEffect(effect) {
+    if (!effect) return;
+    const { action, collection, id, data, updates, actId, chapterId } = effect;
+
+    let repo;
+    if (collection === 'acts') repo = ActRepository;
+    else if (collection === 'chapters') repo = ChapterRepository;
+    else if (collection === 'scenes') repo = SceneRepository;
+
+    if (!repo) return;
+
+    switch (action) {
+        case 'ADD':
+            if (collection === 'acts') repo.add(data);
+            else if (collection === 'chapters') repo.add(actId, data);
+            else if (collection === 'scenes') repo.add(actId, chapterId, data);
+            break;
+        case 'UPDATE':
+            if (collection === 'acts') repo.update(id, updates);
+            else if (collection === 'chapters') repo.update(actId, id, updates);
+            else if (collection === 'scenes') repo.update(actId, chapterId, id, updates);
+            break;
+        case 'REMOVE':
+            if (collection === 'acts') repo.remove(id);
+            else if (collection === 'chapters') repo.remove(actId, id);
+            else if (collection === 'scenes') repo.remove(actId, chapterId, id);
+            break;
+    }
+}
+
+// --- UTILITAIRES DE VUE ---
+
+function toggleAct(actId) {
+    if (typeof expandedActs === 'undefined') return;
+    if (expandedActs.has(actId)) expandedActs.delete(actId);
+    else expandedActs.add(actId);
+
+    if (typeof saveTreeState === 'function') saveTreeState();
+    renderActsList();
+}
+
+function toggleChapter(actId, chapterId) {
+    if (typeof expandedChapters === 'undefined') return;
+    if (expandedChapters.has(chapterId)) expandedChapters.delete(chapterId);
+    else expandedChapters.add(chapterId);
+
+    if (typeof saveTreeState === 'function') saveTreeState();
+    renderActsList();
+}
+
+function expandAll() {
+    const vm = getStructureViewModel();
+    vm.acts.forEach(act => {
+        if (typeof expandedActs !== 'undefined') expandedActs.add(act.id);
+        act.chapters.forEach(ch => {
+            if (typeof expandedChapters !== 'undefined') expandedChapters.add(ch.id);
+        });
+    });
+    if (typeof saveTreeState === 'function') saveTreeState();
+    renderActsList();
+}
+
+function collapseAll() {
+    if (typeof expandedActs !== 'undefined') expandedActs.clear();
+    if (typeof expandedChapters !== 'undefined') expandedChapters.clear();
+    if (typeof saveTreeState === 'function') saveTreeState();
+    renderActsList();
+}
+
+function openAddActModal() {
+    const modal = document.getElementById('addActModal');
+    if (modal) {
+        modal.classList.add('active');
+        const input = document.getElementById('actTitleInput');
+        if (input) setTimeout(() => input.focus(), 100);
+    }
+}
+
+function openAddChapterModal(actId) {
+    if (actId) activeActId = actId;
+    else {
+        const vm = getStructureViewModel();
+        if (vm.acts.length > 0) {
+            activeActId = vm.acts[0].id;
+        } else {
+            activeActId = null; // Will be created in addChapter
+        }
+    }
+    const modal = document.getElementById('addChapterModal');
+    if (modal) {
+        modal.classList.add('active');
+        const input = document.getElementById('chapterTitleInput');
+        if (input) setTimeout(() => input.focus(), 100);
+    }
+}
+
+function openAddSceneModal(actId, chapterId) {
+    if (actId) activeActId = actId;
+    if (chapterId) activeChapterId = chapterId;
+    const modal = document.getElementById('addSceneModal');
+    if (modal) {
+        modal.classList.add('active');
+        const input = document.getElementById('sceneTitleInput');
+        if (input) setTimeout(() => input.focus(), 100);
+    }
+}
+
+function openAddSceneModalQuick() {
+    if (typeof currentActId !== 'undefined' && typeof currentChapterId !== 'undefined' && currentActId && currentChapterId) {
+        openAddSceneModal(currentActId, currentChapterId);
+    } else {
+        const vm = getStructureViewModel();
+        if (vm.acts.length > 0 && vm.acts[0].chapters.length > 0) {
+            openAddSceneModal(vm.acts[0].id, vm.acts[0].chapters[0].id);
+        } else {
+            showNotification('Créez d\'abord un chapitre', 'info');
+        }
+    }
+}
+
+// [MVVM : View]
+// Applique visuellement les filtres de statut dans l'arborescence
+function applyStatusFilters() {
+    // Appliquer les filtres à toutes les scènes
+    document.querySelectorAll('.scene-item[data-scene-id]').forEach(sceneEl => {
+        const sceneId = parseInt(sceneEl.dataset.sceneId);
+        const actId = parseInt(sceneEl.dataset.actId);
+        const chapterId = parseInt(sceneEl.dataset.chapterId);
+
+        const vm = getStructureViewModel();
+        const act = vm.acts.find(a => a.id === actId);
+        if (!act) return;
+        const chapter = act.chapters.find(c => c.id === chapterId);
+        if (!chapter) return;
+        const scene = chapter.scenes.find(s => s.id === sceneId);
+        if (!scene) return;
+
+        const status = scene.status || 'draft';
+
+        if (activeStatusFilters.includes(status)) {
+            sceneEl.classList.remove('filtered-out');
+        } else {
+            sceneEl.classList.add('filtered-out');
+        }
+    });
+
+    // Cacher les chapitres dont toutes les scènes sont filtrées (mais pas les chapitres vides)
+    document.querySelectorAll('.chapter-group').forEach(chapterEl => {
+        const allScenes = chapterEl.querySelectorAll('.scene-item[data-scene-id]');
+        const visibleScenes = chapterEl.querySelectorAll('.scene-item[data-scene-id]:not(.filtered-out)');
+
+        // Si le chapitre a des scènes mais aucune visible, le cacher
+        // Si le chapitre n'a pas de scènes (vide), le garder visible
+        if (allScenes.length > 0 && visibleScenes.length === 0) {
+            chapterEl.classList.add('filtered-out');
+        } else {
+            chapterEl.classList.remove('filtered-out');
+        }
+    });
+
+    // Cacher les actes dont tous les chapitres sont filtrés (mais pas les actes avec chapitres vides)
+    document.querySelectorAll('.act-group').forEach(actEl => {
+        const allChapters = actEl.querySelectorAll('.chapter-group');
+        const visibleChapters = actEl.querySelectorAll('.chapter-group:not(.filtered-out)');
+
+        // Si l'acte a des chapitres mais aucun visible, le cacher
+        // Si l'acte n'a pas de chapitres (vide), le garder visible
+        if (allChapters.length > 0 && visibleChapters.length === 0) {
+            actEl.classList.add('filtered-out');
+        } else {
+            actEl.classList.remove('filtered-out');
         }
     });
 }
 
-// Scene Management
-// [MVVM : View]
-// Ouvre la modale d'ajout de scène
-function openAddSceneModal(actId, chapterId) {
-    activeActId = actId;
-    activeChapterId = chapterId;
-    document.getElementById('addSceneModal').classList.add('active');
-}
+/* [MVVM] View */
+function updateProgressBar() {
+    let counts = { draft: 0, progress: 0, complete: 0, review: 0 };
+    let total = 0;
 
-// [MVVM : Other]
-// Group: Coordinator | Naming: AddSceneCoordinator
-// Ouvre la modale d'ajout de scène rapidement (Mixte)
-function openAddSceneModalQuick() {
-    // Utiliser le chapitre courant s'il existe, sinon le premier chapitre disponible
-    if (currentActId && currentChapterId) {
-        openAddSceneModal(currentActId, currentChapterId);
-    } else if (project.acts.length > 0 && project.acts[0].chapters.length > 0) {
-        openAddSceneModal(project.acts[0].id, project.acts[0].chapters[0].id);
+    const vm = getStructureViewModel();
+    vm.acts.forEach(act => {
+        act.chapters.forEach(chapter => {
+            chapter.scenes.forEach(scene => {
+                const status = scene.status || 'draft';
+                counts[status] = (counts[status] || 0) + 1;
+                total++;
+            });
+        });
+    });
+
+    // Mettre à jour les compteurs
+    document.getElementById('countDraft').textContent = counts.draft;
+    document.getElementById('countProgress').textContent = counts.progress;
+    document.getElementById('countComplete').textContent = counts.complete;
+    document.getElementById('countReview').textContent = counts.review;
+
+    // Mettre à jour le texte de progression
+    const completedPercent = total > 0 ? Math.round((counts.complete / total) * 100) : 0;
+    document.getElementById('progressStatsText').textContent = `${total} scène${total > 1 ? 's' : ''}`;
+    document.getElementById('progressPercent').textContent = `${completedPercent}% terminé`;
+
+    // Mettre à jour les segments de la barre
+    if (total > 0) {
+        document.getElementById('progressComplete').style.width = `${(counts.complete / total) * 100}%`;
+        document.getElementById('progressReview').style.width = `${(counts.review / total) * 100}%`;
+        document.getElementById('progressProgress').style.width = `${(counts.progress / total) * 100}%`;
+        document.getElementById('progressDraft').style.width = `${(counts.draft / total) * 100}%`;
     } else {
-        showNotification('Créez d\'abord un chapitre');
+        document.getElementById('progressComplete').style.width = '0%';
+        document.getElementById('progressReview').style.width = '0%';
+        document.getElementById('progressProgress').style.width = '0%';
+        document.getElementById('progressDraft').style.width = '0%';
     }
 }
-
 
 // [MVVM : View]
 // Ouvre le menu contextuel de statut d'une scène
@@ -399,7 +555,8 @@ function toggleSceneStatus(actId, chapterId, sceneId, event) {
     // Fermer tout menu existant
     closeStatusMenu();
 
-    const act = project.acts.find(a => a.id === actId);
+    const vm = getStructureViewModel();
+    const act = vm.acts.find(a => a.id === actId);
     if (!act) return;
 
     const chapter = act.chapters.find(c => c.id === chapterId);
@@ -482,274 +639,6 @@ function closeStatusMenuOnClickOutside(event) {
     }
 }
 
-// [MVVM : View]
-// Applique visuellement les filtres de statut dans l'arborescence
-function applyStatusFilters() {
-    // Appliquer les filtres à toutes les scènes
-    document.querySelectorAll('.scene-item[data-scene-id]').forEach(sceneEl => {
-        const sceneId = parseInt(sceneEl.dataset.sceneId);
-        const actId = parseInt(sceneEl.dataset.actId);
-        const chapterId = parseInt(sceneEl.dataset.chapterId);
-
-        const act = project.acts.find(a => a.id === actId);
-        if (!act) return;
-        const chapter = act.chapters.find(c => c.id === chapterId);
-        if (!chapter) return;
-        const scene = chapter.scenes.find(s => s.id === sceneId);
-        if (!scene) return;
-
-        const status = scene.status || 'draft';
-
-        if (activeStatusFilters.includes(status)) {
-            sceneEl.classList.remove('filtered-out');
-        } else {
-            sceneEl.classList.add('filtered-out');
-        }
-    });
-
-    // Cacher les chapitres dont toutes les scènes sont filtrées (mais pas les chapitres vides)
-    document.querySelectorAll('.chapter-group').forEach(chapterEl => {
-        const allScenes = chapterEl.querySelectorAll('.scene-item[data-scene-id]');
-        const visibleScenes = chapterEl.querySelectorAll('.scene-item[data-scene-id]:not(.filtered-out)');
-
-        // Si le chapitre a des scènes mais aucune visible, le cacher
-        // Si le chapitre n'a pas de scènes (vide), le garder visible
-        if (allScenes.length > 0 && visibleScenes.length === 0) {
-            chapterEl.classList.add('filtered-out');
-        } else {
-            chapterEl.classList.remove('filtered-out');
-        }
-    });
-
-    // Cacher les actes dont tous les chapitres sont filtrés (mais pas les actes avec chapitres vides)
-    document.querySelectorAll('.act-group').forEach(actEl => {
-        const allChapters = actEl.querySelectorAll('.chapter-group');
-        const visibleChapters = actEl.querySelectorAll('.chapter-group:not(.filtered-out)');
-
-        // Si l'acte a des chapitres mais aucun visible, le cacher
-        // Si l'acte n'a pas de chapitres (vide), le garder visible
-        if (allChapters.length > 0 && visibleChapters.length === 0) {
-            actEl.classList.add('filtered-out');
-        } else {
-            actEl.classList.remove('filtered-out');
-        }
-    });
-}
-
-/* [MVVM] View */
-function updateProgressBar() {
-    let counts = { draft: 0, progress: 0, complete: 0, review: 0 };
-    let total = 0;
-
-    project.acts.forEach(act => {
-        act.chapters.forEach(chapter => {
-            chapter.scenes.forEach(scene => {
-                const status = scene.status || 'draft';
-                counts[status] = (counts[status] || 0) + 1;
-                total++;
-            });
-        });
-    });
-
-    // Mettre à jour les compteurs
-    document.getElementById('countDraft').textContent = counts.draft;
-    document.getElementById('countProgress').textContent = counts.progress;
-    document.getElementById('countComplete').textContent = counts.complete;
-    document.getElementById('countReview').textContent = counts.review;
-
-    // Mettre à jour le texte de progression
-    const completedPercent = total > 0 ? Math.round((counts.complete / total) * 100) : 0;
-    document.getElementById('progressStatsText').textContent = `${total} scène${total > 1 ? 's' : ''}`;
-    document.getElementById('progressPercent').textContent = `${completedPercent}% terminé`;
-
-    // Mettre à jour les segments de la barre
-    if (total > 0) {
-        document.getElementById('progressComplete').style.width = `${(counts.complete / total) * 100}%`;
-        document.getElementById('progressReview').style.width = `${(counts.review / total) * 100}%`;
-        document.getElementById('progressProgress').style.width = `${(counts.progress / total) * 100}%`;
-        document.getElementById('progressDraft').style.width = `${(counts.draft / total) * 100}%`;
-    } else {
-        document.getElementById('progressComplete').style.width = '0%';
-        document.getElementById('progressReview').style.width = '0%';
-        document.getElementById('progressProgress').style.width = '0%';
-        document.getElementById('progressDraft').style.width = '0%';
-    }
-}
-
-/* [MVVM] View */
-function startEditingScene(actId, chapterId, sceneId, element) {
-    const act = project.acts.find(a => a.id === actId);
-    if (!act) return;
-
-    const chapter = act.chapters.find(c => c.id === chapterId);
-    if (!chapter) return;
-
-    const scene = chapter.scenes.find(s => s.id === sceneId);
-    if (!scene) return;
-
-    const originalText = scene.title;
-    const input = document.createElement('input');
-    input.type = 'text';
-    input.className = 'editing-input';
-    input.value = originalText;
-
-    element.textContent = '';
-    element.appendChild(input);
-    input.focus();
-    input.select();
-
-    const finishEditing = () => {
-        const newTitle = input.value.trim();
-        if (newTitle && newTitle !== originalText) {
-            scene.title = newTitle;
-            saveProject();
-
-            // Update editor if this scene is currently open
-            if (currentSceneId === sceneId) {
-                const editorTitle = document.querySelector('.editor-title');
-                if (editorTitle) editorTitle.textContent = newTitle;
-            }
-        }
-        renderActsList();
-    };
-
-    input.addEventListener('blur', finishEditing);
-    input.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-            finishEditing();
-        } else if (e.key === 'Escape') {
-            renderActsList();
-        }
-    });
-}
-
-// Rendering
-
-// [MVVM : View]
-// Affiche le modal d'ajout d'acte (DOM)
-function openAddActModal() {
-    document.getElementById('addActModal').classList.add('active');
-    setTimeout(() => document.getElementById('actTitleInput').focus(), 100);
-}
-
-// [MVVM : Other]
-// Logique de sélection d'acte (ViewModel) et manipulation DOM (View) - Mixte
-function openAddChapterModal(actId) {
-    // Si pas d'actId fourni, utiliser le premier acte ou on en créera un
-    if (actId) {
-        activeActId = actId;
-    } else if (project.acts.length > 0) {
-        activeActId = project.acts[0].id;
-    } else {
-        activeActId = null; // Sera créé dans addChapter
-    }
-    document.getElementById('addChapterModal').classList.add('active');
-    setTimeout(() => document.getElementById('chapterTitleInput').focus(), 100);
-}
-
-
-// --- RENDERING (ARBORESCENCE) ---
-
-/**
- * [MVVM : View]
- * Génère et affiche la liste des actes et chapitres dans le DOM.
- */
-function renderActsList() {
-    const container = document.getElementById('chaptersList');
-    if (!container) return;
-
-    if (project.acts.length === 0) {
-        container.innerHTML = `
-            <div style="padding: 2rem; text-align: center; color: var(--text-muted);">
-                <div style="margin-bottom: 1rem;">Aucun chapitre</div>
-                <button class="btn btn-primary" onclick="openAddChapterModal()">+ Créer un chapitre</button>
-            </div>`;
-        if (typeof updateStats === 'function') updateStats();
-        return;
-    }
-
-    let html = '<div style="padding: 0 0.5rem;">';
-
-    project.acts.forEach((act, actIndex) => {
-        const actStats = typeof getActStats === 'function' ? getActStats(act) : { totalWords: 0 };
-        const actExpanded = expandedActs.has(act.id);
-
-        html += `<div class="act-group" id="act-${act.id}" data-act-id="${act.id}">
-            <div class="act-header" data-act-id="${act.id}">
-                <span class="drag-handle" draggable="true" onclick="event.stopPropagation()">⋮⋮</span>
-                <span class="act-icon ${actExpanded ? 'expanded' : ''}" onclick="toggleAct(${act.id}); event.stopPropagation();" style="cursor: pointer;">▶</span>
-                <span class="auto-number">${actIndex + 1}.</span>
-                <span class="act-title" ondblclick="event.stopPropagation(); startEditingAct(${act.id}, this)" onclick="toggleAct(${act.id})">${act.title}</span>
-                <span class="edit-hint">✏️</span>
-                <span class="word-count-badge" title="${actStats.totalWords.toLocaleString()} mots">${typeof formatWordCount === 'function' ? formatWordCount(actStats.totalWords) : actStats.totalWords}</span>
-                <button class="btn btn-icon btn-small delete-btn" onclick="event.stopPropagation(); deleteAct(${act.id})">×</button>
-            </div>
-            <div class="act-chapters ${actExpanded ? 'visible' : ''}">`;
-
-        act.chapters.forEach((chapter, chapterIndex) => {
-            const chStats = typeof getChapterStats === 'function' ? getChapterStats(chapter) : { totalWords: 0, progressPercent: 0 };
-            const chStatus = chStats.progressPercent === 100 ? 'complete' : chStats.progressPercent > 0 ? 'progress' : 'draft';
-            const chExpanded = expandedChapters.has(chapter.id);
-            const chNumber = `${actIndex + 1}.${chapterIndex + 1}`;
-
-            html += `<div class="chapter-group" id="chapter-${chapter.id}" data-chapter-id="${chapter.id}" data-act-id="${act.id}">
-                <div class="chapter-header" data-chapter-id="${chapter.id}" data-act-id="${act.id}">
-                    <span class="drag-handle" draggable="true" onclick="event.stopPropagation()">⋮⋮</span>
-                    <span class="chapter-icon ${chExpanded ? 'expanded' : ''}" onclick="toggleChapter(${act.id}, ${chapter.id}); event.stopPropagation();" style="cursor: pointer;">▶</span>
-                    <span class="auto-number">${chNumber}</span>
-                    <span class="chapter-title" ondblclick="event.stopPropagation(); startEditingChapter(${act.id}, ${chapter.id}, this)" onclick="toggleChapter(${act.id}, ${chapter.id})">${chapter.title}</span>
-                    <span class="edit-hint">✏️</span>
-                    <span class="word-count-badge" title="${chStats.totalWords.toLocaleString()} mots">${typeof formatWordCount === 'function' ? formatWordCount(chStats.totalWords) : chStats.totalWords}</span>
-                    <span class="status-badge status-${chStatus}" title="${chStats.progressPercent}%"></span>
-                    <span class="chapter-count">${chapter.scenes.length}</span>
-                    <button class="btn btn-icon btn-small delete-btn" onclick="event.stopPropagation(); deleteChapter(${act.id}, ${chapter.id})">×</button>
-                </div>
-                <div class="scenes-list ${chExpanded ? 'visible' : ''}">`;
-
-            chapter.scenes.forEach((scene, sceneIndex) => {
-                const sStatus = scene.status || 'draft';
-                const sWords = scene.wordCount || 0;
-                const synopsis = scene.synopsis ? (scene.synopsis.substring(0, 100) + (scene.synopsis.length > 100 ? '...' : '')) : '';
-                const tooltip = scene.synopsis ? scene.synopsis.replace(/"/g, '&quot;').replace(/'/g, '&#39;') : '';
-                const sNumber = `${actIndex + 1}.${chapterIndex + 1}.${sceneIndex + 1}`;
-
-                html += `<div class="scene-item draggable" draggable="true" data-scene-id="${scene.id}" data-chapter-id="${chapter.id}" data-act-id="${act.id}" onclick="openScene(${act.id}, ${chapter.id}, ${scene.id})" ${tooltip ? `title="${tooltip}"` : ''}>
-                    <div style="display: flex; align-items: center; gap: 0.4rem; flex: 1; min-width: 0;">
-                        <span class="drag-handle">⋮⋮</span>
-                        <span class="auto-number">${sNumber}</span>
-                        <div style="flex: 1; min-width: 0; overflow: hidden;">
-                            <span ondblclick="event.stopPropagation(); startEditingScene(${act.id}, ${chapter.id}, ${scene.id}, this)" style="display: block;">${scene.title}</span>
-                            ${synopsis ? `<span class="scene-synopsis">${synopsis}</span>` : ''}
-                        </div>
-                        <span class="edit-hint">✏️</span>
-                    </div>
-                    <span class="word-count-badge" title="${sWords.toLocaleString()} mots">${typeof formatWordCount === 'function' ? formatWordCount(sWords) : sWords}</span>
-                    <span class="status-badge status-${sStatus}" onclick="event.stopPropagation(); toggleSceneStatus(${act.id}, ${chapter.id}, ${scene.id}, event)" style="cursor: pointer;" title="Cliquez pour changer le statut"></span>
-                    <button class="btn btn-icon btn-small delete-btn" onclick="event.stopPropagation(); deleteScene(${act.id}, ${chapter.id}, ${scene.id})">×</button>
-                </div>`;
-            });
-
-            html += `<div class="scene-item" onclick="openAddSceneModal(${act.id}, ${chapter.id})" style="opacity: 0.6; font-style: italic;">+ Ajouter une scène</div>
-                </div></div>`;
-        });
-
-        html += `<div class="scene-item" onclick="openAddChapterModal(${act.id})" style="opacity: 0.6; font-style: italic; margin-left: 1rem;">+ Ajouter un chapitre</div>
-            </div></div>`;
-    });
-
-    html += '</div>';
-    container.innerHTML = html;
-
-    // Initialisation des comportements
-    if (typeof setupActDragAndDrop === 'function') setupActDragAndDrop();
-    if (typeof setupChapterDragAndDrop === 'function') setupChapterDragAndDrop();
-    if (typeof setupSceneDragAndDrop === 'function') setupSceneDragAndDrop();
-    if (typeof updateStats === 'function') updateStats();
-    if (typeof updateProgressBar === 'function') updateProgressBar();
-    if (typeof applyStatusFilters === 'function') applyStatusFilters();
-    if (typeof restoreTreeState === 'function') setTimeout(() => restoreTreeState(), 50);
-}
-
 /**
  * [MVVM : View]
  * Génère le HTML pour les liens personnages d'une scène.
@@ -759,8 +648,9 @@ function renderSceneCharacters(actId, chapterId, scene) {
         return '<span style="font-size: 0.8rem; color: var(--text-muted); font-style: italic;">Aucun personnage lié</span>';
     }
 
+    const vm = getStructureViewModel();
     return scene.linkedCharacters.map(charId => {
-        const character = project.characters.find(c => c.id === charId);
+        const character = vm.characters.find(c => c.id === charId);
         if (!character) return '';
         return `
             <span class="link-badge" onclick="event.stopPropagation(); switchView('characters'); openCharacterDetail(${charId});">
@@ -779,8 +669,9 @@ function renderSceneElements(actId, chapterId, scene) {
         return '<span style="font-size: 0.8rem; color: var(--text-muted); font-style: italic;">Aucun élément lié</span>';
     }
 
+    const vm = getStructureViewModel();
     return scene.linkedElements.map(elemId => {
-        const element = project.world.find(e => e.id === elemId);
+        const element = vm.world.find(e => e.id === elemId);
         if (!element) return '';
         return `
             <span class="link-badge" onclick="event.stopPropagation(); switchView('world'); openWorldDetail(${elemId});">
@@ -795,11 +686,12 @@ function renderSceneElements(actId, chapterId, scene) {
  * Génère le HTML pour les événements temporels liés à une scène.
  */
 function renderSceneMetroEvents(sceneId) {
-    if (!project.metroTimeline || project.metroTimeline.length === 0) {
+    const vm = getStructureViewModel();
+    if (!vm.metroTimeline || vm.metroTimeline.length === 0) {
         return '<span style="font-size: 0.8rem; color: var(--text-muted); font-style: italic;">Aucun événement</span>';
     }
 
-    const linkedEvents = project.metroTimeline.filter(event => event.sceneId == sceneId);
+    const linkedEvents = vm.metroTimeline.filter(event => event.sceneId == sceneId);
     if (linkedEvents.length === 0) {
         return '<span style="font-size: 0.8rem; color: var(--text-muted); font-style: italic;">Aucun événement lié</span>';
     }
@@ -816,7 +708,8 @@ function renderSceneMetroEvents(sceneId) {
  * Ouvre la modale pour lier des personnages.
  */
 function openCharacterLinker(actId, chapterId, sceneId) {
-    const act = project.acts.find(a => a.id === actId);
+    const vm = getStructureViewModel();
+    const act = vm.acts.find(a => a.id === actId);
     const chapter = act?.chapters.find(c => c.id === chapterId);
     const scene = chapter?.scenes.find(s => s.id === sceneId);
     if (!scene) return;

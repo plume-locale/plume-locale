@@ -60,7 +60,10 @@ JS_ORDER = [
     '12.import-export.js',
     '13.mobile-menu.js',
     '14.dragndrop-acts.js',
-    '15.characters.js',
+    'js-refactor/15.characters.model.js',
+    'js-refactor/15.characters.repository.js',
+    'js-refactor/15.characters.viewmodel.js',
+    'js-refactor/15.characters.view.js',
     '16.split-view.js',
     '17.world.js',
     '18.timeline.js',
@@ -147,6 +150,14 @@ def collect_css():
     log(f"   [OK] {found_count} fichiers CSS trouves")
     return '\n'.join(css_content)
 
+# Fichiers originaux à ignorer (car remplacés par js-refactor)
+IGNORED_ORIGINALS = [
+    '03.project.js',
+    '06.structure.js',
+    '07.stats.js',
+    '15.characters.js'
+]
+
 def collect_js():
     """Collecte tous les fichiers JS dans l'ordre - VERSION REFACTORISÉE"""
     js_content = []
@@ -182,8 +193,10 @@ def collect_js():
     extra = []
     for filepath in glob.glob(os.path.join(js_dir, '*.js')):
         filename = os.path.basename(filepath)
-        # Vérifier que ce fichier n'est pas déjà dans JS_ORDER
-        if filename not in JS_ORDER and f'js-refactor/{filename}' not in JS_ORDER:
+        # Vérifier que ce fichier n'est pas déjà dans JS_ORDER et n'est pas ignoré
+        if (filename not in JS_ORDER and 
+            f'js-refactor/{filename}' not in JS_ORDER and 
+            filename not in IGNORED_ORIGINALS):
             content = read_file(f'js/{filename}')
             js_content.append(f'// ========== {filename} ==========')
             js_content.append(content)
