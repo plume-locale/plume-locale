@@ -1,9 +1,14 @@
 // World Management
+        // MVVM: View
+        // Raison: Manipule directement le DOM (ouvre la modale et met le focus).
         function openAddWorldModal() {
             document.getElementById('addWorldModal').classList.add('active');
             setTimeout(() => document.getElementById('worldNameInput').focus(), 100);
         }
 
+        // MVVM: Mixte (ViewModel + Model)
+        // Raison: Récupère des valeurs depuis la vue, construit/maj le modèle (`project.world`),
+        // et déclenche des actions de vue (`renderWorldList`, `closeModal`) et de persistance (`saveProject`).
         function addWorldElement() {
             const name = document.getElementById('worldNameInput').value.trim();
             const type = document.getElementById('worldTypeInput').value;
@@ -34,6 +39,9 @@
             renderWorldList();
         }
 
+        // MVVM: Mixte (ViewModel + Model)
+        // Raison: Contrôle la logique utilisateur (confirm), modifie le modèle (`project.world`),
+        // puis déclenche persistance et mise à jour de la vue.
         function deleteWorldElement(id) {
             if (!confirm('Êtes-vous sûr de vouloir supprimer cet élément ?')) return;
             project.world = project.world.filter(w => w.id !== id);
@@ -42,6 +50,9 @@
             showEmptyState();
         }
 
+        // MVVM: View
+        // Raison: Génère et met à jour l'interface DOM pour la liste des éléments du monde.
+        // Lit le modèle (`project.world`) mais ne modifie pas directement la logique métier.
         function renderWorldList() {
             const container = document.getElementById('worldList');
             
@@ -109,6 +120,9 @@
             if (typeof lucide !== 'undefined') lucide.createIcons();
         }
 
+        // MVVM: ViewModel (générateur de fragment de vue à partir du modèle)
+        // Raison: Lit le modèle (`project.acts`, `scenes`) et retourne un fragment HTML réutilisable
+        // qui sera inséré dans la vue de détail. Ne modifie pas le modèle.
         function renderElementLinkedScenes(element) {
             const scenes = findScenesWithElement(element.id);
             if (scenes.length === 0) return '';
@@ -136,6 +150,9 @@
             `;
         }
 
+        // MVVM: ViewModel (coordination entre modèle et vue)
+        // Raison: Récupère l'élément depuis le modèle et construit le contenu HTML
+        // pour la vue de détail. Gère aussi la logique de split view (état de l'interface).
         function openWorldDetail(id) {
             const element = project.world.find(w => w.id === id);
             if (!element) return;
@@ -214,6 +231,9 @@
             `;
         }
 
+        // MVVM: ViewModel
+        // Raison: Met à jour le modèle (`project.world`) à partir d'actions de la vue,
+        // persiste et notifie/rafraîchit la vue.
         function updateWorldField(id, field, value) {
             const element = project.world.find(w => w.id === id);
             if (element) {
