@@ -5,6 +5,9 @@
         let currentDiffView = 'unified';
         let diffVersions = { old: null, new: null };
         
+        // MVVM: View
+        // Raison: Manipule directement le DOM (sélecteurs, affichage du modal)
+        // et initialise l'interface — responsabilité d'affichage.
         function openDiffModal(versionId) {
             const current = getCurrentSceneForVersions();
             if (!current || !current.scene.versions || current.scene.versions.length < 2) {
@@ -55,10 +58,15 @@
             updateDiff();
         }
         
+        // MVVM: View
+        // Raison: Simple action d'interface qui masque le modal.
         function closeDiffModal() {
             document.getElementById('diffModal').style.display = 'none';
         }
         
+        // MVVM: Mixte (ViewModel + View)
+        // Raison: Met à jour l'état (`currentDiffView`) (ViewModel) et
+        // modifie des classes DOM (View).
         function setDiffView(view) {
             currentDiffView = view;
             document.getElementById('btnDiffUnified').classList.toggle('active', view === 'unified');
@@ -66,6 +74,9 @@
             updateDiff();
         }
         
+        // MVVM: ViewModel
+        // Raison: Orchestrateur — récupère les données, calcule le diff
+        // et appelle le rendu; fait l'interface entre modèle et vue.
         function updateDiff() {
             const current = getCurrentSceneForVersions();
             if (!current) return;
@@ -97,6 +108,9 @@
             }
         }
         
+        // MVVM: Model (utilitaire)
+        // Raison: Transformation de données (HTML -> texte brut), logique
+        // de traitement indépendante de l'affichage.
         function stripHtml(html) {
             // Remplacer les balises de bloc par des sauts de ligne
             let text = html
@@ -118,6 +132,9 @@
             return text.trim();
         }
         
+        // MVVM: Model
+        // Raison: Logique métier — calcule la différence entre deux textes
+        // et renvoie une structure de données pour le rendu.
         function computeDiff(oldText, newText) {
             // Normaliser les textes - préserver les sauts de ligne comme marqueurs
             const oldWords = tokenizeText(oldText);
@@ -130,6 +147,8 @@
             return [{ type: 'paragraph', items: diff }];
         }
         
+        // MVVM: Model (utilitaire)
+        // Raison: Prépare les données (tokenisation) pour l'algorithme de diff.
         function tokenizeText(text) {
             // Diviser le texte en tokens (mots + marqueurs de saut de ligne)
             const tokens = [];
@@ -150,6 +169,8 @@
         }
         
         // Algorithme de Myers - le même que git utilise
+        // MVVM: Model
+        // Raison: Implémentation de l'algorithme de diff (Myers) — logique pure.
         function myersDiff(oldTokens, newTokens) {
             const N = oldTokens.length;
             const M = newTokens.length;
@@ -249,12 +270,16 @@
             return result;
         }
         
+        // MVVM: Model (utilitaire)
+        // Raison: Aide à construire la structure de donnée de sortie.
         function addParagraphToResult(result, text, type) {
             const words = text.split(/\s+/).filter(w => w.length > 0);
             const items = words.map(word => ({ type: type, text: word }));
             result.push({ type: 'paragraph', status: type, items: items });
         }
         
+        // MVVM: View
+        // Raison: Met à jour le DOM pour afficher des statistiques (affichage).
         function updateDiffStats(diff) {
             let added = 0;
             let removed = 0;
@@ -275,6 +300,8 @@
             `;
         }
         
+        // MVVM: View
+        // Raison: Génère et injecte du HTML pour la vue unifiée — responsabilité UI.
         function renderUnifiedDiff(diff, oldVersion, newVersion) {
             const container = document.getElementById('diffContent');
             
@@ -329,6 +356,8 @@
             container.innerHTML = html;
         }
         
+        // MVVM: View
+        // Raison: Génère et injecte le HTML pour l'affichage côte-à-côte — UI.
         function renderSideBySideDiff(diff, oldVersion, newVersion) {
             const container = document.getElementById('diffContent');
             
@@ -445,6 +474,9 @@
             `;
         }
         
+        // MVVM: View (utilitaire)
+        // Raison: Utilitaire utilisé par les fonctions de rendu pour sécuriser
+        // le texte inséré dans le DOM.
         function escapeHtml(text) {
             const div = document.createElement('div');
             div.textContent = text;
