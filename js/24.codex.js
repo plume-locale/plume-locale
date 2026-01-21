@@ -4,11 +4,13 @@
 // ============================================
 
         // Codex Management
+        // MVVM: View — Affiche une modale et manipule le DOM (purement interface)
         function openAddCodexModal() {
             document.getElementById('addCodexModal').classList.add('active');
             setTimeout(() => document.getElementById('codexTitleInput').focus(), 100);
         }
 
+        // MVVM: ViewModel — Traite l'entrée utilisateur et met à jour le Model (`project.codex`), puis met à jour la View
         function addCodexEntry() {
             const title = document.getElementById('codexTitleInput').value.trim();
             const category = document.getElementById('codexCategoryInput').value;
@@ -36,6 +38,7 @@
             renderCodexList();
         }
 
+        // MVVM: ViewModel — Modifie le Model (suppression) et déclenche sauvegarde + rafraîchissement de la View
         function deleteCodexEntry(id) {
             if (!confirm('Êtes-vous sûr de vouloir supprimer cette entrée ?')) return;
             project.codex = project.codex.filter(c => c.id !== id);
@@ -44,6 +47,7 @@
             showEmptyState();
         }
 
+        // MVVM: View — Rend la liste dans le DOM (groupement, tri, affichage)
         function renderCodexList() {
             const container = document.getElementById('codexList');
             
@@ -114,6 +118,7 @@
             if (typeof lucide !== 'undefined') lucide.createIcons();
         }
 
+        // MVVM: ViewModel/View mixte — Charge une entrée depuis le Model et compose le HTML détaillé (mélange logique + rendu)
         function openCodexDetail(id) {
             const entry = project.codex.find(c => c.id === id);
             if (!entry) return;
@@ -172,6 +177,7 @@
             `;
         }
 
+        // MVVM: ViewModel — Met à jour le Model puis synchronise la View
         function updateCodexField(id, field, value) {
             const entry = project.codex.find(c => c.id === id);
             if (entry) {
@@ -182,6 +188,7 @@
         }
 
         // References and Links Management
+        // MVVM: ViewModel — Agrège données du Model (scènes liées) et construit la View (modal)
         function showReferencesForCharacter(characterId) {
             const character = project.characters.find(c => c.id === characterId);
             if (!character) return;
@@ -213,6 +220,7 @@
             document.getElementById('referencesModal').classList.add('active');
         }
 
+        // MVVM: Model/Helper — Lecture du Model (recherche pure de données), sans manipulation du DOM
         function findScenesWithCharacter(characterId) {
             const scenes = [];
             project.acts.forEach(act => {
@@ -234,6 +242,7 @@
             return scenes;
         }
 
+        // MVVM: Model/Helper — Lecture du Model (recherche pure de données), sans manipulation du DOM
         function findScenesWithElement(elementId) {
             const scenes = [];
             project.acts.forEach(act => {
@@ -255,6 +264,7 @@
             return scenes;
         }
 
+        // MVVM: ViewModel — Agrège données via helpers et affiche modal (mix logique + rendu)
         function showReferencesForElement(elementId) {
             const element = project.world.find(e => e.id === elementId);
             if (!element) return;
@@ -285,6 +295,7 @@
             document.getElementById('referencesModal').classList.add('active');
         }
 
+        // MVVM: ViewModel — Met à jour le Model (liaison/déliaison) puis met à jour la View si nécessaire
         function toggleCharacterInScene(sceneActId, sceneChapterId, sceneId, characterId) {
             const act = project.acts.find(a => a.id === sceneActId);
             const chapter = act.chapters.find(c => c.id === sceneChapterId);
@@ -325,6 +336,7 @@
          * Ajoute ou retire un élément (Lieu/Objet) d'une scène.
          * NOTE : Cette fonction se trouve généralement dans 04.modals.js ou 07.stats.js
          */
+        // MVVM: ViewModel — Met à jour le Model (liaison/déliaison d'éléments) et déclenche rafraîchissement de la View
         function toggleElementInScene(sceneActId, sceneChapterId, sceneId, elementId) {
             const act = project.acts.find(a => a.id === sceneActId);
             if (!act) return;
