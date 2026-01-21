@@ -1,10 +1,16 @@
 
         // Timeline Management
+        // MVVM: View
+        // Rôle: Manipule directement le DOM pour afficher le modal d'ajout
+        // Explication: Strictement lié à l'affichage, n'accède pas au modèle.
         function openAddTimelineModal() {
             document.getElementById('addTimelineModal').classList.add('active');
             setTimeout(() => document.getElementById('timelineTitleInput').focus(), 100);
         }
 
+        // MVVM: ViewModel (mixte)
+        // Rôle: Reçoit les données de la View, met à jour le Model (`project.timeline`) et déclenche
+        // la persistance et le rafraîchissement de la View.
         function addTimelineEvent() {
             const title = document.getElementById('timelineTitleInput').value.trim();
             const date = document.getElementById('timelineDateInput').value.trim();
@@ -40,6 +46,9 @@
             renderTimelineList();
         }
 
+        // MVVM: ViewModel (mixte)
+        // Rôle: Gère l'action utilisateur de suppression — met à jour le Model,
+        // persiste et met à jour la View. Contient aussi une interaction View (confirm).
         function deleteTimelineEvent(id) {
             if (!confirm('Êtes-vous sûr de vouloir supprimer cet événement ?')) return;
             project.timeline = project.timeline.filter(e => e.id !== id);
@@ -48,6 +57,9 @@
             showEmptyState();
         }
 
+        // MVVM: View
+        // Rôle: Rend (render) la liste côté DOM à partir du Model (`project.timeline`).
+        // Explication: Lecture du modèle et construction HTML — responsabilité de la View.
         function renderTimelineList() {
             const container = document.getElementById('timelineList');
             
@@ -82,6 +94,9 @@
             `;
         }
 
+        // MVVM: View
+        // Rôle: Construit la vue détaillée d'un événement à partir du Model et insère
+        // le HTML dans l'éditeur. Les inputs appellent `updateTimelineField` (ViewModel).
         function openTimelineDetail(id) {
             const event = project.timeline.find(e => e.id === id);
             if (!event) return;
@@ -135,6 +150,9 @@
             `;
         }
 
+        // MVVM: ViewModel
+        // Rôle: Point central pour mettre à jour le Model (`project.timeline`) depuis la View;
+        // s'occupe de la persistance et du rafraîchissement de la View après modification.
         function updateTimelineField(id, field, value) {
             const event = project.timeline.find(e => e.id === id);
             if (event) {
