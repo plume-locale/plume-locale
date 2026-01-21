@@ -1,6 +1,11 @@
         // Data Structure
+        // [MODEL] - Stockage de la liste de tous les projets
         let projects = []; // Array of all projects
+        
+        // [VIEW-MODEL] - État de la sélection actuelle
         let currentProjectId = null;
+
+        // [MODEL] - Données métier du projet actif (Le Roman)
         let project = {
             id: null,
             title: "Mon Roman",
@@ -33,14 +38,18 @@
             thrillerConnections: [] // Connections between thriller elements
         };
 
+        // [VIEW-MODEL] - État de la navigation (Pointeurs vers les données affichées)
         let currentActId = null;
         let currentChapterId = null;
         let currentSceneId = null;
         let activeActId = null;
         let activeChapterId = null;
+        
+        // [VIEW-MODEL] - État de la vue active
         let currentView = 'editor'; // 'editor', 'characters', 'world', 'timeline', 'notes', 'stats', 'codex', 'versions'
         let currentMindmapId = null; // ID du mindmap actuellement affiché
         
+        // [VIEW-MODEL] - État du système de Split View
         // SPLIT VIEW SYSTEM - New Architecture
         let splitViewActive = false;
         let splitActivePanel = 'left'; // 'left' or 'right' - which panel is currently active
@@ -69,16 +78,19 @@
             persistOnReload: true
         };
 
+        // [VIEW-MODEL] - État de l'interface (Expansions de l'arborescence)
         // TREE STATE - pour mémoriser l'état d'expansion
         let expandedActs = new Set(); // IDs des actes dépliés
         let expandedChapters = new Set(); // IDs des chapitres dépliés
 
+        // [VIEW-MODEL] - État des outils d'édition (Mode Révision)
         // REVISION MODE VARIABLES
         let revisionMode = false;
         let selectedHighlightColor = 'yellow';
         let selectedAnnotationType = 'comment';
         let currentSelection = null; // 'editor', 'characters', 'world', 'timeline', 'notes', 'stats', 'codex', 'versions'
 
+        // [VIEW-MODEL] - Infrastructure de gestion d'état (Undo/Redo)
         // UNDO/REDO SYSTEM
         let historyStack = []; // Stack pour les états précédents
         let redoStack = []; // Stack pour redo
