@@ -3,6 +3,10 @@
  * Ce fichier coordonne les différentes vues de l'application et gère les side-effects globaux.
  */
 
+// --- ÉTAT UI GLOBAL ---
+let activeStatusFilters = ['draft', 'progress', 'complete', 'review'];
+let currentStatusMenu = null;
+
 // --- DISPATCHER DE REPOSITORY ---
 
 /**

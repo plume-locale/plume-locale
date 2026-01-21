@@ -64,7 +64,7 @@ JS_ORDER = [
     'js-refactor/15.characters.repository.js',
     'js-refactor/15.characters.viewmodel.js',
     'js-refactor/15.characters.view.js',
-    '16.split-view.js',
+    'js-refactor/16.split-view.js',
     '17.world.js',
     '18.timeline.js',
     '19.notes.js',
