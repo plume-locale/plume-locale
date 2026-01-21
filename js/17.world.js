@@ -9,6 +9,7 @@
         // MVVM: Mixte (ViewModel + Model)
         // Raison: Récupère des valeurs depuis la vue, construit/maj le modèle (`project.world`),
         // et déclenche des actions de vue (`renderWorldList`, `closeModal`) et de persistance (`saveProject`).
+        /* MVVM: ViewModel - Logique métier pour ajouter un élément (fait le pont entre UI et Model) */
         function addWorldElement() {
             const name = document.getElementById('worldNameInput').value.trim();
             const type = document.getElementById('worldTypeInput').value;
@@ -42,6 +43,7 @@
         // MVVM: Mixte (ViewModel + Model)
         // Raison: Contrôle la logique utilisateur (confirm), modifie le modèle (`project.world`),
         // puis déclenche persistance et mise à jour de la vue.
+        /* MVVM: ViewModel - Logique métier pour supprimer un élément */
         function deleteWorldElement(id) {
             if (!confirm('Êtes-vous sûr de vouloir supprimer cet élément ?')) return;
             project.world = project.world.filter(w => w.id !== id);
@@ -53,6 +55,7 @@
         // MVVM: View
         // Raison: Génère et met à jour l'interface DOM pour la liste des éléments du monde.
         // Lit le modèle (`project.world`) mais ne modifie pas directement la logique métier.
+        /* MVVM: View - Génération dynamique du HTML pour la liste des éléments */
         function renderWorldList() {
             const container = document.getElementById('worldList');
             
@@ -123,6 +126,7 @@
         // MVVM: ViewModel (générateur de fragment de vue à partir du modèle)
         // Raison: Lit le modèle (`project.acts`, `scenes`) et retourne un fragment HTML réutilisable
         // qui sera inséré dans la vue de détail. Ne modifie pas le modèle.
+        /* MVVM: View - Génération HTML pour les scènes liées */
         function renderElementLinkedScenes(element) {
             const scenes = findScenesWithElement(element.id);
             if (scenes.length === 0) return '';
@@ -153,6 +157,7 @@
         // MVVM: ViewModel (coordination entre modèle et vue)
         // Raison: Récupère l'élément depuis le modèle et construit le contenu HTML
         // pour la vue de détail. Gère aussi la logique de split view (état de l'interface).
+        /* MVVM: Mixte (View/ViewModel) - Gère la logique d'affichage détaillé et la génération du template HTML */
         function openWorldDetail(id) {
             const element = project.world.find(w => w.id === id);
             if (!element) return;
@@ -234,6 +239,7 @@
         // MVVM: ViewModel
         // Raison: Met à jour le modèle (`project.world`) à partir d'actions de la vue,
         // persiste et notifie/rafraîchit la vue.
+        /* MVVM: ViewModel - Met à jour les données du Model et déclenche le rafraîchissement de la View */
         function updateWorldField(id, field, value) {
             const element = project.world.find(w => w.id === id);
             if (element) {
