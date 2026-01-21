@@ -874,6 +874,8 @@ function removeCardAssociation(cardId, rowId) {
 }
 
 // Ajouter un lieu à une card
+// [MVVM : Mixte]
+// Associe un lieu à une carte, sauvegarde et redessine.
 function addLocationToCard(cardId, locationId) {
     const card = findCardById(cardId);
     if (!card) return;
@@ -889,6 +891,8 @@ function addLocationToCard(cardId, locationId) {
 }
 
 // Retirer un lieu d'une card
+// [MVVM : Mixte]
+// Retire un lieu d'une carte, sauvegarde et redessine.
 function removeLocationFromCard(cardId, locationId) {
     const card = findCardById(cardId);
     if (!card || !card.locations) return;
@@ -902,6 +906,8 @@ function removeLocationFromCard(cardId, locationId) {
 }
 
 // Surbrillance synchronisée des cards jumelles
+// [MVVM : View]
+// Applique un style de surbrillance aux cartes jumelles d'une carte donnée.
 function highlightTwinCards(cardId) {
     storyGridState.hoveredCardId = cardId;
     document.querySelectorAll(`[data-card-id="${cardId}"]`).forEach(el => {
@@ -909,6 +915,8 @@ function highlightTwinCards(cardId) {
     });
 }
 
+// [MVVM : View]
+// Retire la surbrillance de toutes les cartes jumelles.
 function unhighlightTwinCards() {
     if (storyGridState.hoveredCardId) {
         document.querySelectorAll(`[data-card-id="${storyGridState.hoveredCardId}"]`).forEach(el => {
@@ -930,6 +938,8 @@ const LINK_TYPES = {
     foreshadow: { label: 'Préfigure', color: '#27ae60', icon: 'eye' }
 };
 
+// [MVVM : Mixte]
+// Crée un lien entre deux cartes, sauvegarde et redessine.
 function addCardLink(fromCardId, toCardId, linkType) {
     // Prevent duplicate links
     const exists = storyGridState.links.some(l =>
@@ -953,6 +963,8 @@ function addCardLink(fromCardId, toCardId, linkType) {
     return link;
 }
 
+// [MVVM : Mixte]
+// Supprime un lien entre deux cartes, sauvegarde et redessine.
 function deleteCardLink(linkId) {
     storyGridState.links = storyGridState.links.filter(l => l.id !== linkId);
     saveStoryGridData();
@@ -966,6 +978,8 @@ function deleteCardLink(linkId) {
 // Stockage des filtres manuels pour les restaurer en mode chronologique
 let storyGridManualFilters = null;
 
+// [MVVM : Mixte]
+// Change le mode de vue de la grille et applique les filtres correspondants.
 function setStoryGridViewMode(mode) {
     const previousMode = storyGridState.viewMode;
     storyGridState.viewMode = mode;
@@ -1010,6 +1024,8 @@ function setStoryGridViewMode(mode) {
     renderStoryGrid();
 }
 
+// [MVVM : Mixte]
+// Définit le niveau de zoom de la grille et redessine.
 function setStoryGridZoom(level) {
     if (!STORYGRID_ZOOM_LEVELS[level]) return;
     storyGridState.zoomLevel = level;
@@ -1017,6 +1033,8 @@ function setStoryGridZoom(level) {
     renderStoryGrid();
 }
 
+// [MVVM : Mixte]
+// Filtre les lignes affichées par type et redessine.
 function filterStoryGridRows(rowTypes) {
     storyGridState.filters.rowTypes = rowTypes;
     renderStoryGrid();
@@ -1026,6 +1044,8 @@ function filterStoryGridRows(rowTypes) {
 // RENDERING
 // ============================================
 
+// [MVVM : View]
+// Fonction de rendu principale qui génère l'ensemble de l'interface du Story Grid.
 function renderStoryGrid() {
     initStoryGrid();
 
@@ -1063,6 +1083,8 @@ function renderStoryGrid() {
     }
 }
 
+// [MVVM : View]
+// Génère le HTML de la barre d'outils (navigation, zoom, actions).
 function renderStoryGridToolbar() {
     const zoom = STORYGRID_ZOOM_LEVELS[storyGridState.zoomLevel];
 
@@ -1150,6 +1172,8 @@ function renderStoryGridToolbar() {
     `;
 }
 
+// [MVVM : View]
+// Génère le HTML des en-têtes de lignes (titres et icônes à gauche).
 function renderStoryGridRowHeaders(rows) {
     const zoom = STORYGRID_ZOOM_LEVELS[storyGridState.zoomLevel];
 
@@ -1228,6 +1252,8 @@ function renderStoryGridRowHeaders(rows) {
 
 
 
+// [MVVM : View]
+// Génère le HTML des en-têtes de colonnes (Actes, Chapitres, Scènes en haut).
 function renderStoryGridColumnHeaders(columns) {
     const zoom = STORYGRID_ZOOM_LEVELS[storyGridState.zoomLevel];
 
@@ -1334,6 +1360,8 @@ function renderStoryGridColumnHeaders(columns) {
 
 
 
+// [MVVM : View]
+// Génère le corps de la grille contenant les cellules et les cartes.
 function renderStoryGridBody(rows, columns) {
     if (rows.length === 0 || columns.length === 0 || columns[0].type === 'placeholder') {
         return `<div class="storygrid-body empty"></div>`;
@@ -1419,6 +1447,8 @@ function renderStoryGridBody(rows, columns) {
     return html;
 }
 
+// [MVVM : ViewModel]
+// Calcule combien de colonnes une carte doit occuper (span) selon son contexte.
 function calculateCardSpan(card, currentColumn, allColumns, currentColumnIndex) {
     // Determine how many consecutive columns this card should span
     let span = 1;
@@ -1439,6 +1469,8 @@ function calculateCardSpan(card, currentColumn, allColumns, currentColumnIndex) 
     return { span };
 }
 
+// [MVVM : ViewModel]
+// Vérifie si une entité est présente dans une scène spécifique du projet.
 function checkRowColumnContent(row, column) {
     // Check if this row has content in this column based on type
     // Utilise linkedCharacters et linkedElements de auto-detect.js
@@ -1474,6 +1506,8 @@ function checkRowColumnContent(row, column) {
     }
 }
 
+// [MVVM : View]
+// Génère l'indicateur visuel pour le contenu détecté automatiquement dans le projet.
 function renderAutoCard(row, column) {
     // Render automatic indicator for content that exists in the project
     const typeData = STORYGRID_ROW_TYPES[row.type];
@@ -1501,6 +1535,8 @@ function renderAutoCard(row, column) {
     `;
 }
 
+// [MVVM : View]
+// Génère le HTML d'une carte individuelle (originale ou jumelle).
 function renderStoryGridCard(card, row, spanWidth = null) {
     const status = CARD_STATUSES[card.status] || CARD_STATUSES.draft;
     const cardColor = card.color || row.color;
@@ -1561,6 +1597,8 @@ function renderStoryGridCard(card, row, spanWidth = null) {
 }
 
 // Rendu des badges de liaison sur une card
+// [MVVM : View]
+// Génère les badges de liaison (personnages, arcs, lieux) affichés sur une carte.
 function renderCardLinkBadges(card) {
     let badges = '';
 
@@ -1587,6 +1625,8 @@ function renderCardLinkBadges(card) {
     return badges;
 }
 
+// [MVVM : View]
+// Génère les indicateurs visuels de l'intensité dramatique.
 function renderIntensityDots(intensity) {
     let dots = '';
     for (let i = 1; i <= 5; i++) {
@@ -1595,6 +1635,8 @@ function renderIntensityDots(intensity) {
     return dots;
 }
 
+// [MVVM : Other]
+// Tronque un texte s'il dépasse une longueur maximale.
 function truncateText(text, maxLength) {
     if (text.length <= maxLength) return text;
     return text.substring(0, maxLength) + '...';
@@ -1604,6 +1646,8 @@ function truncateText(text, maxLength) {
 // SVG LINKS RENDERING
 // ============================================
 
+// [MVVM : View]
+// Dessine les liens SVG entre les cartes dans la grille.
 function renderStoryGridLinks() {
     const svg = document.getElementById('storyGridLinks');
     if (!svg) return;
@@ -1670,6 +1714,8 @@ function renderStoryGridLinks() {
 // DRAG & DROP
 // ============================================
 
+// [MVVM : Mixte]
+// Initialise le drag & drop d'une carte vers une autre cellule.
 function handleCardDragStart(event) {
     const card = event.currentTarget;
     const cardId = card.dataset.cardId;
@@ -1683,6 +1729,8 @@ function handleCardDragStart(event) {
     storyGridState.dragState = { cardId };
 }
 
+// [MVVM : Mixte]
+// Nettoie l'état de drag & drop à la fin du déplacement d'une carte.
 function handleCardDragEnd(event) {
     event.currentTarget.classList.remove('dragging');
     storyGridState.dragState = null;
@@ -1693,17 +1741,23 @@ function handleCardDragEnd(event) {
     });
 }
 
+// [MVVM : Mixte]
+// Gère le survol d'une zone de dépôt lors du glissement d'une carte.
 function handleCardDragOver(event) {
     event.preventDefault();
     event.dataTransfer.dropEffect = 'move';
     event.currentTarget.classList.add('drag-over');
 }
 
+// [MVVM : Mixte]
+// Gère la sortie d'une zone de dépôt lors du glissement d'une carte.
 function handleCardDragLeave(event) {
     event.currentTarget.classList.remove('drag-over');
 }
 
 // Drop handlers for cards - propagate to parent cell
+// [MVVM : Mixte]
+// Gère le dépôt d'une carte sur une autre carte, redirige vers la cellule parente.
 function handleCardDropOnCard(event) {
     event.preventDefault();
     event.stopPropagation();
@@ -1728,6 +1782,8 @@ function handleCardDropOnCard(event) {
     }
 }
 
+// [MVVM : Mixte]
+// Gère le survol d'une carte lors du glissement d'une autre carte.
 function handleCardDragOverOnCard(event) {
     event.preventDefault();
     event.stopPropagation();
@@ -1740,6 +1796,8 @@ function handleCardDragOverOnCard(event) {
     }
 }
 
+// [MVVM : Mixte]
+// Gère la sortie du survol d'une carte lors du glissement.
 function handleCardDragLeaveOnCard(event) {
     event.stopPropagation();
 
@@ -1755,6 +1813,8 @@ function handleCardDragLeaveOnCard(event) {
 }
 
 // Generic drop handlers for cell children (add button, auto-cards, etc.)
+// [MVVM : Mixte]
+// Gère le dépôt d'une carte sur un élément enfant d'une cellule.
 function handleCellChildDrop(event) {
     event.preventDefault();
     event.stopPropagation();
@@ -1774,6 +1834,8 @@ function handleCellChildDrop(event) {
     }
 }
 
+// [MVVM : Mixte]
+// Gère le survol d'un élément enfant d'une cellule lors du glissement.
 function handleCellChildDragOver(event) {
     event.preventDefault();
     event.stopPropagation();
@@ -1786,6 +1848,8 @@ function handleCellChildDragOver(event) {
     }
 }
 
+// [MVVM : Mixte]
+// Gère la sortie du survol d'un élément enfant d'une cellule.
 function handleCellChildDragLeave(event) {
     event.stopPropagation();
 
@@ -1799,6 +1863,8 @@ function handleCellChildDragLeave(event) {
     }
 }
 
+// [MVVM : Mixte]
+// Gère le dépôt effectif d'une carte dans une cellule.
 function handleCardDrop(event) {
     event.preventDefault();
     event.currentTarget.classList.remove('drag-over');
@@ -1813,6 +1879,8 @@ function handleCardDrop(event) {
 }
 
 // Row drag & drop
+// [MVVM : View]
+// Initialise les écouteurs d'événements pour le glisser-déposer des lignes.
 function initRowDragDrop() {
     const rowHeaders = document.querySelectorAll('.storygrid-row-header');
 
@@ -1824,11 +1892,15 @@ function initRowDragDrop() {
     });
 }
 
+// [MVVM : Mixte]
+// Démarre le glissement d'une ligne (réordonnancement).
 function handleRowDragStart(event) {
     event.dataTransfer.setData('text/plain', event.target.dataset.rowIndex);
     event.target.classList.add('dragging');
 }
 
+// [MVVM : Mixte]
+// Termine le glissement d'une ligne et nettoie les styles.
 function handleRowDragEnd(event) {
     event.target.classList.remove('dragging');
     document.querySelectorAll('.storygrid-row-header.drag-over').forEach(el => {
@@ -1836,11 +1908,15 @@ function handleRowDragEnd(event) {
     });
 }
 
+// [MVVM : Mixte]
+// Gère le survol d'une ligne lors du réordonnancement.
 function handleRowDragOver(event) {
     event.preventDefault();
     event.currentTarget.classList.add('drag-over');
 }
 
+// [MVVM : Mixte]
+// Gère le dépôt d'une ligne pour changer son ordre.
 function handleRowDrop(event) {
     event.preventDefault();
     event.currentTarget.classList.remove('drag-over');
@@ -1857,6 +1933,8 @@ function handleRowDrop(event) {
 // EVENT LISTENERS
 // ============================================
 
+// [MVVM : View]
+// Initialise tous les écouteurs d'événements (pan, zoom, drag & drop délégué).
 function initStoryGridEventListeners() {
     const content = document.getElementById('storyGridContent');
     if (!content) {
@@ -1884,6 +1962,8 @@ function initStoryGridEventListeners() {
 }
 
 // Delegated dragstart - find the card being dragged
+// [MVVM : Mixte]
+// Gère le début du glissement d'une carte via délégation d'événements.
 function handleDelegatedDragStart(event) {
     const card = event.target.closest('.storygrid-card');
     if (!card) {
@@ -1902,6 +1982,8 @@ function handleDelegatedDragStart(event) {
     storyGridState.dragState = { cardId };
 }
 
+// [MVVM : Mixte]
+// Gère la fin du glissement d'une carte via délégation.
 function handleDelegatedDragEnd(event) {
     const card = event.target.closest('.storygrid-card');
     if (card) {
@@ -1916,6 +1998,8 @@ function handleDelegatedDragEnd(event) {
 }
 
 // Delegated drag handlers - work regardless of which child element is hovered
+// [MVVM : Mixte]
+// Gère le survol des cellules lors d'un glissement délégué.
 function handleDelegatedDragOver(event) {
     // Find the closest cell
     const cell = event.target.closest('.storygrid-cell');
@@ -1938,6 +2022,8 @@ function handleDelegatedDragOver(event) {
     cell.classList.add('drag-over');
 }
 
+// [MVVM : Mixte]
+// Gère la sortie d'une cellule lors d'un glissement délégué.
 function handleDelegatedDragLeave(event) {
     // Only handle if leaving a cell
     const cell = event.target.closest('.storygrid-cell');
@@ -1950,6 +2036,8 @@ function handleDelegatedDragLeave(event) {
     cell.classList.remove('drag-over');
 }
 
+// [MVVM : Mixte]
+// Gère le dépôt d'une carte dans une cellule via délégation.
 function handleDelegatedDrop(event) {
 
     // Find the closest cell
@@ -1996,6 +2084,8 @@ function handleDelegatedDrop(event) {
 }
 
 // Helper to get the column ID for a card based on its hierarchical position
+// [MVVM : ViewModel]
+// Détermine l'ID de colonne approprié pour une carte selon le niveau de zoom actuel.
 function getCardColumnId(card) {
     const zoom = STORYGRID_ZOOM_LEVELS[storyGridState.zoomLevel];
     switch (zoom.unit) {
@@ -2011,6 +2101,8 @@ function getCardColumnId(card) {
     }
 }
 
+// [MVVM : Mixte]
+// Démarre le déplacement panoramique (pan) de la grille.
 function handlePanStart(event) {
     // Only pan when clicking on empty space
     if (event.target.closest('.storygrid-card') || event.target.closest('.storygrid-cell-add')) {
@@ -2025,6 +2117,8 @@ function handlePanStart(event) {
     }
 }
 
+// [MVVM : Mixte]
+// Gère le mouvement panoramique de la grille.
 function handlePanMove(event) {
     if (!storyGridState.panState.isPanning) return;
 
@@ -2034,11 +2128,15 @@ function handlePanMove(event) {
     event.currentTarget.scrollLeft = storyGridState.panState.scrollLeft - walk;
 }
 
+// [MVVM : Mixte]
+// Arrête le déplacement panoramique de la grille.
 function handlePanEnd(event) {
     storyGridState.panState.isPanning = false;
     event.currentTarget.style.cursor = '';
 }
 
+// [MVVM : Mixte]
+// Gère le zoom à la molette (Ctrl + Wheel).
 function handleWheelZoom(event) {
     if (event.ctrlKey || event.metaKey) {
         event.preventDefault();
@@ -2051,6 +2149,8 @@ function handleWheelZoom(event) {
     }
 }
 
+// [MVVM : ViewModel]
+// Gère la logique de passage d'un niveau de zoom à l'autre.
 function zoomStoryGrid(direction) {
     const levels = Object.keys(STORYGRID_ZOOM_LEVELS);
     const currentIndex = levels.indexOf(storyGridState.zoomLevel);
@@ -2065,6 +2165,8 @@ function zoomStoryGrid(direction) {
 // UI HELPERS
 // ============================================
 
+// [MVVM : View]
+// Affiche ou masque le panneau des filtres de la grille.
 function toggleStoryGridFilters() {
     const filters = document.getElementById('storyGridFilters');
     if (filters) {
@@ -2072,6 +2174,8 @@ function toggleStoryGridFilters() {
     }
 }
 
+// [MVVM : Mixte]
+// Active ou désactive un filtre de type de ligne et redessine la grille.
 function toggleRowTypeFilter(type) {
     // Ne rien faire si on n'est pas en mode chronologique
     if (storyGridState.viewMode !== 'chronological') {
@@ -2101,6 +2205,8 @@ function toggleRowTypeFilter(type) {
     // ===============================================
 }
 
+// [MVVM : ViewModel]
+// Récupère le libellé textuel correspondant à un mode de vue.
 function getViewModeLabel(mode) {
     const labels = {
         chronological: 'Vue chronologique',
@@ -2111,6 +2217,8 @@ function getViewModeLabel(mode) {
     return labels[mode] || mode;
 }
 
+// [MVVM : Mixte]
+// Active l'édition interactive du titre d'une ligne via un champ input temporaire.
 function editRowTitle(rowId, element) {
     const row = storyGridState.rows.find(r => r.id === rowId);
     if (!row) return;
@@ -2141,6 +2249,8 @@ function editRowTitle(rowId, element) {
     });
 }
 
+// [MVVM : ViewModel]
+// Crée une carte et ouvre immédiatement sa modale de détail.
 function quickAddCard(rowId, columnId) {
     const card = addCardToGrid(rowId, columnId);
     if (card) {
@@ -2152,6 +2262,8 @@ function quickAddCard(rowId, columnId) {
 // MODALS
 // ============================================
 
+// [MVVM : View]
+// Ouvre la modale permettant d'ajouter une nouvelle ligne à la grille.
 function openAddRowModal() {
     const modal = document.createElement('div');
     modal.className = 'modal active';
@@ -2217,6 +2329,8 @@ function openAddRowModal() {
     }
 }
 
+// [MVVM : View]
+// Met à jour les options de source (personnages, arcs...) dans la modale d'ajout de ligne.
 function updateRowSourceOptions() {
     const type = document.querySelector('input[name="rowType"]:checked')?.value;
     const sourceSelector = document.getElementById('rowSourceSelector');
@@ -2283,6 +2397,8 @@ function updateRowSourceOptions() {
     };
 }
 
+// [MVVM : Mixte]
+// Valide et crée la ligne demandée via la modale.
 function confirmAddRow() {
     const type = document.querySelector('input[name="rowType"]:checked')?.value;
     const sourceSelect = document.getElementById('rowSourceSelect');
@@ -2313,6 +2429,8 @@ function confirmAddRow() {
     closeModal('addStoryGridRowModal');
 }
 
+// [MVVM : View]
+// Ouvre le menu contextuel (options) d'une ligne à l'emplacement du clic.
 function openRowOptionsMenu(rowId, event) {
     event.stopPropagation();
 
@@ -2361,6 +2479,8 @@ function openRowOptionsMenu(rowId, event) {
     }, 10);
 }
 
+// [MVVM : View]
+// Ouvre la modale de modification des propriétés d'une ligne.
 function editRowProperties(rowId) {
     const row = storyGridState.rows.find(r => r.id === rowId);
     if (!row) return;
@@ -2399,6 +2519,8 @@ function editRowProperties(rowId) {
     document.body.appendChild(modal);
 }
 
+// [MVVM : Mixte]
+// Sauvegarde les modifications apportées aux propriétés d'une ligne.
 function saveRowProperties(rowId) {
     const title = document.getElementById('editRowTitle').value.trim();
     const color = document.getElementById('editRowColor').value;
@@ -2410,6 +2532,8 @@ function saveRowProperties(rowId) {
     closeModal('editRowModal');
 }
 
+// [MVVM : Mixte]
+// Demande confirmation avant de supprimer une ligne.
 function confirmDeleteRow(rowId) {
     // Close context menu
     const existingMenu = document.querySelector('.storygrid-context-menu');
@@ -2424,6 +2548,8 @@ function confirmDeleteRow(rowId) {
 // CARD DETAIL MODAL
 // ============================================
 
+// [MVVM : View]
+// Ouvre la modale de détail d'une carte pour édition complète.
 function openCardDetail(cardId) {
     let card = null;
     let row = null;
@@ -2576,6 +2702,8 @@ function openCardDetail(cardId) {
 }
 
 // Rendu des liaisons d'entités (personnages, arcs, lieux) dans la modale
+// [MVVM : View]
+// Génère le HTML de la section des liaisons (personnages, arcs, lieux) dans la modale.
 function renderCardEntityLinks(card) {
     return `
         <!-- Personnages liés -->
@@ -2622,6 +2750,8 @@ function renderCardEntityLinks(card) {
     `;
 }
 
+// [MVVM : View]
+// Génère le HTML de la liste des personnages liés à une carte.
 function renderCardCharacters(card) {
     if (!card.characters || card.characters.length === 0) {
         return '<div class="storygrid-no-links">Aucun personnage</div>';
@@ -2641,6 +2771,8 @@ function renderCardCharacters(card) {
     }).join('');
 }
 
+// [MVVM : View]
+// Génère le HTML de la liste des arcs narratifs liés à une carte.
 function renderCardArcs(card) {
     if (!card.arcs || card.arcs.length === 0) {
         return '<div class="storygrid-no-links">Aucun arc</div>';
@@ -2660,6 +2792,8 @@ function renderCardArcs(card) {
     }).join('');
 }
 
+// [MVVM : View]
+// Génère le HTML de la liste des lieux liés à une carte.
 function renderCardLocations(card) {
     if (!card.locations || card.locations.length === 0) {
         return '<div class="storygrid-no-links">Aucun lieu</div>';
@@ -2683,6 +2817,8 @@ function renderCardLocations(card) {
 }
 
 // RafraÃ®chir les liens dans la modale sans la fermer
+// [MVVM : View]
+// Rafraîchit l'affichage des liens dans la modale de détail d'une carte.
 function refreshCardDetailLinks(cardId) {
     const card = findCardById(cardId);
     if (!card) return;
@@ -2697,6 +2833,8 @@ function refreshCardDetailLinks(cardId) {
 }
 
 // Modale pour ajouter un personnage
+// [MVVM : View]
+// Ouvre une modale pour sélectionner et ajouter un personnage à une carte.
 function openAddCharacterToCardModal(cardId) {
     // Fermer si déjà ouverte
     const existing = document.getElementById('addCharacterModal');
@@ -2751,6 +2889,8 @@ function openAddCharacterToCardModal(cardId) {
     if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
+// [MVVM : Mixte]
+// Sélectionne un personnage pour l'ajouter à une carte et rafraîchit la vue.
 function selectCharacterForCard(cardId, characterId) {
     addCharacterToCard(cardId, characterId);
     closeModal('addCharacterModal');
@@ -2758,6 +2898,8 @@ function selectCharacterForCard(cardId, characterId) {
 }
 
 // Modale pour ajouter un arc
+// [MVVM : View]
+// Ouvre une modale pour sélectionner et ajouter un arc narratif à une carte.
 function openAddArcToCardModal(cardId) {
     // Fermer si déjà ouverte
     const existing = document.getElementById('addArcModal');
@@ -2812,6 +2954,8 @@ function openAddArcToCardModal(cardId) {
     if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
+// [MVVM : Mixte]
+// Sélectionne un arc pour l'ajouter à une carte et rafraîchit la vue.
 function selectArcForCard(cardId, arcId) {
     addArcToCard(cardId, arcId);
     closeModal('addArcModal');
@@ -2819,6 +2963,8 @@ function selectArcForCard(cardId, arcId) {
 }
 
 // Modale pour ajouter un lieu
+// [MVVM : View]
+// Ouvre une modale pour sélectionner et ajouter un lieu à une carte.
 function openAddLocationToCardModal(cardId) {
     // Fermer si déjà ouverte
     const existing = document.getElementById('addLocationModal');
@@ -2874,12 +3020,16 @@ function openAddLocationToCardModal(cardId) {
     if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
+// [MVVM : Mixte]
+// Sélectionne un lieu pour l'ajouter à une carte et rafraîchit la vue.
 function selectLocationForCard(cardId, locationId) {
     addLocationToCard(cardId, locationId);
     closeModal('addLocationModal');
     refreshCardDetailLinks(cardId);
 }
 
+// [MVVM : View]
+// Génère le HTML de la liste des liens entre cartes pour la modale de détail.
 function renderCardLinks(cardId) {
     const links = storyGridState.links.filter(l => l.fromCard === cardId || l.toCard === cardId);
 
@@ -2913,6 +3063,8 @@ function renderCardLinks(cardId) {
     }).join('');
 }
 
+// [MVVM : Mixte]
+// Met à jour l'intensité d'une carte et modifie l'UI sans rendu complet.
 function updateCardIntensity(cardId, intensity) {
     updateCard(cardId, { intensity });
 
@@ -2923,6 +3075,8 @@ function updateCardIntensity(cardId, intensity) {
     });
 }
 
+// [MVVM : Mixte]
+// Demande confirmation avant de supprimer une carte.
 function confirmDeleteCard(cardId) {
     if (confirm('ÃŠtes-vous sÃƒÂ»r de vouloir supprimer cette carte ?')) {
         deleteCard(cardId);
@@ -2930,6 +3084,8 @@ function confirmDeleteCard(cardId) {
     }
 }
 
+// [MVVM : View]
+// Ouvre la modale pour créer un lien entre la carte actuelle et une autre carte.
 function openAddLinkModal(fromCardId) {
     const modal = document.createElement('div');
     modal.className = 'modal active';
@@ -2982,6 +3138,8 @@ function openAddLinkModal(fromCardId) {
     document.body.appendChild(modal);
 }
 
+// [MVVM : Mixte]
+// Valide et crée le lien entre cartes suite à la sélection en modale.
 function confirmAddLink(fromCardId) {
     const linkType = document.getElementById('linkTypeSelect').value;
     const toCardId = document.getElementById('linkTargetSelect').value;
@@ -2996,6 +3154,8 @@ function confirmAddLink(fromCardId) {
     openCardDetail(fromCardId); // Refresh detail modal
 }
 
+// [MVVM : View]
+// Ouvre la modale des paramètres généraux du Story Grid.
 function openStoryGridSettings() {
     const settings = project.storyGrid?.settings || {};
 
@@ -3053,6 +3213,8 @@ function openStoryGridSettings() {
     }
 }
 
+// [MVVM : Mixte]
+// Sauvegarde les paramètres de la grille et ferme la modale.
 function saveStoryGridSettings() {
     project.storyGrid.settings = {
         defaultZoom: document.getElementById('sgDefaultZoom').value,
@@ -3064,6 +3226,8 @@ function saveStoryGridSettings() {
     closeModal('storyGridSettingsModal');
 }
 
+// [MVVM : Mixte]
+// Réinitialise complètement le Story Grid (supprime tout et recrée les lignes de base).
 function resetStoryGrid() {
     if (confirm('ÃŠtes-vous sÃƒÂ»r de vouloir réinitialiser le Story Grid ? Toutes les lignes personnalisées et cartes seront supprimées.')) {
         storyGridState.rows = [];
@@ -3078,6 +3242,8 @@ function resetStoryGrid() {
 // WELCOME VIEW
 // ============================================
 
+// [MVVM : View]
+// Affiche l'écran d'accueil vide du Story Grid quand aucun contenu n'est ouvert.
 function renderStoryGridWelcome() {
     const container = document.getElementById('editorView');
     if (!container) return;
@@ -3105,6 +3271,8 @@ function renderStoryGridWelcome() {
 // SCENE LINKING
 // ============================================
 
+// [MVVM : Mixte]
+// Lie une scène du manuscrit à une carte existante et synchronise les données.
 function linkSceneToCard(sceneId, cardId) {
     for (const row of storyGridState.rows) {
         const card = row.cards.find(c => c.id === cardId);
@@ -3138,6 +3306,8 @@ function linkSceneToCard(sceneId, cardId) {
 // EXPORT/IMPORT
 // ============================================
 
+// [MVVM : Model]
+// Exporte les données du Story Grid au format JSON pour téléchargement.
 function exportStoryGridData() {
     const data = {
         rows: storyGridState.rows,
@@ -3155,6 +3325,8 @@ function exportStoryGridData() {
     URL.revokeObjectURL(url);
 }
 
+// [MVVM : Mixte]
+// Importe des données Story Grid à partir d'un fichier JSON.
 function importStoryGridData(file) {
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -3180,6 +3352,8 @@ function importStoryGridData(file) {
 // SCENE NAVIGATION MODAL
 // ============================================
 
+// [MVVM : View]
+// Ouvre la modale de navigation pour choisir comment visualiser une scène liée.
 function showSceneNavigationModal(actId, chapterId, sceneId) {
     // Trouver le titre de la scène
     let sceneTitle = 'Scène';
@@ -3245,6 +3419,8 @@ function showSceneNavigationModal(actId, chapterId, sceneId) {
     if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
+// [MVVM : ViewModel]
+// Ferme la modale et navigue vers la vue Structure pour éditer une scène.
 function navigateToSceneFromGrid(actId, chapterId, sceneId) {
     closeModal('sceneNavigationModal');
 
@@ -3263,6 +3439,8 @@ function navigateToSceneFromGrid(actId, chapterId, sceneId) {
     }, 100);
 }
 
+// [MVVM : ViewModel]
+// Ouvre une scène en mode vue séparée (Split-View) tout en gardant la grille visible.
 function openSceneInSplitViewFromGrid(actId, chapterId, sceneId) {
     closeModal('sceneNavigationModal');
 
