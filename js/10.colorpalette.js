@@ -1,6 +1,7 @@
 
 // Color palette for quick selection
-// [MVVM: Model] Color palette data source
+// [MVVM : Model]
+// Source de données pour la palette de couleurs
 const colorPalette = [
     '#000000', '#434343', '#666666', '#999999', '#b7b7b7', '#cccccc', '#d9d9d9', '#efefef',
     '#f3f3f3', '#ffffff', '#980000', '#ff0000', '#ff9900', '#ffff00', '#00ff00', '#00ffff',
@@ -18,7 +19,8 @@ const colorPalette = [
 // SIDEBAR RESIZE
 // ============================================
 
-// [MVVM: View] Handles sidebar resizing UI logic and events
+// [MVVM : View]
+// Gère la logique UI et les événements du redimensionnement de la sidebar
 function initSidebarResize() {
     const sidebar = document.querySelector('.sidebar');
     const resizeHandle = document.getElementById('sidebarResizeHandle');
@@ -76,7 +78,8 @@ function initSidebarResize() {
     }
 }
 
-// [MVVM: View] Generates the UI elements for color pickers
+// [MVVM : View]
+// Génère les éléments UI pour les sélecteurs de couleurs
 function initializeColorPickers() {
     const textColorGrid = document.getElementById('textColorGrid');
     const bgColorGrid = document.getElementById('backgroundColorGrid');
@@ -107,7 +110,8 @@ function initializeColorPickers() {
 }
 
 // Toggle color picker dropdown
-// [MVVM: View] Controls visibility and positioning of color picker UI
+// [MVVM : View]
+// Contrôle la visibilité et le positionnement de l'UI du sélecteur de couleur
 function toggleColorPicker(type, event) {
     const textPicker = document.getElementById('textColorPicker');
     const bgPicker = document.getElementById('backgroundColorPicker');
@@ -139,7 +143,8 @@ function toggleColorPicker(type, event) {
 }
 
 // Apply text color
-// [MVVM: View] Updates editor text color and syncs UI inputs
+// [MVVM : View]
+// Met à jour la couleur du texte dans l'éditeur et synchronise les inputs UI
 function applyTextColor(color) {
     document.execCommand('foreColor', false, color);
     document.getElementById('textColorInput').value = color;
@@ -148,7 +153,8 @@ function applyTextColor(color) {
 }
 
 // Apply background color
-// [MVVM: View] Updates editor background color and syncs UI inputs
+// [MVVM : View]
+// Met à jour la couleur de fond dans l'éditeur et synchronise les inputs UI
 function applyBackgroundColor(color) {
     document.execCommand('hiliteColor', false, color);
     document.getElementById('bgColorInput').value = color;
@@ -165,7 +171,8 @@ document.addEventListener('click', function (event) {
     }
 });
 
-// [MVVM: View] Handles keyboard shortcuts interaction within the editor
+// [MVVM : View]
+// Gère les raccourcis clavier au sein de l'éditeur
 function handleEditorKeydown(event) {
     // Handle keyboard shortcuts
     if (event.ctrlKey || event.metaKey) {

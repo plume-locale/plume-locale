@@ -1,77 +1,73 @@
 
-        // Timeline Management
-        // MVVM: View
-        // Rôle: Manipule directement le DOM pour afficher le modal d'ajout
-        // Explication: Strictement lié à l'affichage, n'accède pas au modèle.
-        function openAddTimelineModal() {
-            document.getElementById('addTimelineModal').classList.add('active');
-            setTimeout(() => document.getElementById('timelineTitleInput').focus(), 100);
-        }
+// Timeline Management
+// [MVVM : View]
+// Manipule directement le DOM pour afficher le modal d'ajout
+function openAddTimelineModal() {
+    document.getElementById('addTimelineModal').classList.add('active');
+    setTimeout(() => document.getElementById('timelineTitleInput').focus(), 100);
+}
 
-        // MVVM: ViewModel (mixte)
-        // Rôle: Reçoit les données de la View, met à jour le Model (`project.timeline`) et déclenche
-        // la persistance et le rafraîchissement de la View.
-        function addTimelineEvent() {
-            const title = document.getElementById('timelineTitleInput').value.trim();
-            const date = document.getElementById('timelineDateInput').value.trim();
-            const location = document.getElementById('timelineLocationInput').value.trim();
-            const characters = document.getElementById('timelineCharactersInput').value.trim();
-            const description = document.getElementById('timelineDescInput').value.trim();
-            
-            if (!title) return;
+// [MVVM : Other]
+// Ajoute un événement à la chronologie (Mixte ViewModel)
+function addTimelineEvent() {
+    const title = document.getElementById('timelineTitleInput').value.trim();
+    const date = document.getElementById('timelineDateInput').value.trim();
+    const location = document.getElementById('timelineLocationInput').value.trim();
+    const characters = document.getElementById('timelineCharactersInput').value.trim();
+    const description = document.getElementById('timelineDescInput').value.trim();
 
-            const event = {
-                id: Date.now(),
-                title: title,
-                date: date || '',
-                location: location || '',
-                characters: characters || '',
-                description: description || '',
-                order: project.timeline.length, // For manual reordering
-                consequences: '',
-                notes: ''
-            };
+    if (!title) return;
 
-            project.timeline.push(event);
-            
-            // Clear inputs
-            document.getElementById('timelineTitleInput').value = '';
-            document.getElementById('timelineDateInput').value = '';
-            document.getElementById('timelineLocationInput').value = '';
-            document.getElementById('timelineCharactersInput').value = '';
-            document.getElementById('timelineDescInput').value = '';
-            
-            closeModal('addTimelineModal');
-            saveProject();
-            renderTimelineList();
-        }
+    const event = {
+        id: Date.now(),
+        title: title,
+        date: date || '',
+        location: location || '',
+        characters: characters || '',
+        description: description || '',
+        order: project.timeline.length, // For manual reordering
+        consequences: '',
+        notes: ''
+    };
 
-        // MVVM: ViewModel (mixte)
-        // Rôle: Gère l'action utilisateur de suppression — met à jour le Model,
-        // persiste et met à jour la View. Contient aussi une interaction View (confirm).
-        function deleteTimelineEvent(id) {
-            if (!confirm('Êtes-vous sûr de vouloir supprimer cet événement ?')) return;
-            project.timeline = project.timeline.filter(e => e.id !== id);
-            saveProject();
-            renderTimelineList();
-            showEmptyState();
-        }
+    project.timeline.push(event);
 
-        // MVVM: View
-        // Rôle: Rend (render) la liste côté DOM à partir du Model (`project.timeline`).
-        // Explication: Lecture du modèle et construction HTML — responsabilité de la View.
-        function renderTimelineList() {
-            const container = document.getElementById('timelineList');
-            
-            if (project.timeline.length === 0) {
-                container.innerHTML = '<div style="padding: 2rem; text-align: center; color: var(--text-muted);">Aucun événement</div>';
-                return;
-            }
+    // Clear inputs
+    document.getElementById('timelineTitleInput').value = '';
+    document.getElementById('timelineDateInput').value = '';
+    document.getElementById('timelineLocationInput').value = '';
+    document.getElementById('timelineCharactersInput').value = '';
+    document.getElementById('timelineDescInput').value = '';
 
-            // Sort by order field for manual ordering
-            const sortedTimeline = [...project.timeline].sort((a, b) => a.order - b.order);
+    closeModal('addTimelineModal');
+    saveProject();
+    renderTimelineList();
+}
 
-            container.innerHTML = `
+// [MVVM : Other]
+// Gère la suppression d'un événement (Mixte ViewModel)
+function deleteTimelineEvent(id) {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer cet événement ?')) return;
+    project.timeline = project.timeline.filter(e => e.id !== id);
+    saveProject();
+    renderTimelineList();
+    showEmptyState();
+}
+
+// [MVVM : View]
+// Rend la liste chronologique dans le DOM à partir du Model
+function renderTimelineList() {
+    const container = document.getElementById('timelineList');
+
+    if (project.timeline.length === 0) {
+        container.innerHTML = '<div style="padding: 2rem; text-align: center; color: var(--text-muted);">Aucun événement</div>';
+        return;
+    }
+
+    // Sort by order field for manual ordering
+    const sortedTimeline = [...project.timeline].sort((a, b) => a.order - b.order);
+
+    container.innerHTML = `
                 <div class="timeline-container">
                     <div class="timeline-line"></div>
                     ${sortedTimeline.map(event => `
@@ -92,17 +88,16 @@
                     `).join('')}
                 </div>
             `;
-        }
+}
 
-        // MVVM: View
-        // Rôle: Construit la vue détaillée d'un événement à partir du Model et insère
-        // le HTML dans l'éditeur. Les inputs appellent `updateTimelineField` (ViewModel).
-        function openTimelineDetail(id) {
-            const event = project.timeline.find(e => e.id === id);
-            if (!event) return;
+// [MVVM : View]
+// Construit la vue détaillée d'un événement chronologique
+function openTimelineDetail(id) {
+    const event = project.timeline.find(e => e.id === id);
+    if (!event) return;
 
-            const editorView = document.getElementById('editorView');
-            editorView.innerHTML = `
+    const editorView = document.getElementById('editorView');
+    editorView.innerHTML = `
                 <div class="detail-view">
                     <div class="detail-header">
                         <div class="detail-title">${event.title}</div>
@@ -148,16 +143,15 @@
                     </div>
                 </div>
             `;
-        }
+}
 
-        // MVVM: ViewModel
-        // Rôle: Point central pour mettre à jour le Model (`project.timeline`) depuis la View;
-        // s'occupe de la persistance et du rafraîchissement de la View après modification.
-        function updateTimelineField(id, field, value) {
-            const event = project.timeline.find(e => e.id === id);
-            if (event) {
-                event[field] = value;
-                saveProject();
-                renderTimelineList();
-            }
-        }
+// [MVVM : ViewModel]
+// Met à jour un champ de l'événement et rafraîchit la View
+function updateTimelineField(id, field, value) {
+    const event = project.timeline.find(e => e.id === id);
+    if (event) {
+        event[field] = value;
+        saveProject();
+        renderTimelineList();
+    }
+}

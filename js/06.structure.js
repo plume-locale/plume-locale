@@ -1,4 +1,5 @@
-/* [MVVM] View */
+// [MVVM : View]
+// Rafraîchit toutes les vues de l'application
 function refreshAllViews() {
     // Rafraîchir tous les affichages après un undo/redo
     renderActsList();
@@ -89,7 +90,8 @@ document.addEventListener('keydown', function (e) {
     }
 });
 
-/* [MVVM] Model */
+// [MVVM : Model]
+// Charge le projet depuis le localStorage et gère la migration de structure
 function loadProject() {
     const saved = localStorage.getItem('plume_locale_project');
     if (saved) {
@@ -159,7 +161,8 @@ function loadProject() {
 }
 
 // Act Management
-/* [MVVM] Mixte */
+// [MVVM : Other]
+// Gestion des Actes (Mixte View/ViewModel)
 function addAct() {
     const title = document.getElementById('actTitleInput').value.trim();
     if (!title) return;
@@ -181,7 +184,8 @@ function addAct() {
     renderActsList();
 }
 
-/* [MVVM] Mixte */
+// [MVVM : Other]
+// Supprime un acte et ses chapitres (Mixte Model/View)
 function deleteAct(actId) {
     if (!confirm('Êtes-vous sûr de vouloir supprimer cet acte et tous ses chapitres ?')) return;
 
@@ -196,7 +200,8 @@ function deleteAct(actId) {
     renderActsList();
 }
 
-/* [MVVM] View */
+// [MVVM : View]
+// Alterne l'affichage d'un acte (déplié/replié)
 function toggleAct(actId) {
     const element = document.getElementById(`act-${actId}`);
     const icon = element.querySelector('.act-icon');
@@ -216,7 +221,8 @@ function toggleAct(actId) {
     saveTreeState();
 }
 
-/* [MVVM] View */
+// [MVVM : View]
+// Active l'édition du titre d'un acte dans le DOM
 function startEditingAct(actId, element) {
     const act = project.acts.find(a => a.id === actId);
     if (!act) return;
@@ -252,7 +258,8 @@ function startEditingAct(actId, element) {
 }
 
 // Chapter Management
-/* [MVVM] Mixte */
+// [MVVM : Other]
+// Ajoute un nouveau chapitre (Mixte Model/View)
 function addChapter() {
     const title = document.getElementById('chapterTitleInput').value.trim();
     if (!title) return;
@@ -298,7 +305,8 @@ function addChapter() {
     renderActsList();
 }
 
-/* [MVVM] Mixte */
+// [MVVM : Other]
+// Supprime un chapitre et ses scènes (Mixte Model/View)
 function deleteChapter(actId, chapterId) {
     if (!confirm('Êtes-vous sûr de vouloir supprimer ce chapitre et toutes ses scènes ?')) return;
 
@@ -315,7 +323,8 @@ function deleteChapter(actId, chapterId) {
     renderActsList();
 }
 
-/* [MVVM] View */
+// [MVVM : View]
+// Alterne l'affichage d'un chapitre (déplié/replié)
 function toggleChapter(actId, chapterId) {
     const element = document.getElementById(`chapter-${chapterId}`);
     const icon = element.querySelector('.chapter-icon');
@@ -335,7 +344,8 @@ function toggleChapter(actId, chapterId) {
     saveTreeState();
 }
 
-/* [MVVM] Model */
+// [MVVM : Model]
+// Sauvegarde l'état d'expansion de l'arborescence dans IndexedDB
 async function saveTreeState() {
     // Sauvegarder l'état d'expansion dans IndexedDB
     try {
@@ -346,7 +356,8 @@ async function saveTreeState() {
     }
 }
 
-/* [MVVM] View */
+// [MVVM : View]
+// Déploie toute l'arborescence dans l'interface
 function expandAllTree() {
     // Déplier tous les actes
     document.querySelectorAll('.act-group').forEach(actEl => {
@@ -407,7 +418,8 @@ function expandAllTree() {
     if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
-/* [MVVM] View */
+// [MVVM : View]
+// Replie toute l'arborescence dans l'interface
 function collapseAllTree() {
     // Replier tous les actes
     document.querySelectorAll('.act-group').forEach(actEl => {
@@ -468,7 +480,8 @@ function collapseAllTree() {
     if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
-/* [MVVM] Model */
+// [MVVM : Model]
+// Charge l'état d'expansion de l'arborescence depuis IndexedDB
 async function loadTreeState() {
     // Charger l'état d'expansion depuis IndexedDB
     try {
@@ -486,7 +499,8 @@ async function loadTreeState() {
     }
 }
 
-/* [MVVM] View */
+// [MVVM : View]
+// Restaure visuellement l'état d'expansion dans le DOM
 function restoreTreeState() {
     // Restaurer visuellement l'état d'expansion après le rendu
     expandedActs.forEach(actId => {
@@ -514,7 +528,8 @@ function restoreTreeState() {
     });
 }
 
-/* [MVVM] View */
+// [MVVM : View]
+// Active l'édition du titre d'un chapitre dans le DOM
 function startEditingChapter(actId, chapterId, element) {
     const act = project.acts.find(a => a.id === actId);
     if (!act) return;
@@ -559,14 +574,16 @@ function startEditingChapter(actId, chapterId, element) {
 }
 
 // Scene Management
-/* [MVVM] View */
+// [MVVM : View]
+// Ouvre la modale d'ajout de scène
 function openAddSceneModal(actId, chapterId) {
     activeActId = actId;
     activeChapterId = chapterId;
     document.getElementById('addSceneModal').classList.add('active');
 }
 
-/* [MVVM] Mixte */
+// [MVVM : Other]
+// Ouvre la modale d'ajout de scène rapidement (Mixte)
 function openAddSceneModalQuick() {
     // Utiliser le chapitre courant s'il existe, sinon le premier chapitre disponible
     if (currentActId && currentChapterId) {
@@ -578,7 +595,8 @@ function openAddSceneModalQuick() {
     }
 }
 
-/* [MVVM] Mixte */
+// [MVVM : Other]
+// Ajoute une nouvelle scène au modèle et met à jour la vue
 function addScene() {
     const title = document.getElementById('sceneTitleInput').value.trim();
     if (!title || !activeActId || !activeChapterId) return;
@@ -618,7 +636,8 @@ function addScene() {
 let activeStatusFilters = ['draft', 'progress', 'complete', 'review'];
 let currentStatusMenu = null;
 
-/* [MVVM] View */
+// [MVVM : View]
+// Ouvre le menu contextuel de statut d'une scène
 function toggleSceneStatus(actId, chapterId, sceneId, event) {
     event = event || window.event;
     event.stopPropagation();
@@ -690,7 +709,8 @@ function toggleSceneStatus(actId, chapterId, sceneId, event) {
     }, 10);
 }
 
-/* [MVVM] View */
+// [MVVM : View]
+// Ferme le menu de statut
 function closeStatusMenu() {
     const menu = document.getElementById('statusMenu');
     if (menu) {
@@ -700,14 +720,16 @@ function closeStatusMenu() {
     document.removeEventListener('click', closeStatusMenuOnClickOutside);
 }
 
-/* [MVVM] View */
+// [MVVM : View]
+// Gère la fermeture du menu au clic extérieur
 function closeStatusMenuOnClickOutside(event) {
     if (currentStatusMenu && !currentStatusMenu.contains(event.target)) {
         closeStatusMenu();
     }
 }
 
-/* [MVVM] Mixte */
+// [MVVM : Other]
+// Met à jour le statut d'une scène (Mixte Model/View)
 function setSceneStatus(actId, chapterId, sceneId, status) {
     const act = project.acts.find(a => a.id === actId);
     if (!act) return;
@@ -726,7 +748,8 @@ function setSceneStatus(actId, chapterId, sceneId, status) {
     updateProgressBar();
 }
 
-/* [MVVM] Mixte */
+// [MVVM : Other]
+// Bascule un filtre de statut (Mixte)
 function toggleStatusFilter(status) {
     const index = activeStatusFilters.indexOf(status);
     const btn = document.querySelector(`.status-filter-btn[data-status="${status}"]`);
@@ -744,7 +767,8 @@ function toggleStatusFilter(status) {
     applyStatusFilters();
 }
 
-/* [MVVM] View */
+// [MVVM : View]
+// Applique visuellement les filtres de statut dans l'arborescence
 function applyStatusFilters() {
     // Appliquer les filtres à toutes les scènes
     document.querySelectorAll('.scene-item[data-scene-id]').forEach(sceneEl => {

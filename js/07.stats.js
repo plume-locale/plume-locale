@@ -2,7 +2,8 @@
 // HELPER FUNCTIONS - STATS & PROGRESSION
 // ==========================================
 
-// [VIEW-MODEL] Formate un nombre pour l'affichage (ex: 1.2k)
+// [MVVM : ViewModel]
+// Formate un nombre pour l'affichage (ex: 1.2k)
 function formatWordCount(count) {
     if (count >= 1000) {
         return (count / 1000).toFixed(1).replace('.0', '') + 'k';
@@ -12,7 +13,8 @@ function formatWordCount(count) {
 
 // getSceneStatus supprimée - on utilise directement scene.status
 
-// [VIEW-MODEL] Calcule les statistiques d'un chapitre pour la vue
+// [MVVM : ViewModel]
+// Calcule les statistiques d'un chapitre pour la vue
 function getChapterStats(chapter) {
     const totalScenes = chapter.scenes.length;
     const totalWords = chapter.scenes.reduce((sum, s) => sum + (s.wordCount || 0), 0);
@@ -21,7 +23,8 @@ function getChapterStats(chapter) {
     return { totalScenes, totalWords, completedScenes, progressPercent };
 }
 
-// [VIEW-MODEL] Calcule les statistiques d'un acte pour la vue
+// [MVVM : ViewModel]
+// Calcule les statistiques d'un acte pour la vue
 function getActStats(act) {
     const totalChapters = act.chapters.length;
     const totalScenes = act.chapters.reduce((sum, ch) => sum + ch.scenes.length, 0);
@@ -30,7 +33,8 @@ function getActStats(act) {
     return { totalChapters, totalScenes, totalWords };
 }
 
-// [VIEW] Génère et affiche la liste des actes et chapitres dans le DOM
+// [MVVM : View]
+// Génère et affiche la liste des actes et chapitres dans le DOM
 function renderActsList() {
     const container = document.getElementById('chaptersList');
 
@@ -162,7 +166,8 @@ function renderActsList() {
     applyStatusFilters();
     setTimeout(() => restoreTreeState(), 50);
 }
-// [VIEW] Génère le HTML pour les liens personnages d'une scène
+// [MVVM : View]
+// Génère le HTML pour les liens personnages d'une scène
 function renderSceneCharacters(actId, chapterId, scene) {
     if (!scene.linkedCharacters || scene.linkedCharacters.length === 0) {
         return '<span style="font-size: 0.8rem; color: var(--text-muted); font-style: italic;">Aucun personnage lié</span>';
@@ -180,7 +185,8 @@ function renderSceneCharacters(actId, chapterId, scene) {
     }).join('');
 }
 
-// [VIEW] Génère le HTML pour les liens éléments/lieux d'une scène
+// [MVVM : View]
+// Génère le HTML pour les liens éléments/lieux d'une scène
 function renderSceneElements(actId, chapterId, scene) {
     //if (!scene.linkedElements || scene.linkedElements.length === 0) {
     //    return '<span style="font-size: 0.8rem; color: var(--text-muted); font-style: italic;">Aucun élément lié</span>';
@@ -199,7 +205,8 @@ function renderSceneElements(actId, chapterId, scene) {
     return '';
 }
 
-// [VIEW] Génère le HTML pour les événements temporels liés à une scène
+// [MVVM : View]
+// Génère le HTML pour les événements temporels liés à une scène
 function renderSceneMetroEvents(sceneId) {
     if (!project.metroTimeline || project.metroTimeline.length === 0) {
         return '<span style="font-size: 0.8rem; color: var(--text-muted); font-style: italic;">Aucun événement</span>';
@@ -222,7 +229,8 @@ function renderSceneMetroEvents(sceneId) {
     }).join('');
 }
 
-// [VIEW] Ouvre la modale pour lier des personnages (Gestion UI)
+// [MVVM : View]
+// Ouvre la modale pour lier des personnages (Gestion UI)
 function openCharacterLinker(actId, chapterId, sceneId) {
     const act = project.acts.find(a => a.id === actId);
     const chapter = act.chapters.find(c => c.id === chapterId);
@@ -248,7 +256,8 @@ function openCharacterLinker(actId, chapterId, sceneId) {
     document.getElementById('referencesModal').classList.add('active');
 }
 
-// [VIEW] Ouvre la modale pour lier des éléments (Gestion UI)
+// [MVVM : View]
+// Ouvre la modale pour lier des éléments (Gestion UI)
 function openElementLinker(actId, chapterId, sceneId) {
     const act = project.acts.find(a => a.id === actId);
     const chapter = act.chapters.find(c => c.id === chapterId);
@@ -273,7 +282,8 @@ function openElementLinker(actId, chapterId, sceneId) {
     document.getElementById('referencesModal').classList.add('active');
 }
 
-// [VIEW] Génère et affiche l'éditeur de texte complet
+// [MVVM : View]
+// Génère et affiche l'éditeur de texte complet
 function renderEditor(act, chapter, scene) {
     const editorView = document.getElementById('editorView');
     const wordCount = getWordCount(scene.content);
@@ -494,7 +504,8 @@ function renderEditor(act, chapter, scene) {
     }, 100);
 }
 
-// [VIEW] Affiche l'état vide de l'éditeur
+// [MVVM : View]
+// Affiche l'état vide de l'éditeur
 function showEmptyState() {
     const editorView = document.getElementById('editorView');
     editorView.innerHTML = `
@@ -512,12 +523,14 @@ function showEmptyState() {
 }
 
 // Alias pour renderWelcomeEditor
-// [VIEW] Alias pour l'état vide
+// [MVVM : View]
+// Alias pour l'état vide
 function renderWelcomeEditor() {
     showEmptyState();
 }
 
-// [VIEW] Affiche l'écran d'accueil des personnages
+// [MVVM : View]
+// Affiche l'écran d'accueil des personnages
 function renderCharacterWelcome() {
     const editorView = document.getElementById('editorView');
     editorView.innerHTML = `
@@ -533,7 +546,8 @@ function renderCharacterWelcome() {
     if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
-// [VIEW] Affiche l'écran d'accueil de l'univers
+// [MVVM : View]
+// Affiche l'écran d'accueil de l'univers
 function renderWorldWelcome() {
     const editorView = document.getElementById('editorView');
     editorView.innerHTML = `
@@ -549,7 +563,8 @@ function renderWorldWelcome() {
     if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
-// [VIEW] Affiche l'écran d'accueil des notes
+// [MVVM : View]
+// Affiche l'écran d'accueil des notes
 function renderNotesWelcome() {
     const editorView = document.getElementById('editorView');
     editorView.innerHTML = `
@@ -565,7 +580,8 @@ function renderNotesWelcome() {
     if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
-// [VIEW] Affiche l'écran d'accueil du codex
+// [MVVM : View]
+// Affiche l'écran d'accueil du codex
 function renderCodexWelcome() {
     const editorView = document.getElementById('editorView');
     editorView.innerHTML = `
@@ -581,7 +597,8 @@ function renderCodexWelcome() {
     if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
-// [MIXTE] Synchronise la Vue vers le Modèle (Input -> Data) et sauvegarde
+// [MVVM : Other]
+// Synchronise la Vue vers le Modèle (Input -> Data) et sauvegarde (Mixte)
 function updateSceneContent() {
     const editor = document.querySelector('.editor-textarea');
     const act = project.acts.find(a => a.id === currentActId);
@@ -612,7 +629,8 @@ function updateSceneContent() {
     autoDetectLinksDebounced();
 }
 
-// [MODEL] Utilitaire pur pour compter les mots (Logique métier)
+// [MVVM : Model]
+// Utilitaire pur pour compter les mots (Logique métier)
 function getWordCount(html) {
     // Create temporary div to strip HTML tags
     const temp = document.createElement('div');

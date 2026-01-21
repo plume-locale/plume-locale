@@ -38,7 +38,8 @@ const viewIcons = {
     'timelineviz': 'clock'
 };
 
-/** [ViewModel] - Gère le basculement de l'état global du mode split */
+// [MVVM : ViewModel]
+// Gère le basculement de l'état global du mode split
 function toggleSplitView() {
     if (splitViewActive) {
         closeSplitView();
@@ -47,7 +48,8 @@ function toggleSplitView() {
     }
 }
 
-/** [ViewModel] - Initialise l'état pour l'activation du mode split */
+// [MVVM : ViewModel]
+// Initialise l'état pour l'activation du mode split
 function activateSplitView() {
     splitViewActive = true;
     splitActivePanel = 'left';
@@ -70,7 +72,8 @@ function activateSplitView() {
     showNotification('Mode split activé - Cliquez sur un panneau pour le sélectionner');
 }
 
-/** [ViewModel] - Réinitialise l'état et restaure la vue standard */
+// [MVVM : ViewModel]
+// Réinitialise l'état et restaure la vue standard
 function closeSplitView() {
     splitViewActive = false;
 
@@ -109,7 +112,8 @@ function closeSplitView() {
     showNotification('Mode split désactivé');
 }
 
-/** [View] - Met à jour l'état visuel du bouton de bascule dans le DOM */
+// [MVVM : View]
+// Met à jour l'état visuel du bouton de bascule dans le DOM
 function updateSplitToggleButton() {
     const btn = document.getElementById('splitModeToggle');
     if (btn) {
@@ -124,7 +128,8 @@ function updateSplitToggleButton() {
     }
 }
 
-/** [View] - Génère et injecte la structure HTML principale du mode split */
+// [MVVM : View]
+// Génère et injecte la structure HTML principale du mode split
 function renderSplitView() {
     if (!splitViewActive) return;
 
@@ -195,7 +200,8 @@ function renderSplitView() {
     if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
-/** [ViewModel] - Gère le changement de panneau actif et met à jour les indicateurs visuels */
+// [MVVM : ViewModel]
+// Gère le changement de panneau actif et met à jour les indicateurs visuels
 function setActiveSplitPanel(panel) {
     if (splitActivePanel === panel) return;
 
@@ -222,7 +228,8 @@ function setActiveSplitPanel(panel) {
     }
 }
 
-/** [View] - Manipule le DOM de la barre latérale pour correspondre à la vue du panneau actif */
+// [MVVM : View]
+// Manipulle le DOM de la barre latérale pour correspondre à la vue du panneau actif
 function updateSidebarForSplitPanel(panel) {
     const state = panel === 'left' ? splitViewState.left : splitViewState.right;
     const view = state.view;
@@ -355,7 +362,8 @@ function updateSidebarForSplitPanel(panel) {
     if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
-/** [ViewModel] - Gère le changement de type de vue au sein d'un panneau spécifique */
+// [MVVM : ViewModel]
+// Gère le changement de type de vue au sein d'un panneau spécifique
 function switchSplitPanelView(panel, view) {
     const state = panel === 'left' ? splitViewState.left : splitViewState.right;
     state.view = view;
@@ -393,7 +401,8 @@ function switchSplitPanelView(panel, view) {
     if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
-/** [View] - Met à jour l'en-tête (titre et icône) d'un panneau split */
+// [MVVM : View]
+// Met à jour l'en-tête (titre et icône) d'un panneau split
 function updateSplitPanelHeader(panel) {
     const state = panel === 'left' ? splitViewState.left : splitViewState.right;
     const titleEl = document.getElementById(panel === 'left' ? 'splitLeftTitle' : 'splitRightTitle');
@@ -410,7 +419,8 @@ function updateSplitPanelHeader(panel) {
     }
 }
 
-/** [View] - Prépare et initialise le conteneur de contenu pour un panneau */
+// [MVVM : View]
+// Prépare et initialise le conteneur de contenu pour un panneau
 function renderSplitPanelViewContent(panel) {
     const container = document.getElementById(panel === 'left' ? 'splitLeftContent' : 'splitRightContent');
     if (!container) return;
@@ -440,7 +450,8 @@ function renderSplitPanelViewContent(panel) {
     renderViewInSplitPanel(view, contentContainer, state, panel);
 }
 
-/** [Mixte] - Logique de routage de rendu vers les différentes vues spécifiques */
+// [MVVM : Other]
+// Logique de routage de rendu vers les différentes vues spécifiques (Mixte)
 function renderViewInSplitPanel(view, container, state, panel) {
     // Technique: créer un faux editorView temporaire pour que les fonctions de rendu existantes fonctionnent
     const realEditorView = document.getElementById('editorView');

@@ -1,105 +1,92 @@
 
-        // Version Control Management
+// Version Control Management
 
-            /* MVVM: ViewModel
-               Raison: Cette fonction coordonne la création d'un snapshot du `project` (Model),
-               déclenche la persistance via `saveProject()` et demande la mise à jour de la vue
-               via `renderVersionsList()`. Elle joue le rôle d'orchestrateur entre Model et View.
-            */
-            function createVersion() {
-            const label = prompt('Nom de la version (ex: "Version 1.0", "Avant révision", etc.)');
-            if (!label || !label.trim()) return;
+// [MVVM : ViewModel]
+// Coordonne la création d'un snapshot du project, persiste et demande la mise à jour de la vue.
+function createVersion() {
+    const label = prompt('Nom de la version (ex: "Version 1.0", "Avant révision", etc.)');
+    if (!label || !label.trim()) return;
 
-            const totalWords = project.acts.reduce((sum, act) => {
-                return sum + act.chapters.reduce((chSum, chapter) => {
-                    return chSum + chapter.scenes.reduce((sceneSum, scene) => {
-                        return sceneSum + getWordCount(scene.content);
-                    }, 0);
-                }, 0);
+    const totalWords = project.acts.reduce((sum, act) => {
+        return sum + act.chapters.reduce((chSum, chapter) => {
+            return chSum + chapter.scenes.reduce((sceneSum, scene) => {
+                return sceneSum + getWordCount(scene.content);
             }, 0);
+        }, 0);
+    }, 0);
 
-            const version = {
-                id: Date.now(),
-                label: label.trim(),
-                timestamp: new Date().toISOString(),
-                wordCount: totalWords,
-                snapshot: JSON.parse(JSON.stringify({ 
-                    acts: project.acts,
-                    characters: project.characters,
-                    world: project.world,
-                    timeline: project.timeline,
-                    notes: project.notes,
-                    codex: project.codex
-                }))
-            };
+    const version = {
+        id: Date.now(),
+        label: label.trim(),
+        timestamp: new Date().toISOString(),
+        wordCount: totalWords,
+        snapshot: JSON.parse(JSON.stringify({
+            acts: project.acts,
+            characters: project.characters,
+            world: project.world,
+            timeline: project.timeline,
+            notes: project.notes,
+            codex: project.codex
+        }))
+    };
 
-            project.versions.push(version);
-            saveProject();
-            renderVersionsList();
-            alert('Version créée avec succès !');
-        }
+    project.versions.push(version);
+    saveProject();
+    renderVersionsList();
+    alert('Version créée avec succès !');
+}
 
-        /* MVVM: ViewModel
-           Raison: Modifie le `project` (Model) en supprimant une version, persiste les
-           changements et déclenche une mise à jour de la vue. Ne fait pas de rendu
-           direct mais coordonne Model <-> View.
-        */
-        function deleteVersion(id) {
-            if (!confirm('Êtes-vous sûr de vouloir supprimer cette version ?')) return;
-            project.versions = project.versions.filter(v => v.id !== id);
-            saveProject();
-            renderVersionsList();
-        }
+// [MVVM : ViewModel]
+// Modifie le project (Model) en supprimant une version, persiste et notifie la vue.
+function deleteVersion(id) {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer cette version ?')) return;
+    project.versions = project.versions.filter(v => v.id !== id);
+    saveProject();
+    renderVersionsList();
+}
 
-        /* MVVM: ViewModel
-           Raison: Restaure l'état du `project` (Model) depuis un snapshot. Avant la
-           restauration, crée une sauvegarde (appel à createVersion). Persiste les
-           modifications, change la vue active et ordonne le re-rendering. Responsable
-           de la logique de restauration (coordination Model <-> View).
-        */
-        function restoreVersion(id) {
-            if (!confirm('?? ATTENTION: Restaurer cette version va remplacer votre travail actuel. Voulez-vous créer une sauvegarde avant de continuer ?')) {
-                return;
-            }
+// [MVVM : ViewModel]
+// Restaure l'état du project (Model) depuis un snapshot.
+function restoreVersion(id) {
+    if (!confirm('?? ATTENTION: Restaurer cette version va remplacer votre travail actuel. Voulez-vous créer une sauvegarde avant de continuer ?')) {
+        return;
+    }
 
-            // Create backup of current state
-            createVersion();
+    // Create backup of current state
+    createVersion();
 
-            const version = project.versions.find(v => v.id === id);
-            if (!version) return;
+    const version = project.versions.find(v => v.id === id);
+    if (!version) return;
 
-            // Restore snapshot
-            project.acts = JSON.parse(JSON.stringify(version.snapshot.acts));
-            project.characters = JSON.parse(JSON.stringify(version.snapshot.characters || []));
-            project.world = JSON.parse(JSON.stringify(version.snapshot.world || []));
-            project.timeline = JSON.parse(JSON.stringify(version.snapshot.timeline || []));
-            project.notes = JSON.parse(JSON.stringify(version.snapshot.notes || []));
-            project.codex = JSON.parse(JSON.stringify(version.snapshot.codex || []));
+    // Restore snapshot
+    project.acts = JSON.parse(JSON.stringify(version.snapshot.acts));
+    project.characters = JSON.parse(JSON.stringify(version.snapshot.characters || []));
+    project.world = JSON.parse(JSON.stringify(version.snapshot.world || []));
+    project.timeline = JSON.parse(JSON.stringify(version.snapshot.timeline || []));
+    project.notes = JSON.parse(JSON.stringify(version.snapshot.notes || []));
+    project.codex = JSON.parse(JSON.stringify(version.snapshot.codex || []));
 
-            saveProject();
-            switchView('editor');
-            renderActsList();
-            alert('Version restaurée avec succès !');
-        }
+    saveProject();
+    switchView('editor');
+    renderActsList();
+    alert('Version restaurée avec succès !');
+}
 
-        /* MVVM: View
-           Raison: Génère directement du HTML et manipule le DOM via `editorView.innerHTML`.
-           Cette fonction est responsable du rendu de l'interface (View) et ne doit
-           contenir que de la logique de présentation.
-        */
-        function renderVersionsList() {
-            const editorView = document.getElementById('editorView');
-            if (!editorView) {
-                console.error('editorView not found');
-                return;
-            }
-            
-            // Sort by most recent first
-            const sortedVersions = [...project.versions].sort((a, b) => 
-                new Date(b.timestamp) - new Date(a.timestamp)
-            );
+// [MVVM : View]
+// Génère directement du HTML et manipule le DOM (Vue).
+function renderVersionsList() {
+    const editorView = document.getElementById('editorView');
+    if (!editorView) {
+        console.error('editorView not found');
+        return;
+    }
 
-            editorView.innerHTML = `
+    // Sort by most recent first
+    const sortedVersions = [...project.versions].sort((a, b) =>
+        new Date(b.timestamp) - new Date(a.timestamp)
+    );
+
+    editorView.innerHTML = `
                 <div style="height: 100%; overflow-y: auto; padding: 2rem 3rem;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
                         <h2 style="color: var(--accent-gold);"><i data-lucide="history" style="width:24px;height:24px;vertical-align:middle;margin-right:8px;"></i>Gestion des Versions</h2>
@@ -130,10 +117,10 @@
                                                 ${version.label}
                                             </div>
                                             <div style="font-size: 0.85rem; color: var(--text-muted);">
-                                                ${new Date(version.timestamp).toLocaleString('fr-FR', { 
-                                                    dateStyle: 'long', 
-                                                    timeStyle: 'short' 
-                                                })}
+                                                ${new Date(version.timestamp).toLocaleString('fr-FR', {
+        dateStyle: 'long',
+        timeStyle: 'short'
+    })}
                                             </div>
                                         </div>
                                         <div style="text-align: right;">
@@ -168,27 +155,24 @@
                     `}
                 </div>
             `;
-        }
+}
 
-        /* MVVM: Mixte (ViewModel + View)
-           Raison: Lit le Model (`project`) et calcule une différence (logique ViewModel),
-           puis affiche directement une boîte de dialogue `alert` (comportement View).
-           Idéalement, la partie affichage serait séparée de la logique de calcul.
-        */
-        function compareVersion(id) {
-            const version = project.versions.find(v => v.id === id);
-            if (!version) return;
+// [MVVM : Other]
+// Calcule une différence (ViewModel) et l'affiche via alert (View).
+function compareVersion(id) {
+    const version = project.versions.find(v => v.id === id);
+    if (!version) return;
 
-            const currentWords = project.acts.reduce((sum, act) => {
-                return sum + act.chapters.reduce((chSum, chapter) => {
-                    return chSum + chapter.scenes.reduce((sceneSum, scene) => {
-                        return sceneSum + getWordCount(scene.content);
-                    }, 0);
-                }, 0);
+    const currentWords = project.acts.reduce((sum, act) => {
+        return sum + act.chapters.reduce((chSum, chapter) => {
+            return chSum + chapter.scenes.reduce((sceneSum, scene) => {
+                return sceneSum + getWordCount(scene.content);
             }, 0);
+        }, 0);
+    }, 0);
 
-            const diff = currentWords - version.wordCount;
-            const diffText = diff > 0 ? `+${diff}` : diff;
+    const diff = currentWords - version.wordCount;
+    const diffText = diff > 0 ? `+${diff}` : diff;
 
-            alert(`Comparaison avec "${version.label}":\n\nVersion sauvegardée: ${version.wordCount.toLocaleString('fr-FR')} mots\nVersion actuelle: ${currentWords.toLocaleString('fr-FR')} mots\nDifférence: ${diffText} mots`);
-        }
+    alert(`Comparaison avec "${version.label}":\n\nVersion sauvegardée: ${version.wordCount.toLocaleString('fr-FR')} mots\nVersion actuelle: ${currentWords.toLocaleString('fr-FR')} mots\nDifférence: ${diffText} mots`);
+}

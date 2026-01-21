@@ -1,101 +1,105 @@
 // Notes Management
 
-// Role: View — Affiche la modal d'ajout; interaction UI uniquement.
-    function openAddNoteModal() {
-            document.getElementById('addNoteModal').classList.add('active');
-            setTimeout(() => document.getElementById('noteTitleInput').focus(), 100);
-        }
+// [MVVM : View]
+// Affiche la modal d'ajout ; interaction UI uniquement.
+function openAddNoteModal() {
+    document.getElementById('addNoteModal').classList.add('active');
+    setTimeout(() => document.getElementById('noteTitleInput').focus(), 100);
+}
 
-// Role: ViewModel — Crée un nouvel objet Model (`note`), met à jour `project.notes`, persiste et déclenche le rendu (coordination VM).
-    function addNote() {
-            const title = document.getElementById('noteTitleInput').value.trim();
-            const category = document.getElementById('noteCategoryInput').value;
-            const tags = document.getElementById('noteTagsInput').value.trim();
-            const content = document.getElementById('noteContentInput').value.trim();
-            
-            if (!title) return;
+// [MVVM : ViewModel]
+// Crée un nouvel objet Model, met à jour project.notes, persiste et déclenche le rendu.
+function addNote() {
+    const title = document.getElementById('noteTitleInput').value.trim();
+    const category = document.getElementById('noteCategoryInput').value;
+    const tags = document.getElementById('noteTagsInput').value.trim();
+    const content = document.getElementById('noteContentInput').value.trim();
 
-            const note = {
-                id: Date.now(),
-                title: title,
-                category: category,
-                tags: tags ? tags.split(',').map(t => t.trim()).filter(t => t) : [],
-                content: content || '',
-                medias: [], // Support pour les médias: {type: 'url'|'image'|'audio', url: '', title: ''}
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString()
-            };
+    if (!title) return;
 
-            project.notes.push(note);
-            
-            // Clear inputs
-            document.getElementById('noteTitleInput').value = '';
-            document.getElementById('noteTagsInput').value = '';
-            document.getElementById('noteContentInput').value = '';
-            
-            closeModal('addNoteModal');
-            saveProject();
-            renderNotesList();
-        }
+    const note = {
+        id: Date.now(),
+        title: title,
+        category: category,
+        tags: tags ? tags.split(',').map(t => t.trim()).filter(t => t) : [],
+        content: content || '',
+        medias: [], // Support pour les médias: {type: 'url'|'image'|'audio', url: '', title: ''}
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+    };
 
-// Role: ViewModel — Modifie le Model (suppression), persiste et met à jour la View.
-        function deleteNote(id) {
-            if (!confirm('Êtes-vous sûr de vouloir supprimer cette note ?')) return;
-            project.notes = project.notes.filter(n => n.id !== id);
-            saveProject();
-            renderNotesList();
-            showEmptyState();
-        }
+    project.notes.push(note);
 
-        // Expanded state for notes categories
-        // Role: ViewModel — État UI local (quelle catégorie est développée). Gère le comportement d'affichage, pas le Model principal.
-        let expandedNoteCategories = new Set(['Idée', 'Recherche', 'Référence', 'A faire', 'Question', 'Autre']);
+    // Clear inputs
+    document.getElementById('noteTitleInput').value = '';
+    document.getElementById('noteTagsInput').value = '';
+    document.getElementById('noteContentInput').value = '';
 
-// Role: View — Rend la liste des notes dans le DOM; lecture du Model mais responsabilité d'affichage.
-        function renderNotesList() {
-            const container = document.getElementById('notesList');
-            
-            if (project.notes.length === 0) {
-                container.innerHTML = '<div style="padding: 1rem; text-align: center; color: var(--text-muted); font-size: 0.85rem;">Aucune note</div>';
-                return;
-            }
+    closeModal('addNoteModal');
+    saveProject();
+    renderNotesList();
+}
 
-            // Group notes by category
-            const categories = {};
-            // Icônes Lucide pour les catégories
-            const categoryIcons = {
-                'Idée': 'lightbulb',
-                'Recherche': 'search',
-                'Référence': 'bookmark',
-                'A faire': 'check-circle',
-                'Question': 'help-circle',
-                'Autre': 'file-text'
-            };
-            
-            project.notes.forEach(note => {
-                const cat = note.category || 'Autre';
-                if (!categories[cat]) categories[cat] = [];
-                categories[cat].push(note);
-            });
+// [MVVM : ViewModel]
+// Modifie le Model (suppression), persiste et met à jour la View.
+function deleteNote(id) {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer cette note ?')) return;
+    project.notes = project.notes.filter(n => n.id !== id);
+    saveProject();
+    renderNotesList();
+    showEmptyState();
+}
 
-            // Sort notes within categories alphabetically by title
-            Object.keys(categories).forEach(cat => {
-                categories[cat].sort((a, b) => {
-                    return (a.title || '').toLowerCase().localeCompare((b.title || '').toLowerCase(), 'fr');
-                });
-            });
+// [MVVM : ViewModel]
+// État UI local (quelle catégorie est développée). Gère le comportement d'affichage.
+let expandedNoteCategories = new Set(['Idée', 'Recherche', 'Référence', 'A faire', 'Question', 'Autre']);
 
-            let html = '';
+// [MVVM : View]
+// Rend la liste des notes dans le DOM ; lecture du Model mais responsabilité d'affichage.
+function renderNotesList() {
+    const container = document.getElementById('notesList');
 
-            // Render each category as a collapsible group
-            const categoryOrder = ['Idée', 'Recherche', 'Référence', 'A faire', 'Question', 'Autre'];
-            categoryOrder.forEach(cat => {
-                if (!categories[cat] || categories[cat].length === 0) return;
-                
-                const isExpanded = expandedNoteCategories.has(cat);
-                const icon = categoryIcons[cat] || 'file-text';
-                
-                html += `
+    if (project.notes.length === 0) {
+        container.innerHTML = '<div style="padding: 1rem; text-align: center; color: var(--text-muted); font-size: 0.85rem;">Aucune note</div>';
+        return;
+    }
+
+    // Group notes by category
+    const categories = {};
+    // Icônes Lucide pour les catégories
+    const categoryIcons = {
+        'Idée': 'lightbulb',
+        'Recherche': 'search',
+        'Référence': 'bookmark',
+        'A faire': 'check-circle',
+        'Question': 'help-circle',
+        'Autre': 'file-text'
+    };
+
+    project.notes.forEach(note => {
+        const cat = note.category || 'Autre';
+        if (!categories[cat]) categories[cat] = [];
+        categories[cat].push(note);
+    });
+
+    // Sort notes within categories alphabetically by title
+    Object.keys(categories).forEach(cat => {
+        categories[cat].sort((a, b) => {
+            return (a.title || '').toLowerCase().localeCompare((b.title || '').toLowerCase(), 'fr');
+        });
+    });
+
+    let html = '';
+
+    // Render each category as a collapsible group
+    const categoryOrder = ['Idée', 'Recherche', 'Référence', 'A faire', 'Question', 'Autre'];
+    categoryOrder.forEach(cat => {
+        if (!categories[cat] || categories[cat].length === 0) return;
+
+        const isExpanded = expandedNoteCategories.has(cat);
+        const icon = categoryIcons[cat] || 'file-text';
+
+        html += `
                     <div class="treeview-group" data-category="${cat}">
                         <div class="treeview-header" onclick="toggleNoteCategory('${cat}')">
                             <span class="treeview-icon ${isExpanded ? 'expanded' : ''}"><i data-lucide="${isExpanded ? 'chevron-down' : 'chevron-right'}" style="width:14px; height:14px;"></i></span>
@@ -105,69 +109,73 @@
                         </div>
                         <div class="treeview-children ${isExpanded ? '' : 'collapsed'}">
                             ${categories[cat].map(note => {
-                                const hasMedia = note.medias && note.medias.length > 0;
-                                // Remplacement du ?? par l'icône de trombone
-                                const mediaIcon = hasMedia ? 'paperclip' : ''; 
-                                return `
+            const hasMedia = note.medias && note.medias.length > 0;
+            // Remplacement du ?? par l'icône de trombone
+            const mediaIcon = hasMedia ? 'paperclip' : '';
+            return `
                                     <div class="treeview-item" onclick="openNoteDetail(${note.id})">
                                         <span class="treeview-item-title">${note.title}</span>
                                         ${mediaIcon ? `<span class="treeview-media-icon"><i data-lucide="${mediaIcon}" style="width:14px; height:14px;"></i></span>` : ''}
                                         <button class="btn btn-icon btn-small delete-btn" onclick="event.stopPropagation(); deleteNote(${note.id})" title="Supprimer">×</button>
                                     </div>
                                 `;
-                            }).join('')}
+        }).join('')}
                         </div>
                     </div>
                 `;
-            });
+    });
 
-            container.innerHTML = html;
-            if (typeof lucide !== 'undefined') lucide.createIcons();
+    container.innerHTML = html;
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+// [MVVM : ViewModel]
+// Mutations de l'état d'affichage (expand/collapse) et déclenche rendu.
+function toggleNoteCategory(category) {
+    if (expandedNoteCategories.has(category)) {
+        expandedNoteCategories.delete(category);
+    } else {
+        expandedNoteCategories.add(category);
+    }
+    renderNotesList();
+}
+
+// [MVVM : ViewModel]
+// Opération sur l'état UI et rafraîchissement de la View.
+function expandAllNoteCategories() {
+    expandedNoteCategories = new Set(['Idée', 'Recherche', 'Référence', 'A faire', 'Question', 'Autre']);
+    renderNotesList();
+}
+
+// [MVVM : ViewModel]
+// Opération sur l'état UI et rafraîchissement de la View.
+function collapseAllNoteCategories() {
+    expandedNoteCategories.clear();
+    renderNotesList();
+}
+
+// [MVVM : Other]
+// Rend la vue détail et gère la navigation (Mixte View/ViewModel).
+function openNoteDetail(id) {
+    const note = project.notes.find(n => n.id === id);
+    if (!note) return;
+
+    // Ensure medias array exists
+    if (!note.medias) note.medias = [];
+
+    // Handle split view mode
+    if (splitViewActive) {
+        const state = splitActivePanel === 'left' ? splitViewState.left : splitViewState.right;
+        if (state.view === 'notes') {
+            state.noteId = id;
+            renderSplitPanelViewContent(splitActivePanel);
+            saveSplitViewState();
+            return;
         }
+    }
 
-// Role: ViewModel — Mutations de l'état d'affichage (expand/collapse) et déclenche rendu.
-        function toggleNoteCategory(category) {
-            if (expandedNoteCategories.has(category)) {
-                expandedNoteCategories.delete(category);
-            } else {
-                expandedNoteCategories.add(category);
-            }
-            renderNotesList();
-        }
-
-// Role: ViewModel — Opération sur l'état UI et rafraîchissement de la View.
-        function expandAllNoteCategories() {
-            expandedNoteCategories = new Set(['Idée', 'Recherche', 'Référence', 'A faire', 'Question', 'Autre']);
-            renderNotesList();
-        }
-
-// Role: ViewModel — Opération sur l'état UI et rafraîchissement de la View.
-        function collapseAllNoteCategories() {
-            expandedNoteCategories.clear();
-            renderNotesList();
-        }
-
-// Role: Mixte — Rend la vue détail (View) mais aussi met à jour l'état (p.ex. split view) et gère la navigation (ViewModel aspects).
-        function openNoteDetail(id) {
-            const note = project.notes.find(n => n.id === id);
-            if (!note) return;
-            
-            // Ensure medias array exists
-            if (!note.medias) note.medias = [];
-            
-            // Handle split view mode
-            if (splitViewActive) {
-                const state = splitActivePanel === 'left' ? splitViewState.left : splitViewState.right;
-                if (state.view === 'notes') {
-                    state.noteId = id;
-                    renderSplitPanelViewContent(splitActivePanel);
-                    saveSplitViewState();
-                    return;
-                }
-            }
-
-            const editorView = document.getElementById('editorView');
-            editorView.innerHTML = `
+    const editorView = document.getElementById('editorView');
+    editorView.innerHTML = `
                 <div class="detail-view">
                     <div class="detail-header">
                         <div style="display: flex; align-items: center; gap: 1rem; flex: 1;">
@@ -223,18 +231,19 @@
                     </div>
                 </div>
             `;
-            if (typeof lucide !== 'undefined') lucide.createIcons();
-        }
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+}
 
-// Role: View — Génère le markup HTML des médias pour une note; purement responsable de l'affichage.
-        function renderNoteMedias(note) {
-            if (!note.medias || note.medias.length === 0) {
-                return '<div style="color: var(--text-muted); font-style: italic; padding: 1rem; text-align: center; border: 1px dashed var(--border-color); border-radius: 8px;">Aucun média ajouté</div>';
-            }
+// [MVVM : View]
+// Génère le markup HTML des médias pour une note.
+function renderNoteMedias(note) {
+    if (!note.medias || note.medias.length === 0) {
+        return '<div style="color: var(--text-muted); font-style: italic; padding: 1rem; text-align: center; border: 1px dashed var(--border-color); border-radius: 8px;">Aucun média ajouté</div>';
+    }
 
-            return `<div class="note-medias-grid">${note.medias.map((media, index) => {
-                if (media.type === 'image') {
-                    return `
+    return `<div class="note-medias-grid">${note.medias.map((media, index) => {
+        if (media.type === 'image') {
+            return `
                         <div class="note-media-item note-media-image">
                             <img src="${media.url}" alt="${media.title || 'Image'}" onclick="window.open('${media.url}', '_blank')">
                             <div class="note-media-overlay">
@@ -243,8 +252,8 @@
                             </div>
                         </div>
                     `;
-                } else if (media.type === 'audio') {
-                    return `
+        } else if (media.type === 'audio') {
+            return `
                         <div class="note-media-item note-media-audio">
                             <div class="note-media-audio-icon"><i data-lucide="volume-2" style="width:24px; height:24px;"></i></div>
                             <div class="note-media-audio-info">
@@ -254,9 +263,9 @@
                             <button class="note-media-delete" onclick="deleteNoteMedia(${note.id}, ${index})">×</button>
                         </div>
                     `;
-                } else if (media.type === 'url') {
-                    const domain = extractDomain(media.url);
-                    return `
+        } else if (media.type === 'url') {
+            const domain = extractDomain(media.url);
+            return `
                         <div class="note-media-item note-media-url" onclick="window.open('${media.url}', '_blank')">
                             <div class="note-media-url-icon"><i data-lucide="link" style="width:24px; height:24px;"></i></div>
                             <div class="note-media-url-info">
@@ -266,9 +275,9 @@
                             <button class="note-media-delete" onclick="event.stopPropagation(); deleteNoteMedia(${note.id}, ${index})">×</button>
                         </div>
                     `;
-                } else if (media.type === 'youtube') {
-                    const videoId = extractYoutubeId(media.url);
-                    return `
+        } else if (media.type === 'youtube') {
+            const videoId = extractYoutubeId(media.url);
+            return `
                         <div class="note-media-item note-media-youtube">
                             <div class="note-media-youtube-thumb" onclick="window.open('${media.url}', '_blank')">
                                 <img src="https://img.youtube.com/vi/${videoId}/mqdefault.jpg" alt="YouTube">
@@ -280,39 +289,42 @@
                             </div>
                         </div>
                     `;
-                }
-                return '';
-            }).join('')}</div>`;
         }
+        return '';
+    }).join('')}</div>`;
+}
 
-// Role: Autre (Utility) — Fonction utilitaire pure, extraction de domaine depuis une URL.
-        function extractDomain(url) {
-            try {
-                const urlObj = new URL(url);
-                return urlObj.hostname.replace('www.', '');
-            } catch {
-                return url;
-            }
-        }
+// [MVVM : Other]
+// Fonction utilitaire (extraction de domaine).
+function extractDomain(url) {
+    try {
+        const urlObj = new URL(url);
+        return urlObj.hostname.replace('www.', '');
+    } catch {
+        return url;
+    }
+}
 
-// Role: Autre (Utility) — Parse l'ID YouTube depuis une URL; utilitaire pur.
-        function extractYoutubeId(url) {
-            const match = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([^&\s?]+)/);
-            return match ? match[1] : '';
-        }
+// [MVVM : Other]
+// Parse l'ID YouTube depuis une URL.
+function extractYoutubeId(url) {
+    const match = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([^&\s?]+)/);
+    return match ? match[1] : '';
+}
 
-// Role: View — Crée et affiche la modal d'ajout de média; manipulation directe du DOM.
-        function openAddMediaModal(noteId) {
-            // Create modal dynamically
-            let modal = document.getElementById('addMediaModal');
-            if (!modal) {
-                modal = document.createElement('div');
-                modal.id = 'addMediaModal';
-                modal.className = 'modal';
-                document.body.appendChild(modal);
-            }
-            
-            modal.innerHTML = `
+// [MVVM : View]
+// Crée et affiche la modal d'ajout de média.
+function openAddMediaModal(noteId) {
+    // Create modal dynamically
+    let modal = document.getElementById('addMediaModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'addMediaModal';
+        modal.className = 'modal';
+        document.body.appendChild(modal);
+    }
+
+    modal.innerHTML = `
                 <div class="modal-content" style="max-width: 500px;">
                     <div class="modal-header">
                         <h3>Ajouter un média</h3>
@@ -344,84 +356,89 @@
                     </div>
                 </div>
             `;
-            modal.classList.add('active');
-        }
+    modal.classList.add('active');
+}
 
-// Role: View — Aide l'UI en adaptant le placeholder selon le type sélectionné.
-        function updateMediaInputPlaceholder() {
-            const type = document.getElementById('mediaTypeInput').value;
-            const urlInput = document.getElementById('mediaUrlInput');
-            const placeholders = {
-                'url': 'https://example.com/article',
-                'image': 'https://example.com/image.jpg',
-                'audio': 'https://example.com/music.mp3',
-                'youtube': 'https://www.youtube.com/watch?v=...'
-            };
-            urlInput.placeholder = placeholders[type] || 'https://...';
-        }
+// [MVVM : View]
+// Aide l'UI en adaptant le placeholder selon le type.
+function updateMediaInputPlaceholder() {
+    const type = document.getElementById('mediaTypeInput').value;
+    const urlInput = document.getElementById('mediaUrlInput');
+    const placeholders = {
+        'url': 'https://example.com/article',
+        'image': 'https://example.com/image.jpg',
+        'audio': 'https://example.com/music.mp3',
+        'youtube': 'https://www.youtube.com/watch?v=...'
+    };
+    urlInput.placeholder = placeholders[type] || 'https://...';
+}
 
-// Role: ViewModel — Ajoute un média au Model (`note.medias`), met à jour les timestamps, persiste et rafraîchit la View.
-        function addNoteMedia(noteId) {
-            const type = document.getElementById('mediaTypeInput').value;
-            const title = document.getElementById('mediaTitleInput').value.trim();
-            const url = document.getElementById('mediaUrlInput').value.trim();
-            
-            if (!url) {
-                alert('Veuillez entrer une URL');
-                return;
-            }
+// [MVVM : ViewModel]
+// Ajoute un média au Model, met à jour les timestamps, persiste et rafraîchit la View.
+function addNoteMedia(noteId) {
+    const type = document.getElementById('mediaTypeInput').value;
+    const title = document.getElementById('mediaTitleInput').value.trim();
+    const url = document.getElementById('mediaUrlInput').value.trim();
 
-            const note = project.notes.find(n => n.id === noteId);
-            if (!note) return;
+    if (!url) {
+        alert('Veuillez entrer une URL');
+        return;
+    }
 
-            if (!note.medias) note.medias = [];
-            
-            note.medias.push({
-                type: type,
-                title: title || '',
-                url: url,
-                addedAt: new Date().toISOString()
-            });
+    const note = project.notes.find(n => n.id === noteId);
+    if (!note) return;
 
-            note.updatedAt = new Date().toISOString();
-            saveProject();
-            closeModal('addMediaModal');
-            openNoteDetail(noteId);
-            renderNotesList();
-        }
+    if (!note.medias) note.medias = [];
 
-// Role: ViewModel — Supprime un média du Model, persiste et met à jour la View.
-        function deleteNoteMedia(noteId, mediaIndex) {
-            if (!confirm('Supprimer ce média ?')) return;
-            
-            const note = project.notes.find(n => n.id === noteId);
-            if (!note || !note.medias) return;
+    note.medias.push({
+        type: type,
+        title: title || '',
+        url: url,
+        addedAt: new Date().toISOString()
+    });
 
-            note.medias.splice(mediaIndex, 1);
-            note.updatedAt = new Date().toISOString();
-            saveProject();
-            openNoteDetail(noteId);
-            renderNotesList();
-        }
+    note.updatedAt = new Date().toISOString();
+    saveProject();
+    closeModal('addMediaModal');
+    openNoteDetail(noteId);
+    renderNotesList();
+}
 
-// Role: ViewModel — Met à jour un champ du Model, persiste et rafraîchit la View.
-        function updateNoteField(id, field, value) {
-            const note = project.notes.find(n => n.id === id);
-            if (note) {
-                note[field] = value;
-                note.updatedAt = new Date().toISOString();
-                saveProject();
-                renderNotesList();
-            }
-        }
+// [MVVM : ViewModel]
+// Supprime un média du Model, persiste et met à jour la View.
+function deleteNoteMedia(noteId, mediaIndex) {
+    if (!confirm('Supprimer ce média ?')) return;
 
-// Role: ViewModel — Transforme la saisie en tableau dans le Model, persiste et rafraîchit la View.
-        function updateNoteTags(id, tagsString) {
-            const note = project.notes.find(n => n.id === id);
-            if (note) {
-                note.tags = tagsString.split(',').map(t => t.trim()).filter(t => t);
-                note.updatedAt = new Date().toISOString();
-                saveProject();
-                renderNotesList();
-            }
-        }
+    const note = project.notes.find(n => n.id === noteId);
+    if (!note || !note.medias) return;
+
+    note.medias.splice(mediaIndex, 1);
+    note.updatedAt = new Date().toISOString();
+    saveProject();
+    openNoteDetail(noteId);
+    renderNotesList();
+}
+
+// [MVVM : ViewModel]
+// Met à jour un champ du Model, persiste et rafraîchit la View.
+function updateNoteField(id, field, value) {
+    const note = project.notes.find(n => n.id === id);
+    if (note) {
+        note[field] = value;
+        note.updatedAt = new Date().toISOString();
+        saveProject();
+        renderNotesList();
+    }
+}
+
+// [MVVM : ViewModel]
+// Transforme la saisie en tableau dans le Model, persiste et rafraîchit la View.
+function updateNoteTags(id, tagsString) {
+    const note = project.notes.find(n => n.id === id);
+    if (note) {
+        note.tags = tagsString.split(',').map(t => t.trim()).filter(t => t);
+        note.updatedAt = new Date().toISOString();
+        saveProject();
+        renderNotesList();
+    }
+}

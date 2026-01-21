@@ -7,7 +7,8 @@ let focusStartWordCount = 0;
 // Objectif de mots pour le projet (peut être configuré)
 let projectWordGoal = 50000;
 
-// MVVM: ViewModel — Calcule les données de progression à partir du modèle (project) et met à jour la vue (DOM).
+// [MVVM : ViewModel]
+// Calcule les données de progression et met à jour la vue.
 function updateWritingProgress() {
     if (!currentSceneId) return;
 
@@ -39,7 +40,8 @@ function updateWritingProgress() {
     }
 }
 
-// MVVM: ViewModel/Mixte — Gère l'état logique du mode focus (ViewModel) et manipule directement les classes CSS et l'affichage (Vue).
+// [MVVM : Other]
+// Gère l'état logique et manipule les classes CSS/affichage (Mixte).
 function toggleFocusMode() {
     console.log('toggleFocusMode called, current state:', focusModeActive);
 
@@ -97,7 +99,8 @@ function toggleFocusMode() {
     }
 }
 
-// MVVM: View — Bascule la visibilité d'un élément d'interface (panneau focus).
+// [MVVM : View]
+// Bascule la visibilité d'un élément d'interface (panneau focus).
 function toggleFocusPanel() {
     focusPanelOpen = !focusPanelOpen;
     const panel = document.getElementById('focusPanel');
@@ -111,7 +114,8 @@ function toggleFocusPanel() {
     }
 }
 
-// MVVM: View — Bascule l'affichage d'un composant UI (barre d'outils) basé sur une checkbox.
+// [MVVM : View]
+// Bascule l'affichage d'un composant UI (barre d'outils).
 function toggleToolbar() {
     const toolbar = document.getElementById('editorToolbar');
     if (toolbar) {
@@ -119,7 +123,8 @@ function toggleToolbar() {
     }
 }
 
-// MVVM: View — Bascule l'affichage d'un composant UI (panneau des liens).
+// [MVVM : View]
+// Bascule l'affichage d'un composant UI (panneau des liens).
 function toggleLinksPanelVisibility() {
     const linksPanel = document.getElementById('linksPanel');
     if (linksPanel) {
@@ -127,7 +132,8 @@ function toggleLinksPanelVisibility() {
     }
 }
 
-// MVVM: ViewModel — Met à jour les statistiques affichées dans le mode focus en calculant la différence entre le modèle actuel et le point de départ.
+// [MVVM : ViewModel]
+// Met à jour les statistiques affichées dans le mode focus.
 function updateFocusStats() {
     if (!focusModeActive || !currentSceneId) return;
 
@@ -147,7 +153,8 @@ let pomodoroInterval = null;
 let pomodoroRunning = false;
 let pomodorosCompleted = 0;
 
-// MVVM: View — Affiche ou masque la popup du timer Pomodoro.
+// [MVVM : View]
+// Affiche ou masque la popup du timer Pomodoro.
 function togglePomodoroPopup() {
     const popup = document.getElementById('pomodoroPopup');
     popup.classList.toggle('active');
@@ -162,7 +169,8 @@ document.addEventListener('click', function (event) {
     }
 });
 
-// MVVM: ViewModel — Gère la logique de démarrage du timer Pomodoro.
+// [MVVM : ViewModel]
+// Gère la logique de démarrage du timer Pomodoro.
 function startPomodoro() {
     if (pomodoroRunning) return;
 
@@ -182,7 +190,8 @@ function startPomodoro() {
     }, 1000);
 }
 
-// MVVM: ViewModel — Gère la logique de pause du timer Pomodoro.
+// [MVVM : ViewModel]
+// Gère la logique de pause du timer Pomodoro.
 function pausePomodoro() {
     pomodoroRunning = false;
     // Retirer indicateur visuel
@@ -195,14 +204,16 @@ function pausePomodoro() {
     }
 }
 
-// MVVM: ViewModel — Réinitialise l'état logique du timer Pomodoro.
+// [MVVM : ViewModel]
+// Réinitialise l'état logique du timer Pomodoro.
 function resetPomodoro() {
     pausePomodoro();
     pomodoroTime = 25 * 60;
     updatePomodoroDisplay();
 }
 
-// MVVM: ViewModel — Gère la fin d'un cycle Pomodoro (logique métier et notification).
+// [MVVM : ViewModel]
+// Gère la fin d'un cycle Pomodoro (logique métier et notification).
 function completedPomodoro() {
     pausePomodoro();
     pomodorosCompleted++;
@@ -219,7 +230,8 @@ function completedPomodoro() {
     updatePomodoroDisplay();
 }
 
-// MVVM: View — Met à jour l'affichage textuel du timer dans l'interface (ViewModel vers View).
+// [MVVM : View]
+// Met à jour l'affichage textuel du timer dans l'interface.
 function updatePomodoroDisplay() {
     const minutes = Math.floor(pomodoroTime / 60);
     const seconds = pomodoroTime % 60;
@@ -227,7 +239,8 @@ function updatePomodoroDisplay() {
         `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }
 
-// MVVM: View/Autre — Produit une sortie audio (UI/Feedback), ne manipule pas de données persistantes.
+// [MVVM : Other]
+// Produit une sortie audio (Feedback UI).
 function playNotificationSound() {
     // Create a simple beep sound using Web Audio API
     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -248,7 +261,8 @@ function playNotificationSound() {
 }
 
 // Update focus stats on content change
-// MVVM: ViewModel/Mixte — Décore une fonction existante pour déclencher une mise à jour du ViewModel lors d'un changement dans le modèle ou la vue.
+// [MVVM : Other]
+// Décore une fonction pour déclencher une mise à jour du ViewModel (Mixte).
 const originalUpdateSceneContent = updateSceneContent;
 updateSceneContent = function () {
     originalUpdateSceneContent();

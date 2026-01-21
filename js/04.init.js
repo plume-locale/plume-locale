@@ -1,5 +1,6 @@
 // Initialize
-// [MVVM] Mixte (Controller/Initialization)
+// [MVVM : Other]
+// Mixte (Controller/Initialization)
 async function init() {
     // Initialiser IndexedDB en premier
     const dbReady = await initDB();
@@ -73,7 +74,8 @@ async function init() {
 }
 
 // Fonction utilitaire pour convertir un nombre en chiffres romains
-// [MVVM] Other (Utility)
+// [MVVM : Other]
+// Fonction utilitaire pour convertir un nombre en chiffres romains (Utility)
 function toRoman(num) {
     const romanNumerals = [
         { value: 10, numeral: 'X' },
@@ -94,7 +96,8 @@ function toRoman(num) {
 }
 
 // Save/Load from localStorage
-// [MVVM] ViewModel
+// [MVVM : ViewModel]
+// Gère la sauvegarde du projet avec debounce pour l'historique
 async function saveProject() {
     try {
         // Sauvegarder dans IndexedDB
@@ -153,7 +156,8 @@ async function saveProject() {
     }
 }
 
-// [MVVM] ViewModel
+// [MVVM : ViewModel]
+// Gère le renommage du projet (Input et mise à jour Modèle/Vue)
 function renameProject() {
     const newName = prompt('Nouveau nom du projet :', project.title || 'Mon Roman');
     if (newName === null) return; // Annulé

@@ -4,7 +4,7 @@
 // MOBILE MENU FUNCTIONS
 // ========================================
 
-// Analyse : View
+// [MVVM : View]
 // Manipulation directe du DOM pour la sidebar mobile (classList, style).
 function toggleMobileSidebar() {
     const sidebar = document.querySelector('.sidebar');
@@ -40,7 +40,7 @@ function toggleMobileSidebar() {
     }
 }
 
-// Analyse : View
+// [MVVM : View]
 // Manipulation directe du DOM pour fermer la sidebar.
 function closeMobileSidebar() {
     const sidebar = document.querySelector('.sidebar');
@@ -60,7 +60,7 @@ function closeMobileSidebar() {
 // MOBILE NAVIGATION FUNCTIONS
 // ========================================
 
-// Analyse : View
+// [MVVM : View]
 // Gestion de l'affichage du menu de navigation mobile (DOM + SVG).
 function toggleMobileNav() {
     const dropdown = document.getElementById('mobileNavDropdown');
@@ -98,7 +98,7 @@ function toggleMobileNav() {
     }
 }
 
-// Analyse : View
+// [MVVM : View]
 // Fermeture du menu de navigation mobile (DOM).
 function closeMobileNav() {
     const dropdown = document.getElementById('mobileNavDropdown');
@@ -112,7 +112,7 @@ function closeMobileNav() {
     }
 }
 
-// Analyse : View
+// [MVVM : View]
 // Mise à jour de l'état UI actif et appel d'une fonction de changement de vue.
 function switchViewMobile(view) {
     // Update active state in mobile menu
@@ -135,7 +135,7 @@ function switchViewMobile(view) {
 // MOBILE EDITOR TOOLBAR FUNCTIONS
 // ========================================
 
-// Analyse : View
+// [MVVM : View]
 // Affichage/Masquage de la barre d'outils (DOM).
 function toggleEditorToolbar() {
     const toolbar = document.getElementById('editorToolbar');
@@ -155,7 +155,7 @@ function toggleEditorToolbar() {
     }
 }
 
-// Analyse : View
+// [MVVM : View]
 // Affichage/Masquage du panneau de liens (DOM).
 function toggleLinksPanel() {
     const panel = document.getElementById('linksPanel');
@@ -175,7 +175,7 @@ function toggleLinksPanel() {
     }
 }
 
-// Analyse : View
+// [MVVM : View]
 // Interaction complexe entre deux éléments d'interface (menu flottant et toolbar).
 function toggleToolbarFromFloating() {
     // Fermer le menu flottant
@@ -206,7 +206,7 @@ function toggleToolbarFromFloating() {
     }, 100);
 }
 
-// Analyse : View
+// [MVVM : View]
 // Gestion de l'affichage du menu avancé (DOM + Style).
 function toggleAdvancedMenu() {
     const advancedBar = document.getElementById('advancedMenuBar');
@@ -232,8 +232,8 @@ function toggleAdvancedMenu() {
     }
 }
 
-// Analyse : Mixte
-// Interaction utilisateur (Prompt) -> Appel logique métier (formatText).
+// [MVVM : Other]
+// Interaction utilisateur (Prompt) -> Appel logique métier (formatText). (Mixte)
 function insertLink() {
     const url = prompt('Entrez l\'URL du lien:');
     if (url) {
@@ -241,7 +241,7 @@ function insertLink() {
     }
 }
 
-// Analyse : View (Extension)
+// [MVVM : View]
 // Surcharge d'une fonction existante pour ajouter un comportement purement visuel (fermer sidebar).
 // Override switchView to close mobile sidebar
 const originalSwitchView = switchView;
@@ -253,7 +253,7 @@ switchView = function (view) {
 };
 
 // Détection dynamique du débordement du header
-// Analyse : View
+// [MVVM : View]
 // Calcul de dimensions et ajustement de classes CSS en fonction de l'espace disponible.
 function checkHeaderOverflow() {
     const header = document.querySelector('.app-header');

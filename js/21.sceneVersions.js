@@ -1,294 +1,295 @@
-        // ==========================================
-        // SCENE VERSION MANAGEMENT (Versions par scène)
-        // ==========================================
-        
-        // MVVM: ViewModel — état d'interface utilisé par la vue (visibilité du panneau)
-        let sceneVersionsSidebarVisible = false;
-        
-        // MVVM: Mixte — met à jour l'état (`sceneVersionsSidebarVisible`) ET manipule le DOM (affichage/classe)
-        // Pourquoi: mélange logique d'état (ViewModel) et opérations directes sur la Vue.
-        function toggleVersionsSidebar() {
-            const sidebar = document.getElementById('sidebarVersions');
-            const toggleBtn = document.getElementById('headerVersionsToggle');
-            sceneVersionsSidebarVisible = !sceneVersionsSidebarVisible;
-            
-            if (sceneVersionsSidebarVisible) {
-                sidebar.classList.remove('hidden');
-                if (toggleBtn) {
-                    toggleBtn.classList.add('active');
-                    toggleBtn.title = 'Masquer les versions de scène';
-                }
-            } else {
-                sidebar.classList.add('hidden');
-                if (toggleBtn) {
-                    toggleBtn.classList.remove('active');
-                    toggleBtn.title = 'Afficher les versions de scène';
-                }
-            }
+// ==========================================
+// SCENE VERSION MANAGEMENT (Versions par scène)
+// ==========================================
+
+// [MVVM : ViewModel]
+// État d'interface utilisé par la vue (visibilité du panneau)
+let sceneVersionsSidebarVisible = false;
+
+// [MVVM : Other]
+// Met à jour l'état et manipule le DOM (Mixte ViewModel + View)
+function toggleVersionsSidebar() {
+    const sidebar = document.getElementById('sidebarVersions');
+    const toggleBtn = document.getElementById('headerVersionsToggle');
+    sceneVersionsSidebarVisible = !sceneVersionsSidebarVisible;
+
+    if (sceneVersionsSidebarVisible) {
+        sidebar.classList.remove('hidden');
+        if (toggleBtn) {
+            toggleBtn.classList.add('active');
+            toggleBtn.title = 'Masquer les versions de scène';
         }
-        
-        // MVVM: Mixte — force l'état d'affichage et modifie directement la Vue (DOM)
-        // Pourquoi: change le ViewModel et applique des classes DOM (Vue).
-        function showVersionsSidebar() {
-            const sidebar = document.getElementById('sidebarVersions');
-            const toggleBtn = document.getElementById('headerVersionsToggle');
-            sceneVersionsSidebarVisible = true;
-            sidebar.classList.remove('hidden');
-            if (toggleBtn) {
-                toggleBtn.classList.add('active');
-            }
+    } else {
+        sidebar.classList.add('hidden');
+        if (toggleBtn) {
+            toggleBtn.classList.remove('active');
+            toggleBtn.title = 'Afficher les versions de scène';
         }
-        
-        // MVVM: Model — accès et initialisation des données de modèle (versions d'une scène)
-        // Pourquoi: opère uniquement sur la structure `project` / `scene` sans toucher la Vue.
-        function getSceneVersions(actId, chapterId, sceneId) {
-            const act = project.acts.find(a => a.id === actId);
-            if (!act) return [];
-            const chapter = act.chapters.find(c => c.id === chapterId);
-            if (!chapter) return [];
-            const scene = chapter.scenes.find(s => s.id === sceneId);
-            if (!scene) return [];
-            
-            // Ensure versions array exists
-            if (!scene.versions) {
-                scene.versions = [];
-            }
-            return scene.versions;
+    }
+}
+
+// [MVVM : Other]
+// Force l'état d'affichage et modifie directement la Vue (Mixte ViewModel + View)
+function showVersionsSidebar() {
+    const sidebar = document.getElementById('sidebarVersions');
+    const toggleBtn = document.getElementById('headerVersionsToggle');
+    sceneVersionsSidebarVisible = true;
+    sidebar.classList.remove('hidden');
+    if (toggleBtn) {
+        toggleBtn.classList.add('active');
+    }
+}
+
+// [MVVM : Model]
+// Accès et initialisation des données de modèle (versions d'une scène)
+function getSceneVersions(actId, chapterId, sceneId) {
+    const act = project.acts.find(a => a.id === actId);
+    if (!act) return [];
+    const chapter = act.chapters.find(c => c.id === chapterId);
+    if (!chapter) return [];
+    const scene = chapter.scenes.find(s => s.id === sceneId);
+    if (!scene) return [];
+
+    // Ensure versions array exists
+    if (!scene.versions) {
+        scene.versions = [];
+    }
+    return scene.versions;
+}
+
+// [MVVM : ViewModel]
+// Localise et expose l'act/chapter/scene courant pour la Vue
+function getCurrentSceneForVersions() {
+    if (!currentActId || !currentChapterId || !currentSceneId) return null;
+
+    const act = project.acts.find(a => a.id === currentActId);
+    if (!act) return null;
+    const chapter = act.chapters.find(c => c.id === currentChapterId);
+    if (!chapter) return null;
+    const scene = chapter.scenes.find(s => s.id === currentSceneId);
+
+    return scene ? { act, chapter, scene } : null;
+}
+
+// [MVVM : Other]
+// Orchestration : lit la Vue, met à jour le Modèle, et rafraîchit la Vue (Mixte)
+function createSceneVersion() {
+    const current = getCurrentSceneForVersions();
+    if (!current) {
+        alert('Veuillez d\'abord sélectionner une scène.');
+        return;
+    }
+
+    const { scene } = current;
+
+    // Ensure versions array exists
+    if (!scene.versions) {
+        scene.versions = [];
+    }
+
+    // Sauvegarder le contenu actuel de l'éditeur dans la version active
+    const editor = document.getElementById('sceneEditor');
+    const currentContent = editor ? editor.innerHTML : (scene.content || '');
+
+    // Obtenir les annotations de la version active actuelle (pour les copier)
+    const currentAnnotations = getVersionAnnotations(scene);
+
+    // Sauvegarder le contenu de la version active actuelle
+    const currentActiveVersion = scene.versions.find(v => v.isActive);
+    if (currentActiveVersion) {
+        currentActiveVersion.content = currentContent;
+        currentActiveVersion.wordCount = getWordCount(currentContent);
+    }
+
+    // Create version - GARDER les mêmes IDs d'annotations car le HTML contient ces IDs
+    const versionNumber = scene.versions.length + 1;
+    const version = {
+        id: Date.now(),
+        number: versionNumber,
+        label: '',
+        content: currentContent,
+        wordCount: getWordCount(currentContent),
+        createdAt: new Date().toISOString(),
+        isActive: false,
+        // Copier les annotations avec les MÊMES IDs (deep copy sans changer les IDs)
+        annotations: currentAnnotations.map(a => ({ ...a }))
+    };
+
+    // Mark all previous versions as inactive
+    scene.versions.forEach(v => v.isActive = false);
+
+    // Add new version as active
+    version.isActive = true;
+    scene.versions.push(version);
+
+    // Update scene content reference to this version
+    scene.activeVersionId = version.id;
+    scene.content = currentContent;
+
+    saveProject();
+    renderSceneVersionsList();
+
+    // Rafraîchir le panneau d'annotations
+    const annotationsPanel = document.getElementById('annotationsPanel');
+    if (annotationsPanel && annotationsPanel.classList.contains('visible')) {
+        renderAnnotationsPanel();
+    }
+    updateAnnotationsButton(false);
+
+    showNotification(`✓ Version ${versionNumber} créée`);
+}
+
+// [MVVM : Other]
+// Met à jour l'état du modèle et rafraîchit la Vue (Mixte)
+function switchToSceneVersion(versionId) {
+    const current = getCurrentSceneForVersions();
+    if (!current) return;
+
+    const { scene } = current;
+    if (!scene.versions) return;
+
+    const version = scene.versions.find(v => v.id === versionId);
+    if (!version) return;
+
+    // Save current editor content to current active version before switching
+    const currentActiveVersion = scene.versions.find(v => v.isActive);
+    if (currentActiveVersion) {
+        const editor = document.getElementById('sceneEditor');
+        const currentContent = editor ? editor.innerHTML : (scene.content || '');
+        currentActiveVersion.content = currentContent;
+        currentActiveVersion.wordCount = getWordCount(currentContent);
+    }
+
+    // Mark all versions as inactive
+    scene.versions.forEach(v => v.isActive = false);
+
+    // Activate the selected version
+    version.isActive = true;
+    scene.activeVersionId = version.id;
+
+    // Load version content into scene
+    scene.content = version.content;
+    scene.wordCount = version.wordCount;
+
+    saveProject();
+    renderSceneVersionsList();
+
+    // Refresh editor if this scene is currently open
+    if (currentSceneId === scene.id) {
+        const act = project.acts.find(a => a.id === currentActId);
+        const chapter = act.chapters.find(c => c.id === currentChapterId);
+        renderEditor(act, chapter, scene);
+
+        // Réattacher les event listeners sur les marqueurs d'annotation
+        setTimeout(() => {
+            reattachAnnotationMarkerListeners();
+        }, 50);
+
+        // Rafraîchir le panneau d'annotations pour la nouvelle version
+        const annotationsPanel = document.getElementById('annotationsPanel');
+        if (annotationsPanel && annotationsPanel.classList.contains('visible')) {
+            renderAnnotationsPanel();
         }
-        
-        // MVVM: ViewModel — localise et expose l'act/chapter/scene courant pour la Vue
-        // Pourquoi: fait le lien entre l'état courant (IDs) et le modèle, pour usage par la Vue.
-        function getCurrentSceneForVersions() {
-            if (!currentActId || !currentChapterId || !currentSceneId) return null;
-            
+        updateAnnotationsButton(false);
+    }
+}
+
+// Réattacher les event listeners sur les marqueurs d'annotation après changement de version
+// [MVVM : View]
+// Rattache des écouteurs DOM aux marqueurs d'annotation
+function reattachAnnotationMarkerListeners() {
+    const markers = document.querySelectorAll('[data-annotation-id]');
+    markers.forEach(marker => {
+        const annotationId = parseInt(marker.getAttribute('data-annotation-id'));
+        marker.style.cursor = 'pointer';
+        marker.onclick = function (e) {
+            e.stopPropagation();
+            highlightAnnotation(annotationId);
+        };
+    });
+}
+
+// [MVVM : Other]
+// Supprime le modèle (versions) et rafraîchit la Vue (Mixte)
+function deleteSceneVersion(versionId) {
+    const current = getCurrentSceneForVersions();
+    if (!current) return;
+
+    const { scene } = current;
+    if (!scene.versions || scene.versions.length <= 1) {
+        alert('Impossible de supprimer la dernière version.');
+        return;
+    }
+
+    const version = scene.versions.find(v => v.id === versionId);
+    if (!version) return;
+
+    if (!confirm(`Supprimer la version ${version.number} ?`)) return;
+
+    const wasActive = version.isActive;
+    scene.versions = scene.versions.filter(v => v.id !== versionId);
+
+    // Renumber remaining versions
+    scene.versions.forEach((v, index) => {
+        v.number = index + 1;
+    });
+
+    // If deleted version was active, activate the last one
+    if (wasActive && scene.versions.length > 0) {
+        const lastVersion = scene.versions[scene.versions.length - 1];
+        lastVersion.isActive = true;
+        scene.activeVersionId = lastVersion.id;
+        scene.content = lastVersion.content;
+        scene.wordCount = lastVersion.wordCount;
+
+        // Refresh editor
+        if (currentSceneId === scene.id) {
             const act = project.acts.find(a => a.id === currentActId);
-            if (!act) return null;
             const chapter = act.chapters.find(c => c.id === currentChapterId);
-            if (!chapter) return null;
-            const scene = chapter.scenes.find(s => s.id === currentSceneId);
-            
-            return scene ? { act, chapter, scene } : null;
+            renderEditor(act, chapter, scene);
         }
-        
-        // MVVM: Mixte — orchestration: lit la Vue (éditeur), met à jour le Modèle (versions), et rafraîchit la Vue
-        // Pourquoi: combine lecture DOM, modification du modèle, sauvegarde et re-render.
-        function createSceneVersion() {
-            const current = getCurrentSceneForVersions();
-            if (!current) {
-                alert('Veuillez d\'abord sélectionner une scène.');
-                return;
-            }
-            
-            const { scene } = current;
-            
-            // Ensure versions array exists
-            if (!scene.versions) {
-                scene.versions = [];
-            }
-            
-            // Sauvegarder le contenu actuel de l'éditeur dans la version active
-            const editor = document.getElementById('sceneEditor');
-            const currentContent = editor ? editor.innerHTML : (scene.content || '');
-            
-            // Obtenir les annotations de la version active actuelle (pour les copier)
-            const currentAnnotations = getVersionAnnotations(scene);
-            
-            // Sauvegarder le contenu de la version active actuelle
-            const currentActiveVersion = scene.versions.find(v => v.isActive);
-            if (currentActiveVersion) {
-                currentActiveVersion.content = currentContent;
-                currentActiveVersion.wordCount = getWordCount(currentContent);
-            }
-            
-            // Create version - GARDER les mêmes IDs d'annotations car le HTML contient ces IDs
-            const versionNumber = scene.versions.length + 1;
-            const version = {
-                id: Date.now(),
-                number: versionNumber,
-                label: '',
-                content: currentContent,
-                wordCount: getWordCount(currentContent),
-                createdAt: new Date().toISOString(),
-                isActive: false,
-                // Copier les annotations avec les MÊMES IDs (deep copy sans changer les IDs)
-                annotations: currentAnnotations.map(a => ({...a}))
-            };
-            
-            // Mark all previous versions as inactive
-            scene.versions.forEach(v => v.isActive = false);
-            
-            // Add new version as active
-            version.isActive = true;
-            scene.versions.push(version);
-            
-            // Update scene content reference to this version
-            scene.activeVersionId = version.id;
-            scene.content = currentContent;
-            
-            saveProject();
-            renderSceneVersionsList();
-            
-            // Rafraîchir le panneau d'annotations
-            const annotationsPanel = document.getElementById('annotationsPanel');
-            if (annotationsPanel && annotationsPanel.classList.contains('visible')) {
-                renderAnnotationsPanel();
-            }
-            updateAnnotationsButton(false);
-            
-            showNotification(`✓ Version ${versionNumber} créée`);
-        }
-        
-        // MVVM: Mixte — met à jour l'état du modèle (active version), sauvegarde, et refresh de la Vue/éditeur
-        // Pourquoi: modifie le modèle puis rafraîchit la Vue; comporte aussi sauvegarde côté modèle.
-        function switchToSceneVersion(versionId) {
-            const current = getCurrentSceneForVersions();
-            if (!current) return;
-            
-            const { scene } = current;
-            if (!scene.versions) return;
-            
-            const version = scene.versions.find(v => v.id === versionId);
-            if (!version) return;
-            
-            // Save current editor content to current active version before switching
-            const currentActiveVersion = scene.versions.find(v => v.isActive);
-            if (currentActiveVersion) {
-                const editor = document.getElementById('sceneEditor');
-                const currentContent = editor ? editor.innerHTML : (scene.content || '');
-                currentActiveVersion.content = currentContent;
-                currentActiveVersion.wordCount = getWordCount(currentContent);
-            }
-            
-            // Mark all versions as inactive
-            scene.versions.forEach(v => v.isActive = false);
-            
-            // Activate the selected version
-            version.isActive = true;
-            scene.activeVersionId = version.id;
-            
-            // Load version content into scene
-            scene.content = version.content;
-            scene.wordCount = version.wordCount;
-            
-            saveProject();
-            renderSceneVersionsList();
-            
-            // Refresh editor if this scene is currently open
-            if (currentSceneId === scene.id) {
-                const act = project.acts.find(a => a.id === currentActId);
-                const chapter = act.chapters.find(c => c.id === currentChapterId);
-                renderEditor(act, chapter, scene);
-                
-                // Réattacher les event listeners sur les marqueurs d'annotation
-                setTimeout(() => {
-                    reattachAnnotationMarkerListeners();
-                }, 50);
-                
-                // Rafraîchir le panneau d'annotations pour la nouvelle version
-                const annotationsPanel = document.getElementById('annotationsPanel');
-                if (annotationsPanel && annotationsPanel.classList.contains('visible')) {
-                    renderAnnotationsPanel();
-                }
-                updateAnnotationsButton(false);
-            }
-        }
-        
-        // Réattacher les event listeners sur les marqueurs d'annotation après changement de version
-        // MVVM: View — rattache des écouteurs DOM aux marqueurs d'annotation (opérations purement UI)
-        // Pourquoi: manipulation et comportement d'éléments DOM, sans toucher au modèle.
-        function reattachAnnotationMarkerListeners() {
-            const markers = document.querySelectorAll('[data-annotation-id]');
-            markers.forEach(marker => {
-                const annotationId = parseInt(marker.getAttribute('data-annotation-id'));
-                marker.style.cursor = 'pointer';
-                marker.onclick = function(e) {
-                    e.stopPropagation();
-                    highlightAnnotation(annotationId);
-                };
-            });
-        }
-        
-        // MVVM: Mixte — supprime/ajuste le modèle (versions) et rafraîchit la Vue; inclut confirmation utilisateur
-        // Pourquoi: logique métier (suppression, renumérotation) + effets sur l'UI.
-        function deleteSceneVersion(versionId) {
-            const current = getCurrentSceneForVersions();
-            if (!current) return;
-            
-            const { scene } = current;
-            if (!scene.versions || scene.versions.length <= 1) {
-                alert('Impossible de supprimer la dernière version.');
-                return;
-            }
-            
-            const version = scene.versions.find(v => v.id === versionId);
-            if (!version) return;
-            
-            if (!confirm(`Supprimer la version ${version.number} ?`)) return;
-            
-            const wasActive = version.isActive;
-            scene.versions = scene.versions.filter(v => v.id !== versionId);
-            
-            // Renumber remaining versions
-            scene.versions.forEach((v, index) => {
-                v.number = index + 1;
-            });
-            
-            // If deleted version was active, activate the last one
-            if (wasActive && scene.versions.length > 0) {
-                const lastVersion = scene.versions[scene.versions.length - 1];
-                lastVersion.isActive = true;
-                scene.activeVersionId = lastVersion.id;
-                scene.content = lastVersion.content;
-                scene.wordCount = lastVersion.wordCount;
-                
-                // Refresh editor
-                if (currentSceneId === scene.id) {
-                    const act = project.acts.find(a => a.id === currentActId);
-                    const chapter = act.chapters.find(c => c.id === currentChapterId);
-                    renderEditor(act, chapter, scene);
-                }
-            }
-            
-            saveProject();
-            renderSceneVersionsList();
-        }
-        
-        // MVVM: Mixte — met à jour le modèle (label) et demande à la Vue de se rafraîchir (prompt + render)
-        // Pourquoi: interaction utilisateur (Vue) + modification du modèle.
-        function renameSceneVersion(versionId) {
-            const current = getCurrentSceneForVersions();
-            if (!current) return;
-            
-            const { scene } = current;
-            if (!scene.versions) return;
-            
-            const version = scene.versions.find(v => v.id === versionId);
-            if (!version) return;
-            
-            const newLabel = prompt('Nom de la version (optionnel):', version.label || '');
-            if (newLabel === null) return; // Cancelled
-            
-            version.label = newLabel.trim();
-            saveProject();
-            renderSceneVersionsList();
-        }
-        
-        // MVVM: View — construit et injecte le HTML pour la liste des versions (rendu complet de la Vue)
-        // Pourquoi: purement responsable du rendu DOM et de l'affichage des données.
-        function renderSceneVersionsList() {
-            const listContainer = document.getElementById('sceneVersionsList');
-            const sceneNameEl = document.getElementById('versionsSceneName');
-            const btnNewVersion = document.getElementById('btnNewVersion');
-            
-            if (!listContainer) return;
-            
-            const current = getCurrentSceneForVersions();
-            
-            if (!current) {
-                // No scene selected
-                sceneNameEl.textContent = 'Aucune scène sélectionnée';
-                btnNewVersion.disabled = true;
-                listContainer.innerHTML = `
+    }
+
+    saveProject();
+    renderSceneVersionsList();
+}
+
+// [MVVM : Other]
+// Met à jour le modèle (label) et demande à la Vue de se rafraîchir (Mixte)
+function renameSceneVersion(versionId) {
+    const current = getCurrentSceneForVersions();
+    if (!current) return;
+
+    const { scene } = current;
+    if (!scene.versions) return;
+
+    const version = scene.versions.find(v => v.id === versionId);
+    if (!version) return;
+
+    const newLabel = prompt('Nom de la version (optionnel):', version.label || '');
+    if (newLabel === null) return; // Cancelled
+
+    version.label = newLabel.trim();
+    saveProject();
+    renderSceneVersionsList();
+}
+
+// [MVVM : View]
+// Construit et injecte le HTML pour la liste des versions
+function renderSceneVersionsList() {
+    const listContainer = document.getElementById('sceneVersionsList');
+    const sceneNameEl = document.getElementById('versionsSceneName');
+    const btnNewVersion = document.getElementById('btnNewVersion');
+
+    if (!listContainer) return;
+
+    const current = getCurrentSceneForVersions();
+
+    if (!current) {
+        // No scene selected
+        sceneNameEl.textContent = 'Aucune scène sélectionnée';
+        btnNewVersion.disabled = true;
+        listContainer.innerHTML = `
                     <div class="versions-no-scene">
                         <div class="versions-no-scene-icon">📄</div>
                         <div class="versions-no-scene-text">
@@ -296,22 +297,22 @@
                         </div>
                     </div>
                 `;
-                return;
-            }
-            
-            const { act, chapter, scene } = current;
-            
-            // Update scene name
-            sceneNameEl.textContent = `${act.title} › ${chapter.title} › ${scene.title}`;
-            btnNewVersion.disabled = false;
-            
-            // Ensure versions array exists
-            if (!scene.versions) {
-                scene.versions = [];
-            }
-            
-            if (scene.versions.length === 0) {
-                listContainer.innerHTML = `
+        return;
+    }
+
+    const { act, chapter, scene } = current;
+
+    // Update scene name
+    sceneNameEl.textContent = `${act.title} › ${chapter.title} › ${scene.title}`;
+    btnNewVersion.disabled = false;
+
+    // Ensure versions array exists
+    if (!scene.versions) {
+        scene.versions = [];
+    }
+
+    if (scene.versions.length === 0) {
+        listContainer.innerHTML = `
                     <div class="versions-empty">
                         <div class="versions-empty-icon"><i data-lucide="git-branch" style="width:48px;height:48px;"></i></div>
                         <div class="versions-empty-text">
@@ -320,25 +321,25 @@
                         </div>
                     </div>
                 `;
-                return;
-            }
-            
-            // Sort by most recent first
-            const sortedVersions = [...scene.versions].sort((a, b) => 
-                new Date(b.createdAt) - new Date(a.createdAt)
-            );
-            
-            let html = '';
-            sortedVersions.forEach(version => {
-                const date = new Date(version.createdAt);
-                const dateStr = date.toLocaleDateString('fr-FR');
-                const timeStr = date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-                const canCompare = scene.versions.length >= 2;
-                const isFinal = version.isFinal === true;
-                const finalClass = isFinal ? 'final' : '';
-                const activeClass = version.isActive ? 'active' : '';
-                
-                html += `
+        return;
+    }
+
+    // Sort by most recent first
+    const sortedVersions = [...scene.versions].sort((a, b) =>
+        new Date(b.createdAt) - new Date(a.createdAt)
+    );
+
+    let html = '';
+    sortedVersions.forEach(version => {
+        const date = new Date(version.createdAt);
+        const dateStr = date.toLocaleDateString('fr-FR');
+        const timeStr = date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+        const canCompare = scene.versions.length >= 2;
+        const isFinal = version.isFinal === true;
+        const finalClass = isFinal ? 'final' : '';
+        const activeClass = version.isActive ? 'active' : '';
+
+        html += `
                     <div class="version-card ${activeClass} ${finalClass}" 
                          onclick="switchToSceneVersion(${version.id})">
                         <div class="version-card-header">
@@ -358,71 +359,71 @@
                         ${version.label ? `<div class="version-card-label">${version.label}</div>` : ''}
                     </div>
                 `;
-            });
-            
-            listContainer.innerHTML = html;
+    });
+
+    listContainer.innerHTML = html;
+}
+
+// Marquer/démarquer une version comme finale
+// [MVVM : Other]
+// Met à jour le modèle (flag isFinal) puis rafraîchit la Vue (Mixte)
+function toggleFinalVersion(versionId) {
+    const current = getCurrentSceneForVersions();
+    if (!current) return;
+
+    const { scene } = current;
+    if (!scene.versions) return;
+
+    const version = scene.versions.find(v => v.id === versionId);
+    if (!version) return;
+
+    if (version.isFinal) {
+        // Retirer le statut final
+        version.isFinal = false;
+        showNotification('Version retirée comme finale');
+    } else {
+        // Retirer le statut final des autres versions
+        scene.versions.forEach(v => v.isFinal = false);
+        // Marquer cette version comme finale
+        version.isFinal = true;
+        showNotification(`⭐ Version "${version.number}" marquée comme finale`);
+    }
+
+    saveProject();
+    renderSceneVersionsList();
+}
+
+// Obtenir le contenu à exporter pour une scène (version finale si existe, sinon contenu actuel)
+// [MVVM : Model]
+// Logique d'accès pour l'export (choisit la version finale si présente)
+function getSceneExportContent(scene) {
+    if (scene.versions && scene.versions.length > 0) {
+        const finalVersion = scene.versions.find(v => v.isFinal === true);
+        if (finalVersion) {
+            return finalVersion.content;
         }
-        
-        // Marquer/démarquer une version comme finale
-        // MVVM: Mixte — met à jour le modèle (flag `isFinal`) puis déclenche notifications/rafraîchissement Vue
-        // Pourquoi: modifie les données puis demande à la Vue de se re-render.
-        function toggleFinalVersion(versionId) {
-            const current = getCurrentSceneForVersions();
-            if (!current) return;
-            
-            const { scene } = current;
-            if (!scene.versions) return;
-            
-            const version = scene.versions.find(v => v.id === versionId);
-            if (!version) return;
-            
-            if (version.isFinal) {
-                // Retirer le statut final
-                version.isFinal = false;
-                showNotification('Version retirée comme finale');
-            } else {
-                // Retirer le statut final des autres versions
-                scene.versions.forEach(v => v.isFinal = false);
-                // Marquer cette version comme finale
-                version.isFinal = true;
-                showNotification(`⭐ Version "${version.number}" marquée comme finale`);
-            }
-            
-            saveProject();
-            renderSceneVersionsList();
+    }
+    return scene.content;
+}
+
+// Update scene content when editing (also updates active version)
+// [MVVM : ViewModel]
+// Synchronise le contenu édité (Vue) avec le Modèle et ses versions actives
+function updateSceneContentWithVersion(content) {
+    const current = getCurrentSceneForVersions();
+    if (!current) return;
+
+    const { scene } = current;
+    scene.content = content;
+    scene.wordCount = getWordCount(content);
+
+    // Also update active version if exists
+    if (scene.versions && scene.versions.length > 0) {
+        const activeVersion = scene.versions.find(v => v.isActive);
+        if (activeVersion) {
+            activeVersion.content = content;
+            activeVersion.wordCount = scene.wordCount;
         }
-        
-        // Obtenir le contenu à exporter pour une scène (version finale si existe, sinon contenu actuel)
-        // MVVM: Model — logique d'accès pour l'export (choisit la version finale si présente)
-        // Pourquoi: travaille uniquement sur les données de la scène.
-        function getSceneExportContent(scene) {
-            if (scene.versions && scene.versions.length > 0) {
-                const finalVersion = scene.versions.find(v => v.isFinal === true);
-                if (finalVersion) {
-                    return finalVersion.content;
-                }
-            }
-            return scene.content;
-        }
-        
-        // Update scene content when editing (also updates active version)
-        // MVVM: ViewModel — synchronise le contenu édité (Vue) avec le Modèle et ses versions actives
-        // Pourquoi: agit comme médiateur entre l'éditeur (Vue) et le modèle (mise à jour des versions actives).
-        function updateSceneContentWithVersion(content) {
-            const current = getCurrentSceneForVersions();
-            if (!current) return;
-            
-            const { scene } = current;
-            scene.content = content;
-            scene.wordCount = getWordCount(content);
-            
-            // Also update active version if exists
-            if (scene.versions && scene.versions.length > 0) {
-                const activeVersion = scene.versions.find(v => v.isActive);
-                if (activeVersion) {
-                    activeVersion.content = content;
-                    activeVersion.wordCount = scene.wordCount;
-                }
-            }
-        }
+    }
+}
 

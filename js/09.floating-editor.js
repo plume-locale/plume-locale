@@ -4,7 +4,8 @@
 // GESTES TACTILES POUR L'ÉDITEUR
 // ============================================
 
-// MVVM: View (Gère les interactions tactiles sur l'éditeur : zoom, undo/redo gestuels)
+// [MVVM : View]
+// Gère les interactions tactiles sur l'éditeur (zoom, undo/redo gestuels)
 function initEditorGestures() {
     const editor = document.querySelector('.editor-textarea');
     if (!editor) return;
@@ -85,7 +86,8 @@ let floatingMenuPosition = null;
 let isDraggingFloatingMenu = false;
 let dragOffset = { x: 0, y: 0 };
 
-// MVVM: View (Initialise le menu flottant, ses références DOM et les événements locaux)
+// [MVVM : View]
+// Initialise le menu flottant, ses références DOM et les événements locaux
 function initFloatingEditorMenu() {
     const menu = document.getElementById('floatingEditorMenu');
     const handle = document.getElementById('floatingMenuHandle');
@@ -171,7 +173,8 @@ function initFloatingEditorMenu() {
 }
 
 // TOUCH MOVE - au niveau global
-// MVVM: View (Event Handler global : Gère le déplacement visuel du menu via touch)
+// [MVVM : View]
+// Event Handler global : Gère le déplacement visuel du menu via touch
 document.addEventListener('touchmove', function (e) {
     console.log('👆 TOUCH MOVE event - isDragging:', isDraggingFloatingMenu);
 
@@ -201,7 +204,8 @@ document.addEventListener('touchmove', function (e) {
 }, { passive: false });
 
 // TOUCH END - au niveau global
-// MVVM: ViewModel (Event Handler global : Finalise le déplacement et sauvegarde l'état de position via Persistence)
+// [MVVM : ViewModel]
+// Event Handler global : Finalise le déplacement et sauvegarde l'état de position via Persistence
 document.addEventListener('touchend', function (e) {
     console.log('👆 TOUCH END - isDragging:', isDraggingFloatingMenu);
 
@@ -218,7 +222,8 @@ document.addEventListener('touchend', function (e) {
 });
 
 // MOUSE MOVE - au niveau global
-// MVVM: View (Event Handler global : Gère le déplacement visuel du menu via souris)
+// [MVVM : View]
+// Event Handler global : Gère le déplacement visuel du menu via souris
 document.addEventListener('mousemove', function (e) {
     if (!isDraggingFloatingMenu) return;
 
@@ -239,7 +244,8 @@ document.addEventListener('mousemove', function (e) {
 });
 
 // MOUSE UP - au niveau global
-// MVVM: ViewModel (Event Handler global : Finalise le déplacement souris et sauvegarde l'état)
+// [MVVM : ViewModel]
+// Event Handler global : Finalise le déplacement souris et sauvegarde l'état
 document.addEventListener('mouseup', function (e) {
     if (!isDraggingFloatingMenu) return;
 
@@ -252,7 +258,8 @@ document.addEventListener('mouseup', function (e) {
     localStorage.setItem('floatingMenuPosition', JSON.stringify(floatingMenuPosition));
 });
 
-// MVVM: View (Met à jour le DOM du menu selon l'état de position stocké)
+// [MVVM : View]
+// Met à jour le DOM du menu selon l'état de position stocké
 function updateFloatingMenuPosition() {
     const menu = document.getElementById('floatingEditorMenu');
     if (menu && floatingMenuPosition) {
@@ -263,7 +270,8 @@ function updateFloatingMenuPosition() {
     }
 }
 
-// MVVM: View (Logique d'affichage : Bascule la visibilité du menu et met à jour l'icône)
+// [MVVM : View]
+// Logique d'affichage : Bascule la visibilité du menu et met à jour l'icône
 function toggleFloatingEditorMenu() {
     console.log('toggleFloatingEditorMenu appelée');
     const menu = document.getElementById('floatingEditorMenu');
@@ -289,7 +297,8 @@ function toggleFloatingEditorMenu() {
     }
 }
 
-// MVVM: ViewModel (Action : Applique le formatage de bloc sur le contenu)
+// [MVVM : ViewModel]
+// Action : Applique le formatage de bloc sur le contenu
 function applyFloatingFormat() {
     const format = document.getElementById('floatingFormatBlock').value;
     document.execCommand('formatBlock', false, format);
@@ -297,7 +306,8 @@ function applyFloatingFormat() {
     if (editor) editor.focus();
 }
 
-// MVVM: ViewModel (Action : Modifie la couleur du texte)
+// [MVVM : ViewModel]
+// Action : Modifie la couleur du texte
 function changeFloatingTextColor() {
     const color = document.getElementById('floatingTextColor').value;
     document.execCommand('foreColor', false, color);
@@ -305,7 +315,8 @@ function changeFloatingTextColor() {
     if (editor) editor.focus();
 }
 
-// MVVM: ViewModel (Action : Modifie la couleur de fond)
+// [MVVM : ViewModel]
+// Action : Modifie la couleur de fond
 function changeFloatingBackgroundColor() {
     const color = document.getElementById('floatingBgColor').value;
     document.execCommand('hiliteColor', false, color);
@@ -313,7 +324,8 @@ function changeFloatingBackgroundColor() {
     if (editor) editor.focus();
 }
 
-// MVVM: ViewModel (Action : Logique d'insertion de lien avec interaction utilisateur)
+// [MVVM : ViewModel]
+// Action : Logique d'insertion de lien avec interaction utilisateur
 function insertLink() {
     const url = prompt('URL du lien :');
     if (url) {
@@ -331,7 +343,8 @@ function insertLink() {
     }
 }
 
-// MVVM: ViewModel (Action : Logique d'insertion d'image)
+// [MVVM : ViewModel]
+// Action : Logique d'insertion d'image
 function insertImage() {
     const url = prompt('URL de l\'image :');
     if (url) {

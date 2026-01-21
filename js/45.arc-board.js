@@ -251,7 +251,7 @@ function renderInlineCategoryForm() {
     `;
 }
 
-// [MVVM : ViewModel/View]
+// [MVVM : Other]
 // Définit l'état pour afficher le formulaire de création de catégorie et rafraîchit la sidebar.
 function showInlineCategoryForm() {
     arcBoardState.showingCategoryForm = true;
@@ -260,7 +260,7 @@ function showInlineCategoryForm() {
 }
 
 // Remplacer l'ancienne fonction
-// [MVVM : ViewModel/View]
+// [MVVM : Other]
 // Raccourci vers showInlineCategoryForm pour compatibilité.
 function showAddCategoryModal() {
     showInlineCategoryForm();
@@ -283,7 +283,7 @@ function handleInlineCategoryKeydown(event) {
     }
 }
 
-// [MVVM : ViewModel/Model]
+// [MVVM : Other]
 // Valide et crée une nouvelle catégorie dans les données du projet.
 function confirmInlineCategoryForm() {
     const name = document.getElementById('inlineCategoryName').value.trim();
@@ -401,7 +401,7 @@ function renderArcTreeItem(arc) {
         </div>
     `;
 }
-// [MVVM : ViewModel/View]
+// [MVVM : Other]
 // Prépare l'état pour afficher le formulaire de création ou modification d'un arc.
 function showInlineArcForm(arcId = null) {
     // Nettoyer l'ID des guillemets doubles et simples (Mesure de sécurité)
@@ -452,7 +452,7 @@ function updateInlineArcColor() {
     }
 }
 
-// [MVVM : ViewModel/Model]
+// [MVVM : Other]
 // Valide et enregistre (création ou modification) un arc narratif.
 function confirmInlineArcForm() {
     // 1. Récupérer l'ID, le titre, la catégorie et la couleur
@@ -522,7 +522,7 @@ function confirmInlineArcForm() {
 }
 
 
-// [MVVM : ViewModel/Model]
+// [MVVM : Other]
 // Bascule l'état d'expansion d'une catégorie d'arcs dans la barre latérale.
 function toggleArcCategory(categoryKey) {
     if (!project.collapsedArcCategories) {
@@ -558,7 +558,7 @@ function closeCreateArcModal(event) {
     if (modal) modal.remove();
 }
 
-// [MVVM : ViewModel/Model]
+// [MVVM : Other]
 // (Ancien système) Valide et crée un nouvel arc narratif.
 function confirmCreateArc() {
     const title = document.getElementById('newArcTitle').value.trim();
@@ -606,7 +606,7 @@ function confirmCreateArc() {
 // OUVERTURE DU BOARD D'UN ARC
 // ============================================
 
-// [MVVM : ViewModel/View]
+// [MVVM : Other]
 // Initialise et affiche le board complet d'un arc narratif spécifique.
 function openArcBoard(arcId) {
     const arc = project.narrativeArcs.find(a => a.id === arcId);
@@ -998,7 +998,7 @@ function renderArcCard(card, columnId) {
 }
 
 // Fonction pour supprimer une carte
-// [MVVM : ViewModel/Model]
+// [MVVM : Other]
 // Supprime une carte d'une colonne et met à jour les données du projet.
 function deleteArcCard(event, columnId, cardId) {
     event.stopPropagation();
@@ -1263,7 +1263,7 @@ function renderArcContextDefault(arc) {
     `;
 }
 
-// [MVVM : ViewModel/View]
+// [MVVM : Other]
 // Détermine et affiche le contenu du panneau contextuel selon l'item sélectionné.
 function renderArcContextForItem(item) {
     const body = document.getElementById('arcContextBody');
@@ -1519,7 +1519,7 @@ function renderDefaultContextPanel(item) {
     `;
 }
 
-// [MVVM : ViewModel/View]
+// [MVVM : Other]
 // Bascule la visibilité du panneau contextuel à droite.
 function toggleArcContextPanel() {
     const panel = document.getElementById('arcContextPanel');
@@ -1534,7 +1534,7 @@ function toggleArcContextPanel() {
 // ============================================
 
 // Mode connexion : clic sur source, puis clic sur cible
-// [MVVM : ViewModel/View]
+// [MVVM : Other]
 // Active ou désactive le mode de création de connexions.
 function toggleConnectionMode() {
     if (arcBoardState.activeTool === 'connect') {
@@ -1568,7 +1568,7 @@ function toggleConnectionMode() {
     }
 }
 
-// [MVVM : ViewModel/View]
+// [MVVM : Other]
 // Annule le mode connexion et réinitialise l'état associé.
 function cancelConnectionMode() {
     arcBoardState.activeTool = 'select';
@@ -1593,7 +1593,7 @@ function cancelConnectionMode() {
     });
 }
 
-// [MVVM : ViewModel/Model]
+// [MVVM : Other]
 // Gère la logique de sélection source/cible pour créer une connexion entre deux éléments.
 function handleConnectionClick(itemId) {
     if (arcBoardState.activeTool !== 'connect') return false;
@@ -1669,7 +1669,7 @@ function handleConnectionClick(itemId) {
     }
 }
 
-// [MVVM : Autre]
+// [MVVM : Other]
 // Calcule géométriquement les meilleurs côtés (top, bottom, left, right) pour relier deux éléments.
 function calculateBestConnectionSides(fromId, toId) {
     const fromEl = document.getElementById(`item-${fromId}`);
@@ -1758,7 +1758,7 @@ function renderArcConnections(arc) {
     });
 }
 
-// [MVVM : Autre]
+// [MVVM : Other]
 // Calcule la position (x, y) d'un point d'ancrage sur le bord d'un élément.
 function getElementPosition(element, side) {
     // Obtenir la position depuis le style (left/top)
@@ -1776,7 +1776,7 @@ function getElementPosition(element, side) {
     }
 }
 
-// [MVVM : Autre]
+// [MVVM : Other]
 // Génère la chaîne de caractères (path) pour une courbe de Bézier entre deux points.
 function createBezierPath(from, to, fromSide, toSide) {
     const dx = to.x - from.x;
@@ -1804,7 +1804,7 @@ function createBezierPath(from, to, fromSide, toSide) {
     return `M ${from.x} ${from.y} C ${cp1.x} ${cp1.y}, ${cp2.x} ${cp2.y}, ${to.x} ${to.y}`;
 }
 
-// [MVVM : ViewModel/View]
+// [MVVM : Other]
 // Sélectionne une connexion et met à jour l'état visuel.
 function selectArcConnection(event, connId) {
     event.stopPropagation();
@@ -1824,7 +1824,7 @@ function selectArcConnection(event, connId) {
     if (line) line.classList.add('selected');
 }
 
-// [MVVM : ViewModel/Model]
+// [MVVM : Other]
 // Supprime tous les éléments (items et connexions) actuellement sélectionnés.
 function deleteSelectedItems() {
     const arc = project.narrativeArcs.find(a => a.id === arcBoardState.currentArcId);
@@ -1957,7 +1957,7 @@ function updateCanvasTransform() {
 // ZOOM
 // ============================================
 
-// [MVVM : ViewModel/View]
+// [MVVM : Other]
 // Modifie le facteur de zoom du board et met à jour l'affichage.
 function zoomArcBoard(direction) {
     const newZoom = arcBoardState.zoom + (direction * ARC_BOARD_CONFIG.zoomStep);
@@ -1971,7 +1971,7 @@ function zoomArcBoard(direction) {
     }
 }
 
-// [MVVM : ViewModel/View]
+// [MVVM : Other]
 // Réinitialise le zoom à 100% et recentre le canvas.
 function resetArcZoom() {
     arcBoardState.zoom = 1;
@@ -1989,7 +1989,7 @@ function resetArcZoom() {
 // OUTILS
 // ============================================
 
-// [MVVM : ViewModel/View]
+// [MVVM : Other]
 // Définit l'outil actif (sélection, pan, connexion) et met à jour les curseurs et boutons.
 function setArcTool(tool) {
     arcBoardState.activeTool = tool;
@@ -2016,7 +2016,7 @@ function setArcTool(tool) {
 // AJOUT D'ITEMS
 // ============================================
 
-// [MVVM : ViewModel/Model]
+// [MVVM : Other]
 // Crée et ajoute un nouvel élément (colonne, note, image, etc.) sur le board.
 function addArcItem(type) {
     const arc = project.narrativeArcs.find(a => a.id === arcBoardState.currentArcId);
@@ -2078,7 +2078,7 @@ function addArcItem(type) {
     selectArcItem(null, newItem.id);
 }
 
-// [MVVM : ViewModel/Model]
+// [MVVM : Other]
 // Ajoute une nouvelle carte d'un type spécifique à une colonne donnée.
 function addCardToColumn(columnId, cardType = 'note') {
     const arc = project.narrativeArcs.find(a => a.id === arcBoardState.currentArcId);
@@ -2124,7 +2124,7 @@ function addCardToColumn(columnId, cardType = 'note') {
 // SÉLECTION
 // ============================================
 
-// [MVVM : ViewModel/View]
+// [MVVM : Other]
 // Gère la sélection d'un item sur le board (simple ou multi-sélection avec Ctrl).
 function selectArcItem(event, itemId) {
     if (event) event.stopPropagation();
@@ -2180,7 +2180,7 @@ function selectArcCard(event, cardId, columnId) {
     selectArcItem(event, columnId);
 }
 
-// [MVVM : ViewModel/View]
+// [MVVM : Other]
 // Désélectionne tous les éléments du board et réinitialise le panneau contextuel.
 function deselectAllArcItems() {
     arcBoardState.selectedItems = [];
@@ -2256,7 +2256,7 @@ function handleItemDrag(event) {
     if (arc) renderArcConnections(arc);
 }
 
-// [MVVM : ViewModel/Model]
+// [MVVM : Other]
 // Termine le drag d'un item et enregistre sa nouvelle position.
 function endItemDrag(event) {
     if (!arcBoardState.isDragging || !arcBoardState.dragItem) return;
@@ -2317,7 +2317,7 @@ function handleColumnResizeDrag(event) {
     }
 }
 
-// [MVVM : ViewModel/Model]
+// [MVVM : Other]
 // Termine le redimensionnement d'une colonne et enregistre sa largeur.
 function endColumnResize(event) {
     if (!arcBoardState.isResizing || !arcBoardState.resizeItem) return;
@@ -2342,7 +2342,7 @@ function endColumnResize(event) {
 // MISE À JOUR DES ITEMS
 // ============================================
 
-// [MVVM : ViewModel/Model]
+// [MVVM : Other]
 // Met à jour le titre d'un item dans les données du projet.
 function updateArcItemTitle(itemId, title) {
     const arc = project.narrativeArcs.find(a => a.id === arcBoardState.currentArcId);
@@ -2355,7 +2355,7 @@ function updateArcItemTitle(itemId, title) {
     }
 }
 
-// [MVVM : ViewModel/Model]
+// [MVVM : Other]
 // Met à jour le contenu textuel d'un item.
 function updateArcItemContent(itemId, content) {
     const arc = project.narrativeArcs.find(a => a.id === arcBoardState.currentArcId);
@@ -2368,7 +2368,7 @@ function updateArcItemContent(itemId, content) {
     }
 }
 
-// [MVVM : ViewModel/Model]
+// [MVVM : Other]
 // Met à jour la largeur d'un item et rafraîchit l'affichage.
 function updateArcItemWidth(itemId, width) {
     const arc = project.narrativeArcs.find(a => a.id === arcBoardState.currentArcId);
@@ -2382,7 +2382,7 @@ function updateArcItemWidth(itemId, width) {
     }
 }
 
-// [MVVM : ViewModel/Model]
+// [MVVM : Other]
 // Met à jour le titre global de l'arc narratif actuel.
 function updateCurrentArcTitle(title) {
     const arc = project.narrativeArcs.find(a => a.id === arcBoardState.currentArcId);
@@ -2398,7 +2398,7 @@ function updateCurrentArcTitle(title) {
 // CARTES - MISE À JOUR
 // ============================================
 
-// [MVVM : ViewModel/Model]
+// [MVVM : Other]
 // Met à jour le contenu d'une carte spécifique.
 function updateArcCardContent(columnId, cardId, content) {
     const arc = project.narrativeArcs.find(a => a.id === arcBoardState.currentArcId);
@@ -2414,7 +2414,7 @@ function updateArcCardContent(columnId, cardId, content) {
     }
 }
 
-// [MVVM : ViewModel/Model]
+// [MVVM : Other]
 // Met à jour le titre d'une carte spécifique.
 function updateArcCardTitle(columnId, cardId, title) {
     const arc = project.narrativeArcs.find(a => a.id === arcBoardState.currentArcId);
@@ -2434,7 +2434,7 @@ function updateArcCardTitle(columnId, cardId, title) {
 // TO-DO FUNCTIONS
 // ============================================
 
-// [MVVM : ViewModel/Model]
+// [MVVM : Other]
 // Ajoute une tâche à une carte de type to-do.
 function addArcTodoItem(columnId, cardId) {
     const arc = project.narrativeArcs.find(a => a.id === arcBoardState.currentArcId);
@@ -2453,7 +2453,7 @@ function addArcTodoItem(columnId, cardId) {
     renderArcBoardItems(arc);
 }
 
-// [MVVM : ViewModel/Model]
+// [MVVM : Other]
 // Bascule l'état de complétion d'une tâche dans une carte.
 function toggleArcTodo(columnId, cardId, todoIndex) {
     const arc = project.narrativeArcs.find(a => a.id === arcBoardState.currentArcId);
@@ -2471,7 +2471,7 @@ function toggleArcTodo(columnId, cardId, todoIndex) {
     renderArcBoardItems(arc);
 }
 
-// [MVVM : ViewModel/Model]
+// [MVVM : Other]
 // Met à jour le texte d'une tâche dans une carte.
 function updateArcTodoText(columnId, cardId, todoIndex, text) {
     const arc = project.narrativeArcs.find(a => a.id === arcBoardState.currentArcId);
@@ -2488,7 +2488,7 @@ function updateArcTodoText(columnId, cardId, todoIndex, text) {
 }
 
 // Floating todo functions
-// [MVVM : ViewModel/Model]
+// [MVVM : Other]
 // Ajoute une tâche à un item flottant de type to-do.
 function addFloatingTodoItem(itemId) {
     const arc = project.narrativeArcs.find(a => a.id === arcBoardState.currentArcId);
@@ -2504,7 +2504,7 @@ function addFloatingTodoItem(itemId) {
     renderArcBoardItems(arc);
 }
 
-// [MVVM : ViewModel/Model]
+// [MVVM : Other]
 // Bascule l'état de complétion d'une tâche dans un item flottant.
 function toggleFloatingTodo(itemId, todoIndex) {
     const arc = project.narrativeArcs.find(a => a.id === arcBoardState.currentArcId);
@@ -2519,7 +2519,7 @@ function toggleFloatingTodo(itemId, todoIndex) {
     renderArcBoardItems(arc);
 }
 
-// [MVVM : ViewModel/Model]
+// [MVVM : Other]
 // Met à jour le texte d'une tâche dans un item flottant.
 function updateFloatingTodoText(itemId, todoIndex, text) {
     const arc = project.narrativeArcs.find(a => a.id === arcBoardState.currentArcId);
@@ -2536,7 +2536,7 @@ function updateFloatingTodoText(itemId, todoIndex, text) {
 // TABLE FUNCTIONS
 // ============================================
 
-// [MVVM : ViewModel/Model]
+// [MVVM : Other]
 // Met à jour la valeur d'une cellule dans un tableau.
 function updateArcTableCell(itemId, row, col, value) {
     const arc = project.narrativeArcs.find(a => a.id === arcBoardState.currentArcId);
@@ -2552,7 +2552,7 @@ function updateArcTableCell(itemId, row, col, value) {
     saveProject();
 }
 
-// [MVVM : ViewModel/Model]
+// [MVVM : Other]
 // Modifie les dimensions (lignes ou colonnes) d'un tableau.
 function updateArcTableSize(itemId, dimension, value) {
     const arc = project.narrativeArcs.find(a => a.id === arcBoardState.currentArcId);
@@ -2570,7 +2570,7 @@ function updateArcTableSize(itemId, dimension, value) {
 // LINK FUNCTIONS
 // ============================================
 
-// [MVVM : ViewModel/Model]
+// [MVVM : Other]
 // Gère l'entrée d'une URL pour une carte lien dans une colonne.
 function handleLinkInput(event, columnId, cardId) {
     if (event.key !== 'Enter') return;
@@ -2594,7 +2594,7 @@ function handleLinkInput(event, columnId, cardId) {
     renderArcBoardItems(arc);
 }
 
-// [MVVM : ViewModel/Model]
+// [MVVM : Other]
 // Gère l'entrée d'une URL pour un item lien flottant.
 function handleFloatingLinkInput(event, itemId) {
     if (event.key !== 'Enter') return;
@@ -2648,7 +2648,7 @@ function triggerCardImageUpload(columnId, cardId) {
     }
 }
 
-// [MVVM : ViewModel/Model]
+// [MVVM : Other]
 // Lit le fichier uploadé et met à jour l'élément cible (item ou carte) avec l'image Base64.
 function handleArcFileUpload(event) {
     const file = event.target.files[0];
@@ -2689,7 +2689,7 @@ function handleArcFileUpload(event) {
     reader.readAsDataURL(file);
 }
 
-// [MVVM : ViewModel/Model]
+// [MVVM : Other]
 // Met à jour la source d'image d'un item flottant et enregistre.
 function updateItemImage(itemId, src) {
     const arc = project.narrativeArcs.find(a => a.id === arcBoardState.currentArcId);
@@ -2703,7 +2703,7 @@ function updateItemImage(itemId, src) {
     }
 }
 
-// [MVVM : ViewModel/Model]
+// [MVVM : Other]
 // Met à jour la source d'image d'une carte dans une colonne et enregistre.
 function updateCardImage(columnId, cardId, src) {
     const arc = project.narrativeArcs.find(a => a.id === arcBoardState.currentArcId);
@@ -2724,7 +2724,7 @@ function updateCardImage(columnId, cardId, src) {
 // SUPPRESSION
 // ============================================
 
-// [MVVM : ViewModel/Model]
+// [MVVM : Other]
 // Supprime un item du board ainsi que toutes ses connexions associées.
 function deleteArcItem(itemId) {
     const arc = project.narrativeArcs.find(a => a.id === arcBoardState.currentArcId);
@@ -2750,13 +2750,13 @@ function deleteArcItem(itemId) {
 // FORMATAGE TEXTE
 // ============================================
 
-// [MVVM : Autre]
+// [MVVM : Other]
 // Applique une commande de formatage de texte (gras, italique, etc.) au texte sélectionné.
 function formatArcText(command) {
     document.execCommand(command, false, null);
 }
 
-// [MVVM : Autre]
+// [MVVM : Other]
 // Insère une balise code dans l'éditeur de texte actuel.
 function insertArcCode() {
     document.execCommand('insertHTML', false, '<code></code>');
@@ -2878,7 +2878,7 @@ function handleCardDragLeave(event) {
 }
 
 // Drop sur une colonne - accepte cartes ET éléments flottants
-// [MVVM : ViewModel/Model]
+// [MVVM : Other]
 // Gère le drop sur une colonne (déplacement de carte ou conversion d'item flottant en carte).
 function handleCardDrop(event, targetColumnId) {
     event.preventDefault();
@@ -2933,7 +2933,7 @@ function handleCardDrop(event, targetColumnId) {
 }
 
 // Drop sur le canvas - convertir une carte en élément flottant
-// [MVVM : ViewModel/Model]
+// [MVVM : Other]
 // Gère le drop sur le canvas (conversion d'une carte en item flottant à la position du drop).
 function handleCanvasDrop(event) {
     // Ne pas traiter si on drop sur une colonne
@@ -3173,7 +3173,7 @@ function removeContextMenu() {
     if (menu) menu.remove();
 }
 
-// [MVVM : ViewModel/Model]
+// [MVVM : Other]
 // Ajoute un nouvel item sur le board à une position spécifique (via menu contextuel).
 function addArcItemAtPosition(clientX, clientY, type) {
     removeContextMenu();
@@ -3220,7 +3220,7 @@ function addArcItemAtPosition(clientX, clientY, type) {
 // GESTION DES ARCS
 // ============================================
 
-// [MVVM : ViewModel/Model]
+// [MVVM : Other]
 // Supprime définitivement un arc narratif après confirmation.
 function deleteArc(arcId) {
     removeContextMenu();
@@ -3243,7 +3243,7 @@ function deleteArc(arcId) {
     renderArcsBoardSidebar();
 }
 
-// [MVVM : ViewModel/Model]
+// [MVVM : Other]
 // Duplique un arc narratif complet avec de nouveaux identifiants pour tous ses éléments.
 function duplicateArc(arcId) {
     removeContextMenu();
@@ -3285,7 +3285,7 @@ function duplicateArc(arcId) {
     openArcBoard(newArc.id);
 }
 
-// [MVVM : ViewModel/Model]
+// [MVVM : Other]
 // Renomme un arc narratif via une boîte de dialogue prompt.
 function renameArc(arcId) {
     removeContextMenu();
@@ -3318,7 +3318,7 @@ function closeAddCategoryModal(event) {
     if (modal) modal.remove();
 }
 
-// [MVVM : ViewModel/Model]
+// [MVVM : Other]
 // (Ancien système) Valide et crée une nouvelle catégorie via modale.
 function confirmAddCategory() {
     const name = document.getElementById('newCategoryName').value.trim();
@@ -3478,7 +3478,7 @@ document.addEventListener('keydown', function (event) {
 // COPY/PASTE
 // ============================================
 
-// [MVVM : ViewModel/Model]
+// [MVVM : Other]
 // Copie les éléments sélectionnés dans le presse-papier interne.
 function copySelectedItems() {
     const arc = project.narrativeArcs.find(a => a.id === arcBoardState.currentArcId);
@@ -3488,7 +3488,7 @@ function copySelectedItems() {
     arcBoardState.clipboard = JSON.parse(JSON.stringify(itemsToCopy));
 }
 
-// [MVVM : ViewModel/Model]
+// [MVVM : Other]
 // Colle les éléments du presse-papier sur le board avec un décalage.
 function pasteArcItem() {
     removeContextMenu();

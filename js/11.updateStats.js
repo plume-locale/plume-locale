@@ -3,8 +3,8 @@
     if (typeof window === 'undefined') return;
     if (typeof window.updateStats === 'function') return; // migrated implementation present
 
-    /* [Mixte] Calcul des statistiques globales (Logique métier) et mise à jour directe de l'interface (View).
-       Cette fonction agit comme un contrôleur/présentateur qui synchronise l'état du projet avec le header. */
+    // [MVVM : Other]
+    // Calcul des statistiques globales (Logique métier) et mise à jour directe de l'interface (View).
     window.updateStats = function () {
         const totalActs = project.acts.length;
         const totalChapters = project.acts.reduce((sum, act) => sum + act.chapters.length, 0);

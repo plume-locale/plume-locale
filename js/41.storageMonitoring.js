@@ -68,7 +68,7 @@ function formatBytes(bytes) {
     return mb.toFixed(2) + ' MB';
 }
 
-// [MVVM : Mixte (ViewModel/View)]
+// [MVVM : Other]
 // Calcule le pourcentage d'utilisation (ViewModel) et met à jour l'apparence du badge de stockage dans l'interface (View).
 async function updateStorageBadge() {
     try {
@@ -154,7 +154,7 @@ function showStorageAlert(title, message, level) {
     }
 }
 
-// [MVVM : Mixte (ViewModel/View)]
+// [MVVM : Other]
 // Prépare les données détaillées (ViewModel) et met à jour dynamiquement la modale de détails du stockage (View).
 async function showStorageDetails() {
     try {

@@ -515,7 +515,7 @@ let cardDragState = {
     isTreeviewDrag: false
 };
 
-// [MVVM : Mixte]
+// [MVVM : Other]
 // Gère le début du glissement d'une carte : met à jour l'état (ViewModel) et applique des styles (View).
 function handleCardDragStart(event, cardId) {
     event.stopPropagation();
@@ -533,7 +533,7 @@ function handleCardDragStart(event, cardId) {
     event.dataTransfer.setData('text/plain', cardId);
 }
 
-// [MVVM : Mixte]
+// [MVVM : Other]
 // Gère la fin du glissement d'une carte : réinitialise l'état et nettoie les styles visuels (View).
 function handleCardDragEnd(event) {
     event.stopPropagation();
@@ -574,7 +574,7 @@ function handleCellDragLeave(event) {
     }
 }
 
-// [MVVM : Mixte]
+// [MVVM : Other]
 // Gère le drop de cartes : crée ou déplace des éléments (Model/ViewModel) et rafraîchit l'affichage (View).
 function handleCellDrop(event, targetRowId, targetColumnId) {
     event.preventDefault();
@@ -675,7 +675,7 @@ function handleStackedCardClick(event, cardId, index) {
     }
 }
 
-// [MVVM : Mixte]
+// [MVVM : Other]
 // Gère le début du glissement depuis l'arborescence (treeview) vers la grille.
 function handleTreeviewDragStart(event, elementId) {
     event.stopPropagation();
@@ -689,7 +689,7 @@ function handleTreeviewDragStart(event, elementId) {
     event.dataTransfer.setData('text/plain', elementId);
 }
 
-// [MVVM : Mixte]
+// [MVVM : Other]
 // Gère la fin du glissement depuis l'arborescence, nettoie les indicateurs visuels (View).
 function handleTreeviewDragEnd(event) {
     event.stopPropagation();
@@ -841,7 +841,7 @@ function handleCardFooterClick(event, cardId) {
     }, 100);
 }
 
-// [MVVM : Mixte]
+// [MVVM : Other]
 // Met à jour le modèle (statut de la carte) et rafraîchit la vue.
 function changeCardStatus(cardId, newStatus) {
     const card = thrillerBoardState.gridConfig.cards.find(c => c.id === cardId);
@@ -867,7 +867,7 @@ function changeCardStatus(cardId, newStatus) {
     }
 }
 
-// [MVVM : Mixte]
+// [MVVM : Other]
 // Change l'ordre d'affichage (zIndex) pour amener une carte au premier plan.
 function bringCardToFront(event, cardId) {
     event.stopPropagation();
@@ -992,7 +992,7 @@ function editThrillerCardFromModal(cardId) {
     editThrillerElement(card.elementId);
 }
 
-// [MVVM : Mixte]
+// [MVVM : Other]
 // Supprime une carte depuis le modal de la pile et rafraîchit l'interface.
 function deleteThrillerCardFromStack(cardId) {
     if (!confirm('Supprimer cette carte ?')) return;
@@ -1133,7 +1133,7 @@ function renderThrillerCardProperties(card) {
     }).join('');
 }
 
-// [MVVM : Model/ViewModel]
+// [MVVM : Other]
 // Définit les propriétés attendues pour chaque type de carte Thriller.
 function getCardTypeProperties(cardType) {
     // Define which properties to show for each card type
@@ -1556,7 +1556,7 @@ function selectAndViewThrillerElement(elementId) {
 // ELEMENT MANAGEMENT
 // ============================================
 
-// [MVVM : Mixte]
+// [MVVM : Other]
 // Crée un nouvel élément (Model) et ouvre son modal d'édition (View).
 function addThrillerElement(type = null) {
     // Use current filter if no type specified
@@ -2263,7 +2263,7 @@ function renderThrillerElementFields(element) {
     }
 }
 
-// [MVVM : Mixte]
+// [MVVM : Other]
 // Récupère les données du formulaire, met à jour le modèle (project) et rafraîchit la vue.
 function saveThrillerElement(event, elementId, isNew = false) {
     event.preventDefault();
@@ -2481,7 +2481,7 @@ function saveThrillerElement(event, elementId, isNew = false) {
     event.target.closest('.modal-overlay').remove();
 }
 
-// [MVVM : Model/ViewModel]
+// [MVVM : Other]
 // Met à jour toutes les cartes de la grille associées à un élément modifié.
 function updateCardsFromElement(elementId) {
     // Find the element
@@ -2642,7 +2642,7 @@ function moveCardsToNewSwimlane(elementId, oldCharacterId, newCharacterId) {
     project.thrillerGridConfig.cards = thrillerBoardState.gridConfig.cards;
 }
 
-// [MVVM : Mixte]
+// [MVVM : Other]
 // Crée une ou plusieurs cartes sur la grille pour un élément donné.
 function createCardForElement(element) {
     // Determine the row based on the character or location associated with the element
@@ -2721,7 +2721,7 @@ function createCardForElement(element) {
     renderThrillerBoard();
 }
 
-// [MVVM : Mixte]
+// [MVVM : Other]
 // Supprime un élément, ses cartes associées et ses connexions.
 function deleteThrillerElement(elementId) {
     if (!confirm('Êtes-vous sûr de vouloir supprimer cet élément et toutes ses cartes associées ?')) return;
@@ -2909,7 +2909,7 @@ function selectThrillerElement(elementId) {
     // Update visual selection
 }
 
-// [MVVM : Autre]
+// [MVVM : Other]
 // Génère un identifiant unique aléatoire.
 function generateId() {
     return 'thriller_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
@@ -3291,7 +3291,7 @@ function updateRowTypeFields(type) {
     }
 }
 
-// [MVVM : Mixte]
+// [MVVM : Other]
 // Enregistre une nouvelle ligne dans le modèle et rafraîchit la grille.
 function saveThrillerSwimlaneRow(event) {
     event.preventDefault();
@@ -3357,7 +3357,7 @@ function editThrillerRow(rowId) {
     }
 }
 
-// [MVVM : Mixte]
+// [MVVM : Other]
 // Supprime une ligne (Model) et rafraîchit la vue.
 function deleteThrillerRow(rowId) {
     if (!confirm('Supprimer cette ligne et toutes ses cartes ?')) return;
@@ -3407,7 +3407,7 @@ function editThrillerColumn(columnId) {
     }
 }
 
-// [MVVM : Mixte]
+// [MVVM : Other]
 // Supprime une colonne (Model) et rafraîchit la vue.
 function deleteThrillerColumn(columnId) {
     if (!confirm('Supprimer cette colonne et toutes ses cartes ?')) return;
@@ -3523,7 +3523,7 @@ function updateCardFields(cardType) {
     container.innerHTML = html;
 }
 
-// [MVVM : Mixte]
+// [MVVM : Other]
 // Enregistre une nouvelle carte dans la cellule (Model/ViewModel) et rafraîchit la grille.
 function saveNewThrillerCard(event, rowId, columnId) {
     event.preventDefault();
@@ -3700,7 +3700,7 @@ function updateCardFieldsForEdit(cardType, cardId) {
     container.innerHTML = html;
 }
 
-// [MVVM : Mixte (Déprécié)]
+// [MVVM : Other]
 // Enregistrement des modifications via l'ancien modal de carte.
 function saveEditedThrillerCard(event, cardId) {
     event.preventDefault();
@@ -3746,7 +3746,7 @@ function saveEditedThrillerCard(event, cardId) {
 }
 */
 
-// [MVVM : Mixte]
+// [MVVM : Other]
 // Supprime une carte de la grille (Model) et rafraîchit l'affichage.
 function deleteThrillerCard(cardId) {
     if (!confirm('Supprimer cette carte et toutes ses connexions ?')) return;
@@ -3783,7 +3783,7 @@ let connectionState = {
     dragOverlay: null
 };
 
-// [MVVM : Mixte]
+// [MVVM : Other]
 // Initialise le dessin d'une connexion entre deux sockets de cartes.
 function startThrillerConnection(event, cardId, property) {
     console.log('=== START CONNECTION ===');
@@ -3885,7 +3885,7 @@ function handleConnectionDrag(event) {
     }
 }
 
-// [MVVM : Mixte]
+// [MVVM : Other]
 // Finalise la création d'une connexion entre deux cartes au relâchement de la souris.
 function endThrillerConnection(event) {
     console.log('=== END CONNECTION ===');
@@ -3949,7 +3949,7 @@ function endThrillerConnection(event) {
     console.log('Cleanup complete');
 }
 
-// [MVVM : Model/ViewModel]
+// [MVVM : Other]
 // Crée une nouvelle connexion logique entre deux éléments et l'ajoute au projet.
 function createThrillerConnection(fromCardId, fromProperty, toCardId, toProperty) {
     console.log('=== CREATE CONNECTION ===');
@@ -3994,7 +3994,7 @@ function createThrillerConnection(fromCardId, fromProperty, toCardId, toProperty
     renderThrillerBoard();
 }
 
-// [MVVM : Mixte]
+// [MVVM : Other]
 // Supprime une connexion logique entre deux éléments.
 function deleteThrillerConnection(connectionId) {
     if (!thrillerBoardState.gridConfig.connections) return;

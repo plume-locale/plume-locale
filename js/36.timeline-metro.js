@@ -876,7 +876,7 @@ function sortMetroByDate() {
     }
 
     // Helper function to parse date in DD/MM/YYYY format
-    // [MVVM : autre]
+    // [MVVM : Other]
     // Analyse une date réelle au format JJ/MM/AAAA.
     function parseRealDate(dateStr) {
         if (!dateStr || !dateStr.trim()) return null;
@@ -909,7 +909,7 @@ function sortMetroByDate() {
 
     // Helper function to extract a numeric value from fictional dates
     // Handles: "An 2157", "Année 5", "Year 42", "2157", "-500" (BCE), etc.
-    // [MVVM : autre]
+    // [MVVM : Other]
     // Extrait l'année d'une chaîne de caractères (pour calendriers fictifs).
     function extractYearNumber(dateStr) {
         if (!dateStr || !dateStr.trim()) return null;
@@ -1167,7 +1167,7 @@ function parseMetroTimelineCSV(csvContent) {
     showNotification(`✓ ${imported} événement(s) importé(s)`);
 }
 
-// [MVVM : autre]
+// [MVVM : Other]
 // Analyse une ligne CSV en tenant compte des guillemets.
 function parseCSVLine(line) {
     const result = [];
@@ -1202,7 +1202,7 @@ function exportTimelineCSV() {
     exportMetroTimelineCSV();
 }
 
-// [MVVM : autre]
+// [MVVM : Other]
 // Échappe les champs pour l'exportation CSV.
 function escapeCSVField(field) {
     if (!field) return '""';

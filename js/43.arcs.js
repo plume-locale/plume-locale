@@ -316,7 +316,7 @@ function renderArcEditor(arc, isNew = false) {
     }
 }
 
-// [MVVM : Mixte]
+// [MVVM : Other]
 // Gère la sélection visuelle d'un type d'arc et met à jour les données temporaires de l'éditeur.
 function selectArcTypeInEditor(type) {
     // Update UI
@@ -337,7 +337,7 @@ function selectArcTypeInEditor(type) {
     window.currentEditingArc.type = type;
 }
 
-// [MVVM : Mixte]
+// [MVVM : Other]
 // Récupère les données du formulaire, les valide et les enregistre dans le modèle.
 function saveArcFromEditor(isNew) {
     const arc = window.currentEditingArc;
@@ -403,7 +403,7 @@ function cancelArcEdit() {
 // DELETE ARC
 // ============================================
 
-// [MVVM : Mixte]
+// [MVVM : Other]
 // Supprime un arc du modèle après confirmation et rafraîchit la vue.
 function deleteNarrativeArc(arcId) {
     const arc = project.narrativeArcs.find(a => a.id === arcId);
@@ -539,7 +539,7 @@ function renderArcScenePanel() {
     }
 }
 
-// [MVVM : Mixte]
+// [MVVM : Other]
 // Ajoute un arc existant à la scène courante et met à jour le modèle.
 function addArcToCurrentScene() {
     const select = document.getElementById('arcToAddSelect');
@@ -566,7 +566,7 @@ function addArcToCurrentScene() {
     renderArcScenePanel();
 }
 
-// [MVVM : Mixte]
+// [MVVM : Other]
 // Retire un arc de la scène courante et met à jour le modèle.
 function removeArcFromScene(arcId) {
     const arc = project.narrativeArcs.find(a => a.id === arcId);
@@ -577,7 +577,7 @@ function removeArcFromScene(arcId) {
     renderArcScenePanel();
 }
 
-// [MVVM : Mixte]
+// [MVVM : Other]
 // Met à jour l'intensité d'un arc dans une scène (Model) et rafraîchit l'affichage (View).
 function updateArcIntensity(arcId, intensity) {
     const arc = project.narrativeArcs.find(a => a.id === arcId);

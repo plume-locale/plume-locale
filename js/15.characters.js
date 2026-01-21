@@ -7,7 +7,8 @@ if (!project.races) {
     project.races = ['Humain', 'Elfe', 'Nain', 'Orc', 'Autre'];
 }
 
-// [MVVM] Mixte - Logique métier et interaction utilisateur (prompt)
+// [MVVM : Other]
+// Logique métier et interaction utilisateur (prompt) - Mixte
 function addNewRace(charId) {
     const newRace = prompt("Nom de la nouvelle race :");
     if (newRace && newRace.trim() !== "") {
@@ -34,13 +35,15 @@ function addNewRace(charId) {
 }
 
 // Character Management
-// [MVVM] View - Manipulation directe du DOM pour afficher la modale
+// [MVVM : View]
+// Manipulation directe du DOM pour afficher la modale
 function openAddCharacterModal() {
     document.getElementById('addCharacterModal').classList.add('active');
     setTimeout(() => document.getElementById('characterNameInput').focus(), 100);
 }
 
-// [MVVM] ViewModel - Gère la création, l'initialisation et la sauvegarde d'un personnage
+// [MVVM : ViewModel]
+// Gère la création, l'initialisation et la sauvegarde d'un personnage
 function addCharacter() {
     const name = document.getElementById('characterNameInput').value.trim();
     const role = document.getElementById('characterRoleInput').value.trim();
@@ -134,7 +137,8 @@ function addCharacter() {
     openCharacterDetail(character.id);
 }
 
-// [MVVM] ViewModel - Gère la suppression et la mise à jour de l'état global
+// [MVVM : ViewModel]
+// Gère la suppression et la mise à jour de l'état global
 function deleteCharacter(id) {
     if (!confirm('Êtes-vous sûr de vouloir supprimer ce personnage ?')) return;
     project.characters = project.characters.filter(c => c.id !== id);
@@ -143,7 +147,8 @@ function deleteCharacter(id) {
     showEmptyState();
 }
 
-// [MVVM] View - Génération du HTML pour la liste des personnages
+// [MVVM : View]
+// Génération du HTML pour la liste des personnages
 function renderCharactersList() {
     const container = document.getElementById('charactersList');
 
@@ -246,7 +251,8 @@ function renderCharactersList() {
     }
 }
 
-// [MVVM] ViewModel - Gère l'état de repliement des groupes dans le localStorage
+// [MVVM : ViewModel]
+// Gère l'état de repliement des groupes dans le localStorage
 function toggleTreeviewGroup(groupKey) {
     const collapsedState = JSON.parse(localStorage.getItem('plume_treeview_collapsed') || '{}');
     collapsedState[groupKey] = !collapsedState[groupKey];
@@ -258,7 +264,8 @@ function toggleTreeviewGroup(groupKey) {
     else if (groupKey.startsWith('codex_')) renderCodexList();
 }
 
-// [MVVM] View - Génération du HTML pour les scènes liées
+// [MVVM : View]
+// Génération du HTML pour les scènes liées
 function renderCharacterLinkedScenes(character) {
     const scenes = findScenesWithCharacter(character.id);
     if (scenes.length === 0) return '';
@@ -286,7 +293,8 @@ function renderCharacterLinkedScenes(character) {
             `;
 }
 
-// [MVVM] ViewModel - Coordination de l'affichage du détail d'un personnage
+// [MVVM : ViewModel]
+// Coordination de l'affichage du détail d'un personnage
 function openCharacterDetail(id) {
     const character = project.characters.find(c => c.id === id);
     if (!character) return;
@@ -321,7 +329,8 @@ function openCharacterDetail(id) {
     }, 50);
 }
 
-// [MVVM] Model/ViewModel - Migration et normalisation des données
+// [MVVM : Other]
+// Migration et normalisation des données (Model/ViewModel)
 function migrateCharacterData(char) {
     // Migrate legacy characters to new structure
     if (!char.firstName) char.firstName = char.name?.split(' ')[0] || '';
@@ -378,7 +387,8 @@ function migrateCharacterData(char) {
     if (!char.possessions) char.possessions = [];
 }
 
-// [MVVM] View - Template HTML principal de la fiche personnage
+// [MVVM : View]
+// Template HTML principal de la fiche personnage
 function renderCharacterSheet(character, compact = false) {
     const metaInfo = [];
     if (character.age) metaInfo.push(`${character.age}${character.birthPlace ? ', né à ' + character.birthPlace : ''}`);
@@ -704,7 +714,8 @@ function renderCharacterSheet(character, compact = false) {
             `;
 }
 
-// [MVVM] View - Template HTML pour un item d'inventaire
+// [MVVM : View]
+// Template HTML pour un item d'inventaire
 function renderInventoryItem(charId, listType, item, index) {
     return `
                 <div class="inventory-item" data-index="${index}">
@@ -732,7 +743,8 @@ function renderInventoryItem(charId, listType, item, index) {
             `;
 }
 
-// [MVVM] View - Interaction UI simple pour afficher/masquer des sections
+// [MVVM : View]
+// Interaction UI simple pour afficher/masquer des sections
 function toggleCharacterSection(sectionName) {
     const section = document.getElementById(`section-${sectionName}`);
     if (section) {
@@ -740,7 +752,8 @@ function toggleCharacterSection(sectionName) {
     }
 }
 
-// [MVVM] ViewModel - Logique de mise à jour du nom
+// [MVVM : ViewModel]
+// Logique de mise à jour du nom
 function updateCharacterName(id, newName) {
     const character = project.characters.find(c => c.id === id);
     if (character) {
@@ -753,7 +766,8 @@ function updateCharacterName(id, newName) {
     }
 }
 
-// [MVVM] ViewModel - Logique de mise à jour du nom d'affichage
+// [MVVM : ViewModel]
+// Logique de mise à jour du nom d'affichage
 function updateCharacterDisplayName(id) {
     const character = project.characters.find(c => c.id === id);
     if (character) {
@@ -763,7 +777,8 @@ function updateCharacterDisplayName(id) {
     }
 }
 
-// [MVVM] ViewModel - Gestion des tags et mise à jour directe (Mixte car manipule un peu de DOM pour le rafraîchissement ciblé)
+// [MVVM : Other]
+// Gestion des tags et mise à jour directe (Mixte)
 function handleTagInput(event, charId, field) {
     if (event.key === 'Enter' && event.target.value.trim()) {
         event.preventDefault();
@@ -785,7 +800,8 @@ function handleTagInput(event, charId, field) {
     }
 }
 
-// [MVVM] ViewModel - Logique de suppression d'un tag
+// [MVVM : ViewModel]
+// Logique de suppression d'un tag
 function removeCharacterTag(charId, field, index) {
     const character = project.characters.find(c => c.id === charId);
     if (character && character[field]) {

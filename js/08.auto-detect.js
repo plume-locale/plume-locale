@@ -4,13 +4,9 @@
 
 let autoDetectTimeout = null;
 
-/**
- * [ViewModel] Lance la détection automatique avec un délai.
- * Gère la logique temporelle (debounce) avant de déclencher le traitement métier.
- * 
- * Lance la détection automatique avec un délai (Debounce)
- * pour éviter de surcharger pendant la frappe.
- */
+// [MVVM : ViewModel]
+// Lance la détection automatique avec un délai (Debounce)
+// pour éviter de surcharger pendant la frappe.
 function autoDetectLinksDebounced() {
     clearTimeout(autoDetectTimeout);
     autoDetectTimeout = setTimeout(() => {
@@ -18,13 +14,9 @@ function autoDetectLinksDebounced() {
     }, 800); // Délai de 800ms après arrêt de la frappe
 }
 
-/**
- * [ViewModel] Accès aux données contextuelles.
- * Récupère l'objet "scène" courant depuis le modèle global (project).
- * Est utilisé par les fonctions de logique métier et de vue.
- * 
- * Fonction utilitaire pour récupérer la scène active proprement
- */
+// [MVVM : ViewModel]
+// Accès aux données contextuelles.
+// Récupère l'objet "scène" courant depuis le modèle global (project).
 function getCurrentScene() {
     if (!currentActId || !currentChapterId || !currentSceneId) return null;
 
@@ -37,12 +29,9 @@ function getCurrentScene() {
     return chapter.scenes.find(s => s.id === currentSceneId);
 }
 
-/**
- * [Model/Helper] Utilitaire pur de manipulation de données.
- * Modifie un tableau en place (mutation de données).
- * 
- * Fonction utilitaire pour retirer un élément d'un tableau
- */
+// [MVVM : Model]
+// Utilitaire pur de manipulation de données.
+// Modifie un tableau en place (mutation de données).
 function removeIdfromArray(arr, id) {
     const index = arr.indexOf(id);
     if (index > -1) {
@@ -52,17 +41,9 @@ function removeIdfromArray(arr, id) {
     return false;
 }
 
-/**
- * [ViewModel] Cœur de la logique de détection (Business Logic).
- * 1. Lit la Vue (editor.innerHTML).
- * 2. Analyse le texte (Traitement métier).
- * 3. Met à jour le Modèle (scene.suggestedCharacters, etc.).
- * 4. Déclenche la mise à jour de la Vue (refreshLinksPanel).
- * Agit comme un contrôleur/médiateur complexe.
- * 
- * Fonction principale de détection
- * Analyse le texte et met à jour les listes (Suggérés, Présents, Absents)
- */
+// [MVVM : ViewModel]
+// Cœur de la logique de détection (Business Logic).
+// Analyse le texte et met à jour les listes (Suggérés, Présents, Absents)
 function autoDetectLinks() {
     const scene = getCurrentScene();
     if (!scene) return;
@@ -217,14 +198,9 @@ function autoDetectLinks() {
 // GESTION MANUELLE DES ÉTATS (ACTIONS UTILISATEUR)
 // ============================================
 
-/**
- * [ViewModel] Action utilisateur (Command).
- * Modifie l'état du Modèle (déplacement de listes) suite à une interaction utilisateur.
- * Déclenche la sauvegarde et le rafraîchissement de la vue.
- * 
- * Action : L'utilisateur valide la présence (Check)
- * Déplace de Suggéré/Absent vers Présent
- */
+// [MVVM : ViewModel]
+// Action utilisateur (Command) : L'utilisateur valide la présence (Check)
+// Déplace de Suggéré/Absent vers Présent
 function confirmCharacterPresence(charId) {
     const scene = getCurrentScene();
     if (!scene) return;
@@ -242,13 +218,9 @@ function confirmCharacterPresence(charId) {
     refreshLinksPanel();
 }
 
-/**
- * [ViewModel] Action utilisateur (Command).
- * Modifie le Modèle pour refuser une suggestion.
- * 
- * Action : L'utilisateur refuse la présence (Croix)
- * Déplace de Suggéré/Présent vers Absent
- */
+// [MVVM : ViewModel]
+// Action utilisateur (Command) : L'utilisateur refuse la présence (Croix)
+// Déplace de Suggéré/Présent vers Absent
 function confirmCharacterAbsence(charId) {
     const scene = getCurrentScene();
     if (!scene) return;
@@ -272,11 +244,8 @@ function confirmCharacterAbsence(charId) {
 
 // Fichier 08.auto-detect.js - REMPLACEMENT TOTAL DE function refreshLinksPanel()
 
-/**
- * [View] Fonction de rendu pur.
- * Construit le DOM du panneau latéral basé sur l'état actuel du Modèle.
- * Ne contient pas de logique métier complexe, juste du mapping Modèle -> HTML.
- */
+// [MVVM : View]
+// Fonction de rendu pur. Construit le DOM du panneau latéral basé sur l'état du Modèle.
 function refreshLinksPanel() {
     const linksPanel = document.getElementById('linksPanel');
     if (!linksPanel) return;
@@ -437,12 +406,8 @@ function refreshLinksPanel() {
     if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
-/**
- * [View] Helper de rendu UI.
- * Retourne une chaîne de caractères (nom d'icône) pour l'affichage.
- * 
- * Détermine l'icône Lucide à utiliser pour un type d'élément donné.
- */
+// [MVVM : View]
+// Helper de rendu UI. Détermine l'icône Lucide à utiliser pour un type d'élément.
 function getElementIcon(type) {
     switch (type.toLowerCase()) {
         case 'lieu':
@@ -463,16 +428,8 @@ function getElementIcon(type) {
     }
 }
 
-/**
- * [ViewModel] Action utilisateur (Command).
- * Gère une logique conditionnelle d'état (bascule on/off) pour un lien manuel.
- * Appelle `refreshLinksPanel` et `saveProject`.
- * 
- * Gère l'action de liaison/déliaison d'un personnage depuis la modale (Lier manuellement).
- * Bascule l'état entre ConfirmedPresent et non-lié.
- * Cette fonction est appelée par les boutons de la modale.
- * @param {number} charId - ID du personnage à lier/délier.
- */
+// [MVVM : ViewModel]
+// Action utilisateur (Command) : Gère la déliaison d'un personnage (Bascule l'état).
 function toggleCharacterLinkerAction(charId) {
     const scene = getCurrentScene();
     if (!scene) return;
@@ -502,10 +459,8 @@ function toggleCharacterLinkerAction(charId) {
 // ============================================
 
 // Helper pour générer le petit avatar HTML (Image ou Icône)
-/**
- * [View] Helper de rendu UI.
- * Génère des chaînes HTML pour les avatars.
- */
+// [MVVM : View]
+// Helper de rendu UI pour les avatars.
 function getAvatarHTML(char) {
     if (char.avatarImage) {
         return `<img src="${char.avatarImage}" style="width: 20px; height: 20px; border-radius: 50%; object-fit: cover;">`;
@@ -515,10 +470,8 @@ function getAvatarHTML(char) {
 }
 
 // Normaliser le texte pour la recherche (retirer accents, minuscule)
-/**
- * [Helper/Model] Utilitaire pur de manipulation de string.
- * Sans état, peut être utilisé partout.
- */
+// [MVVM : Model]
+// Utilitaire pur de manipulation de string (Normalisation pour recherche)
 function normalizeForSearch(text) {
     return text
         .toLowerCase()
@@ -527,18 +480,15 @@ function normalizeForSearch(text) {
 }
 
 // Échapper les caractères spéciaux regex
-/**
- * [Helper/Model] Utilitaire pur.
- */
+// [MVVM : Model]
+// Utilitaire pur : Échappe les caractères spéciaux regex.
 function escapeRegex(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 // Rich Text Formatting (inchangé)
-/**
- * [View] Manipulation directe du DOM/API du navigateur.
- * Actions UI bas niveau.
- */
+// [MVVM : View]
+// Manipulation directe du DOM/API du navigateur pour le formatage.
 function formatText(command, value = null) {
     document.execCommand(command, false, value);
     document.querySelector('.editor-textarea').focus();

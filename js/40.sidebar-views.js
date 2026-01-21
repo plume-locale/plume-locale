@@ -2,7 +2,7 @@
 // MOBILE SIDEBAR VIEWS
 // ============================================
 
-// [MVVM : Mixte]
+// [MVVM : Other]
 // Gère le rendu des vues de la barre latérale pour la version mobile.
 // Cette fonction fait le pont entre les données du projet (Model) et l'interface utilisateur (View)
 // en affichant soit un état vide avec un bouton d'action, soit un résumé du nombre d'éléments pour chaque catégorie.

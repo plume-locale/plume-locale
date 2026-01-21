@@ -3,9 +3,8 @@
 let draggedAct = null;
 
 /**
+ * @MVVM : View
  * Configure le glisser-déposer pour les actes
- * @return {void}
- * @MVVM View
  */
 function setupActDragAndDrop() {
     const actHeaders = document.querySelectorAll('.act-header');
@@ -55,11 +54,8 @@ function setupActDragAndDrop() {
 }
 
 /**
+ * @MVVM : ViewModel
  * Réorganise les actes après un glisser-déposer
- * @param {number} draggedId - ID de l'acte déplacé
- * @param {number} targetId - ID de l'acte cible
- * @return {void}
- * @MVVM ViewModel
  */
 function reorderActs(draggedId, targetId) {
     const draggedIndex = project.acts.findIndex(a => a.id === draggedId);
@@ -78,9 +74,8 @@ function reorderActs(draggedId, targetId) {
 let draggedChapter = { chapterId: null, actId: null };
 
 /**
+ * @MVVM : View
  * Configure le glisser-déposer pour les chapitres
- * @return {void}
- * @MVVM View
  */
 function setupChapterDragAndDrop() {
     const chapterHeaders = document.querySelectorAll('.chapter-header');
@@ -138,13 +133,8 @@ function setupChapterDragAndDrop() {
 }
 
 /**
+ * @MVVM : ViewModel
  * Réorganise les chapitres après un glisser-déposer
- * @param {number} draggedChapterId
- * @param {number} draggedActId
- * @param {number} targetChapterId
- * @param {number} targetActId
- * @return {void}
- * @MVVM ViewModel
  */
 function reorderChapters(draggedChapterId, draggedActId, targetChapterId, targetActId) {
     const sourceAct = project.acts.find(a => a.id === draggedActId);
@@ -173,9 +163,8 @@ function reorderChapters(draggedChapterId, draggedActId, targetChapterId, target
 let draggedScene = { sceneId: null, chapterId: null, actId: null };
 
 /**
+ * @MVVM : View
  * Configure le glisser-déposer pour les scènes
- * @return {void}
- * @MVVM View
  */
 function setupSceneDragAndDrop() {
     const sceneItems = document.querySelectorAll('.scene-item.draggable');
@@ -233,15 +222,8 @@ function setupSceneDragAndDrop() {
 }
 
 /**
+ * @MVVM : ViewModel
  * Réorganise les scènes après un glisser-déposer
- * @param {number} draggedSceneId
- * @param {number} draggedActId
- * @param {number} draggedChapterId
- * @param {number} targetSceneId
- * @param {number} targetActId
- * @param {number} targetChapterId
- * @return {void}
- * @MVVM ViewModel
  */
 function reorderScenes(draggedSceneId, draggedActId, draggedChapterId, targetSceneId, targetActId, targetChapterId) {
     const sourceAct = project.acts.find(a => a.id === draggedActId);
@@ -272,14 +254,8 @@ function reorderScenes(draggedSceneId, draggedActId, draggedChapterId, targetSce
 }
 
 /**
- * Déplace une scène vers un autre chapitre
- * @param {number} sceneId
- * @param {number} sourceActId
- * @param {number} sourceChapterId
- * @param {number} targetActId
- * @param {number} targetChapterId
- * @return {void}
- * @MVVM Mixed - Modifie les données (Model) et manipule le DOM pour l'expansion (View)
+ * @MVVM : Other
+ * Déplace une scène vers un autre chapitre (Mixte Model/View)
  */
 function moveSceneToChapter(sceneId, sourceActId, sourceChapterId, targetActId, targetChapterId) {
     const sourceAct = project.acts.find(a => a.id === sourceActId);

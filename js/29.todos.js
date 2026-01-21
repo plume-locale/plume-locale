@@ -2,7 +2,7 @@
 // TODOS PANEL
 // ==========================================
 
-// [MVVM : Mixte]
+// [MVVM : Other]
 // Alterne l'affichage du panneau des TODOs et déclenche le rendu
 function toggleTodosPanel() {
     const panel = document.getElementById('todosPanel');
@@ -29,7 +29,7 @@ function closeTodosPanel() {
     if (btn) btn.classList.remove('active');
 }
 
-// [MVVM : Mixte]
+// [MVVM : Other]
 // Collecte les TODOs depuis le Model (project) et construit l'interface du panneau
 function renderTodosPanel() {
     const panel = document.getElementById('todosPanelContent');
@@ -168,7 +168,7 @@ function getSceneTodoCount(scene) {
 }
 
 // Modifier la fonction renderEditor pour ajouter le bouton révision
-// [MVVM : Mixte]
+// [MVVM : Other]
 // Extension du rendu de l'éditeur pour intégrer les options de révision
 const originalRenderEditor = renderEditor;
 renderEditor = function (act, chapter, scene) {
@@ -198,7 +198,7 @@ renderEditor = function (act, chapter, scene) {
 };
 
 // Modifier renderActsList pour afficher les badges d'annotations
-// [MVVM : Mixte]
+// [MVVM : Other]
 // Extension du rendu de la liste des actes pour inclure les badges d'annotations (Model -> View)
 const originalRenderActsList = renderActsList;
 renderActsList = function () {
@@ -263,7 +263,7 @@ init = function () {
 // TODO LIST VIEW
 // ============================================
 
-// [MVVM : Mixte]
+// [MVVM : Other]
 // Construit et affiche la vue complète de la liste des TODOs au milieu de l'écran
 function renderTodosList() {
     // Afficher dans editorView au lieu de la sidebar
@@ -376,7 +376,7 @@ function updateAnnotationsPanelPosition() {
     }
 }
 
-// [MVVM : Mixte]
+// [MVVM : Other]
 // Extension du rendu du panneau d'annotations pour ajuster sa position
 const originalRenderAnnotationsPanel = renderAnnotationsPanel;
 renderAnnotationsPanel = function () {

@@ -23,7 +23,7 @@ document.addEventListener('touchend', function (e) {
     handleSwipe();
 }, false);
 
-// [MVVM : Mixte]
+// [MVVM : Other]
 // Calcule la direction et l'amplitude du swipe pour commander l'ouverture ou la fermeture de la barre latérale.
 function handleSwipe() {
     const diffX = touchEndX - touchStartX;

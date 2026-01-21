@@ -1,11 +1,13 @@
 
 // Backup and Import Management
-// View : Gère l'affichage du modal de sauvegarde
+// [MVVM : View]
+// Gère l'affichage du modal de sauvegarde
 function showBackupMenu() {
     document.getElementById('backupModal').classList.add('active');
 }
 
-// Mixte : Convertit le Model en JSON et gère le téléchargement (View)
+// [MVVM : Other]
+// Convertit le Model en JSON et gère le téléchargement (View) - Mixte
 function exportToJSON() {
     const dataStr = JSON.stringify(project, null, 2);
     const blob = new Blob([dataStr], { type: 'application/json' });
@@ -20,12 +22,14 @@ function exportToJSON() {
     alert(`? Fichier JSON téléchargé !\n\nNom : ${filename}\n\nTu peux maintenant l'uploader sur Google Drive, Dropbox, ou tout autre service cloud.`);
 }
 
-// View : Interaction simple pour ouvrir le sélecteur de fichier
+// [MVVM : View]
+// Interaction simple pour ouvrir le sélecteur de fichier
 function importFromFile() {
     document.getElementById('importFileInput').click();
 }
 
-// Mixte : Lit le fichier (View), valide et met à jour le Model, puis rafraîchit l'UI (View)
+// [MVVM : Other]
+// Lit le fichier (View), valide et met à jour le Model, puis rafraîchit l'UI (View) - Mixte
 function handleFileImport(event) {
     const file = event.target.files[0];
     if (!file) return;
@@ -92,7 +96,8 @@ function handleFileImport(event) {
 }
 
 // Export
-// Mixte : Formatte les données du Model pour l'export texte et déclenche le téléchargement (View)
+// [MVVM : Other]
+// Formatte les données du Model pour l'export texte et déclenche le téléchargement (View) - Mixte
 function exportProject() {
     let text = `${project.title}\n${'='.repeat(project.title.length)}\n\n`;
 
@@ -122,13 +127,15 @@ function exportProject() {
 }
 
 // Modal Management
-// View : Affiche le modal d'ajout d'acte (DOM)
+// [MVVM : View]
+// Affiche le modal d'ajout d'acte (DOM)
 function openAddActModal() {
     document.getElementById('addActModal').classList.add('active');
     setTimeout(() => document.getElementById('actTitleInput').focus(), 100);
 }
 
-// Mixte : Logique de sélection d'acte (ViewModel) et manipulation DOM (View)
+// [MVVM : Other]
+// Logique de sélection d'acte (ViewModel) et manipulation DOM (View) - Mixte
 function openAddChapterModal(actId) {
     // Si pas d'actId fourni, utiliser le premier acte ou on en créera un
     if (actId) {
@@ -142,7 +149,8 @@ function openAddChapterModal(actId) {
     setTimeout(() => document.getElementById('chapterTitleInput').focus(), 100);
 }
 
-// View : Manipulation DOM pour fermer les modales
+// [MVVM : View]
+// Manipulation DOM pour fermer les modales
 function closeModal(modalId) {
     document.getElementById(modalId).classList.remove('active');
 }

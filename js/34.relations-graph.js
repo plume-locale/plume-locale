@@ -2,7 +2,7 @@
 // RELATIONS GRAPH FUNCTIONS
 // ============================================
 
-// [MVVM : Mixte]
+// [MVVM : Other]
 // Génère et affiche la vue globale du graphe des relations, incluant le calcul des positions et le rendu HTML/SVG.
 function renderRelationsView() {
     const editorView = document.getElementById('editorView');
@@ -231,7 +231,7 @@ function startDragCharacter(event, charId) {
     document.addEventListener('mouseup', stopDragCharacter);
 }
 
-// [MVVM : Mixte]
+// [MVVM : Other]
 // Gère le mouvement du personnage pendant le drag, met à jour sa position DOM et les lignes de relation.
 function dragCharacter(event) {
     if (!isDragging || !draggedCharId) return;
@@ -272,7 +272,7 @@ function dragCharacter(event) {
     updateRelationLines();
 }
 
-// [MVVM : Mixte]
+// [MVVM : Other]
 // Termine le glisser-déposer, enregistre la nouvelle position dans le modèle et sauvegarde le projet.
 function stopDragCharacter(event) {
     if (!isDragging) return;
@@ -563,7 +563,7 @@ function deleteRelation(relId) {
     }
 }
 
-// [MVVM : Autre]
+// [MVVM : Other]
 // Placeholder pour une future fonctionnalité d'exportation graphique des relations.
 function exportRelations() {
     alert('Export graphique des relations à venir');

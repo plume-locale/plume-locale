@@ -6,8 +6,8 @@ let db = null; // Instance de la base de données
 let useLocalStorage = false; // Fallback si IndexedDB échoue
 
 // Initialiser IndexedDB
-// [MVVM: Model] Initialisation de la couche de données (Data Access Layer).
-// Cette fonction configure l'infrastructure de stockage et n'interagit pas avec l'interface utilisateur.
+// [MVVM : Model]
+// Initialisation de la couche de données (Data Access Layer).
 async function initDB() {
     try {
         console.log('🔧 Initialisation IndexedDB...');
@@ -55,8 +55,8 @@ async function initDB() {
     }
 }
 
-// [MVVM: Model] Logique de migration de données.
-// Manipule uniquement les sources de données brutes pour assurer la cohérence.
+// [MVVM : Model]
+// Logique de migration de données.
 async function migrateFromLocalStorage() {
     try {
         // Vérifier si migration déjà effectuée
@@ -147,8 +147,8 @@ async function migrateFromLocalStorage() {
 }
 
 // Sauvegarder un projet dans IndexedDB
-// [MVVM: Model] Persistance des données (Create/Update).
-// Enregistre l'état du modèle dans le stockage persistant.
+// [MVVM : Model]
+// Persistance des données (Create/Update).
 async function saveProjectToDB(projectData) {
     try {
         if (!db) {
@@ -177,8 +177,8 @@ async function saveProjectToDB(projectData) {
 }
 
 // Charger un projet depuis IndexedDB
-// [MVVM: Model] Récupération de données (Read).
-// Restitue un objet modèle depuis le stockage.
+// [MVVM : Model]
+// Récupération de données (Read).
 async function loadProjectFromDB(projectId) {
     try {
         if (!db) {
@@ -202,8 +202,8 @@ async function loadProjectFromDB(projectId) {
 }
 
 // Charger tous les projets
-// [MVVM: Model] Récupération de collection (Read All).
-// Retourne une liste d'objets modèles.
+// [MVVM : Model]
+// Récupération de collection (Read All).
 async function loadAllProjectsFromDB() {
     try {
         if (!db) {
@@ -221,8 +221,8 @@ async function loadAllProjectsFromDB() {
 }
 
 // Supprimer un projet
-// [MVVM: Model] Suppression de données (Delete).
-// Supprime un enregistrement du stockage persistant.
+// [MVVM : Model]
+// Suppression de données (Delete).
 async function deleteProjectFromDB(projectId) {
     try {
         if (!db) {
@@ -240,8 +240,8 @@ async function deleteProjectFromDB(projectId) {
 }
 
 // Obtenir la taille totale utilisée par IndexedDB
-// [MVVM: Model] Métadonnées sur les données.
-// Analyse technique des données stockées.
+// [MVVM : Model]
+// Métadonnées sur les données.
 async function getIndexedDBSize() {
     try {
         if (!db) return 0;
@@ -261,8 +261,8 @@ async function getIndexedDBSize() {
 }
 
 // Sauvegarder un setting
-// [MVVM: Model] Persistance de configuration.
-// Gère le stockage des paramètres de l'application.
+// [MVVM : Model]
+// Persistance de configuration.
 async function saveSetting(key, value) {
     try {
         if (!db) return false;
@@ -275,8 +275,8 @@ async function saveSetting(key, value) {
 }
 
 // Charger un setting
-// [MVVM: Model] Récupération de configuration.
-// Récupère une valeur de configuration depuis le stockage.
+// [MVVM : Model]
+// Récupération de configuration.
 async function loadSetting(key) {
     try {
         if (!db) return null;

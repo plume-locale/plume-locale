@@ -1,6 +1,7 @@
 
 // View Management (définie tôt pour être accessible partout)
-// [VIEW] Gère l'affichage des différentes vues et l'état de l'interface (DOM manipulation)
+// [MVVM : View]
+// Gère l'affichage des différentes vues et l'état de l'interface (DOM manipulation)
 function switchView(view) {
     // Si split view actif, changer la vue du panneau actif
     if (splitViewActive) {
@@ -163,7 +164,8 @@ function switchView(view) {
 }
 
 // Fonction pour rendre le contenu d'une vue dans un conteneur donné
-// [VIEW] Affiche le contenu HTML spécifique de chaque vue (Routing/Rendering)
+// [MVVM : View]
+// Affiche le contenu HTML spécifique de chaque vue (Routing/Rendering)
 function renderViewContent(view, containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -274,7 +276,8 @@ function renderViewContent(view, containerId) {
 }
 
 // Render scene in a specific container (for split view)
-// [VIEW] Affiche une scène spécifique dans un conteneur donné (Rendering pour split view)
+// [MVVM : View]
+// Affiche une scène spécifique dans un conteneur donné (Rendering pour split view)
 function renderSceneInContainer(actId, chapterId, sceneId, containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -311,19 +314,22 @@ function renderSceneInContainer(actId, chapterId, sceneId, containerId) {
 let lastSavedState = null; // Dernier état sauvegardé pour détecter les changements
 
 // Projects Management
-// [VIEW] Ouvre la modale de gestion des projets (UI logic)
+// [MVVM : View]
+// Ouvre la modale de gestion des projets (UI logic)
 function openProjectsModal() {
     renderProjectsList();
     document.getElementById('projectsModal').classList.add('active');
 }
 
-// [VIEW] Ouvre la modale de création de projet (UI logic)
+// [MVVM : View]
+// Ouvre la modale de création de projet (UI logic)
 function openNewProjectModal() {
     document.getElementById('newProjectModal').classList.add('active');
     setTimeout(() => document.getElementById('newProjectTitle').focus(), 100);
 }
 
-// [VIEWMODEL] Crée un nouveau projet à partir des inputs (View) et met à jour les données (Model)
+// [MVVM : ViewModel]
+// Crée un nouveau projet à partir des inputs (View) et met à jour les données (Model)
 function createNewProject() {
     const title = document.getElementById('newProjectTitle').value.trim();
     const description = document.getElementById('newProjectDesc').value.trim();
@@ -393,7 +399,8 @@ function createNewProject() {
     closeModal('projectsModal');
 }
 
-// [VIEWMODEL] Change le projet actif (State) et déclenche la mise à jour de l'interface (View)
+// [MVVM : ViewModel]
+// Change le projet actif (State) et déclenche la mise à jour de l'interface (View)
 function switchToProject(projectId) {
     currentProjectId = projectId;
     project = projects.find(p => p.id === projectId);
@@ -414,7 +421,8 @@ function switchToProject(projectId) {
     localStorage.setItem('plume_locale_current_project', projectId);
 }
 
-// [VIEWMODEL] Supprime un projet (Model) et rafraîchit l'affichage (View)
+// [MVVM : ViewModel]
+// Supprime un projet (Model) et rafraîchit l'affichage (View)
 function deleteProject(projectId) {
     const proj = projects.find(p => p.id === projectId);
     if (!proj) return;
@@ -435,7 +443,8 @@ function deleteProject(projectId) {
     renderProjectsList();
 }
 
-// [VIEWMODEL] Prépare les données du modèle pour l'export (Business Logic/Bridge)
+// [MVVM : ViewModel]
+// Prépare les données du modèle pour l'export (Business Logic/Bridge)
 function exportProjectIndividual(projectId) {
     const proj = projects.find(p => p.id === projectId);
     if (!proj) return;
@@ -450,12 +459,14 @@ function exportProjectIndividual(projectId) {
     URL.revokeObjectURL(url);
 }
 
-// [VIEW] Déclenche l'élément d'entrée de fichier (UI Interaction)
+// [MVVM : View]
+// Déclenche l'élément d'entrée de fichier (UI Interaction)
 function importProject() {
     document.getElementById('importProjectInput').click();
 }
 
-// [VIEWMODEL] Traite le fichier importé, valide les données et met à jour le modèle
+// [MVVM : ViewModel]
+// Traite le fichier importé, valide les données et met à jour le modèle
 function handleProjectImport(event) {
     const file = event.target.files[0];
     if (!file) return;
@@ -483,7 +494,8 @@ function handleProjectImport(event) {
     reader.readAsText(file);
 }
 
-// [VIEW] Génère et injecte le HTML pour la liste des projets
+// [MVVM : View]
+// Génère et injecte le HTML pour la liste des projets
 function renderProjectsList() {
     const container = document.getElementById('projectsList');
 
@@ -520,7 +532,8 @@ function renderProjectsList() {
     }).join('');
 }
 
-// [MODEL] Service de persistance : sauvegarde l'état complet dans la base de données
+// [MVVM : Model]
+// Service de persistance : sauvegarde l'état complet dans la base de données
 async function saveAllProjects() {
     try {
         if (currentProjectId) {
@@ -544,7 +557,8 @@ async function saveAllProjects() {
     }
 }
 
-// [MODEL] Service de persistance : charge l'état depuis la base de données
+// [MVVM : Model]
+// Service de persistance : charge l'état depuis la base de données
 async function loadAllProjects() {
     try {
         // Charger tous les projets depuis IndexedDB
@@ -586,7 +600,8 @@ async function loadAllProjects() {
     }
 }
 
-// [MODEL] Factory : crée une nouvelle instance de structure de projet par défaut
+// [MVVM : Model]
+// Factory : crée une nouvelle instance de structure de projet par défaut
 function createDefaultProject() {
     project = {
         id: Date.now(),
@@ -609,7 +624,8 @@ function createDefaultProject() {
     currentProjectId = project.id;
 }
 
-// [MODEL] Validation/Migration : s'assure que toutes les propriétés requises existent
+// [MVVM : Model]
+// Validation/Migration : s'assure que toutes les propriétés requises existent
 function ensureProjectStructure() {
     if (!project) return;
     project.characters = project.characters || [];
@@ -623,13 +639,15 @@ function ensureProjectStructure() {
 }
 
 const originalSaveProject = saveProject;
-// [MODEL] Proxy : point d'accès unifié pour la sauvegarde
+// [MVVM : Model]
+// Proxy : point d'accès unifié pour la sauvegarde
 saveProject = function () {
     saveAllProjects();
 };
 
 // Text Analysis Tools
-// [VIEW] Initialise l'interface de l'outil d'analyse
+// [MVVM : View]
+// Initialise l'interface de l'outil d'analyse
 function renderAnalysis() {
     const editorView = document.getElementById('editorView');
     if (!editorView) {
@@ -665,7 +683,8 @@ function renderAnalysis() {
     }, 0);
 }
 
-// [VIEWMODEL] Orchestrateur : récupère les données, lance les calculs du modèle, met à jour la vue
+// [MVVM : ViewModel]
+// Orchestrateur : récupère les données, lance les calculs du modèle, met à jour la vue
 function runTextAnalysis() {
     const scope = document.getElementById('analysisScope')?.value || 'current';
     const text = getTextForAnalysis(scope);
@@ -687,7 +706,8 @@ function runTextAnalysis() {
     displayAnalysisResults(analysis);
 }
 
-// [VIEWMODEL] Helper : extrait les données brutes nécessaires depuis le modèle selon le contexte de vue
+// [MVVM : ViewModel]
+// Helper : extrait les données brutes nécessaires depuis le modèle selon le contexte de vue
 function getTextForAnalysis(scope) {
     console.log('getTextForAnalysis called with scope:', scope);
     console.log('currentActId:', currentActId, 'currentChapterId:', currentChapterId, 'currentSceneId:', currentSceneId);
@@ -743,6 +763,7 @@ function getTextForAnalysis(scope) {
     return '';
 }
 
+// [MVVM : Other]
 // [HELPER] Utilitaire de traitement de chaîne (agnostique)
 function stripHTML(html) {
     const div = document.createElement('div');
@@ -750,7 +771,8 @@ function stripHTML(html) {
     return div.textContent || div.innerText || '';
 }
 
-// [MODEL] Algorithme pur : logique de détection des répétitions
+// [MVVM : Model]
+// Algorithme pur : logique de détection des répétitions
 function detectRepetitions(text) {
     // Correction pour inclure les caractères accentués français et autres Unicode
     const words = text.toLowerCase().match(/[\p{L}]{4,}/gu) || [];
@@ -765,7 +787,8 @@ function detectRepetitions(text) {
     return repeated;
 }
 
-// [MODEL] Algorithme pur : calcul de score de lisibilité
+// [MVVM : Model]
+// Algorithme pur : calcul de score de lisibilité
 function calculateReadability(text) {
     const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
     // Correction pour inclure les caractères accentués français et autres Unicode
@@ -791,7 +814,8 @@ function calculateReadability(text) {
     return { score: Math.max(0, Math.min(100, score)).toFixed(1), level };
 }
 
-// [MODEL] Helper algorithmique : comptage de syllabes
+// [MVVM : Model]
+// Helper algorithmique : comptage de syllabes
 function countSyllables(word) {
     word = word.toLowerCase();
     const vowels = /[aeiouyàâäéèêëïîôùûü]/g;
@@ -805,7 +829,8 @@ function countSyllables(word) {
     return Math.max(1, count);
 }
 
-// [MODEL] Algorithme pur : analyse de fréquence des mots
+// [MVVM : Model]
+// Algorithme pur : analyse de fréquence des mots
 function calculateWordFrequency(text) {
     // Correction pour inclure les caractères accentués français et autres Unicode
     const words = text.toLowerCase().match(/[\p{L}]{3,}/gu) || [];
@@ -823,7 +848,8 @@ function calculateWordFrequency(text) {
         .slice(0, 15);
 }
 
-// [MODEL] Algorithme pur : statistiques de longueur de phrases
+// [MVVM : Model]
+// Algorithme pur : statistiques de longueur de phrases
 function calculateSentenceLength(text) {
     const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
     const lengths = sentences.map(s => s.trim().split(/\s+/).length);
@@ -846,7 +872,8 @@ function calculateSentenceLength(text) {
     return { avg: avg.toFixed(1), min, max, distribution: ranges };
 }
 
-// [MODEL] Algorithme pur : analyse de distribution narrative/dialogue
+// [MVVM : Model]
+// Algorithme pur : analyse de distribution narrative/dialogue
 function analyzeNarrativeDistribution(text) {
     const dialogRegex = /[«"—–]\s*[^»"—–]{10,}?\s*[»"—–]/g;
     const dialogs = text.match(dialogRegex) || [];
@@ -863,7 +890,8 @@ function analyzeNarrativeDistribution(text) {
     };
 }
 
-// [VIEW] Rendu des résultats d'analyse (Génération HTML)
+// [MVVM : View]
+// Rendu des résultats d'analyse (Génération HTML)
 function displayAnalysisResults(analysis) {
     const container = document.getElementById('analysisResults');
 

@@ -321,7 +321,7 @@ const themeManager = {
         this.loadCurrentTheme();
     },
 
-    // [MVVM : Mixte]
+    // [MVVM : Other]
     // Applique les couleurs d'un thème au document (Vue) et met à jour l'état interne (Modèle).
     applyTheme(colors) {
         const root = document.documentElement;

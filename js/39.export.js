@@ -5,7 +5,7 @@
 // Global variable to track selection state
 let exportSelectionState = {};
 
-// [MVVM : Mixte]
+// [MVVM : Other]
 // Ouvre la modale d'exportation du roman et initialise l'état de sélection.
 function openExportNovelModal() {
     // Initialize selection state with all items checked
