@@ -3,6 +3,7 @@
 // ============================================
 
 // [MVVM : Other]
+// Group: Use Case | Naming: ToggleRevisionUseCase
 // Bascule l'état du mode révision et met à jour l'interface de la barre d'outils.
 function toggleRevisionMode() {
     // Vérifier qu'une scène est ouverte
@@ -190,6 +191,7 @@ function selectHighlightColor(color) {
 }
 
 // [MVVM : Other]
+// Group: Use Case | Naming: ApplyHighlightUseCase
 // Applique un surlignage à la sélection de texte et met à jour le contenu de la scène.
 function applyHighlight() {
     const sel = window.getSelection();
@@ -213,6 +215,7 @@ function applyHighlight() {
 }
 
 // [MVVM : Other]
+// Group: Use Case | Naming: RemoveHighlightUseCase
 // Retire le surlignage de la sélection et met à jour le contenu de la scène.
 function removeHighlight() {
     const sel = window.getSelection();
@@ -277,6 +280,7 @@ function selectAnnotationType(type) {
 }
 
 // [MVVM : Other]
+// Group: Use Case | Naming: SaveAnnotationUseCase
 // Enregistre une nouvelle annotation dans le modèle et l'insère visuellement dans l'éditeur.
 function saveAnnotation() {
     const text = document.getElementById('annotationText').value.trim();
@@ -547,6 +551,7 @@ function updateAnnotationsButton(isOpen) {
 }
 
 // [MVVM : Other]
+// Group: Util / Helper | Naming: AnnotationUtils
 // Fonction utilitaire retournant le libellé lisible d' un type d' annotation.
 function getAnnotationTypeLabel(type) {
     const labels = {
@@ -654,6 +659,7 @@ function migrateSceneAnnotationsToVersion(scene) {
 // ============ FIN ANNOTATIONS LIÉES AUX VERSIONS ============
 
 // [MVVM : Other]
+// Group: Use Case | Naming: ToggleAnnotationCompleteUseCase
 // Alterne l' état d' achèvement d' une annotation et rafraîchit l' interface.
 function toggleAnnotationComplete(annotationId) {
     const act = project.acts.find(a => a.id === currentActId);
@@ -670,6 +676,7 @@ function toggleAnnotationComplete(annotationId) {
 }
 
 // [MVVM : Other]
+// Group: Use Case | Naming: DeleteAnnotationUseCase
 // Supprime une annotation du modèle et retire son marqueur visuel de l' éditeur.
 function deleteAnnotation(annotationId) {
     if (!confirm('Supprimer cette annotation ?')) return;

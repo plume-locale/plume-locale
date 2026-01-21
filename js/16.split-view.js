@@ -451,6 +451,7 @@ function renderSplitPanelViewContent(panel) {
 }
 
 // [MVVM : Other]
+// Group: Coordinator | Naming: SplitViewCoordinator
 // Logique de routage de rendu vers les différentes vues spécifiques (Mixte)
 function renderViewInSplitPanel(view, container, state, panel) {
     // Technique: créer un faux editorView temporaire pour que les fonctions de rendu existantes fonctionnent

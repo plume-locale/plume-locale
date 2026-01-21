@@ -397,6 +397,7 @@ function getAllScenesFromAct(act) {
 // ============================================
 
 // [MVVM : Other]
+// Group: Use Case | Naming: AddRowUseCase
 // Ajoute une nouvelle ligne au Story Grid, sauvegarde et déclenche le rendu.
 function addStoryGridRow(type, options = {}) {
     const typeData = STORYGRID_ROW_TYPES[type];
@@ -421,6 +422,7 @@ function addStoryGridRow(type, options = {}) {
 }
 
 // [MVVM : Other]
+// Group: Use Case | Naming: DeleteRowUseCase
 // Supprime une ligne et ses cartes associées, sauvegarde et redessine la grille.
 function deleteStoryGridRow(rowId) {
     const index = storyGridState.rows.findIndex(r => r.id === rowId);
@@ -444,6 +446,7 @@ function deleteStoryGridRow(rowId) {
 }
 
 // [MVVM : Other]
+// Group: Use Case | Naming: UpdateRowUseCase
 // Met à jour les propriétés d'une ligne, sauvegarde et redessine la grille.
 function updateStoryGridRow(rowId, updates) {
     const row = storyGridState.rows.find(r => r.id === rowId);
@@ -455,6 +458,7 @@ function updateStoryGridRow(rowId, updates) {
 }
 
 // [MVVM : Other]
+// Group: Use Case | Naming: ToggleRowVisibilityUseCase
 // Alterne la visibilité d'une ligne, sauvegarde et redessine la grille.
 function toggleRowVisibility(rowId) {
     const row = storyGridState.rows.find(r => r.id === rowId);
@@ -466,6 +470,7 @@ function toggleRowVisibility(rowId) {
 }
 
 // [MVVM : Other]
+// Group: Use Case | Naming: ReorderRowsUseCase
 // Réordonne les lignes du Story Grid, met à jour les ordres, sauvegarde et redessine.
 function reorderRows(fromIndex, toIndex) {
     const [removed] = storyGridState.rows.splice(fromIndex, 1);
@@ -484,6 +489,7 @@ function reorderRows(fromIndex, toIndex) {
 // ============================================
 
 // [MVVM : Other]
+// Group: Use Case | Naming: AddCardUseCase
 // Crée et ajoute une nouvelle carte dans une cellule spécifique, sauvegarde et redessine.
 function addCardToGrid(rowId, columnId, sceneData = null) {
     const row = storyGridState.rows.find(r => r.id === rowId);
@@ -580,6 +586,7 @@ function matchesColumn(card, column) {
 }
 
 // [MVVM : Other]
+// Group: Use Case | Naming: UpdateCardUseCase
 // Met à jour les données d'une carte par son ID, sauvegarde et redessine la grille.
 function updateCard(cardId, updates) {
     for (const row of storyGridState.rows) {
@@ -594,6 +601,7 @@ function updateCard(cardId, updates) {
 }
 
 // [MVVM : Other]
+// Group: Use Case | Naming: DeleteCardUseCase
 // Supprime une carte et ses liens, sauvegarde et redessine la grille.
 function deleteCard(cardId) {
     for (const row of storyGridState.rows) {
@@ -614,6 +622,7 @@ function deleteCard(cardId) {
 }
 
 // [MVVM : Other]
+// Group: Use Case | Naming: MoveCardUseCase
 // Déplace une carte vers une nouvelle position (ligne/colonne) et met à jour ses références.
 function moveCard(cardId, newRowId, newColumnId) {
     // Find and remove card from current location
@@ -782,6 +791,7 @@ function getCardTwinCount(cardId) {
 
 // Ajouter un personnage à une card
 // [MVVM : Other]
+// Group: Use Case | Naming: AddCharacterToCardUseCase
 // Associe un personnage à une carte, sauvegarde et redessine.
 function addCharacterToCard(cardId, characterId) {
     const card = findCardById(cardId);

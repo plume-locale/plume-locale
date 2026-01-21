@@ -60,7 +60,8 @@ async function getStorageSize() {
     }
 }
 
-// [MVVM : Other (Utility)]
+// [MVVM : Other]
+// Group: Util / Helper | Naming: StorageUtils
 // Utilitaire de conversion de bytes en mégaoctets (MB) avec formatage de texte.
 function formatBytes(bytes) {
     if (bytes === 0) return '0 MB';
@@ -69,6 +70,7 @@ function formatBytes(bytes) {
 }
 
 // [MVVM : Other]
+// Group: Coordinator | Naming: StorageCoordinator
 // Calcule le pourcentage d'utilisation (ViewModel) et met à jour l'apparence du badge de stockage dans l'interface (View).
 async function updateStorageBadge() {
     try {
@@ -155,6 +157,7 @@ function showStorageAlert(title, message, level) {
 }
 
 // [MVVM : Other]
+// Group: Coordinator | Naming: StorageCoordinator
 // Prépare les données détaillées (ViewModel) et met à jour dynamiquement la modale de détails du stockage (View).
 async function showStorageDetails() {
     try {

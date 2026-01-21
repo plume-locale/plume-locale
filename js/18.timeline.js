@@ -8,6 +8,7 @@ function openAddTimelineModal() {
 }
 
 // [MVVM : Other]
+// Group: Use Case | Naming: AddTimelineEventUseCase
 // Ajoute un événement à la chronologie (Mixte ViewModel)
 function addTimelineEvent() {
     const title = document.getElementById('timelineTitleInput').value.trim();
@@ -45,6 +46,7 @@ function addTimelineEvent() {
 }
 
 // [MVVM : Other]
+// Group: Use Case | Naming: DeleteTimelineEventUseCase
 // Gère la suppression d'un événement (Mixte ViewModel)
 function deleteTimelineEvent(id) {
     if (!confirm('Êtes-vous sûr de vouloir supprimer cet événement ?')) return;

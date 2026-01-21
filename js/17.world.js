@@ -7,6 +7,7 @@ function openAddWorldModal() {
 }
 
 // [MVVM : Other]
+// Group: Use Case | Naming: AddWorldElementUseCase
 // Logique métier pour ajouter un élément (Mixte ViewModel + Model)
 function addWorldElement() {
     const name = document.getElementById('worldNameInput').value.trim();
@@ -39,6 +40,7 @@ function addWorldElement() {
 }
 
 // [MVVM : Other]
+// Group: Use Case | Naming: DeleteWorldElementUseCase
 // Logique métier pour supprimer un élément (Mixte ViewModel + Model)
 function deleteWorldElement(id) {
     if (!confirm('Êtes-vous sûr de vouloir supprimer cet élément ?')) return;
@@ -147,6 +149,7 @@ function renderElementLinkedScenes(element) {
 }
 
 // [MVVM : Other]
+// Group: Use Case | Naming: OpenWorldDetailUseCase
 // Gère la logique d'affichage détaillé et la génération du template HTML (Mixte View/ViewModel)
 function openWorldDetail(id) {
     const element = project.world.find(w => w.id === id);

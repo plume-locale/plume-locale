@@ -64,6 +64,7 @@ function closeDiffModal() {
 }
 
 // [MVVM : Other]
+// Group: Util / Helper | Naming: DiffUtils
 // Met à jour l'état (ViewModel) et modifie des classes DOM (View) (Mixte).
 function setDiffView(view) {
     currentDiffView = view;

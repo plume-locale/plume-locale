@@ -6,6 +6,7 @@
 let exportSelectionState = {};
 
 // [MVVM : Other]
+// Group: Coordinator | Naming: ExportCoordinator
 // Ouvre la modale d'exportation du roman et initialise l'état de sélection.
 function openExportNovelModal() {
     // Initialize selection state with all items checked
@@ -265,7 +266,8 @@ function getSelectedContent(options) {
     return content;
 }
 
-// [MVVM : autre]
+// [MVVM : Other]
+// Group: Util / Helper | Naming: ExportUtils
 // Retourne la chaîne de caractères utilisée comme séparateur de scènes selon le type choisi.
 function getSceneDivider(dividerType) {
     switch (dividerType) {
@@ -284,7 +286,8 @@ function getSceneDivider(dividerType) {
     }
 }
 
-// [MVVM : autre]
+// [MVVM : Other]
+// Group: Service | Naming: ExportService
 // Génère et télécharge le contenu du projet au format Markdown.
 function exportAsMarkdown(options) {
     const content = getSelectedContent(options);
@@ -327,7 +330,8 @@ function exportAsMarkdown(options) {
     closeModal('exportNovelModal');
 }
 
-// [MVVM : autre]
+// [MVVM : Other]
+// Group: Service | Naming: ExportService
 // Génère et télécharge le contenu du projet au format texte brut (.txt).
 function exportAsTXT(options) {
     const content = getSelectedContent(options);
@@ -369,7 +373,8 @@ function exportAsTXT(options) {
     closeModal('exportNovelModal');
 }
 
-// [MVVM : autre]
+// [MVVM : Other]
+// Group: Service | Naming: ExportService
 // Génère et télécharge le contenu du projet au format HTML.
 function exportAsHTML(options) {
     const content = getSelectedContent(options);
@@ -492,7 +497,8 @@ function exportAsHTML(options) {
     closeModal('exportNovelModal');
 }
 
-// [MVVM : autre]
+// [MVVM : Other]
+// Group: Service | Naming: ExportService
 // Génère et télécharge le contenu du projet au format EPUB (utilisant JSZip).
 async function exportAsEPUB(options) {
     if (typeof JSZip === 'undefined') {

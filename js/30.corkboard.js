@@ -565,6 +565,7 @@ function createActFromCork() {
 }
 
 // [MVVM : Other]
+// Group: Util / Helper | Naming: CorkboardUtils
 // Affiche le menu contextuel pour une scène
 function toggleSceneMenu(sceneId) {
     // À implémenter : menu contextuel pour la scène
@@ -572,18 +573,21 @@ function toggleSceneMenu(sceneId) {
 }
 
 // [MVVM : Other]
+// Group: Coordinator | Naming: CorkboardCoordinator
 // Ouvre la modal de création depuis un plan (outline)
 function openCreateFromOutlineModal() {
     alert('Fonctionnalité "Create from Outline" à venir');
 }
 
 // [MVVM : Other]
+// Group: Coordinator | Naming: CorkboardCoordinator
 // Affiche les options d'importation
 function showImportOptions() {
     alert('Fonctionnalité "Import" à venir');
 }
 
 // [MVVM : Other]
+// Group: Coordinator | Naming: CorkboardCoordinator
 // Affiche les actions disponibles
 function showActions() {
     alert('Fonctionnalité "Actions" à venir');

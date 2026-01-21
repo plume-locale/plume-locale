@@ -255,6 +255,7 @@ function reorderScenes(draggedSceneId, draggedActId, draggedChapterId, targetSce
 
 /**
  * @MVVM : Other
+ * Group: Use Case | Naming: MoveSceneToChapterUseCase
  * Déplace une scène vers un autre chapitre (Mixte Model/View)
  */
 function moveSceneToChapter(sceneId, sourceActId, sourceChapterId, targetActId, targetChapterId) {

@@ -516,6 +516,7 @@ let cardDragState = {
 };
 
 // [MVVM : Other]
+// Group: Coordinator | Naming: ThrillerCoordinator
 // Gère le début du glissement d'une carte : met à jour l'état (ViewModel) et applique des styles (View).
 function handleCardDragStart(event, cardId) {
     event.stopPropagation();
@@ -575,6 +576,7 @@ function handleCellDragLeave(event) {
 }
 
 // [MVVM : Other]
+// Group: Use Case | Naming: HandleCellDropUseCase
 // Gère le drop de cartes : crée ou déplace des éléments (Model/ViewModel) et rafraîchit l'affichage (View).
 function handleCellDrop(event, targetRowId, targetColumnId) {
     event.preventDefault();
@@ -676,6 +678,7 @@ function handleStackedCardClick(event, cardId, index) {
 }
 
 // [MVVM : Other]
+// Group: Coordinator | Naming: ThrillerCoordinator
 // Gère le début du glissement depuis l'arborescence (treeview) vers la grille.
 function handleTreeviewDragStart(event, elementId) {
     event.stopPropagation();
@@ -690,6 +693,7 @@ function handleTreeviewDragStart(event, elementId) {
 }
 
 // [MVVM : Other]
+// Group: Coordinator | Naming: ThrillerCoordinator
 // Gère la fin du glissement depuis l'arborescence, nettoie les indicateurs visuels (View).
 function handleTreeviewDragEnd(event) {
     event.stopPropagation();

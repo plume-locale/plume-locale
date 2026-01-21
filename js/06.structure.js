@@ -162,6 +162,7 @@ function loadProject() {
 
 // Act Management
 // [MVVM : Other]
+// Group: Use Case | Naming: AddActUseCase
 // Gestion des Actes (Mixte View/ViewModel)
 function addAct() {
     const title = document.getElementById('actTitleInput').value.trim();
@@ -185,6 +186,7 @@ function addAct() {
 }
 
 // [MVVM : Other]
+// Group: Use Case | Naming: DeleteActUseCase
 // Supprime un acte et ses chapitres (Mixte Model/View)
 function deleteAct(actId) {
     if (!confirm('Êtes-vous sûr de vouloir supprimer cet acte et tous ses chapitres ?')) return;
@@ -259,6 +261,7 @@ function startEditingAct(actId, element) {
 
 // Chapter Management
 // [MVVM : Other]
+// Group: Use Case | Naming: AddChapterUseCase
 // Ajoute un nouveau chapitre (Mixte Model/View)
 function addChapter() {
     const title = document.getElementById('chapterTitleInput').value.trim();
@@ -306,6 +309,7 @@ function addChapter() {
 }
 
 // [MVVM : Other]
+// Group: Use Case | Naming: DeleteChapterUseCase
 // Supprime un chapitre et ses scènes (Mixte Model/View)
 function deleteChapter(actId, chapterId) {
     if (!confirm('Êtes-vous sûr de vouloir supprimer ce chapitre et toutes ses scènes ?')) return;
@@ -583,6 +587,7 @@ function openAddSceneModal(actId, chapterId) {
 }
 
 // [MVVM : Other]
+// Group: Coordinator | Naming: AddSceneCoordinator
 // Ouvre la modale d'ajout de scène rapidement (Mixte)
 function openAddSceneModalQuick() {
     // Utiliser le chapitre courant s'il existe, sinon le premier chapitre disponible
@@ -596,6 +601,7 @@ function openAddSceneModalQuick() {
 }
 
 // [MVVM : Other]
+// Group: Use Case | Naming: AddSceneUseCase
 // Ajoute une nouvelle scène au modèle et met à jour la vue
 function addScene() {
     const title = document.getElementById('sceneTitleInput').value.trim();
@@ -729,6 +735,7 @@ function closeStatusMenuOnClickOutside(event) {
 }
 
 // [MVVM : Other]
+// Group: Use Case | Naming: SetSceneStatusUseCase
 // Met à jour le statut d'une scène (Mixte Model/View)
 function setSceneStatus(actId, chapterId, sceneId, status) {
     const act = project.acts.find(a => a.id === actId);
@@ -749,6 +756,7 @@ function setSceneStatus(actId, chapterId, sceneId, status) {
 }
 
 // [MVVM : Other]
+// Group: Util / Helper | Naming: FilterUtils
 // Bascule un filtre de statut (Mixte)
 function toggleStatusFilter(status) {
     const index = activeStatusFilters.indexOf(status);

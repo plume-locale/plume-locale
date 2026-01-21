@@ -41,6 +41,7 @@ function updateWritingProgress() {
 }
 
 // [MVVM : Other]
+// Group: Use Case | Naming: ToggleFocusUseCase
 // Gère l'état logique et manipule les classes CSS/affichage (Mixte).
 function toggleFocusMode() {
     console.log('toggleFocusMode called, current state:', focusModeActive);
@@ -240,6 +241,7 @@ function updatePomodoroDisplay() {
 }
 
 // [MVVM : Other]
+// Group: Service | Naming: AudioService
 // Produit une sortie audio (Feedback UI).
 function playNotificationSound() {
     // Create a simple beep sound using Web Audio API
@@ -262,6 +264,7 @@ function playNotificationSound() {
 
 // Update focus stats on content change
 // [MVVM : Other]
+// Group: Util / Helper | Naming: FocusUtils
 // Décore une fonction pour déclencher une mise à jour du ViewModel (Mixte).
 const originalUpdateSceneContent = updateSceneContent;
 updateSceneContent = function () {

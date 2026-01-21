@@ -3,6 +3,7 @@
 // ========================================
 
 // [MVVM : Other]
+// Group: Util / Helper | Naming: TouchUtils
 // Gère le début d'un événement tactile sur un nœud de la mindmap (déplacement ou sélection)
 function handleNodeTouchStart(e) {
     // Empêcher le comportement par défaut mais permettre les boutons
@@ -36,6 +37,7 @@ function handleNodeTouchStart(e) {
 }
 
 // [MVVM : Other]
+// Group: Util / Helper | Naming: TouchUtils
 // Gère le début du toucher sur le canvas pour l'initiation du panoramique (panning)
 function handleCanvasTouchStart(e) {
     if (e.target.id === 'mindmapCanvasWrapper' || e.target.id === 'mindmapCanvas') {
@@ -49,6 +51,7 @@ function handleCanvasTouchStart(e) {
 }
 
 // [MVVM : Other]
+// Group: Util / Helper | Naming: TouchUtils
 // Gère le mouvement du toucher pour déplacer les nœuds ou effectuer un panoramique
 function handleTouchMove(e) {
     const mindmap = project.mindmaps.find(mm => mm.id === currentMindmapId);
@@ -93,6 +96,7 @@ function handleTouchMove(e) {
 }
 
 // [MVVM : Other]
+// Group: Util / Helper | Naming: TouchUtils
 // Finalise le déplacement ou le panoramique lors du relâchement du toucher
 function handleTouchEnd(e) {
     if (mindmapState.isDragging) {
@@ -119,6 +123,7 @@ function handleTouchEnd(e) {
 }
 
 // [MVVM : Other]
+// Group: Util / Helper | Naming: TouchUtils
 // Gère le zoom de la mindmap via la molette de la souris ou le geste de pincement
 function handleWheel(e) {
     e.preventDefault();

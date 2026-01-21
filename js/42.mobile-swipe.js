@@ -24,6 +24,7 @@ document.addEventListener('touchend', function (e) {
 }, false);
 
 // [MVVM : Other]
+// Group: Util / Helper | Naming: SwipeUtils
 // Calcule la direction et l'amplitude du swipe pour commander l'ouverture ou la fermeture de la barre latérale.
 function handleSwipe() {
     const diffX = touchEndX - touchStartX;

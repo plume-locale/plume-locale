@@ -252,6 +252,7 @@ function renderInlineCategoryForm() {
 }
 
 // [MVVM : Other]
+// Group: Coordinator | Naming: ArcBoardCoordinator
 // Définit l'état pour afficher le formulaire de création de catégorie et rafraîchit la sidebar.
 function showInlineCategoryForm() {
     arcBoardState.showingCategoryForm = true;
@@ -284,6 +285,7 @@ function handleInlineCategoryKeydown(event) {
 }
 
 // [MVVM : Other]
+// Group: Use Case | Naming: ConfirmCategoryUseCase
 // Valide et crée une nouvelle catégorie dans les données du projet.
 function confirmInlineCategoryForm() {
     const name = document.getElementById('inlineCategoryName').value.trim();
@@ -402,6 +404,7 @@ function renderArcTreeItem(arc) {
     `;
 }
 // [MVVM : Other]
+// Group: Coordinator | Naming: ArcBoardCoordinator
 // Prépare l'état pour afficher le formulaire de création ou modification d'un arc.
 function showInlineArcForm(arcId = null) {
     // Nettoyer l'ID des guillemets doubles et simples (Mesure de sécurité)
@@ -453,6 +456,7 @@ function updateInlineArcColor() {
 }
 
 // [MVVM : Other]
+// Group: Use Case | Naming: ConfirmArcBoardUseCase
 // Valide et enregistre (création ou modification) un arc narratif.
 function confirmInlineArcForm() {
     // 1. Récupérer l'ID, le titre, la catégorie et la couleur
@@ -523,6 +527,7 @@ function confirmInlineArcForm() {
 
 
 // [MVVM : Other]
+// Group: Coordinator | Naming: ArcBoardCoordinator
 // Bascule l'état d'expansion d'une catégorie d'arcs dans la barre latérale.
 function toggleArcCategory(categoryKey) {
     if (!project.collapsedArcCategories) {
@@ -559,6 +564,7 @@ function closeCreateArcModal(event) {
 }
 
 // [MVVM : Other]
+// Group: Use Case | Naming: ConfirmArcBoardUseCase
 // (Ancien système) Valide et crée un nouvel arc narratif.
 function confirmCreateArc() {
     const title = document.getElementById('newArcTitle').value.trim();
@@ -607,6 +613,7 @@ function confirmCreateArc() {
 // ============================================
 
 // [MVVM : Other]
+// Group: Coordinator | Naming: ArcBoardCoordinator
 // Initialise et affiche le board complet d'un arc narratif spécifique.
 function openArcBoard(arcId) {
     const arc = project.narrativeArcs.find(a => a.id === arcId);

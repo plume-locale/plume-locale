@@ -108,6 +108,7 @@ function renderMapView() {
 }
 
 // [MVVM : Other]
+// Group: Use Case | Naming: HandleMapClickUseCase
 // Gère le clic sur la carte pour créer un nouveau marqueur à l'emplacement cliqué.
 function handleMapClick(event) {
     // S'assurer que mapLocations existe
