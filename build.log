@@ -1,5 +1,5 @@
 ========================================
-Build Plume - 2026-01-16 15:48:05
+Build Plume - 2026-01-21 08:33:39
 ========================================
 Repertoire de travail: G:\Mon Drive\plume-locale
 Fichier log: G:\Mon Drive\plume-locale\build.log
@@ -11,12 +11,12 @@ Fichier log: G:\Mon Drive\plume-locale\build.log
 
 --- Lecture des templates HTML ---
    [OK] head.html (972 caracteres)
-   [OK] body.html (90878 caracteres)
+   [OK] body.html (91039 caracteres)
    [OK] footer.html (478 caracteres)
 
 --- Collecte CSS ---
    [OK] 13 fichiers CSS trouves
-   Total: 320,657 caracteres
+   Total: 339,857 caracteres
 
 --- Collecte JavaScript ---
    [!] js/10.colorpalette.js lu en cp1252 (pas UTF-8)
@@ -35,15 +35,15 @@ Fichier log: G:\Mon Drive\plume-locale\build.log
    [OK] 45 fichiers JS trouves
    [i] 1 fichiers JS supplementaires:
       + 46.thriller-board.js
-   Total: 1,163,266 caracteres
+   Total: 1,350,032 caracteres
 
 --- Ecriture du fichier ---
    Dossier cible: G:\Mon Drive\plume-locale\build
    [OK] Dossier build/ pret
-   [OK] Fichier ecrit: G:\Mon Drive\plume-locale\build\plume-build-2026.01.16.15.48.html
+   [OK] Fichier ecrit: G:\Mon Drive\plume-locale\build\plume-build-2026.01.21.08.33.html
 
 ========================================
 BUILD TERMINE AVEC SUCCES!
 ========================================
-Fichier: G:\Mon Drive\plume-locale\build\plume-build-2026.01.16.15.48.html
-Taille: 1,620,920 octets (1,576,315 caracteres)
+Fichier: G:\Mon Drive\plume-locale\build\plume-build-2026.01.21.08.33.html
+Taille: 1,832,414 octets (1,782,442 caracteres)
