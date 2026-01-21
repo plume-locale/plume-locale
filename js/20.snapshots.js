@@ -1,6 +1,12 @@
 
         // Version Control Management
-        function createVersion() {
+
+            /* MVVM: ViewModel
+               Raison: Cette fonction coordonne la création d'un snapshot du `project` (Model),
+               déclenche la persistance via `saveProject()` et demande la mise à jour de la vue
+               via `renderVersionsList()`. Elle joue le rôle d'orchestrateur entre Model et View.
+            */
+            function createVersion() {
             const label = prompt('Nom de la version (ex: "Version 1.0", "Avant révision", etc.)');
             if (!label || !label.trim()) return;
 
@@ -33,6 +39,11 @@
             alert('Version créée avec succès !');
         }
 
+        /* MVVM: ViewModel
+           Raison: Modifie le `project` (Model) en supprimant une version, persiste les
+           changements et déclenche une mise à jour de la vue. Ne fait pas de rendu
+           direct mais coordonne Model <-> View.
+        */
         function deleteVersion(id) {
             if (!confirm('Êtes-vous sûr de vouloir supprimer cette version ?')) return;
             project.versions = project.versions.filter(v => v.id !== id);
@@ -40,6 +51,12 @@
             renderVersionsList();
         }
 
+        /* MVVM: ViewModel
+           Raison: Restaure l'état du `project` (Model) depuis un snapshot. Avant la
+           restauration, crée une sauvegarde (appel à createVersion). Persiste les
+           modifications, change la vue active et ordonne le re-rendering. Responsable
+           de la logique de restauration (coordination Model <-> View).
+        */
         function restoreVersion(id) {
             if (!confirm('?? ATTENTION: Restaurer cette version va remplacer votre travail actuel. Voulez-vous créer une sauvegarde avant de continuer ?')) {
                 return;
@@ -65,6 +82,11 @@
             alert('Version restaurée avec succès !');
         }
 
+        /* MVVM: View
+           Raison: Génère directement du HTML et manipule le DOM via `editorView.innerHTML`.
+           Cette fonction est responsable du rendu de l'interface (View) et ne doit
+           contenir que de la logique de présentation.
+        */
         function renderVersionsList() {
             const editorView = document.getElementById('editorView');
             if (!editorView) {
@@ -148,6 +170,11 @@
             `;
         }
 
+        /* MVVM: Mixte (ViewModel + View)
+           Raison: Lit le Model (`project`) et calcule une différence (logique ViewModel),
+           puis affiche directement une boîte de dialogue `alert` (comportement View).
+           Idéalement, la partie affichage serait séparée de la logique de calcul.
+        */
         function compareVersion(id) {
             const version = project.versions.find(v => v.id === id);
             if (!version) return;
