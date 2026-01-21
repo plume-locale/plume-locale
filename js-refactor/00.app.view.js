@@ -473,3 +473,201 @@ function toggleStatusFilter(status) {
 
     if (typeof applyStatusFilters === 'function') applyStatusFilters();
 }
+
+// --- EDITOR RENDERING ---
+
+/**
+ * [MVVM : View]
+ * Génère et affiche l'éditeur de texte complet.
+ */
+function renderEditor(act, chapter, scene) {
+    const editorView = document.getElementById('editorView');
+    if (!editorView) return;
+
+    const wordCount = typeof getWordCount === 'function' ? getWordCount(scene.content) : 0;
+
+    // Vérifier si une version finale existe
+    const hasFinalVersion = scene.versions && scene.versions.some(v => v.isFinal === true);
+    const finalVersion = hasFinalVersion ? scene.versions.find(v => v.isFinal === true) : null;
+    const finalVersionBadge = hasFinalVersion
+        ? `<span style="display: inline-flex; align-items: center; gap: 0.25rem; background: var(--accent-gold); color: var(--bg-accent); font-size: 0.7rem; font-weight: 600; padding: 0.2rem 0.5rem; border-radius: 10px; margin-left: 0.5rem;" title="Version finale : ${finalVersion.number}">⭐ ${finalVersion.number}</span>`
+        : '';
+
+    editorView.innerHTML = `
+        <div class="editor-fixed-top">
+            <div class="editor-header">
+                <div class="editor-breadcrumb">${act.title} > ${chapter.title}</div>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div class="editor-title" style="flex: 1;">${scene.title}${finalVersionBadge}</div>
+                    <button class="btn btn-small" onclick="toggleFocusMode()" title="Mode Focus (F11)" style="white-space: nowrap;">
+                        <i data-lucide="maximize" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Focus
+                    </button>
+                </div>
+                <div class="editor-meta">
+                    <span id="sceneWordCount">${wordCount} mots</span>
+                    <span>Dernière modification : ${new Date(scene.updatedAt || Date.now()).toLocaleDateString('fr-FR')}</span>
+                </div>
+                <div class="editor-synopsis">
+                    <span class="synopsis-label"><i data-lucide="file-text" style="width:12px;height:12px;"></i> Résumé :</span>
+                    <input type="text" 
+                           class="synopsis-input" 
+                           value="${(scene.synopsis || '').replace(/"/g, '&quot;')}" 
+                           placeholder="Ajouter un résumé de la scène..."
+                           onchange="updateSceneSynopsis(${act.id}, ${chapter.id}, ${scene.id}, this.value)"
+                           oninput="this.style.width = Math.max(200, this.scrollWidth) + 'px'">
+                </div>
+            </div>
+            <!-- Toolbar and Links Panels -->
+            <button class="toolbar-mobile-toggle" onclick="toggleEditorToolbar()">
+                <span id="toolbarToggleText"><i data-lucide="pen-line" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Afficher les outils</span>
+            </button>
+            <div class="editor-toolbar" id="editorToolbar">
+                <!-- Group formatting -->
+                <div class="toolbar-group">
+                    <button class="toolbar-btn" onclick="formatText('bold')"><strong>B</strong></button>
+                    <button class="toolbar-btn" onclick="formatText('italic')"><em>I</em></button>
+                    <button class="toolbar-btn" onclick="formatText('underline')"><u>U</u></button>
+                </div>
+                <!-- Alignment -->
+                <div class="toolbar-group">
+                    <button class="toolbar-btn" onclick="formatText('justifyLeft')">⫷</button>
+                    <button class="toolbar-btn" onclick="formatText('justifyCenter')">⫶</button>
+                    <button class="toolbar-btn" onclick="formatText('justifyRight')">⫸</button>
+                </div>
+                <!-- Annotations & Arcs -->
+                <div class="toolbar-group">
+                    <button class="toolbar-btn" onclick="toggleAnnotationsPanel()" id="toolbarAnnotationsBtn"><i data-lucide="message-square"></i></button>
+                    <button class="toolbar-btn" onclick="toggleArcScenePanel()" id="toolbarArcsBtn"><i data-lucide="git-commit-horizontal"></i></button>
+                </div>
+                <div class="toolbar-group">
+                    <button class="toolbar-btn" onclick="toggleRevisionMode()" id="toolbarRevisionBtn" style="color: var(--accent-gold); font-weight: 600;">✏️ RÉVISION</button>
+                </div>
+            </div>
+            
+            <div class="links-panel-sticky" id="linksPanel">
+                <div style="display: flex; gap: 2rem; align-items: start;">
+                    <div style="flex: 1;">
+                        <div class="quick-links-title"><i data-lucide="users" style="width:14px;height:14px;"></i> Personnages</div>
+                        <div class="quick-links">${typeof renderSceneCharacters === 'function' ? renderSceneCharacters(act.id, chapter.id, scene) : ''}</div>
+                    </div>
+                    <div style="flex: 1;">
+                        <div class="quick-links-title"><i data-lucide="globe" style="width:14px;height:14px;"></i> Univers</div>
+                        <div class="quick-links">${typeof renderSceneElements === 'function' ? renderSceneElements(act.id, chapter.id, scene) : ''}</div>
+                    </div>
+                    <div style="flex: 1;">
+                        <div class="quick-links-title"><i data-lucide="train-track" style="width:14px;height:14px;"></i> Timeline</div>
+                        <div class="quick-links">${typeof renderSceneMetroEvents === 'function' ? renderSceneMetroEvents(scene.id) : ''}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="editor-workspace">
+            <div class="editor-content">
+                <div class="editor-textarea" contenteditable="true" spellcheck="true" oninput="updateSceneContent()">${scene.content || ''}</div>
+            </div>
+        </div>`;
+
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+
+    // Focus if empty
+    setTimeout(() => {
+        const editor = document.querySelector('.editor-textarea');
+        if (editor && editor.textContent.trim() === '') editor.focus();
+    }, 100);
+}
+
+/**
+ * [MVVM : View]
+ * Synchronise la Vue vers le Modèle et rafraîchit les indicateurs.
+ */
+function updateSceneContent() {
+    const editor = document.querySelector('.editor-textarea');
+    if (!editor) return;
+
+    const act = project.acts.find(a => a.id === currentActId);
+    const chapter = act?.chapters.find(c => c.id === currentChapterId);
+    const scene = chapter?.scenes.find(s => s.id === currentSceneId);
+    if (!scene) return;
+
+    scene.content = editor.innerHTML;
+    const wordCount = typeof getWordCount === 'function' ? getWordCount(editor.innerHTML) : 0;
+    scene.wordCount = wordCount;
+
+    // Mise à jour de la version active (si applicable)
+    if (typeof updateSceneContentWithVersion === 'function') updateSceneContentWithVersion(editor.innerHTML);
+
+    const countEl = document.getElementById('sceneWordCount');
+    if (countEl) countEl.textContent = `${wordCount} mots`;
+
+    if (typeof saveProject === 'function') saveProject();
+    if (typeof updateStats === 'function') updateStats();
+    if (typeof renderActsList === 'function') renderActsList();
+    if (typeof trackWritingSession === 'function') trackWritingSession();
+
+    if (typeof focusModeActive !== 'undefined' && focusModeActive && typeof updateWritingProgress === 'function') {
+        updateWritingProgress();
+    }
+
+    if (typeof autoDetectLinksDebounced === 'function') autoDetectLinksDebounced();
+}
+
+// --- WELCOME SCREENS ---
+
+function renderWelcomeEditor() {
+    const container = document.getElementById('editorView');
+    if (!container) return;
+    container.innerHTML = `
+        <div class="empty-state">
+            <div class="empty-state-icon">✍️</div>
+            <div class="empty-state-title">Sélectionnez une scène</div>
+            <div class="empty-state-text">Choisissez une scène dans la barre latérale pour commencer à écrire.</div>
+        </div>`;
+}
+
+function renderCharacterWelcome() {
+    const container = document.getElementById('editorView');
+    if (!container) return;
+    container.innerHTML = `
+        <div class="empty-state">
+            <div class="empty-state-icon"><i data-lucide="users" style="width:48px;height:48px;stroke-width:1.5;"></i></div>
+            <div class="empty-state-title">Personnages</div>
+            <div class="empty-state-text">Sélectionnez un personnage pour voir sa fiche, ou créez-en un nouveau.</div>
+        </div>`;
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+function renderWorldWelcome() {
+    const container = document.getElementById('editorView');
+    if (!container) return;
+    container.innerHTML = `
+        <div class="empty-state">
+            <div class="empty-state-icon"><i data-lucide="globe" style="width:48px;height:48px;stroke-width:1.5;"></i></div>
+            <div class="empty-state-title">Univers</div>
+            <div class="empty-state-text">Sélectionnez un lieu ou un élément dans la liste pour voir ses détails.</div>
+        </div>`;
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+function renderNotesWelcome() {
+    const container = document.getElementById('editorView');
+    if (!container) return;
+    container.innerHTML = `
+        <div class="empty-state">
+            <div class="empty-state-icon"><i data-lucide="sticky-note" style="width:48px;height:48px;stroke-width:1.5;"></i></div>
+            <div class="empty-state-title">Notes</div>
+            <div class="empty-state-text">Sélectionnez une note dans la liste pour la consulter.</div>
+        </div>`;
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+function renderCodexWelcome() {
+    const container = document.getElementById('editorView');
+    if (!container) return;
+    container.innerHTML = `
+        <div class="empty-state">
+            <div class="empty-state-icon"><i data-lucide="book-open" style="width:48px;height:48px;stroke-width:1.5;"></i></div>
+            <div class="empty-state-title">Codex</div>
+            <div class="empty-state-text">Sélectionnez une entrée dans la liste pour la consulter.</div>
+        </div>`;
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+}

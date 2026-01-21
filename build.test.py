@@ -52,7 +52,7 @@ JS_ORDER = [
     'js-refactor/00.app.view.js',
     'js-refactor/06.structure.view.js',
     'js-refactor/06.structure.helpers.js',
-    '07.stats.js',
+    'js-refactor/07.stats.refactor.js',
     '08.auto-detect.js',
     '09.floating-editor.js',
     '10.colorpalette.js',

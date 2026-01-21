@@ -647,3 +647,232 @@ function openAddChapterModal(actId) {
     setTimeout(() => document.getElementById('chapterTitleInput').focus(), 100);
 }
 
+
+// --- RENDERING (ARBORESCENCE) ---
+
+/**
+ * [MVVM : View]
+ * Génère et affiche la liste des actes et chapitres dans le DOM.
+ */
+function renderActsList() {
+    const container = document.getElementById('chaptersList');
+    if (!container) return;
+
+    if (project.acts.length === 0) {
+        container.innerHTML = `
+            <div style="padding: 2rem; text-align: center; color: var(--text-muted);">
+                <div style="margin-bottom: 1rem;">Aucun chapitre</div>
+                <button class="btn btn-primary" onclick="openAddChapterModal()">+ Créer un chapitre</button>
+            </div>`;
+        if (typeof updateStats === 'function') updateStats();
+        return;
+    }
+
+    let html = '<div style="padding: 0 0.5rem;">';
+
+    project.acts.forEach((act, actIndex) => {
+        const actStats = typeof getActStats === 'function' ? getActStats(act) : { totalWords: 0 };
+        const actExpanded = expandedActs.has(act.id);
+
+        html += `<div class="act-group" id="act-${act.id}" data-act-id="${act.id}">
+            <div class="act-header" data-act-id="${act.id}">
+                <span class="drag-handle" draggable="true" onclick="event.stopPropagation()">⋮⋮</span>
+                <span class="act-icon ${actExpanded ? 'expanded' : ''}" onclick="toggleAct(${act.id}); event.stopPropagation();" style="cursor: pointer;">▶</span>
+                <span class="auto-number">${actIndex + 1}.</span>
+                <span class="act-title" ondblclick="event.stopPropagation(); startEditingAct(${act.id}, this)" onclick="toggleAct(${act.id})">${act.title}</span>
+                <span class="edit-hint">✏️</span>
+                <span class="word-count-badge" title="${actStats.totalWords.toLocaleString()} mots">${typeof formatWordCount === 'function' ? formatWordCount(actStats.totalWords) : actStats.totalWords}</span>
+                <button class="btn btn-icon btn-small delete-btn" onclick="event.stopPropagation(); deleteAct(${act.id})">×</button>
+            </div>
+            <div class="act-chapters ${actExpanded ? 'visible' : ''}">`;
+
+        act.chapters.forEach((chapter, chapterIndex) => {
+            const chStats = typeof getChapterStats === 'function' ? getChapterStats(chapter) : { totalWords: 0, progressPercent: 0 };
+            const chStatus = chStats.progressPercent === 100 ? 'complete' : chStats.progressPercent > 0 ? 'progress' : 'draft';
+            const chExpanded = expandedChapters.has(chapter.id);
+            const chNumber = `${actIndex + 1}.${chapterIndex + 1}`;
+
+            html += `<div class="chapter-group" id="chapter-${chapter.id}" data-chapter-id="${chapter.id}" data-act-id="${act.id}">
+                <div class="chapter-header" data-chapter-id="${chapter.id}" data-act-id="${act.id}">
+                    <span class="drag-handle" draggable="true" onclick="event.stopPropagation()">⋮⋮</span>
+                    <span class="chapter-icon ${chExpanded ? 'expanded' : ''}" onclick="toggleChapter(${act.id}, ${chapter.id}); event.stopPropagation();" style="cursor: pointer;">▶</span>
+                    <span class="auto-number">${chNumber}</span>
+                    <span class="chapter-title" ondblclick="event.stopPropagation(); startEditingChapter(${act.id}, ${chapter.id}, this)" onclick="toggleChapter(${act.id}, ${chapter.id})">${chapter.title}</span>
+                    <span class="edit-hint">✏️</span>
+                    <span class="word-count-badge" title="${chStats.totalWords.toLocaleString()} mots">${typeof formatWordCount === 'function' ? formatWordCount(chStats.totalWords) : chStats.totalWords}</span>
+                    <span class="status-badge status-${chStatus}" title="${chStats.progressPercent}%"></span>
+                    <span class="chapter-count">${chapter.scenes.length}</span>
+                    <button class="btn btn-icon btn-small delete-btn" onclick="event.stopPropagation(); deleteChapter(${act.id}, ${chapter.id})">×</button>
+                </div>
+                <div class="scenes-list ${chExpanded ? 'visible' : ''}">`;
+
+            chapter.scenes.forEach((scene, sceneIndex) => {
+                const sStatus = scene.status || 'draft';
+                const sWords = scene.wordCount || 0;
+                const synopsis = scene.synopsis ? (scene.synopsis.substring(0, 100) + (scene.synopsis.length > 100 ? '...' : '')) : '';
+                const tooltip = scene.synopsis ? scene.synopsis.replace(/"/g, '&quot;').replace(/'/g, '&#39;') : '';
+                const sNumber = `${actIndex + 1}.${chapterIndex + 1}.${sceneIndex + 1}`;
+
+                html += `<div class="scene-item draggable" draggable="true" data-scene-id="${scene.id}" data-chapter-id="${chapter.id}" data-act-id="${act.id}" onclick="openScene(${act.id}, ${chapter.id}, ${scene.id})" ${tooltip ? `title="${tooltip}"` : ''}>
+                    <div style="display: flex; align-items: center; gap: 0.4rem; flex: 1; min-width: 0;">
+                        <span class="drag-handle">⋮⋮</span>
+                        <span class="auto-number">${sNumber}</span>
+                        <div style="flex: 1; min-width: 0; overflow: hidden;">
+                            <span ondblclick="event.stopPropagation(); startEditingScene(${act.id}, ${chapter.id}, ${scene.id}, this)" style="display: block;">${scene.title}</span>
+                            ${synopsis ? `<span class="scene-synopsis">${synopsis}</span>` : ''}
+                        </div>
+                        <span class="edit-hint">✏️</span>
+                    </div>
+                    <span class="word-count-badge" title="${sWords.toLocaleString()} mots">${typeof formatWordCount === 'function' ? formatWordCount(sWords) : sWords}</span>
+                    <span class="status-badge status-${sStatus}" onclick="event.stopPropagation(); toggleSceneStatus(${act.id}, ${chapter.id}, ${scene.id}, event)" style="cursor: pointer;" title="Cliquez pour changer le statut"></span>
+                    <button class="btn btn-icon btn-small delete-btn" onclick="event.stopPropagation(); deleteScene(${act.id}, ${chapter.id}, ${scene.id})">×</button>
+                </div>`;
+            });
+
+            html += `<div class="scene-item" onclick="openAddSceneModal(${act.id}, ${chapter.id})" style="opacity: 0.6; font-style: italic;">+ Ajouter une scène</div>
+                </div></div>`;
+        });
+
+        html += `<div class="scene-item" onclick="openAddChapterModal(${act.id})" style="opacity: 0.6; font-style: italic; margin-left: 1rem;">+ Ajouter un chapitre</div>
+            </div></div>`;
+    });
+
+    html += '</div>';
+    container.innerHTML = html;
+
+    // Initialisation des comportements
+    if (typeof setupActDragAndDrop === 'function') setupActDragAndDrop();
+    if (typeof setupChapterDragAndDrop === 'function') setupChapterDragAndDrop();
+    if (typeof setupSceneDragAndDrop === 'function') setupSceneDragAndDrop();
+    if (typeof updateStats === 'function') updateStats();
+    if (typeof updateProgressBar === 'function') updateProgressBar();
+    if (typeof applyStatusFilters === 'function') applyStatusFilters();
+    if (typeof restoreTreeState === 'function') setTimeout(() => restoreTreeState(), 50);
+}
+
+/**
+ * [MVVM : View]
+ * Génère le HTML pour les liens personnages d'une scène.
+ */
+function renderSceneCharacters(actId, chapterId, scene) {
+    if (!scene.linkedCharacters || scene.linkedCharacters.length === 0) {
+        return '<span style="font-size: 0.8rem; color: var(--text-muted); font-style: italic;">Aucun personnage lié</span>';
+    }
+
+    return scene.linkedCharacters.map(charId => {
+        const character = project.characters.find(c => c.id === charId);
+        if (!character) return '';
+        return `
+            <span class="link-badge" onclick="event.stopPropagation(); switchView('characters'); openCharacterDetail(${charId});">
+                ${character.name}
+                <span class="link-badge-remove" onclick="event.stopPropagation(); toggleCharacterInScene(${actId}, ${chapterId}, ${scene.id}, ${charId}); openScene(${actId}, ${chapterId}, ${scene.id});">×</span>
+            </span>`;
+    }).join('');
+}
+
+/**
+ * [MVVM : View]
+ * Génère le HTML pour les liens éléments/lieux d'une scène.
+ */
+function renderSceneElements(actId, chapterId, scene) {
+    if (!scene.linkedElements || scene.linkedElements.length === 0) {
+        return '<span style="font-size: 0.8rem; color: var(--text-muted); font-style: italic;">Aucun élément lié</span>';
+    }
+
+    return scene.linkedElements.map(elemId => {
+        const element = project.world.find(e => e.id === elemId);
+        if (!element) return '';
+        return `
+            <span class="link-badge" onclick="event.stopPropagation(); switchView('world'); openWorldDetail(${elemId});">
+                ${element.name}
+                <span class="link-badge-remove" onclick="event.stopPropagation(); toggleElementInScene(${actId}, ${chapterId}, ${scene.id}, ${elemId}); openScene(${actId}, ${chapterId}, ${scene.id});">×</span>
+           </span>`;
+    }).join('');
+}
+
+/**
+ * [MVVM : View]
+ * Génère le HTML pour les événements temporels liés à une scène.
+ */
+function renderSceneMetroEvents(sceneId) {
+    if (!project.metroTimeline || project.metroTimeline.length === 0) {
+        return '<span style="font-size: 0.8rem; color: var(--text-muted); font-style: italic;">Aucun événement</span>';
+    }
+
+    const linkedEvents = project.metroTimeline.filter(event => event.sceneId == sceneId);
+    if (linkedEvents.length === 0) {
+        return '<span style="font-size: 0.8rem; color: var(--text-muted); font-style: italic;">Aucun événement lié</span>';
+    }
+
+    return linkedEvents.map(event => `
+        <span class="link-badge" style="background: var(--accent-blue); color: white;" onclick="event.stopPropagation(); openMetroEventFromScene(${event.id});" title="${event.date || 'Sans date'}">
+            <i data-lucide="train-track" style="width:12px;height:12px;vertical-align:middle;margin-right:2px;"></i>
+            ${event.title}
+        </span>`).join('');
+}
+
+/**
+ * [MVVM : View]
+ * Ouvre la modale pour lier des personnages.
+ */
+function openCharacterLinker(actId, chapterId, sceneId) {
+    const act = project.acts.find(a => a.id === actId);
+    const chapter = act?.chapters.find(c => c.id === chapterId);
+    const scene = chapter?.scenes.find(s => s.id === sceneId);
+    if (!scene) return;
+
+    const titleEl = document.getElementById('referencesModalTitle');
+    const contentEl = document.getElementById('referencesModalContent');
+    if (titleEl) titleEl.textContent = 'Lier des personnages à cette scène';
+
+    if (contentEl) {
+        contentEl.innerHTML = `
+            <div class="tag-selector">
+                ${project.characters.map(char => {
+            const isLinked = scene.confirmedPresentCharacters && scene.confirmedPresentCharacters.includes(char.id);
+            return `
+                        <div class="tag-option ${isLinked ? 'selected' : ''}" 
+                             onclick="toggleCharacterLinkerAction(${char.id}); this.classList.toggle('selected');">
+                            ${char.name}
+                        </div>`;
+        }).join('')}
+            </div>
+            ${project.characters.length === 0 ? '<p style="color: var(--text-muted); margin-top: 1rem;">Aucun personnage créé. Créez des personnages dans l\'onglet Personnages.</p>' : ''}`;
+    }
+
+    const modal = document.getElementById('referencesModal');
+    if (modal) modal.classList.add('active');
+}
+
+/**
+ * [MVVM : View]
+ * Ouvre la modale pour lier des éléments.
+ */
+function openElementLinker(actId, chapterId, sceneId) {
+    const act = project.acts.find(a => a.id === actId);
+    const chapter = act?.chapters.find(c => c.id === chapterId);
+    const scene = chapter?.scenes.find(s => s.id === sceneId);
+    if (!scene) return;
+
+    const titleEl = document.getElementById('referencesModalTitle');
+    const contentEl = document.getElementById('referencesModalContent');
+    if (titleEl) titleEl.textContent = 'Lier des lieux/éléments à cette scène';
+
+    if (contentEl) {
+        contentEl.innerHTML = `
+            <div class="tag-selector">
+                ${project.world.map(elem => {
+            const isLinked = scene.linkedElements && scene.linkedElements.includes(elem.id);
+            return `
+                        <div class="tag-option ${isLinked ? 'selected' : ''}" 
+                             onclick="toggleElementInScene(${actId}, ${chapterId}, ${sceneId}, ${elem.id}); this.classList.toggle('selected');">
+                            ${elem.name} <small>(${elem.type})</small>
+                        </div>`;
+        }).join('')}
+            </div>
+            ${project.world.length === 0 ? '<p style="color: var(--text-muted); margin-top: 1rem;">Aucun élément créé. Créez des lieux dans l\'onglet Univers.</p>' : ''}`;
+    }
+
+    const modal = document.getElementById('referencesModal');
+    if (modal) modal.classList.add('active');
+}
