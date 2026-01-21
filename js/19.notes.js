@@ -1,10 +1,13 @@
 // Notes Management
-        function openAddNoteModal() {
+
+// Role: View — Affiche la modal d'ajout; interaction UI uniquement.
+    function openAddNoteModal() {
             document.getElementById('addNoteModal').classList.add('active');
             setTimeout(() => document.getElementById('noteTitleInput').focus(), 100);
         }
 
-        function addNote() {
+// Role: ViewModel — Crée un nouvel objet Model (`note`), met à jour `project.notes`, persiste et déclenche le rendu (coordination VM).
+    function addNote() {
             const title = document.getElementById('noteTitleInput').value.trim();
             const category = document.getElementById('noteCategoryInput').value;
             const tags = document.getElementById('noteTagsInput').value.trim();
@@ -35,6 +38,7 @@
             renderNotesList();
         }
 
+// Role: ViewModel — Modifie le Model (suppression), persiste et met à jour la View.
         function deleteNote(id) {
             if (!confirm('Êtes-vous sûr de vouloir supprimer cette note ?')) return;
             project.notes = project.notes.filter(n => n.id !== id);
@@ -44,8 +48,10 @@
         }
 
         // Expanded state for notes categories
+        // Role: ViewModel — État UI local (quelle catégorie est développée). Gère le comportement d'affichage, pas le Model principal.
         let expandedNoteCategories = new Set(['Idée', 'Recherche', 'Référence', 'A faire', 'Question', 'Autre']);
 
+// Role: View — Rend la liste des notes dans le DOM; lecture du Model mais responsabilité d'affichage.
         function renderNotesList() {
             const container = document.getElementById('notesList');
             
@@ -119,6 +125,7 @@
             if (typeof lucide !== 'undefined') lucide.createIcons();
         }
 
+// Role: ViewModel — Mutations de l'état d'affichage (expand/collapse) et déclenche rendu.
         function toggleNoteCategory(category) {
             if (expandedNoteCategories.has(category)) {
                 expandedNoteCategories.delete(category);
@@ -128,16 +135,19 @@
             renderNotesList();
         }
 
+// Role: ViewModel — Opération sur l'état UI et rafraîchissement de la View.
         function expandAllNoteCategories() {
             expandedNoteCategories = new Set(['Idée', 'Recherche', 'Référence', 'A faire', 'Question', 'Autre']);
             renderNotesList();
         }
 
+// Role: ViewModel — Opération sur l'état UI et rafraîchissement de la View.
         function collapseAllNoteCategories() {
             expandedNoteCategories.clear();
             renderNotesList();
         }
 
+// Role: Mixte — Rend la vue détail (View) mais aussi met à jour l'état (p.ex. split view) et gère la navigation (ViewModel aspects).
         function openNoteDetail(id) {
             const note = project.notes.find(n => n.id === id);
             if (!note) return;
@@ -216,6 +226,7 @@
             if (typeof lucide !== 'undefined') lucide.createIcons();
         }
 
+// Role: View — Génère le markup HTML des médias pour une note; purement responsable de l'affichage.
         function renderNoteMedias(note) {
             if (!note.medias || note.medias.length === 0) {
                 return '<div style="color: var(--text-muted); font-style: italic; padding: 1rem; text-align: center; border: 1px dashed var(--border-color); border-radius: 8px;">Aucun média ajouté</div>';
@@ -274,6 +285,7 @@
             }).join('')}</div>`;
         }
 
+// Role: Autre (Utility) — Fonction utilitaire pure, extraction de domaine depuis une URL.
         function extractDomain(url) {
             try {
                 const urlObj = new URL(url);
@@ -283,11 +295,13 @@
             }
         }
 
+// Role: Autre (Utility) — Parse l'ID YouTube depuis une URL; utilitaire pur.
         function extractYoutubeId(url) {
             const match = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([^&\s?]+)/);
             return match ? match[1] : '';
         }
 
+// Role: View — Crée et affiche la modal d'ajout de média; manipulation directe du DOM.
         function openAddMediaModal(noteId) {
             // Create modal dynamically
             let modal = document.getElementById('addMediaModal');
@@ -333,6 +347,7 @@
             modal.classList.add('active');
         }
 
+// Role: View — Aide l'UI en adaptant le placeholder selon le type sélectionné.
         function updateMediaInputPlaceholder() {
             const type = document.getElementById('mediaTypeInput').value;
             const urlInput = document.getElementById('mediaUrlInput');
@@ -345,6 +360,7 @@
             urlInput.placeholder = placeholders[type] || 'https://...';
         }
 
+// Role: ViewModel — Ajoute un média au Model (`note.medias`), met à jour les timestamps, persiste et rafraîchit la View.
         function addNoteMedia(noteId) {
             const type = document.getElementById('mediaTypeInput').value;
             const title = document.getElementById('mediaTitleInput').value.trim();
@@ -374,6 +390,7 @@
             renderNotesList();
         }
 
+// Role: ViewModel — Supprime un média du Model, persiste et met à jour la View.
         function deleteNoteMedia(noteId, mediaIndex) {
             if (!confirm('Supprimer ce média ?')) return;
             
@@ -387,6 +404,7 @@
             renderNotesList();
         }
 
+// Role: ViewModel — Met à jour un champ du Model, persiste et rafraîchit la View.
         function updateNoteField(id, field, value) {
             const note = project.notes.find(n => n.id === id);
             if (note) {
@@ -397,6 +415,7 @@
             }
         }
 
+// Role: ViewModel — Transforme la saisie en tableau dans le Model, persiste et rafraîchit la View.
         function updateNoteTags(id, tagsString) {
             const note = project.notes.find(n => n.id === id);
             if (note) {
