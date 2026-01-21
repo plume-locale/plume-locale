@@ -2,8 +2,11 @@
         // SCENE VERSION MANAGEMENT (Versions par scène)
         // ==========================================
         
+        // MVVM: ViewModel — état d'interface utilisé par la vue (visibilité du panneau)
         let sceneVersionsSidebarVisible = false;
         
+        // MVVM: Mixte — met à jour l'état (`sceneVersionsSidebarVisible`) ET manipule le DOM (affichage/classe)
+        // Pourquoi: mélange logique d'état (ViewModel) et opérations directes sur la Vue.
         function toggleVersionsSidebar() {
             const sidebar = document.getElementById('sidebarVersions');
             const toggleBtn = document.getElementById('headerVersionsToggle');
@@ -24,6 +27,8 @@
             }
         }
         
+        // MVVM: Mixte — force l'état d'affichage et modifie directement la Vue (DOM)
+        // Pourquoi: change le ViewModel et applique des classes DOM (Vue).
         function showVersionsSidebar() {
             const sidebar = document.getElementById('sidebarVersions');
             const toggleBtn = document.getElementById('headerVersionsToggle');
@@ -34,6 +39,8 @@
             }
         }
         
+        // MVVM: Model — accès et initialisation des données de modèle (versions d'une scène)
+        // Pourquoi: opère uniquement sur la structure `project` / `scene` sans toucher la Vue.
         function getSceneVersions(actId, chapterId, sceneId) {
             const act = project.acts.find(a => a.id === actId);
             if (!act) return [];
@@ -49,6 +56,8 @@
             return scene.versions;
         }
         
+        // MVVM: ViewModel — localise et expose l'act/chapter/scene courant pour la Vue
+        // Pourquoi: fait le lien entre l'état courant (IDs) et le modèle, pour usage par la Vue.
         function getCurrentSceneForVersions() {
             if (!currentActId || !currentChapterId || !currentSceneId) return null;
             
@@ -61,6 +70,8 @@
             return scene ? { act, chapter, scene } : null;
         }
         
+        // MVVM: Mixte — orchestration: lit la Vue (éditeur), met à jour le Modèle (versions), et rafraîchit la Vue
+        // Pourquoi: combine lecture DOM, modification du modèle, sauvegarde et re-render.
         function createSceneVersion() {
             const current = getCurrentSceneForVersions();
             if (!current) {
@@ -127,6 +138,8 @@
             showNotification(`✓ Version ${versionNumber} créée`);
         }
         
+        // MVVM: Mixte — met à jour l'état du modèle (active version), sauvegarde, et refresh de la Vue/éditeur
+        // Pourquoi: modifie le modèle puis rafraîchit la Vue; comporte aussi sauvegarde côté modèle.
         function switchToSceneVersion(versionId) {
             const current = getCurrentSceneForVersions();
             if (!current) return;
@@ -181,6 +194,8 @@
         }
         
         // Réattacher les event listeners sur les marqueurs d'annotation après changement de version
+        // MVVM: View — rattache des écouteurs DOM aux marqueurs d'annotation (opérations purement UI)
+        // Pourquoi: manipulation et comportement d'éléments DOM, sans toucher au modèle.
         function reattachAnnotationMarkerListeners() {
             const markers = document.querySelectorAll('[data-annotation-id]');
             markers.forEach(marker => {
@@ -193,6 +208,8 @@
             });
         }
         
+        // MVVM: Mixte — supprime/ajuste le modèle (versions) et rafraîchit la Vue; inclut confirmation utilisateur
+        // Pourquoi: logique métier (suppression, renumérotation) + effets sur l'UI.
         function deleteSceneVersion(versionId) {
             const current = getCurrentSceneForVersions();
             if (!current) return;
@@ -236,6 +253,8 @@
             renderSceneVersionsList();
         }
         
+        // MVVM: Mixte — met à jour le modèle (label) et demande à la Vue de se rafraîchir (prompt + render)
+        // Pourquoi: interaction utilisateur (Vue) + modification du modèle.
         function renameSceneVersion(versionId) {
             const current = getCurrentSceneForVersions();
             if (!current) return;
@@ -254,6 +273,8 @@
             renderSceneVersionsList();
         }
         
+        // MVVM: View — construit et injecte le HTML pour la liste des versions (rendu complet de la Vue)
+        // Pourquoi: purement responsable du rendu DOM et de l'affichage des données.
         function renderSceneVersionsList() {
             const listContainer = document.getElementById('sceneVersionsList');
             const sceneNameEl = document.getElementById('versionsSceneName');
@@ -343,6 +364,8 @@
         }
         
         // Marquer/démarquer une version comme finale
+        // MVVM: Mixte — met à jour le modèle (flag `isFinal`) puis déclenche notifications/rafraîchissement Vue
+        // Pourquoi: modifie les données puis demande à la Vue de se re-render.
         function toggleFinalVersion(versionId) {
             const current = getCurrentSceneForVersions();
             if (!current) return;
@@ -370,6 +393,8 @@
         }
         
         // Obtenir le contenu à exporter pour une scène (version finale si existe, sinon contenu actuel)
+        // MVVM: Model — logique d'accès pour l'export (choisit la version finale si présente)
+        // Pourquoi: travaille uniquement sur les données de la scène.
         function getSceneExportContent(scene) {
             if (scene.versions && scene.versions.length > 0) {
                 const finalVersion = scene.versions.find(v => v.isFinal === true);
@@ -381,6 +406,8 @@
         }
         
         // Update scene content when editing (also updates active version)
+        // MVVM: ViewModel — synchronise le contenu édité (Vue) avec le Modèle et ses versions actives
+        // Pourquoi: agit comme médiateur entre l'éditeur (Vue) et le modèle (mise à jour des versions actives).
         function updateSceneContentWithVersion(content) {
             const current = getCurrentSceneForVersions();
             if (!current) return;
