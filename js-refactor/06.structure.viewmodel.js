@@ -17,7 +17,10 @@ function getStructureViewModel() {
                 ...chapter,
                 scenesCount: (chapter.scenes || []).length
             }))
-        }))
+        })),
+        characters: typeof CharacterRepository !== 'undefined' ? CharacterRepository.getAll() : (project.characters || []),
+        world: project.world || [],
+        metroTimeline: project.metroTimeline || []
     };
 }
 
