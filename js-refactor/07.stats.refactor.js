@@ -60,14 +60,37 @@ function getActStats(act) {
  * Met à jour les statistiques globales affichées dans l'interface.
  * Note: Cette fonction dépend de variables globales comme 'project'.
  */
+/**
+ * [MVVM : View]
+ * Met à jour les statistiques globales affichées dans l'interface (Header).
+ */
 function updateStats() {
-    // Cette fonction sera probablement complétée par les outils d'analyse/stats plus avancés
-    // Mais elle sert de point d'entrée pour rafraîchir les badges de mots.
+    if (typeof project === 'undefined' || !project.acts) return;
+
+    const totalChapters = project.acts.reduce((sum, act) => sum + (act.chapters ? act.chapters.length : 0), 0);
+
     const totalWords = project.acts.reduce((sum, act) => {
-        const stats = getActStats(act);
-        return sum + stats.totalWords;
+        return sum + (act.chapters ? act.chapters.reduce((chSum, chapter) => {
+            return chSum + (chapter.scenes ? chapter.scenes.reduce((sceneSum, scene) => {
+                // Prioritize pre-calculated wordCount if available
+                return sceneSum + (scene.wordCount || (typeof getWordCount === 'function' ? getWordCount(scene.content) : 0));
+            }, 0) : 0);
+        }, 0) : 0);
     }, 0);
 
+    // Mettre à jour les stats dans le header
+    const headerWords = document.getElementById('headerTotalWords');
+    const headerChapters = document.getElementById('headerTotalChapters');
+    if (headerWords) headerWords.textContent = `${totalWords.toLocaleString('fr-FR')} mots`;
+    if (headerChapters) headerChapters.textContent = `${totalChapters} chapitres`;
+
+    // Mettre à jour le titre du projet dans le header
+    const headerTitle = document.getElementById('headerProjectTitle');
+    if (headerTitle && project.title) {
+        headerTitle.textContent = project.title;
+    }
+
+    // Compatibilité avec l'ancien ID si nécessaire (pour d'autres vues refactorisées)
     const totalWordsEl = document.getElementById('totalWordCount');
     if (totalWordsEl) {
         totalWordsEl.textContent = totalWords.toLocaleString('fr-FR');

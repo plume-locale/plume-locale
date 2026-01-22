@@ -65,7 +65,10 @@ JS_ORDER = [
     'js-refactor/15.characters.viewmodel.js',
     'js-refactor/15.characters.view.js',
     'js-refactor/16.split-view.js',
-    '17.world.js',
+    'js-refactor/17.world.model.js',
+    'js-refactor/17.world.repository.js',
+    'js-refactor/17.world.viewmodel.js',
+    'js-refactor/17.world.view.js',
     '18.timeline.js',
     '19.notes.js',
     '20.snapshots.js',
@@ -155,7 +158,8 @@ IGNORED_ORIGINALS = [
     '03.project.js',
     '06.structure.js',
     '07.stats.js',
-    '15.characters.js'
+    '15.characters.js',
+    '17.world.js'
 ]
 
 def collect_js():
