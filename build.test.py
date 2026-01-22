@@ -96,7 +96,14 @@ JS_ORDER = [
     '42.mobile-swipe.js',
     '43.arcs.js',
     '44.storygrid.js',
-    '45.arc-board.js'
+    '45.arc-board.js',
+    # Thriller Board refactored files (order: constants -> model -> repository -> helpers -> viewmodel -> view)
+    'js-refactor/46.thriller-board.constants.js',
+    'js-refactor/46.thriller-board.model.js',
+    'js-refactor/46.thriller-board.repository.js',
+    'js-refactor/46.thriller-board.helpers.js',
+    'js-refactor/46.thriller-board.viewmodel.js',
+    'js-refactor/46.thriller-board.view.js'
 ]
 
 def read_file(path):
@@ -159,7 +166,8 @@ IGNORED_ORIGINALS = [
     '06.structure.js',
     '07.stats.js',
     '15.characters.js',
-    '17.world.js'
+    '17.world.js',
+    '46.thriller-board.js'  # Remplacé par les fichiers refactorisés 46.thriller-board.*.js
 ]
 
 def collect_js():
