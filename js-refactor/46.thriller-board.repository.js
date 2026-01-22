@@ -29,6 +29,170 @@ let connectionState = {
 };
 
 // ============================================
+// TYPE REPOSITORY
+// ============================================
+
+const ThrillerTypeRepository = {
+    /**
+     * Récupère tous les types personnalisés.
+     * @returns {Array} Liste des types.
+     */
+    getCustomTypes: function () {
+        return thrillerBoardState.customTypes || [];
+    },
+
+    /**
+     * Récupère un type par son ID (système ou personnalisé).
+     * @param {string} id - ID du type.
+     * @returns {Object|null} La définition du type ou null.
+     */
+    getTypeDefinition: function (id) {
+        // 1. Chercher dans les types personnalisés (priorité pour l'override)
+        const customType = this.getCustomTypes().find(t => t.id === id);
+        if (customType) {
+            const systemType = THRILLER_TYPES[id];
+            return {
+                ...customType,
+                isSystem: !!systemType, // Marquer comme système si ça override un type système
+                isShadow: !!systemType // Internal flag
+            };
+        }
+
+        // 2. Chercher dans les types système
+        if (THRILLER_TYPES[id]) {
+            return {
+                id: id,
+                ...THRILLER_TYPES[id],
+                isSystem: true
+            };
+        }
+
+        return null;
+    },
+
+    /**
+     * Récupère tous les types (système + personnalisés).
+     * @returns {Object} Map des types.
+     */
+    getAllTypes: function () {
+        const types = { ...THRILLER_TYPES };
+
+        this.getCustomTypes().forEach(ct => {
+            types[ct.id] = ct;
+        });
+
+        return types;
+    },
+
+    /**
+     * Ajoute un type personnalisé.
+     * @param {Object} typeDef - Définition du type.
+     * @returns {Object} Le type ajouté.
+     */
+    add: function (typeDef) {
+        if (!thrillerBoardState.customTypes) {
+            thrillerBoardState.customTypes = [];
+        }
+
+        // S'assurer que l'ID est unique
+        if (this.getTypeDefinition(typeDef.id)) {
+            return { error: 'Cet ID de type existe déjà' };
+        }
+
+        thrillerBoardState.customTypes.push(typeDef);
+        this._syncToProject();
+        return typeDef;
+    },
+
+    /**
+     * Met à jour un type personnalisé.
+     * @param {string} id - ID du type.
+     * @param {Object} updates - Modifications.
+     * @returns {Object} Le type mis à jour.
+     */
+    update: function (id, updates) {
+        if (!thrillerBoardState.customTypes) thrillerBoardState.customTypes = [];
+
+        const index = thrillerBoardState.customTypes.findIndex(t => t.id === id);
+
+        // Si le type n'existe pas dans les custom types
+        if (index === -1) {
+            // Est-ce un type système qu'on veut surcharger ?
+            if (THRILLER_TYPES[id]) {
+                // On crée une entrée "Shadow"
+                // On prend la définition de base du système et on applique les mises à jour
+                const shadowType = {
+                    id: id,
+                    ...THRILLER_TYPES[id],
+                    ...updates,
+                    // On s'assure de ne pas sauvegarder les champs système hardcodés comme "fields" custom
+                    // sauf si updates contient des fields
+                };
+
+                // Si les updates ne définissent pas de fields, on initialise à vide pour un type système
+                // (car leurs champs sont gérés par le code hardcodé, on ajoute seulement des extras)
+                if (!shadowType.fields) shadowType.fields = [];
+
+                thrillerBoardState.customTypes.push(shadowType);
+                this._syncToProject();
+                return shadowType;
+            }
+            return null; // Type introuvable ni en custom ni en système
+        }
+
+        const updated = {
+            ...thrillerBoardState.customTypes[index],
+            ...updates
+        };
+
+        thrillerBoardState.customTypes[index] = updated;
+        this._syncToProject();
+        return updated;
+    },
+
+    /**
+     * Supprime un type personnalisé.
+     * @param {string} id - ID du type.
+     * @returns {boolean} Succès.
+     */
+    remove: function (id) {
+        if (!thrillerBoardState.customTypes) return false;
+
+        // Vérifier si des éléments utilisent ce type
+        const used = ThrillerElementRepository.getByType(id).length > 0;
+        if (used) return { error: 'Ce type est utilisé par des éléments existants' };
+
+        const initialLength = thrillerBoardState.customTypes.length;
+        thrillerBoardState.customTypes = thrillerBoardState.customTypes.filter(t => t.id !== id);
+
+        if (thrillerBoardState.customTypes.length !== initialLength) {
+            this._syncToProject();
+            return true;
+        }
+        return false;
+    },
+
+    /**
+     * Synchronise l'état avec le projet global.
+     * @private
+     */
+    _syncToProject: function () {
+        if (typeof project !== 'undefined') {
+            project.thrillerCustomTypes = thrillerBoardState.customTypes;
+        }
+    },
+
+    /**
+     * Charge les types depuis le projet.
+     */
+    loadFromProject: function () {
+        if (typeof project !== 'undefined' && project.thrillerCustomTypes) {
+            thrillerBoardState.customTypes = project.thrillerCustomTypes;
+        }
+    }
+};
+
+// ============================================
 // ELEMENT REPOSITORY
 // ============================================
 
@@ -720,11 +884,13 @@ const ThrillerStateRepository = {
                 connections: []
             };
         }
+        if (!project.thrillerCustomTypes) project.thrillerCustomTypes = [];
 
         // Charger dans l'état local
         thrillerBoardState.elements = project.thrillerElements;
         thrillerBoardState.connections = project.thrillerConnections;
         thrillerBoardState.gridConfig = project.thrillerGridConfig;
+        thrillerBoardState.customTypes = project.thrillerCustomTypes;
 
         // Restaurer le mode de vue depuis localStorage
         const savedViewMode = localStorage.getItem('plume_thriller_view_mode');

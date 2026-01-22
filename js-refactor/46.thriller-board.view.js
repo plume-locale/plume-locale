@@ -327,9 +327,22 @@ function renderCardStack(cards, rowId, columnId) {
 
 /**
  * Affiche une carte individuelle.
+// ============================================
+// CARDS RENDERING
+// ============================================
+
+/**
+ * Affiche une carte avec son header et son body.
  */
 function renderThrillerCard(card) {
-    const typeData = THRILLER_TYPES[card.type] || THRILLER_TYPES.clue;
+    // Résolution du type (Supporte les types personnalisés)
+    let typeData = THRILLER_TYPES[card.type];
+    if (!typeData && typeof ThrillerTypeRepository !== 'undefined') {
+        typeData = ThrillerTypeRepository.getTypeDefinition(card.type);
+    }
+    // Fallback
+    if (!typeData) typeData = THRILLER_TYPES.clue;
+
     const statusData = THRILLER_CARD_STATUS[card.status || 'pending'];
 
     let headerExtra = '';
@@ -581,6 +594,9 @@ function renderThrillerList() {
         const groupKey = 'thriller_' + typeKey;
         const isCollapsed = collapsedState[groupKey] === true;
 
+        // Détérminer si c'est un type personnalisé (si pas dans les constantes système)
+        const isCustom = !THRILLER_TYPES[typeKey];
+
         html += `
             <div class="treeview-group">
                 <div class="treeview-header" onclick="toggleTreeviewGroup('${groupKey}'); event.stopPropagation();">
@@ -588,9 +604,20 @@ function renderThrillerList() {
                     <i data-lucide="${data.icon}" style="color: ${data.color}; width: 16px; height: 16px;"></i>
                     <span class="treeview-label">${data.label}</span>
                     <span class="treeview-count">${data.elements.length}</span>
-                    <button class="treeview-add-btn" onclick="event.stopPropagation(); handleAddElement('${typeKey}')" title="Ajouter ${data.label.toLowerCase()}">
-                        <i data-lucide="plus" style="width: 14px; height: 14px;"></i>
-                    </button>
+                    
+                    <div class="treeview-header-actions">
+                        <button class="treeview-add-btn" onclick="event.stopPropagation(); openTypeEditor('${typeKey}')" title="Modifier le type" style="margin-right: 4px;">
+                            <i data-lucide="edit-2" style="width: 12px; height: 12px;"></i>
+                        </button>
+                        ${(typeof ThrillerTypeRepository !== 'undefined' && ThrillerTypeRepository.getCustomTypes().some(t => t.id === typeKey)) ? `
+                            <button class="treeview-add-btn" onclick="event.stopPropagation(); handleDeleteCustomType('${typeKey}')" title="Supprimer/Réinitialiser ce type" style="margin-right: 4px; color: #dc3545;">
+                                <i data-lucide="trash-2" style="width: 12px; height: 12px;"></i>
+                            </button>
+                        ` : ''}
+                        <button class="treeview-add-btn" onclick="event.stopPropagation(); handleAddElement('${typeKey}')" title="Ajouter ${data.label.toLowerCase()}">
+                            <i data-lucide="plus" style="width: 14px; height: 14px;"></i>
+                        </button>
+                    </div>
                 </div>
                 ${!isCollapsed && data.elements.length > 0 ? `
                     <div class="treeview-children">
@@ -616,6 +643,20 @@ function renderThrillerList() {
     });
 
     container.innerHTML = html;
+
+    // Ajouter le bouton "Gérer les types"
+    const footer = document.createElement('div');
+    footer.className = 'thriller-sidebar-footer';
+    footer.style.padding = '10px';
+    footer.style.borderTop = '1px solid #ddd';
+    footer.style.marginTop = 'auto'; // Pousser vers le bas si flex column
+    footer.innerHTML = `
+        <button class="btn btn-secondary w-100" onclick="openTypeEditor()">
+            <i data-lucide="settings"></i> Gérer les types de cartes
+        </button>
+    `;
+    container.appendChild(footer);
+
     setTimeout(() => {
         if (typeof lucide !== 'undefined') lucide.createIcons();
     }, 50);
@@ -750,6 +791,24 @@ function handleDeleteColumn(columnId) {
     if (result.sideEffects.shouldSave) saveProject();
     if (result.sideEffects.shouldRender) renderThrillerBoard();
 }
+
+/**
+ * Supprime un type personnalisé.
+ */
+function handleDeleteCustomType(typeId) {
+    if (!confirm('Voulez-vous vraiment supprimer ce type personnalisé ? Toutes les cartes de ce type seront également supprimées.')) return;
+
+    if (typeof deleteCustomTypeVM !== 'undefined') {
+        const result = deleteCustomTypeVM(typeId);
+        if (result.success) {
+            if (result.sideEffects.shouldSave) saveProject();
+            if (result.sideEffects.shouldRender) renderThrillerBoard();
+        } else {
+            alert('Erreur: ' + (result.error || 'Impossible de supprimer le type.'));
+        }
+    }
+}
+
 
 // ============================================
 // DRAG & DROP HANDLERS
@@ -1223,11 +1282,22 @@ function handleSaveColumn(event, columnId) {
 /**
  * Affiche le modal d'édition d'un élément.
  */
+/**
+ * Affiche le modal d'édition d'un élément.
+ */
 function editThrillerElement(elementId, isNew = false) {
     const element = ThrillerElementRepository.getById(elementId);
     if (!element) return;
 
-    const typeData = THRILLER_TYPES[element.type];
+    // Résolution du type
+    let typeData = THRILLER_TYPES[element.type];
+    if (!typeData && typeof ThrillerTypeRepository !== 'undefined') {
+        typeData = ThrillerTypeRepository.getTypeDefinition(element.type);
+    }
+    // Fallback secure
+    if (!typeData) {
+        typeData = { label: 'Élément inconnu', icon: 'help-circle', color: '#ccc' };
+    }
 
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
@@ -1626,8 +1696,88 @@ function renderThrillerElementFields(element) {
             `;
 
         default:
-            return '';
+            // Gestion des types personnalisés
+            if (typeof ThrillerTypeRepository !== 'undefined') {
+                const typeDef = ThrillerTypeRepository.getTypeDefinition(element.type);
+                if (typeDef && typeDef.fields) {
+                    return renderCustomTypeFields(element, typeDef.fields, chars);
+                }
+            }
+            return '<div class="alert alert-info">Aucun champ spécifique configuré pour ce type.</div>';
     }
+}
+
+/**
+ * Génère les champs pour un type personnalisé.
+ */
+function renderCustomTypeFields(element, fields, chars) {
+    return fields.map(field => {
+        const value = element.data[field.key] || '';
+        const fieldId = `custom_${field.key}`;
+
+        switch (field.type) {
+            case 'textarea':
+                return `
+                    <div class="form-group">
+                        <label class="form-label" for="${fieldId}">${field.label}</label>
+                        <textarea class="form-input custom-field" data-key="${field.key}" id="${fieldId}" rows="3">${value}</textarea>
+                    </div>
+                `;
+
+            case 'select':
+                const options = field.options || [];
+                return `
+                    <div class="form-group">
+                        <label class="form-label" for="${fieldId}">${field.label}</label>
+                        <select class="form-input custom-field" data-key="${field.key}" id="${fieldId}">
+                            <option value="">Sélectionner</option>
+                            ${options.map(opt => `<option value="${opt}" ${value === opt ? 'selected' : ''}>${opt}</option>`).join('')}
+                        </select>
+                    </div>
+                `;
+
+            case 'boolean':
+                return `
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" class="custom-field" data-key="${field.key}" id="${fieldId}" ${value ? 'checked' : ''}>
+                            ${field.label}
+                        </label>
+                    </div>
+                `;
+
+            case 'character':
+                return `
+                    <div class="form-group">
+                        <label class="form-label" for="${fieldId}">${field.label}</label>
+                        <select class="form-input custom-field" data-key="${field.key}" id="${fieldId}">
+                            <option value="">Sélectionner un personnage</option>
+                            ${chars.map(c => `<option value="${c.id}" ${String(value) === String(c.id) ? 'selected' : ''}>${c.name}</option>`).join('')}
+                        </select>
+                    </div>
+                `;
+
+            case 'scene':
+            case 'scene_link':
+                return `
+                    <div class="form-group">
+                        <label class="form-label" for="${fieldId}">${field.label}</label>
+                        <select class="form-input custom-field" data-key="${field.key}" id="${fieldId}">
+                            <option value="">Sélectionner une scène</option>
+                            ${renderSceneOptions(value)}
+                        </select>
+                    </div>
+                `;
+
+            default: // text, link, location, etc.
+                return `
+                    <div class="form-group">
+                        <label class="form-label" for="${fieldId}">${field.label}</label>
+                        <input type="text" class="form-input custom-field" data-key="${field.key}" id="${fieldId}" value="${value}">
+                    </div>
+                `;
+        }
+    }).join('');
 }
 
 /**
@@ -1745,6 +1895,29 @@ function saveThrillerElement(event, elementId, isNew = false) {
                 coordinates: document.getElementById('locCoordinates')?.value || '',
                 description: document.getElementById('locDesc')?.value || ''
             };
+            break;
+
+        default:
+            // Gestion des types personnalisés
+            if (typeof ThrillerTypeRepository !== 'undefined') {
+                const typeDef = ThrillerTypeRepository.getTypeDefinition(element.type);
+                if (typeDef && typeDef.fields) {
+                    const customData = {};
+                    typeDef.fields.forEach(field => {
+                        const fieldId = `custom_${field.key}`;
+                        const elementInput = document.getElementById(fieldId);
+
+                        if (elementInput) {
+                            if (field.type === 'boolean') {
+                                customData[field.key] = elementInput.checked;
+                            } else {
+                                customData[field.key] = elementInput.value;
+                            }
+                        }
+                    });
+                    element.data = customData;
+                }
+            }
             break;
     }
 

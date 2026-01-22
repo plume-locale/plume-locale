@@ -70,7 +70,15 @@ function formatThrillerPropertyValue(value, type) {
             return formatWitnessesList(value);
 
         case 'scene':
+        case 'scene_link':
             return formatSceneReference(value);
+
+        case 'link':
+            // Lien générique vers une entité (à implémenter si besoin de plus de détail)
+            return value ? `<span class="badge badge-outline">${value}</span>` : '<em>Non défini</em>';
+
+        case 'dropdown':
+            return value || '<em>Non défini</em>';
 
         default:
             if (typeof value === 'string' && value.length > 80) {
@@ -228,7 +236,20 @@ function renderSceneSelectOptions(selectedSceneId) {
  * @returns {Array} Liste des propriétés.
  */
 function getThrillerCardTypeProperties(cardType) {
-    return THRILLER_CARD_PROPERTIES[cardType] || [];
+    // 1. Chercher dans les constantes prédéfinies
+    if (THRILLER_CARD_PROPERTIES[cardType]) {
+        return THRILLER_CARD_PROPERTIES[cardType];
+    }
+
+    // 2. Chercher dans les types personnalisés via le repository
+    if (typeof ThrillerTypeRepository !== 'undefined') {
+        const typeDef = ThrillerTypeRepository.getTypeDefinition(cardType);
+        if (typeDef && typeDef.fields) {
+            return typeDef.fields;
+        }
+    }
+
+    return [];
 }
 
 // ============================================

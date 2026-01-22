@@ -68,6 +68,73 @@ function setColumnModeVM(mode) {
 }
 
 // ============================================
+// TYPE MANAGEMENT
+// ============================================
+
+/**
+ * Ajoute un nouveau type personnalisé.
+ * @param {Object} data - Données du type.
+ * @returns {Object} Résultat.
+ */
+function addCustomTypeVM(data) {
+    if (!data.id) {
+        data.id = 'custom_' + Date.now();
+    }
+
+    const result = ThrillerTypeRepository.add(data);
+    if (result.error) return { success: false, error: result.error };
+
+    return {
+        success: true,
+        type: result,
+        sideEffects: {
+            shouldSave: true, // Sauvegarder dans project.thrillerCustomTypes
+            shouldRenderList: true // Mettre à jour la sidebar
+        }
+    };
+}
+
+/**
+ * Met à jour un type personnalisé.
+ * @param {string} typeId - ID du type.
+ * @param {Object} updates - Données à mettre à jour.
+ * @returns {Object} Résultat.
+ */
+function updateCustomTypeVM(typeId, updates) {
+    const result = ThrillerTypeRepository.update(typeId, updates);
+    if (!result) return { success: false, error: 'Type introuvable' };
+
+    return {
+        success: true,
+        type: result,
+        sideEffects: {
+            shouldSave: true,
+            shouldRenderList: true,
+            shouldRender: true // Mettre à jour le board (cartes existantes avec ce type)
+        }
+    };
+}
+
+/**
+ * Supprime un type personnalisé.
+ * @param {string} typeId - ID du type.
+ * @returns {Object} Résultat.
+ */
+function deleteCustomTypeVM(typeId) {
+    const result = ThrillerTypeRepository.remove(typeId);
+    if (result.error) return { success: false, error: result.error };
+    if (!result) return { success: false, error: 'Erreur lors de la suppression' };
+
+    return {
+        success: true,
+        sideEffects: {
+            shouldSave: true,
+            shouldRenderList: true
+        }
+    };
+}
+
+// ============================================
 // ELEMENT CRUD
 // ============================================
 
@@ -78,7 +145,15 @@ function setColumnModeVM(mode) {
  */
 function addElementVM(type = null) {
     const elementType = type || ThrillerStateRepository.getCurrentFilter();
-    const typeData = THRILLER_TYPES[elementType];
+
+    // Utiliser le repository de types pour supporter les types personnalisés
+    let typeData = null;
+    if (typeof ThrillerTypeRepository !== 'undefined') {
+        typeData = ThrillerTypeRepository.getTypeDefinition(elementType);
+    } else {
+        typeData = THRILLER_TYPES[elementType];
+    }
+
     if (!typeData) return { success: false, error: 'Type invalide' };
 
     // Compter les éléments existants de ce type
@@ -701,12 +776,26 @@ function getGridDataVM() {
 function getGroupedElementsVM() {
     const grouped = {};
 
+    // 1. Types système
     Object.keys(THRILLER_TYPES).forEach(type => {
         grouped[type] = {
             ...THRILLER_TYPES[type],
             elements: ThrillerElementRepository.getByType(type)
         };
     });
+
+    // 2. Types personnalisés
+    if (typeof ThrillerTypeRepository !== 'undefined') {
+        const customTypes = ThrillerTypeRepository.getCustomTypes();
+        customTypes.forEach(ct => {
+            grouped[ct.id] = {
+                label: ct.label,
+                icon: ct.icon,
+                color: ct.color,
+                elements: ThrillerElementRepository.getByType(ct.id)
+            };
+        });
+    }
 
     return grouped;
 }

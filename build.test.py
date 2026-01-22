@@ -103,6 +103,7 @@ JS_ORDER = [
     'js-refactor/46.thriller-board.repository.js',
     'js-refactor/46.thriller-board.helpers.js',
     'js-refactor/46.thriller-board.viewmodel.js',
+    'js-refactor/46.thriller-board.type-editor.js',
     'js-refactor/46.thriller-board.view.js'
 ]
 
