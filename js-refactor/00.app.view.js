@@ -203,6 +203,9 @@ function renderViewContent(view, containerId) {
                             if (scene) {
                                 if (typeof renderEditor === 'function') {
                                     renderEditor(act, chapter, scene);
+                                    // Force refresh of links panel
+                                    if (typeof autoDetectLinks === 'function') autoDetectLinks();
+                                    if (typeof refreshLinksPanel === 'function') refreshLinksPanel();
                                     return;
                                 }
                             }

@@ -3,6 +3,7 @@
 let focusModeActive = false;
 let focusPanelOpen = false;
 let focusStartWordCount = 0;
+let linksPanelVisible = true; // État de visibilité du linksPanel
 
 // Objectif de mots pour le projet (peut être configuré)
 let projectWordGoal = 50000;
@@ -128,8 +129,43 @@ function toggleToolbar() {
 // Bascule l'affichage d'un composant UI (panneau des liens).
 function toggleLinksPanelVisibility() {
     const linksPanel = document.getElementById('linksPanel');
-    if (linksPanel) {
-        linksPanel.style.display = document.getElementById('hideLinksPanel').checked ? 'none' : 'block';
+    const toolBtn = document.getElementById('toolLinksPanelBtn');
+    const checkbox = document.getElementById('hideLinksPanel');
+
+    if (!linksPanel) return;
+
+    // Si appelé depuis la checkbox du mode focus
+    if (checkbox && checkbox.checked !== undefined) {
+        const isChecked = checkbox.checked;
+        linksPanelVisible = !isChecked;
+        linksPanel.style.display = isChecked ? 'none' : 'block';
+
+        // Synchroniser le bouton de la toolbar
+        if (toolBtn) {
+            if (isChecked) {
+                toolBtn.classList.add('active');
+            } else {
+                toolBtn.classList.remove('active');
+            }
+        }
+    } else {
+        // Si appelé depuis le bouton de la toolbar - toggle simple
+        linksPanelVisible = !linksPanelVisible;
+        linksPanel.style.display = linksPanelVisible ? 'block' : 'none';
+
+        // Mettre à jour l'état actif du bouton
+        if (toolBtn) {
+            if (linksPanelVisible) {
+                toolBtn.classList.remove('active');
+            } else {
+                toolBtn.classList.add('active');
+            }
+        }
+
+        // Synchroniser la checkbox si elle existe
+        if (checkbox) {
+            checkbox.checked = !linksPanelVisible;
+        }
     }
 }
 
