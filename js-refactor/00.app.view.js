@@ -493,6 +493,147 @@ function toggleStatusFilter(status) {
 
 /**
  * [MVVM : View]
+ * Retourne le HTML complet de la barre d'outils de l'éditeur.
+ * @param {string} [panel] - Si présent, utilise formatTextInPanel au lieu de formatText
+ */
+function getEditorToolbarHTML(panel = null) {
+    const fnName = panel ? 'formatTextInPanel' : 'formatText';
+    const fnPrefix = panel ? `'${panel}', ` : '';
+    const idSuffix = panel ? `-${panel}` : '';
+
+    return `
+        <!-- Basic formatting -->
+        <div class="toolbar-group">
+            <button class="toolbar-btn" data-format="bold" onclick="${fnName}(${fnPrefix}'bold')" title="Gras (Ctrl+B)">
+                <strong>B</strong>
+            </button>
+            <button class="toolbar-btn" data-format="italic" onclick="${fnName}(${fnPrefix}'italic')" title="Italique (Ctrl+I)">
+                <em>I</em>
+            </button>
+            <button class="toolbar-btn" data-format="underline" onclick="${fnName}(${fnPrefix}'underline')" title="Souligné (Ctrl+U)">
+                <u>U</u>
+            </button>
+            <button class="toolbar-btn" data-format="strikethrough" onclick="${fnName}(${fnPrefix}'strikeThrough')" title="Barré">
+                <s>S</s>
+            </button>
+        </div>
+        
+        <!-- Font family and size -->
+        <div class="toolbar-group">
+            <select class="font-family-selector" onchange="${fnName}(${fnPrefix}'fontName', this.value)" title="Police de caractères">
+                <option value="Crimson Pro">Crimson Pro</option>
+                <option value="Arial">Arial</option>
+                <option value="Georgia">Georgia</option>
+                <option value="Times New Roman">Times New Roman</option>
+                <option value="Courier New">Courier New</option>
+                <option value="Verdana">Verdana</option>
+                <option value="Garamond">Garamond</option>
+                <option value="Palatino">Palatino</option>
+            </select>
+            <select class="font-size-selector" onchange="${fnName}(${fnPrefix}'fontSize', this.value)" title="Taille de police">
+                <option value="1">Très petit</option>
+                <option value="2">Petit</option>
+                <option value="3" selected>Normal</option>
+                <option value="4">Grand</option>
+                <option value="5">Très grand</option>
+                <option value="6">Énorme</option>
+                <option value="7">Gigantesque</option>
+            </select>
+        </div>
+        
+        <!-- Text color -->
+        <div class="toolbar-group">
+            <div class="color-picker-wrapper">
+                <button class="toolbar-btn" onclick="toggleColorPicker('text', event, ${panel ? `'${panel}'` : 'null'})" title="Couleur du texte">
+                    <span style="border-bottom: 3px solid currentColor;">A</span>
+                </button>
+                <div class="color-picker-dropdown" id="textColorPicker${idSuffix}">
+                    <div class="color-grid" id="textColorGrid${idSuffix}"></div>
+                    <div class="color-input-wrapper">
+                        <input type="color" id="textColorInput${idSuffix}" onchange="applyTextColor(this.value, ${panel ? `'${panel}'` : 'null'})">
+                        <input type="text" id="textColorHex${idSuffix}" placeholder="#000000" maxlength="7" onchange="applyTextColor(this.value, ${panel ? `'${panel}'` : 'null'})">
+                    </div>
+                </div>
+            </div>
+            <div class="color-picker-wrapper">
+                <button class="toolbar-btn" onclick="toggleColorPicker('background', event, ${panel ? `'${panel}'` : 'null'})" title="Couleur de fond">
+                    <span style="background: yellow; padding: 0 4px;">A</span>
+                </button>
+                <div class="color-picker-dropdown" id="backgroundColorPicker${idSuffix}">
+                    <div class="color-grid" id="backgroundColorGrid${idSuffix}"></div>
+                    <div class="color-input-wrapper">
+                        <input type="color" id="bgColorInput${idSuffix}" onchange="applyBackgroundColor(this.value, ${panel ? `'${panel}'` : 'null'})">
+                        <input type="text" id="bgColorHex${idSuffix}" placeholder="#FFFF00" maxlength="7" onchange="applyBackgroundColor(this.value, ${panel ? `'${panel}'` : 'null'})">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Alignment -->
+        <div class="toolbar-group">
+            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'justifyLeft')" title="Aligner à gauche">
+                ⫷
+            </button>
+            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'justifyCenter')" title="Centrer">
+                ⫶
+            </button>
+            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'justifyRight')" title="Aligner à droite">
+                ⫸
+            </button>
+            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'justifyFull')" title="Justifier">
+                ☰
+            </button>
+        </div>
+        
+        <!-- Headings -->
+        <div class="toolbar-group">
+            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'formatBlock', 'h1')" title="Titre 1">H1</button>
+            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'formatBlock', 'h2')" title="Titre 2">H2</button>
+            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'formatBlock', 'h3')" title="Titre 3">H3</button>
+            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'formatBlock', 'p')" title="Paragraphe">P</button>
+        </div>
+        
+        <!-- Lists and quotes -->
+        <div class="toolbar-group">
+            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'insertUnorderedList')" title="Liste à puces">• Liste</button>
+            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'insertOrderedList')" title="Liste numérotée">1. Liste</button>
+            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'formatBlock', 'blockquote')" title="Citation">❝ Citation</button>
+        </div>
+        
+        <!-- Indentation -->
+        <div class="toolbar-group">
+            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'indent')" title="Augmenter l'indentation">→|</button>
+            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'outdent')" title="Diminuer l'indentation">|←</button>
+        </div>
+        
+        <!-- Superscript, subscript -->
+        <div class="toolbar-group">
+            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'superscript')" title="Exposant">x²</button>
+            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'subscript')" title="Indice">x₂</button>
+        </div>
+        
+        <!-- Other -->
+        <div class="toolbar-group">
+            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'insertHorizontalRule')" title="Ligne horizontale">─</button>
+            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'removeFormat')" title="Supprimer le formatage">✕ Format</button>
+        </div>
+
+        <!-- Annotations, Arcs & Plot -->
+        <div class="toolbar-group">
+            <button class="toolbar-btn" onclick="${panel ? `toggleAnnotationsPanel()` : 'toggleAnnotationsPanel()'}" id="toolbarAnnotationsBtn${idSuffix}" title="Annotations"><i data-lucide="message-square"></i></button>
+            <button class="toolbar-btn" onclick="${panel ? `toggleArcScenePanel()` : 'toggleArcScenePanel()'}" id="toolbarArcsBtn${idSuffix}" title="Arcs Narratifs"><i data-lucide="git-commit-horizontal"></i></button>
+            <button class="toolbar-btn" onclick="PlotGridUI.toggleSidebar()" id="toolbarPlotBtn${idSuffix}" title="Afficher l'intrigue"><i data-lucide="trending-up"></i></button>
+        </div>
+        
+        <!-- Revision mode button -->
+        <div class="toolbar-group">
+            <button class="toolbar-btn" onclick="toggleRevisionMode()" title="Mode Révision (Ctrl+R)" style="color: var(--accent-gold); font-weight: 600;">✏️ RÉVISION</button>
+        </div>
+    `;
+}
+
+/**
+ * [MVVM : View]
  * Génère et affiche l'éditeur de texte complet.
  */
 function renderEditor(act, chapter, scene) {
@@ -537,27 +678,7 @@ function renderEditor(act, chapter, scene) {
                 <span id="toolbarToggleText"><i data-lucide="pen-line" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Afficher les outils</span>
             </button>
             <div class="editor-toolbar" id="editorToolbar">
-                <!-- Group formatting -->
-                <div class="toolbar-group">
-                    <button class="toolbar-btn" onclick="formatText('bold')"><strong>B</strong></button>
-                    <button class="toolbar-btn" onclick="formatText('italic')"><em>I</em></button>
-                    <button class="toolbar-btn" onclick="formatText('underline')"><u>U</u></button>
-                </div>
-                <!-- Alignment -->
-                <div class="toolbar-group">
-                    <button class="toolbar-btn" onclick="formatText('justifyLeft')">⫷</button>
-                    <button class="toolbar-btn" onclick="formatText('justifyCenter')">⫶</button>
-                    <button class="toolbar-btn" onclick="formatText('justifyRight')">⫸</button>
-                </div>
-                <!-- Annotations & Arcs -->
-                <div class="toolbar-group">
-                    <button class="toolbar-btn" onclick="toggleAnnotationsPanel()" id="toolbarAnnotationsBtn"><i data-lucide="message-square"></i></button>
-                    <button class="toolbar-btn" onclick="toggleArcScenePanel()" id="toolbarArcsBtn"><i data-lucide="git-commit-horizontal"></i></button>
-                    <button class="toolbar-btn" onclick="PlotGridUI.toggleSidebar()" id="toolbarPlotBtn" title="Afficher l'intrigue"><i data-lucide="trending-up"></i></button>
-                </div>
-                <div class="toolbar-group">
-                    <button class="toolbar-btn" onclick="toggleRevisionMode()" id="toolbarRevisionBtn" style="color: var(--accent-gold); font-weight: 600;">✏️ RÉVISION</button>
-                </div>
+                ${getEditorToolbarHTML()}
             </div>
             
             <div class="links-panel-sticky" id="linksPanel">
@@ -584,6 +705,7 @@ function renderEditor(act, chapter, scene) {
         </div>`;
 
     if (typeof lucide !== 'undefined') lucide.createIcons();
+    if (typeof initializeColorPickers === 'function') initializeColorPickers();
 
     // Focus if empty
     setTimeout(() => {

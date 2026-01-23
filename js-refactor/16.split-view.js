@@ -875,93 +875,7 @@ function renderEditorInContainer(act, chapter, scene, container, panel) {
                         <span><i data-lucide="pen-line" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Outils de formatage</span>
                     </button>
                     <div class="editor-toolbar" id="editorToolbar-${panel}">
-                        <!-- Basic formatting -->
-                        <div class="toolbar-group">
-                            <button class="toolbar-btn" onclick="formatTextInPanel('${panel}', 'bold')" title="Gras (Ctrl+B)">
-                                <strong>B</strong>
-                            </button>
-                            <button class="toolbar-btn" onclick="formatTextInPanel('${panel}', 'italic')" title="Italique (Ctrl+I)">
-                                <em>I</em>
-                            </button>
-                            <button class="toolbar-btn" onclick="formatTextInPanel('${panel}', 'underline')" title="Souligné (Ctrl+U)">
-                                <u>U</u>
-                            </button>
-                            <button class="toolbar-btn" onclick="formatTextInPanel('${panel}', 'strikeThrough')" title="Barré">
-                                <s>S</s>
-                            </button>
-                        </div>
-                        
-                        <!-- Font family and size -->
-                        <div class="toolbar-group">
-                            <select class="font-family-selector" onchange="formatTextInPanel('${panel}', 'fontName', this.value)" title="Police de caractères">
-                                <option value="Crimson Pro">Crimson Pro</option>
-                                <option value="Arial">Arial</option>
-                                <option value="Georgia">Georgia</option>
-                                <option value="Times New Roman">Times New Roman</option>
-                                <option value="Courier New">Courier New</option>
-                                <option value="Verdana">Verdana</option>
-                                <option value="Garamond">Garamond</option>
-                                <option value="Palatino">Palatino</option>
-                            </select>
-                            <select class="font-size-selector" onchange="formatTextInPanel('${panel}', 'fontSize', this.value)" title="Taille de police">
-                                <option value="1">Très petit</option>
-                                <option value="2">Petit</option>
-                                <option value="3" selected>Normal</option>
-                                <option value="4">Grand</option>
-                                <option value="5">Très grand</option>
-                                <option value="6">Énorme</option>
-                                <option value="7">Gigantesque</option>
-                            </select>
-                        </div>
-                        
-                        <!-- Alignment -->
-                        <div class="toolbar-group">
-                            <button class="toolbar-btn" onclick="formatTextInPanel('${panel}', 'justifyLeft')" title="Aligner à gauche">
-                                ⫷
-                            </button>
-                            <button class="toolbar-btn" onclick="formatTextInPanel('${panel}', 'justifyCenter')" title="Centrer">
-                                ⫶
-                            </button>
-                            <button class="toolbar-btn" onclick="formatTextInPanel('${panel}', 'justifyRight')" title="Aligner à droite">
-                                ⫸
-                            </button>
-                            <button class="toolbar-btn" onclick="formatTextInPanel('${panel}', 'justifyFull')" title="Justifier">
-                                ☰
-                            </button>
-                        </div>
-                        
-                        <!-- Headings -->
-                        <div class="toolbar-group">
-                            <button class="toolbar-btn" onclick="formatTextInPanel('${panel}', 'formatBlock', 'h1')" title="Titre 1">H1</button>
-                            <button class="toolbar-btn" onclick="formatTextInPanel('${panel}', 'formatBlock', 'h2')" title="Titre 2">H2</button>
-                            <button class="toolbar-btn" onclick="formatTextInPanel('${panel}', 'formatBlock', 'h3')" title="Titre 3">H3</button>
-                            <button class="toolbar-btn" onclick="formatTextInPanel('${panel}', 'formatBlock', 'p')" title="Paragraphe">P</button>
-                        </div>
-                        
-                        <!-- Lists and quotes -->
-                        <div class="toolbar-group">
-                            <button class="toolbar-btn" onclick="formatTextInPanel('${panel}', 'insertUnorderedList')" title="Liste à puces">• Liste</button>
-                            <button class="toolbar-btn" onclick="formatTextInPanel('${panel}', 'insertOrderedList')" title="Liste numérotée">1. Liste</button>
-                            <button class="toolbar-btn" onclick="formatTextInPanel('${panel}', 'formatBlock', 'blockquote')" title="Citation">❝ Citation</button>
-                        </div>
-                        
-                        <!-- Indentation -->
-                        <div class="toolbar-group">
-                            <button class="toolbar-btn" onclick="formatTextInPanel('${panel}', 'indent')" title="Augmenter l'indentation">→|</button>
-                            <button class="toolbar-btn" onclick="formatTextInPanel('${panel}', 'outdent')" title="Diminuer l'indentation">|←</button>
-                        </div>
-                        
-                        <!-- Superscript, subscript -->
-                        <div class="toolbar-group">
-                            <button class="toolbar-btn" onclick="formatTextInPanel('${panel}', 'superscript')" title="Exposant">x²</button>
-                            <button class="toolbar-btn" onclick="formatTextInPanel('${panel}', 'subscript')" title="Indice">x₂</button>
-                        </div>
-                        
-                        <!-- Other -->
-                        <div class="toolbar-group">
-                            <button class="toolbar-btn" onclick="formatTextInPanel('${panel}', 'insertHorizontalRule')" title="Ligne horizontale">─</button>
-                            <button class="toolbar-btn" onclick="formatTextInPanel('${panel}', 'removeFormat')" title="Supprimer le formatage">✕ Format</button>
-                        </div>
+                        ${getEditorToolbarHTML(panel)}
                     </div>
                     <div class="links-panel-sticky" id="linksPanel-${panel}">
                         <div style="display: flex; gap: 2rem; align-items: start;">
@@ -1007,9 +921,10 @@ function renderEditorInContainer(act, chapter, scene, container, panel) {
                 </div>
             `;
 
-    // Initialize lucide icons
+    // Initialize lucide icons and color pickers
     setTimeout(() => {
         if (typeof lucide !== 'undefined') lucide.createIcons();
+        if (typeof initializeColorPickers === 'function') initializeColorPickers(panel);
     }, 50);
 }
 

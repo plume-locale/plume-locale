@@ -41,7 +41,7 @@ CSS_ORDER = [
 
 # Ordre des fichiers JS - MODIFIÉ pour js-refactor
 JS_ORDER = [
-    '01.app.js',
+    'js-refactor/01.app.refactor.js',
     '02.storage.js',
     'js-refactor/03.projects.refactor.js',
     '04.init.js',
@@ -55,7 +55,7 @@ JS_ORDER = [
     'js-refactor/07.stats.refactor.js',
     '08.auto-detect.js',
     '09.floating-editor.js',
-    '10.colorpalette.js',
+    'js-refactor/10.colorpalette.refactor.js',
     '11.updateStats.js',
     '12.import-export.js',
     '13.mobile-menu.js',
@@ -79,12 +79,12 @@ JS_ORDER = [
     '25.globalSearch.js',
     '26.focusMode.js',
     '27.keyboardShortcuts.js',
-    '28.revision.js',
+    'js-refactor/28.revision.refactor.js',
     '29.todos.js',
-    '30.corkboard.js',
+    'js-refactor/30.corkboard.refactor.js',
     '31.mindmap.js',
     '32.touch-events.js',
-    '33.plot.js',
+    'js-refactor/33.plot.refactor.js',
     '34.relations-graph.js',
     '35.renderMap.js',
     '36.timeline-metro.js',
@@ -173,6 +173,11 @@ IGNORED_ORIGINALS = [
     '07.stats.js',
     '15.characters.js',
     '17.world.js',
+    '01.app.js',
+    '10.colorpalette.js',
+    '28.revision.js',
+    '30.corkboard.js',
+    '33.plot.js',
     '46.thriller-board.js'  # Remplacé par les fichiers refactorisés 46.thriller-board.*.js
 ]
 
