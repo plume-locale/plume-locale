@@ -1,95 +1,105 @@
 // Notes Management
-        function openAddNoteModal() {
-            document.getElementById('addNoteModal').classList.add('active');
-            setTimeout(() => document.getElementById('noteTitleInput').focus(), 100);
-        }
 
-        function addNote() {
-            const title = document.getElementById('noteTitleInput').value.trim();
-            const category = document.getElementById('noteCategoryInput').value;
-            const tags = document.getElementById('noteTagsInput').value.trim();
-            const content = document.getElementById('noteContentInput').value.trim();
-            
-            if (!title) return;
+// [MVVM : View]
+// Affiche la modal d'ajout ; interaction UI uniquement.
+function openAddNoteModal() {
+    document.getElementById('addNoteModal').classList.add('active');
+    setTimeout(() => document.getElementById('noteTitleInput').focus(), 100);
+}
 
-            const note = {
-                id: Date.now(),
-                title: title,
-                category: category,
-                tags: tags ? tags.split(',').map(t => t.trim()).filter(t => t) : [],
-                content: content || '',
-                medias: [], // Support pour les médias: {type: 'url'|'image'|'audio', url: '', title: ''}
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString()
-            };
+// [MVVM : ViewModel]
+// CrÃ©e un nouvel objet Model, met Ã  jour project.notes, persiste et dÃ©clenche le rendu.
+function addNote() {
+    const title = document.getElementById('noteTitleInput').value.trim();
+    const category = document.getElementById('noteCategoryInput').value;
+    const tags = document.getElementById('noteTagsInput').value.trim();
+    const content = document.getElementById('noteContentInput').value.trim();
 
-            project.notes.push(note);
-            
-            // Clear inputs
-            document.getElementById('noteTitleInput').value = '';
-            document.getElementById('noteTagsInput').value = '';
-            document.getElementById('noteContentInput').value = '';
-            
-            closeModal('addNoteModal');
-            saveProject();
-            renderNotesList();
-        }
+    if (!title) return;
 
-        function deleteNote(id) {
-            if (!confirm('Êtes-vous sûr de vouloir supprimer cette note ?')) return;
-            project.notes = project.notes.filter(n => n.id !== id);
-            saveProject();
-            renderNotesList();
-            showEmptyState();
-        }
+    const note = {
+        id: Date.now(),
+        title: title,
+        category: category,
+        tags: tags ? tags.split(',').map(t => t.trim()).filter(t => t) : [],
+        content: content || '',
+        medias: [], // Support pour les mÃ©dias: {type: 'url'|'image'|'audio', url: '', title: ''}
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+    };
 
-        // Expanded state for notes categories
-        let expandedNoteCategories = new Set(['Idée', 'Recherche', 'Référence', 'A faire', 'Question', 'Autre']);
+    project.notes.push(note);
 
-        function renderNotesList() {
-            const container = document.getElementById('notesList');
-            
-            if (project.notes.length === 0) {
-                container.innerHTML = '<div style="padding: 1rem; text-align: center; color: var(--text-muted); font-size: 0.85rem;">Aucune note</div>';
-                return;
-            }
+    // Clear inputs
+    document.getElementById('noteTitleInput').value = '';
+    document.getElementById('noteTagsInput').value = '';
+    document.getElementById('noteContentInput').value = '';
 
-            // Group notes by category
-            const categories = {};
-            // Icônes Lucide pour les catégories
-            const categoryIcons = {
-                'Idée': 'lightbulb',
-                'Recherche': 'search',
-                'Référence': 'bookmark',
-                'A faire': 'check-circle',
-                'Question': 'help-circle',
-                'Autre': 'file-text'
-            };
-            
-            project.notes.forEach(note => {
-                const cat = note.category || 'Autre';
-                if (!categories[cat]) categories[cat] = [];
-                categories[cat].push(note);
-            });
+    closeModal('addNoteModal');
+    saveProject();
+    renderNotesList();
+}
 
-            // Sort notes within categories alphabetically by title
-            Object.keys(categories).forEach(cat => {
-                categories[cat].sort((a, b) => {
-                    return (a.title || '').toLowerCase().localeCompare((b.title || '').toLowerCase(), 'fr');
-                });
-            });
+// [MVVM : ViewModel]
+// Modifie le Model (suppression), persiste et met Ã  jour la View.
+function deleteNote(id) {
+    if (!confirm('ÃŠtes-vous sÃ»r de vouloir supprimer cette note ?')) return;
+    project.notes = project.notes.filter(n => n.id !== id);
+    saveProject();
+    renderNotesList();
+    showEmptyState();
+}
 
-            let html = '';
+// [MVVM : ViewModel]
+// Ã‰tat UI local (quelle catÃ©gorie est dÃ©veloppÃ©e). GÃ¨re le comportement d'affichage.
+let expandedNoteCategories = new Set(['IdÃ©e', 'Recherche', 'RÃ©fÃ©rence', 'A faire', 'Question', 'Autre']);
 
-            // Render each category as a collapsible group
-            const categoryOrder = ['Idée', 'Recherche', 'Référence', 'A faire', 'Question', 'Autre'];
-            categoryOrder.forEach(cat => {
-                if (!categories[cat] || categories[cat].length === 0) return;
-                
-                const isExpanded = expandedNoteCategories.has(cat);
-                const icon = categoryIcons[cat] || 'file-text';
-                
-                html += `
+// [MVVM : View]
+// Rend la liste des notes dans le DOM ; lecture du Model mais responsabilitÃ© d'affichage.
+function renderNotesList() {
+    const container = document.getElementById('notesList');
+
+    if (project.notes.length === 0) {
+        container.innerHTML = '<div style="padding: 1rem; text-align: center; color: var(--text-muted); font-size: 0.85rem;">Aucune note</div>';
+        return;
+    }
+
+    // Group notes by category
+    const categories = {};
+    // IcÃ´nes Lucide pour les catÃ©gories
+    const categoryIcons = {
+        'IdÃ©e': 'lightbulb',
+        'Recherche': 'search',
+        'RÃ©fÃ©rence': 'bookmark',
+        'A faire': 'check-circle',
+        'Question': 'help-circle',
+        'Autre': 'file-text'
+    };
+
+    project.notes.forEach(note => {
+        const cat = note.category || 'Autre';
+        if (!categories[cat]) categories[cat] = [];
+        categories[cat].push(note);
+    });
+
+    // Sort notes within categories alphabetically by title
+    Object.keys(categories).forEach(cat => {
+        categories[cat].sort((a, b) => {
+            return (a.title || '').toLowerCase().localeCompare((b.title || '').toLowerCase(), 'fr');
+        });
+    });
+
+    let html = '';
+
+    // Render each category as a collapsible group
+    const categoryOrder = ['IdÃ©e', 'Recherche', 'RÃ©fÃ©rence', 'A faire', 'Question', 'Autre'];
+    categoryOrder.forEach(cat => {
+        if (!categories[cat] || categories[cat].length === 0) return;
+
+        const isExpanded = expandedNoteCategories.has(cat);
+        const icon = categoryIcons[cat] || 'file-text';
+
+        html += `
                     <div class="treeview-group" data-category="${cat}">
                         <div class="treeview-header" onclick="toggleNoteCategory('${cat}')">
                             <span class="treeview-icon ${isExpanded ? 'expanded' : ''}"><i data-lucide="${isExpanded ? 'chevron-down' : 'chevron-right'}" style="width:14px; height:14px;"></i></span>
@@ -99,65 +109,73 @@
                         </div>
                         <div class="treeview-children ${isExpanded ? '' : 'collapsed'}">
                             ${categories[cat].map(note => {
-                                const hasMedia = note.medias && note.medias.length > 0;
-                                // Remplacement du ?? par l'icône de trombone
-                                const mediaIcon = hasMedia ? 'paperclip' : ''; 
-                                return `
+            const hasMedia = note.medias && note.medias.length > 0;
+            // Remplacement du ?? par l'icÃ´ne de trombone
+            const mediaIcon = hasMedia ? 'paperclip' : '';
+            return `
                                     <div class="treeview-item" onclick="openNoteDetail(${note.id})">
                                         <span class="treeview-item-title">${note.title}</span>
                                         ${mediaIcon ? `<span class="treeview-media-icon"><i data-lucide="${mediaIcon}" style="width:14px; height:14px;"></i></span>` : ''}
-                                        <button class="btn btn-icon btn-small delete-btn" onclick="event.stopPropagation(); deleteNote(${note.id})" title="Supprimer">×</button>
+                                        <button class="btn btn-icon btn-small delete-btn" onclick="event.stopPropagation(); deleteNote(${note.id})" title="Supprimer">Ã—</button>
                                     </div>
                                 `;
-                            }).join('')}
+        }).join('')}
                         </div>
                     </div>
                 `;
-            });
+    });
 
-            container.innerHTML = html;
-            if (typeof lucide !== 'undefined') lucide.createIcons();
+    container.innerHTML = html;
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+// [MVVM : ViewModel]
+// Mutations de l'Ã©tat d'affichage (expand/collapse) et dÃ©clenche rendu.
+function toggleNoteCategory(category) {
+    if (expandedNoteCategories.has(category)) {
+        expandedNoteCategories.delete(category);
+    } else {
+        expandedNoteCategories.add(category);
+    }
+    renderNotesList();
+}
+
+// [MVVM : ViewModel]
+// OpÃ©ration sur l'Ã©tat UI et rafraÃ®chissement de la View.
+function expandAllNoteCategories() {
+    expandedNoteCategories = new Set(['IdÃ©e', 'Recherche', 'RÃ©fÃ©rence', 'A faire', 'Question', 'Autre']);
+    renderNotesList();
+}
+
+// [MVVM : ViewModel]
+// OpÃ©ration sur l'Ã©tat UI et rafraÃ®chissement de la View.
+function collapseAllNoteCategories() {
+    expandedNoteCategories.clear();
+    renderNotesList();
+}
+
+// [MVVM : Other]
+// Rend la vue dÃ©tail et gÃ¨re la navigation (Mixte View/ViewModel).
+function openNoteDetail(id) {
+    const note = project.notes.find(n => n.id === id);
+    if (!note) return;
+
+    // Ensure medias array exists
+    if (!note.medias) note.medias = [];
+
+    // Handle split view mode
+    if (splitViewActive) {
+        const state = splitActivePanel === 'left' ? splitViewState.left : splitViewState.right;
+        if (state.view === 'notes') {
+            state.noteId = id;
+            renderSplitPanelViewContent(splitActivePanel);
+            saveSplitViewState();
+            return;
         }
+    }
 
-        function toggleNoteCategory(category) {
-            if (expandedNoteCategories.has(category)) {
-                expandedNoteCategories.delete(category);
-            } else {
-                expandedNoteCategories.add(category);
-            }
-            renderNotesList();
-        }
-
-        function expandAllNoteCategories() {
-            expandedNoteCategories = new Set(['Idée', 'Recherche', 'Référence', 'A faire', 'Question', 'Autre']);
-            renderNotesList();
-        }
-
-        function collapseAllNoteCategories() {
-            expandedNoteCategories.clear();
-            renderNotesList();
-        }
-
-        function openNoteDetail(id) {
-            const note = project.notes.find(n => n.id === id);
-            if (!note) return;
-            
-            // Ensure medias array exists
-            if (!note.medias) note.medias = [];
-            
-            // Handle split view mode
-            if (splitViewActive) {
-                const state = splitActivePanel === 'left' ? splitViewState.left : splitViewState.right;
-                if (state.view === 'notes') {
-                    state.noteId = id;
-                    renderSplitPanelViewContent(splitActivePanel);
-                    saveSplitViewState();
-                    return;
-                }
-            }
-
-            const editorView = document.getElementById('editorView');
-            editorView.innerHTML = `
+    const editorView = document.getElementById('editorView');
+    editorView.innerHTML = `
                 <div class="detail-view">
                     <div class="detail-header">
                         <div style="display: flex; align-items: center; gap: 1rem; flex: 1;">
@@ -167,16 +185,16 @@
                                    placeholder="Titre de la note">
                             <span style="font-size: 0.8rem; padding: 0.4rem 0.8rem; background: var(--accent-gold); color: var(--bg-primary); border-radius: 2px;">${note.category}</span>
                         </div>
-                        <button class="btn" onclick="switchView('editor')">? Retour à l'éditeur</button>
+                        <button class="btn" onclick="switchView('editor')">? Retour Ã  l'Ã©diteur</button>
                     </div>
                     
                     <div class="detail-section">
-                        <div class="detail-section-title">Catégorie</div>
+                        <div class="detail-section-title">CatÃ©gorie</div>
                         <select class="form-input" onchange="updateNoteField(${id}, 'category', this.value)">
                             <option value="Recherche" ${note.category === 'Recherche' ? 'selected' : ''}>Recherche</option>
-                            <option value="Idée" ${note.category === 'Idée' ? 'selected' : ''}>Idée</option>
-                            <option value="Référence" ${note.category === 'Référence' ? 'selected' : ''}>Référence</option>
-                            <option value="A faire" ${note.category === 'A faire' ? 'selected' : ''}>À faire</option>
+                            <option value="IdÃ©e" ${note.category === 'IdÃ©e' ? 'selected' : ''}>IdÃ©e</option>
+                            <option value="RÃ©fÃ©rence" ${note.category === 'RÃ©fÃ©rence' ? 'selected' : ''}>RÃ©fÃ©rence</option>
+                            <option value="A faire" ${note.category === 'A faire' ? 'selected' : ''}>Ã€ faire</option>
                             <option value="Question" ${note.category === 'Question' ? 'selected' : ''}>Question</option>
                             <option value="Autre" ${note.category === 'Autre' ? 'selected' : ''}>Autre</option>
                         </select>
@@ -186,7 +204,7 @@
                         <div class="detail-section-title">Tags</div>
                         <input type="text" class="form-input" value="${note.tags.join(', ')}" 
                                onchange="updateNoteTags(${id}, this.value)">
-                        <small style="color: var(--text-muted); font-style: italic;">Séparez les tags par des virgules</small>
+                        <small style="color: var(--text-muted); font-style: italic;">SÃ©parez les tags par des virgules</small>
                     </div>
 
                     <div class="detail-section">
@@ -197,7 +215,7 @@
 
                     <div class="detail-section">
                         <div class="detail-section-title">
-                            Médias
+                            MÃ©dias
                             <button class="btn btn-small" onclick="openAddMediaModal(${id})" style="margin-left: 1rem;">
                                 <i data-lucide="plus" style="width:14px;height:14px;margin-right:0.3rem;"></i>Ajouter
                             </button>
@@ -208,115 +226,123 @@
                     </div>
 
                     <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2rem; font-family: 'Source Code Pro', monospace;">
-                        Créée le ${new Date(note.createdAt).toLocaleDateString('fr-FR')} • 
-                        Modifiée le ${new Date(note.updatedAt).toLocaleDateString('fr-FR')}
+                        CrÃ©Ã©e le ${new Date(note.createdAt).toLocaleDateString('fr-FR')} â€¢ 
+                        ModifiÃ©e le ${new Date(note.updatedAt).toLocaleDateString('fr-FR')}
                     </div>
                 </div>
             `;
-            if (typeof lucide !== 'undefined') lucide.createIcons();
-        }
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+}
 
-        function renderNoteMedias(note) {
-            if (!note.medias || note.medias.length === 0) {
-                return '<div style="color: var(--text-muted); font-style: italic; padding: 1rem; text-align: center; border: 1px dashed var(--border-color); border-radius: 8px;">Aucun média ajouté</div>';
-            }
+// [MVVM : View]
+// GÃ©nÃ¨re le markup HTML des mÃ©dias pour une note.
+function renderNoteMedias(note) {
+    if (!note.medias || note.medias.length === 0) {
+        return '<div style="color: var(--text-muted); font-style: italic; padding: 1rem; text-align: center; border: 1px dashed var(--border-color); border-radius: 8px;">Aucun mÃ©dia ajoutÃ©</div>';
+    }
 
-            return `<div class="note-medias-grid">${note.medias.map((media, index) => {
-                if (media.type === 'image') {
-                    return `
+    return `<div class="note-medias-grid">${note.medias.map((media, index) => {
+        if (media.type === 'image') {
+            return `
                         <div class="note-media-item note-media-image">
                             <img src="${media.url}" alt="${media.title || 'Image'}" onclick="window.open('${media.url}', '_blank')">
                             <div class="note-media-overlay">
                                 <span class="note-media-title">${media.title || 'Image'}</span>
-                                <button class="note-media-delete" onclick="deleteNoteMedia(${note.id}, ${index})">×</button>
+                                <button class="note-media-delete" onclick="deleteNoteMedia(${note.id}, ${index})">Ã—</button>
                             </div>
                         </div>
                     `;
-                } else if (media.type === 'audio') {
-                    return `
+        } else if (media.type === 'audio') {
+            return `
                         <div class="note-media-item note-media-audio">
                             <div class="note-media-audio-icon"><i data-lucide="volume-2" style="width:24px; height:24px;"></i></div>
                             <div class="note-media-audio-info">
                                 <span class="note-media-title">${media.title || 'Audio'}</span>
                                 <audio controls src="${media.url}" style="width: 100%; margin-top: 0.5rem;"></audio>
                             </div>
-                            <button class="note-media-delete" onclick="deleteNoteMedia(${note.id}, ${index})">×</button>
+                            <button class="note-media-delete" onclick="deleteNoteMedia(${note.id}, ${index})">Ã—</button>
                         </div>
                     `;
-                } else if (media.type === 'url') {
-                    const domain = extractDomain(media.url);
-                    return `
+        } else if (media.type === 'url') {
+            const domain = extractDomain(media.url);
+            return `
                         <div class="note-media-item note-media-url" onclick="window.open('${media.url}', '_blank')">
                             <div class="note-media-url-icon"><i data-lucide="link" style="width:24px; height:24px;"></i></div>
                             <div class="note-media-url-info">
                                 <span class="note-media-title">${media.title || media.url}</span>
                                 <span class="note-media-domain">${domain}</span>
                             </div>
-                            <button class="note-media-delete" onclick="event.stopPropagation(); deleteNoteMedia(${note.id}, ${index})">×</button>
+                            <button class="note-media-delete" onclick="event.stopPropagation(); deleteNoteMedia(${note.id}, ${index})">Ã—</button>
                         </div>
                     `;
-                } else if (media.type === 'youtube') {
-                    const videoId = extractYoutubeId(media.url);
-                    return `
+        } else if (media.type === 'youtube') {
+            const videoId = extractYoutubeId(media.url);
+            return `
                         <div class="note-media-item note-media-youtube">
                             <div class="note-media-youtube-thumb" onclick="window.open('${media.url}', '_blank')">
                                 <img src="https://img.youtube.com/vi/${videoId}/mqdefault.jpg" alt="YouTube">
                                 <div class="note-media-youtube-play"><i data-lucide="play" style="width:32px; height:32px; fill: white; stroke: white;"></i></div>
                             </div>
                             <div class="note-media-overlay">
-                                <span class="note-media-title">${media.title || 'Vidéo YouTube'}</span>
-                                <button class="note-media-delete" onclick="deleteNoteMedia(${note.id}, ${index})">×</button>
+                                <span class="note-media-title">${media.title || 'VidÃ©o YouTube'}</span>
+                                <button class="note-media-delete" onclick="deleteNoteMedia(${note.id}, ${index})">Ã—</button>
                             </div>
                         </div>
                     `;
-                }
-                return '';
-            }).join('')}</div>`;
         }
+        return '';
+    }).join('')}</div>`;
+}
 
-        function extractDomain(url) {
-            try {
-                const urlObj = new URL(url);
-                return urlObj.hostname.replace('www.', '');
-            } catch {
-                return url;
-            }
-        }
+// [MVVM : Other]
+// Fonction utilitaire (extraction de domaine).
+function extractDomain(url) {
+    try {
+        const urlObj = new URL(url);
+        return urlObj.hostname.replace('www.', '');
+    } catch {
+        return url;
+    }
+}
 
-        function extractYoutubeId(url) {
-            const match = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([^&\s?]+)/);
-            return match ? match[1] : '';
-        }
+// [MVVM : Other]
+// Parse l'ID YouTube depuis une URL.
+function extractYoutubeId(url) {
+    const match = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([^&\s?]+)/);
+    return match ? match[1] : '';
+}
 
-        function openAddMediaModal(noteId) {
-            // Create modal dynamically
-            let modal = document.getElementById('addMediaModal');
-            if (!modal) {
-                modal = document.createElement('div');
-                modal.id = 'addMediaModal';
-                modal.className = 'modal';
-                document.body.appendChild(modal);
-            }
-            
-            modal.innerHTML = `
+// [MVVM : View]
+// CrÃ©e et affiche la modal d'ajout de mÃ©dia.
+function openAddMediaModal(noteId) {
+    // Create modal dynamically
+    let modal = document.getElementById('addMediaModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'addMediaModal';
+        modal.className = 'modal';
+        document.body.appendChild(modal);
+    }
+
+    modal.innerHTML = `
                 <div class="modal-content" style="max-width: 500px;">
                     <div class="modal-header">
-                        <h3>Ajouter un média</h3>
-                        <button class="modal-close" onclick="closeModal('addMediaModal')">×</button>
+                        <h3>Ajouter un mÃ©dia</h3>
+                        <button class="modal-close" onclick="closeModal('addMediaModal')">Ã—</button>
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                            <label class="form-label">Type de média</label>
+                            <label class="form-label">Type de mÃ©dia</label>
                             <select id="mediaTypeInput" class="form-input" onchange="updateMediaInputPlaceholder()">
                                 <option value="url">Lien URL</option>
                                 <option value="image">Image (URL)</option>
                                 <option value="audio">Audio (URL)</option>
-                                <option value="youtube">Vidéo YouTube</option>
+                                <option value="youtube">VidÃ©o YouTube</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Titre (optionnel)</label>
-                            <input type="text" id="mediaTitleInput" class="form-input" placeholder="Titre du média">
+                            <input type="text" id="mediaTitleInput" class="form-input" placeholder="Titre du mÃ©dia">
                         </div>
                         <div class="form-group">
                             <label class="form-label">URL</label>
@@ -330,79 +356,89 @@
                     </div>
                 </div>
             `;
-            modal.classList.add('active');
-        }
+    modal.classList.add('active');
+}
 
-        function updateMediaInputPlaceholder() {
-            const type = document.getElementById('mediaTypeInput').value;
-            const urlInput = document.getElementById('mediaUrlInput');
-            const placeholders = {
-                'url': 'https://example.com/article',
-                'image': 'https://example.com/image.jpg',
-                'audio': 'https://example.com/music.mp3',
-                'youtube': 'https://www.youtube.com/watch?v=...'
-            };
-            urlInput.placeholder = placeholders[type] || 'https://...';
-        }
+// [MVVM : View]
+// Aide l'UI en adaptant le placeholder selon le type.
+function updateMediaInputPlaceholder() {
+    const type = document.getElementById('mediaTypeInput').value;
+    const urlInput = document.getElementById('mediaUrlInput');
+    const placeholders = {
+        'url': 'https://example.com/article',
+        'image': 'https://example.com/image.jpg',
+        'audio': 'https://example.com/music.mp3',
+        'youtube': 'https://www.youtube.com/watch?v=...'
+    };
+    urlInput.placeholder = placeholders[type] || 'https://...';
+}
 
-        function addNoteMedia(noteId) {
-            const type = document.getElementById('mediaTypeInput').value;
-            const title = document.getElementById('mediaTitleInput').value.trim();
-            const url = document.getElementById('mediaUrlInput').value.trim();
-            
-            if (!url) {
-                alert('Veuillez entrer une URL');
-                return;
-            }
+// [MVVM : ViewModel]
+// Ajoute un mÃ©dia au Model, met Ã  jour les timestamps, persiste et rafraÃ®chit la View.
+function addNoteMedia(noteId) {
+    const type = document.getElementById('mediaTypeInput').value;
+    const title = document.getElementById('mediaTitleInput').value.trim();
+    const url = document.getElementById('mediaUrlInput').value.trim();
 
-            const note = project.notes.find(n => n.id === noteId);
-            if (!note) return;
+    if (!url) {
+        alert('Veuillez entrer une URL');
+        return;
+    }
 
-            if (!note.medias) note.medias = [];
-            
-            note.medias.push({
-                type: type,
-                title: title || '',
-                url: url,
-                addedAt: new Date().toISOString()
-            });
+    const note = project.notes.find(n => n.id === noteId);
+    if (!note) return;
 
-            note.updatedAt = new Date().toISOString();
-            saveProject();
-            closeModal('addMediaModal');
-            openNoteDetail(noteId);
-            renderNotesList();
-        }
+    if (!note.medias) note.medias = [];
 
-        function deleteNoteMedia(noteId, mediaIndex) {
-            if (!confirm('Supprimer ce média ?')) return;
-            
-            const note = project.notes.find(n => n.id === noteId);
-            if (!note || !note.medias) return;
+    note.medias.push({
+        type: type,
+        title: title || '',
+        url: url,
+        addedAt: new Date().toISOString()
+    });
 
-            note.medias.splice(mediaIndex, 1);
-            note.updatedAt = new Date().toISOString();
-            saveProject();
-            openNoteDetail(noteId);
-            renderNotesList();
-        }
+    note.updatedAt = new Date().toISOString();
+    saveProject();
+    closeModal('addMediaModal');
+    openNoteDetail(noteId);
+    renderNotesList();
+}
 
-        function updateNoteField(id, field, value) {
-            const note = project.notes.find(n => n.id === id);
-            if (note) {
-                note[field] = value;
-                note.updatedAt = new Date().toISOString();
-                saveProject();
-                renderNotesList();
-            }
-        }
+// [MVVM : ViewModel]
+// Supprime un mÃ©dia du Model, persiste et met Ã  jour la View.
+function deleteNoteMedia(noteId, mediaIndex) {
+    if (!confirm('Supprimer ce mÃ©dia ?')) return;
 
-        function updateNoteTags(id, tagsString) {
-            const note = project.notes.find(n => n.id === id);
-            if (note) {
-                note.tags = tagsString.split(',').map(t => t.trim()).filter(t => t);
-                note.updatedAt = new Date().toISOString();
-                saveProject();
-                renderNotesList();
-            }
-        }
+    const note = project.notes.find(n => n.id === noteId);
+    if (!note || !note.medias) return;
+
+    note.medias.splice(mediaIndex, 1);
+    note.updatedAt = new Date().toISOString();
+    saveProject();
+    openNoteDetail(noteId);
+    renderNotesList();
+}
+
+// [MVVM : ViewModel]
+// Met Ã  jour un champ du Model, persiste et rafraÃ®chit la View.
+function updateNoteField(id, field, value) {
+    const note = project.notes.find(n => n.id === id);
+    if (note) {
+        note[field] = value;
+        note.updatedAt = new Date().toISOString();
+        saveProject();
+        renderNotesList();
+    }
+}
+
+// [MVVM : ViewModel]
+// Transforme la saisie en tableau dans le Model, persiste et rafraÃ®chit la View.
+function updateNoteTags(id, tagsString) {
+    const note = project.notes.find(n => n.id === id);
+    if (note) {
+        note.tags = tagsString.split(',').map(t => t.trim()).filter(t => t);
+        note.updatedAt = new Date().toISOString();
+        saveProject();
+        renderNotesList();
+    }
+}

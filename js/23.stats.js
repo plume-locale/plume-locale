@@ -1,31 +1,33 @@
 
-       // Statistics Management
-        function renderStats() {
-            const editorView = document.getElementById('editorView');
-            if (!editorView) {
-                console.error('editorView not found');
-                return;
-            }
-            
-            // Calculate total words
-            const totalWords = project.acts.reduce((sum, act) => {
-                return sum + act.chapters.reduce((chSum, chapter) => {
-                    return chSum + chapter.scenes.reduce((sceneSum, scene) => {
-                        return sceneSum + getWordCount(scene.content);
-                    }, 0);
-                }, 0);
+// Statistics Management
+// [MVVM : Other]
+// Calcule des métriques (ViewModel) et injecte du HTML (View).
+function renderStats() {
+    const editorView = document.getElementById('editorView');
+    if (!editorView) {
+        console.error('editorView not found');
+        return;
+    }
+
+    // Calculate total words
+    const totalWords = project.acts.reduce((sum, act) => {
+        return sum + act.chapters.reduce((chSum, chapter) => {
+            return chSum + chapter.scenes.reduce((sceneSum, scene) => {
+                return sceneSum + getWordCount(scene.content);
             }, 0);
+        }, 0);
+    }, 0);
 
-            // Calculate today's words
-            const today = new Date().toDateString();
-            const todaySession = project.stats.writingSessions.find(s => new Date(s.date).toDateString() === today);
-            const todayWords = todaySession ? todaySession.words : 0;
+    // Calculate today's words
+    const today = new Date().toDateString();
+    const todaySession = project.stats.writingSessions.find(s => new Date(s.date).toDateString() === today);
+    const todayWords = todaySession ? todaySession.words : 0;
 
-            // Progress percentages
-            const dailyProgress = Math.min((todayWords / project.stats.dailyGoal) * 100, 100);
-            const totalProgress = Math.min((totalWords / project.stats.totalGoal) * 100, 100);
+    // Progress percentages
+    const dailyProgress = Math.min((todayWords / project.stats.dailyGoal) * 100, 100);
+    const totalProgress = Math.min((totalWords / project.stats.totalGoal) * 100, 100);
 
-            editorView.innerHTML = `
+    editorView.innerHTML = `
                 <div style="height: 100%; overflow-y: auto; padding: 2rem 3rem;">
                     <h2 style="margin-bottom: 2rem; color: var(--accent-gold);"><i data-lucide="bar-chart-3" style="width:24px;height:24px;vertical-align:middle;margin-right:8px;"></i>Statistiques</h2>
                     
@@ -41,7 +43,7 @@
                                 <input type="number" class="form-input" value="${project.stats.totalGoal}" 
                                        id="totalGoalInput"
                                        style="flex: 1;" placeholder="Objectif total">
-                                <button class="btn btn-small" onclick="updateGoal('totalGoal', document.getElementById('totalGoalInput').value)">Mettre � jour</button>
+                                <button class="btn btn-small" onclick="updateGoal('totalGoal', document.getElementById('totalGoalInput').value)">Mettre à jour</button>
                             </div>
                         </div>
 
@@ -56,7 +58,7 @@
                                 <input type="number" class="form-input" value="${project.stats.dailyGoal}" 
                                        id="dailyGoalInput"
                                        style="flex: 1;" placeholder="Objectif quotidien">
-                                <button class="btn btn-small" onclick="updateGoal('dailyGoal', document.getElementById('dailyGoalInput').value)">Mettre � jour</button>
+                                <button class="btn btn-small" onclick="updateGoal('dailyGoal', document.getElementById('dailyGoalInput').value)">Mettre à jour</button>
                             </div>
                         </div>
                     </div>
@@ -65,18 +67,18 @@
                         <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Par acte</h3>
                         <div style="background: var(--bg-secondary); padding: 1.5rem; border-radius: 8px;">
                             ${project.acts.map(act => {
-                                const actWords = act.chapters.reduce((sum, chapter) => {
-                                    return sum + chapter.scenes.reduce((sceneSum, scene) => {
-                                        return sceneSum + getWordCount(scene.content);
-                                    }, 0);
-                                }, 0);
-                                return `
+        const actWords = act.chapters.reduce((sum, chapter) => {
+            return sum + chapter.scenes.reduce((sceneSum, scene) => {
+                return sceneSum + getWordCount(scene.content);
+            }, 0);
+        }, 0);
+        return `
                                     <div style="display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid var(--border-color);">
                                         <span style="color: var(--text-primary);">${act.title}</span>
                                         <span style="font-weight: 600; color: var(--accent-gold);">${actWords.toLocaleString('fr-FR')} mots</span>
                                     </div>
                                 `;
-                            }).join('')}
+    }).join('')}
                         </div>
                     </div>
 
@@ -88,23 +90,25 @@
                     </div>
                 </div>
             `;
-        }
+}
 
-        function renderWritingHistory() {
-            const last7Days = [];
-            for (let i = 6; i >= 0; i--) {
-                const date = new Date();
-                date.setDate(date.getDate() - i);
-                last7Days.push(date);
-            }
+// [MVVM : View]
+// Transforme les données d'historique en fragments HTML.
+function renderWritingHistory() {
+    const last7Days = [];
+    for (let i = 6; i >= 0; i--) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        last7Days.push(date);
+    }
 
-            return last7Days.map(date => {
-                const dateStr = date.toDateString();
-                const session = project.stats.writingSessions.find(s => new Date(s.date).toDateString() === dateStr);
-                const words = session ? session.words : 0;
-                const dayName = date.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' });
-                
-                return `
+    return last7Days.map(date => {
+        const dateStr = date.toDateString();
+        const session = project.stats.writingSessions.find(s => new Date(s.date).toDateString() === dateStr);
+        const words = session ? session.words : 0;
+        const dayName = date.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' });
+
+        return `
                     <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0;">
                         <span style="font-size: 0.85rem;">${dayName}</span>
                         <div style="flex: 1; margin: 0 1rem;">
@@ -115,38 +119,42 @@
                         <span style="font-size: 0.85rem; font-weight: 600; font-family: 'Source Code Pro', monospace;">${words}</span>
                     </div>
                 `;
-            }).join('');
-        }
+    }).join('');
+}
 
-        function updateGoal(type, value) {
-            const numValue = parseInt(value);
-            if (numValue && numValue > 0) {
-                project.stats[type] = numValue;
-                saveProject();
-                renderStats();
-            }
-        }
+// [MVVM : ViewModel]
+// Met à jour le modèle (project.stats), persiste et déclenche un re-render.
+function updateGoal(type, value) {
+    const numValue = parseInt(value);
+    if (numValue && numValue > 0) {
+        project.stats[type] = numValue;
+        saveProject();
+        renderStats();
+    }
+}
 
-        function trackWritingSession() {
-            // Track writing session for stats
-            const today = new Date().toDateString();
-            const totalWords = project.acts.reduce((sum, act) => {
-                return sum + act.chapters.reduce((chSum, chapter) => {
-                    return chSum + chapter.scenes.reduce((sceneSum, scene) => {
-                        return sceneSum + getWordCount(scene.content);
-                    }, 0);
-                }, 0);
+// [MVVM : ViewModel]
+// Suit et modifie l'état du modèle (writingSessions), calculs métier.
+function trackWritingSession() {
+    // Track writing session for stats
+    const today = new Date().toDateString();
+    const totalWords = project.acts.reduce((sum, act) => {
+        return sum + act.chapters.reduce((chSum, chapter) => {
+            return chSum + chapter.scenes.reduce((sceneSum, scene) => {
+                return sceneSum + getWordCount(scene.content);
             }, 0);
+        }, 0);
+    }, 0);
 
-            const sessionIndex = project.stats.writingSessions.findIndex(s => new Date(s.date).toDateString() === today);
-            
-            if (sessionIndex >= 0) {
-                project.stats.writingSessions[sessionIndex].words = totalWords - (project.stats.writingSessions[sessionIndex].startWords || 0);
-            } else {
-                project.stats.writingSessions.push({
-                    date: new Date().toISOString(),
-                    words: 0,
-                    startWords: totalWords
-                });
-            }
-        }
+    const sessionIndex = project.stats.writingSessions.findIndex(s => new Date(s.date).toDateString() === today);
+
+    if (sessionIndex >= 0) {
+        project.stats.writingSessions[sessionIndex].words = totalWords - (project.stats.writingSessions[sessionIndex].startWords || 0);
+    } else {
+        project.stats.writingSessions.push({
+            date: new Date().toISOString(),
+            words: 0,
+            startWords: totalWords
+        });
+    }
+}

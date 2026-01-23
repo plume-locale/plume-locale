@@ -1,87 +1,97 @@
 // World Management
-        function openAddWorldModal() {
-            document.getElementById('addWorldModal').classList.add('active');
-            setTimeout(() => document.getElementById('worldNameInput').focus(), 100);
-        }
+// [MVVM : View]
+// Manipule directement le DOM (ouvre la modale et met le focus).
+function openAddWorldModal() {
+    document.getElementById('addWorldModal').classList.add('active');
+    setTimeout(() => document.getElementById('worldNameInput').focus(), 100);
+}
 
-        function addWorldElement() {
-            const name = document.getElementById('worldNameInput').value.trim();
-            const type = document.getElementById('worldTypeInput').value;
-            const description = document.getElementById('worldDescInput').value.trim();
-            
-            if (!name) return;
+// [MVVM : Other]
+// Group: Use Case | Naming: AddWorldElementUseCase
+// Logique m√©tier pour ajouter un √©l√©ment (Mixte ViewModel + Model)
+function addWorldElement() {
+    const name = document.getElementById('worldNameInput').value.trim();
+    const type = document.getElementById('worldTypeInput').value;
+    const description = document.getElementById('worldDescInput').value.trim();
 
-            const element = {
-                id: Date.now(),
-                name: name,
-                type: type,
-                description: description || '',
-                details: '',
-                history: '',
-                notes: '',
-                linkedScenes: [], // Array of scene IDs where this element appears
-                linkedElements: [] // Array of {type, id} for related characters/timeline/etc
-            };
+    if (!name) return;
 
-            project.world.push(element);
-            
-            // Clear inputs
-            document.getElementById('worldNameInput').value = '';
-            document.getElementById('worldDescInput').value = '';
-            
-            closeModal('addWorldModal');
-            saveProject();
-            renderWorldList();
-        }
+    const element = {
+        id: Date.now(),
+        name: name,
+        type: type,
+        description: description || '',
+        details: '',
+        history: '',
+        notes: '',
+        linkedScenes: [], // Array of scene IDs where this element appears
+        linkedElements: [] // Array of {type, id} for related characters/timeline/etc
+    };
 
-        function deleteWorldElement(id) {
-            if (!confirm(' tes-vous s˚r de vouloir supprimer cet ÈlÈment ?')) return;
-            project.world = project.world.filter(w => w.id !== id);
-            saveProject();
-            renderWorldList();
-            showEmptyState();
-        }
+    project.world.push(element);
 
-        function renderWorldList() {
-            const container = document.getElementById('worldList');
-            
-            if (project.world.length === 0) {
-                container.innerHTML = '<div style="padding: 1rem; text-align: center; color: var(--text-muted); font-size: 0.85rem;">Aucun ÈlÈment</div>';
-                return;
-            }
-            
-            // Group by type
-            const groups = {};
-            project.world.forEach(elem => {
-                const type = elem.type || 'Autre';
-                if (!groups[type]) groups[type] = [];
-                groups[type].push(elem);
-            });
-            
-            // Icons for each type (Mise ‡ jour avec Lucide Icons)
-            const typeIcons = {
-                'Lieu': 'map-pin',
-                'Objet': 'package', 
-                'Concept': 'lightbulb',
-                'Organisation': 'users',
-                '…vÈnement': 'calendar',
-                'Autre': 'more-horizontal'
-            };
-            
-            // Get collapsed state from localStorage
-            const collapsedState = JSON.parse(localStorage.getItem('plume_treeview_collapsed') || '{}');
-            
-            let html = '';
-            Object.keys(groups).sort().forEach(type => {
-                const groupKey = 'world_' + type;
-                const isCollapsed = collapsedState[groupKey] === true;
-                
-                // Sort elements alphabetically within each group
-                const sortedElements = [...groups[type]].sort((a, b) => {
-                    return (a.name || '').toLowerCase().localeCompare((b.name || '').toLowerCase(), 'fr');
-                });
-                
-                html += `
+    // Clear inputs
+    document.getElementById('worldNameInput').value = '';
+    document.getElementById('worldDescInput').value = '';
+
+    closeModal('addWorldModal');
+    saveProject();
+    renderWorldList();
+}
+
+// [MVVM : Other]
+// Group: Use Case | Naming: DeleteWorldElementUseCase
+// Logique m√©tier pour supprimer un √©l√©ment (Mixte ViewModel + Model)
+function deleteWorldElement(id) {
+    if (!confirm('√ätes-vous s√ªr de vouloir supprimer cet √©l√©ment ?')) return;
+    project.world = project.world.filter(w => w.id !== id);
+    saveProject();
+    renderWorldList();
+    showEmptyState();
+}
+
+// [MVVM : View]
+// G√©n√©ration dynamique du HTML pour la liste des √©l√©ments
+function renderWorldList() {
+    const container = document.getElementById('worldList');
+
+    if (project.world.length === 0) {
+        container.innerHTML = '<div style="padding: 1rem; text-align: center; color: var(--text-muted); font-size: 0.85rem;">Aucun √©l√©ment</div>';
+        return;
+    }
+
+    // Group by type
+    const groups = {};
+    project.world.forEach(elem => {
+        const type = elem.type || 'Autre';
+        if (!groups[type]) groups[type] = [];
+        groups[type].push(elem);
+    });
+
+    // Icons for each type (Mise √† jour avec Lucide Icons)
+    const typeIcons = {
+        'Lieu': 'map-pin',
+        'Objet': 'package',
+        'Concept': 'lightbulb',
+        'Organisation': 'users',
+        '√âv√©nement': 'calendar',
+        'Autre': 'more-horizontal'
+    };
+
+    // Get collapsed state from localStorage
+    const collapsedState = JSON.parse(localStorage.getItem('plume_treeview_collapsed') || '{}');
+
+    let html = '';
+    Object.keys(groups).sort().forEach(type => {
+        const groupKey = 'world_' + type;
+        const isCollapsed = collapsedState[groupKey] === true;
+
+        // Sort elements alphabetically within each group
+        const sortedElements = [...groups[type]].sort((a, b) => {
+            return (a.name || '').toLowerCase().localeCompare((b.name || '').toLowerCase(), 'fr');
+        });
+
+        html += `
                     <div class="treeview-group">
                         <div class="treeview-header" onclick="toggleTreeviewGroup('${groupKey}')">
                             <i data-lucide="${isCollapsed ? 'chevron-right' : 'chevron-down'}" class="treeview-chevron"></i>
@@ -90,69 +100,74 @@
                         </div>
                         <div class="treeview-children ${isCollapsed ? 'collapsed' : ''}">
                             ${sortedElements.map(elem => {
-                                const iconName = typeIcons[type] || 'circle'; // IcÙne par dÈfaut 'circle'
-                                
-                                return `
+            const iconName = typeIcons[type] || 'circle'; // Ic√¥ne par d√©faut 'circle'
+
+            return `
                                 <div class="treeview-item" onclick="openWorldDetail(${elem.id})">
                                     <span class="treeview-item-icon"><i data-lucide="${iconName}" style="width:14px;height:14px;vertical-align:middle;"></i></span>
                                     <span class="treeview-item-label">${elem.name}</span>
-                                    <button class="treeview-item-delete" onclick="event.stopPropagation(); deleteWorldElement(${elem.id})" title="Supprimer">◊</button>
+                                    <button class="treeview-item-delete" onclick="event.stopPropagation(); deleteWorldElement(${elem.id})" title="Supprimer">√ó</button>
                                 </div>
                                 `;
-                            }).join('')}
+        }).join('')}
                         </div>
                     </div>
                 `;
-            });
+    });
 
-            container.innerHTML = html;
-            if (typeof lucide !== 'undefined') lucide.createIcons();
-        }
+    container.innerHTML = html;
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+}
 
-        function renderElementLinkedScenes(element) {
-            const scenes = findScenesWithElement(element.id);
-            if (scenes.length === 0) return '';
+// [MVVM : View]
+// G√©n√©ration HTML pour les sc√®nes li√©es (ViewModel/View fragment)
+function renderElementLinkedScenes(element) {
+    const scenes = findScenesWithElement(element.id);
+    if (scenes.length === 0) return '';
 
-            return `
+    return `
                 <div class="detail-section">
-                    <div class="detail-section-title"><i data-lucide="file-text" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>ApparaÓt dans ${scenes.length} scËne(s)</div>
+                    <div class="detail-section-title"><i data-lucide="file-text" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Appara√Æt dans ${scenes.length} sc√®ne(s)</div>
                     <div class="quick-links">
                         ${scenes.map(scene => {
-                            const actIndex = project.acts.findIndex(a => a.id === scene.actId);
-                            const act = project.acts[actIndex];
-                            const chapterIndex = act.chapters.findIndex(c => c.id === scene.chapterId);
-                            const actNumber = toRoman(actIndex + 1);
-                            const chapterNumber = chapterIndex + 1;
-                            const breadcrumb = `Acte ${actNumber} õ Chapitre ${chapterNumber} õ ${scene.sceneTitle}`;
-                            
-                            return `
+        const actIndex = project.acts.findIndex(a => a.id === scene.actId);
+        const act = project.acts[actIndex];
+        const chapterIndex = act.chapters.findIndex(c => c.id === scene.chapterId);
+        const actNumber = toRoman(actIndex + 1);
+        const chapterNumber = chapterIndex + 1;
+        const breadcrumb = `Acte ${actNumber} ‚Ä∫ Chapitre ${chapterNumber} ‚Ä∫ ${scene.sceneTitle}`;
+
+        return `
                             <span class="link-badge" onclick="openScene(${scene.actId}, ${scene.chapterId}, ${scene.sceneId})" title="${scene.actTitle} - ${scene.chapterTitle}">
                                 ${breadcrumb}
                             </span>
                         `;
-                        }).join('')}
+    }).join('')}
                     </div>
                 </div>
             `;
+}
+
+// [MVVM : Other]
+// Group: Use Case | Naming: OpenWorldDetailUseCase
+// G√®re la logique d'affichage d√©taill√© et la g√©n√©ration du template HTML (Mixte View/ViewModel)
+function openWorldDetail(id) {
+    const element = project.world.find(w => w.id === id);
+    if (!element) return;
+
+    // Handle split view mode
+    if (splitViewActive) {
+        const state = splitActivePanel === 'left' ? splitViewState.left : splitViewState.right;
+        if (state.view === 'world') {
+            state.worldId = id;
+            renderSplitPanelViewContent(splitActivePanel);
+            saveSplitViewState();
+            return;
         }
+    }
 
-        function openWorldDetail(id) {
-            const element = project.world.find(w => w.id === id);
-            if (!element) return;
-            
-            // Handle split view mode
-            if (splitViewActive) {
-                const state = splitActivePanel === 'left' ? splitViewState.left : splitViewState.right;
-                if (state.view === 'world') {
-                    state.worldId = id;
-                    renderSplitPanelViewContent(splitActivePanel);
-                    saveSplitViewState();
-                    return;
-                }
-            }
-
-            const editorView = document.getElementById('editorView');
-            editorView.innerHTML = `
+    const editorView = document.getElementById('editorView');
+    editorView.innerHTML = `
                 <div class="detail-view">
                     <div class="detail-header">
                         <div style="display: flex; align-items: center; gap: 1rem;">
@@ -160,8 +175,8 @@
                             <span style="font-size: 0.9rem; padding: 0.5rem 1rem; background: var(--accent-gold); color: var(--bg-primary); border-radius: 2px;">${element.type}</span>
                         </div>
                         <div style="display: flex; gap: 0.5rem;">
-                            <button class="btn btn-small" onclick="showReferencesForElement(${id})"><i data-lucide="link" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Voir les rÈfÈrences</button>
-                            <button class="btn" onclick="switchView('editor')">? Retour ‡ l'Èditeur</button>
+                            <button class="btn btn-small" onclick="showReferencesForElement(${id})"><i data-lucide="link" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Voir les r√©f√©rences</button>
+                            <button class="btn" onclick="switchView('editor')">? Retour √† l'√©diteur</button>
                         </div>
                     </div>
                     
@@ -183,7 +198,7 @@
                             <option value="Objet" ${element.type === 'Objet' ? 'selected' : ''}>Objet</option>
                             <option value="Concept" ${element.type === 'Concept' ? 'selected' : ''}>Concept</option>
                             <option value="Organisation" ${element.type === 'Organisation' ? 'selected' : ''}>Organisation</option>
-                            <option value="…vÈnement" ${element.type === '…vÈnement' ? 'selected' : ''}>…vÈnement</option>
+                            <option value="√âv√©nement" ${element.type === '√âv√©nement' ? 'selected' : ''}>√âv√©nement</option>
                         </select>
                     </div>
 
@@ -194,7 +209,7 @@
                     </div>
 
                     <div class="detail-section">
-                        <div class="detail-section-title">DÈtails</div>
+                        <div class="detail-section-title">D√©tails</div>
                         <textarea class="form-input" rows="6" 
                                   onchange="updateWorldField(${id}, 'details', this.value)">${element.details}</textarea>
                     </div>
@@ -212,13 +227,15 @@
                     </div>
                 </div>
             `;
-        }
+}
 
-        function updateWorldField(id, field, value) {
-            const element = project.world.find(w => w.id === id);
-            if (element) {
-                element[field] = value;
-                saveProject();
-                renderWorldList();
-            }
-        }
+// [MVVM : ViewModel]
+// Met √† jour les donn√©es du Model et d√©clenche le rafra√Æchissement de la View
+function updateWorldField(id, field, value) {
+    const element = project.world.find(w => w.id === id);
+    if (element) {
+        element[field] = value;
+        saveProject();
+        renderWorldList();
+    }
+}

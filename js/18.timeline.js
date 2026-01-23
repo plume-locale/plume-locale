@@ -1,65 +1,75 @@
 
-        // Timeline Management
-        function openAddTimelineModal() {
-            document.getElementById('addTimelineModal').classList.add('active');
-            setTimeout(() => document.getElementById('timelineTitleInput').focus(), 100);
-        }
+// Timeline Management
+// [MVVM : View]
+// Manipule directement le DOM pour afficher le modal d'ajout
+function openAddTimelineModal() {
+    document.getElementById('addTimelineModal').classList.add('active');
+    setTimeout(() => document.getElementById('timelineTitleInput').focus(), 100);
+}
 
-        function addTimelineEvent() {
-            const title = document.getElementById('timelineTitleInput').value.trim();
-            const date = document.getElementById('timelineDateInput').value.trim();
-            const location = document.getElementById('timelineLocationInput').value.trim();
-            const characters = document.getElementById('timelineCharactersInput').value.trim();
-            const description = document.getElementById('timelineDescInput').value.trim();
-            
-            if (!title) return;
+// [MVVM : Other]
+// Group: Use Case | Naming: AddTimelineEventUseCase
+// Ajoute un événement à la chronologie (Mixte ViewModel)
+function addTimelineEvent() {
+    const title = document.getElementById('timelineTitleInput').value.trim();
+    const date = document.getElementById('timelineDateInput').value.trim();
+    const location = document.getElementById('timelineLocationInput').value.trim();
+    const characters = document.getElementById('timelineCharactersInput').value.trim();
+    const description = document.getElementById('timelineDescInput').value.trim();
 
-            const event = {
-                id: Date.now(),
-                title: title,
-                date: date || '',
-                location: location || '',
-                characters: characters || '',
-                description: description || '',
-                order: project.timeline.length, // For manual reordering
-                consequences: '',
-                notes: ''
-            };
+    if (!title) return;
 
-            project.timeline.push(event);
-            
-            // Clear inputs
-            document.getElementById('timelineTitleInput').value = '';
-            document.getElementById('timelineDateInput').value = '';
-            document.getElementById('timelineLocationInput').value = '';
-            document.getElementById('timelineCharactersInput').value = '';
-            document.getElementById('timelineDescInput').value = '';
-            
-            closeModal('addTimelineModal');
-            saveProject();
-            renderTimelineList();
-        }
+    const event = {
+        id: Date.now(),
+        title: title,
+        date: date || '',
+        location: location || '',
+        characters: characters || '',
+        description: description || '',
+        order: project.timeline.length, // For manual reordering
+        consequences: '',
+        notes: ''
+    };
 
-        function deleteTimelineEvent(id) {
-            if (!confirm('�tes-vous s�r de vouloir supprimer cet �v�nement ?')) return;
-            project.timeline = project.timeline.filter(e => e.id !== id);
-            saveProject();
-            renderTimelineList();
-            showEmptyState();
-        }
+    project.timeline.push(event);
 
-        function renderTimelineList() {
-            const container = document.getElementById('timelineList');
-            
-            if (project.timeline.length === 0) {
-                container.innerHTML = '<div style="padding: 2rem; text-align: center; color: var(--text-muted);">Aucun �v�nement</div>';
-                return;
-            }
+    // Clear inputs
+    document.getElementById('timelineTitleInput').value = '';
+    document.getElementById('timelineDateInput').value = '';
+    document.getElementById('timelineLocationInput').value = '';
+    document.getElementById('timelineCharactersInput').value = '';
+    document.getElementById('timelineDescInput').value = '';
 
-            // Sort by order field for manual ordering
-            const sortedTimeline = [...project.timeline].sort((a, b) => a.order - b.order);
+    closeModal('addTimelineModal');
+    saveProject();
+    renderTimelineList();
+}
 
-            container.innerHTML = `
+// [MVVM : Other]
+// Group: Use Case | Naming: DeleteTimelineEventUseCase
+// Gère la suppression d'un événement (Mixte ViewModel)
+function deleteTimelineEvent(id) {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer cet événement ?')) return;
+    project.timeline = project.timeline.filter(e => e.id !== id);
+    saveProject();
+    renderTimelineList();
+    showEmptyState();
+}
+
+// [MVVM : View]
+// Rend la liste chronologique dans le DOM à partir du Model
+function renderTimelineList() {
+    const container = document.getElementById('timelineList');
+
+    if (project.timeline.length === 0) {
+        container.innerHTML = '<div style="padding: 2rem; text-align: center; color: var(--text-muted);">Aucun événement</div>';
+        return;
+    }
+
+    // Sort by order field for manual ordering
+    const sortedTimeline = [...project.timeline].sort((a, b) => a.order - b.order);
+
+    container.innerHTML = `
                 <div class="timeline-container">
                     <div class="timeline-line"></div>
                     ${sortedTimeline.map(event => `
@@ -74,24 +84,26 @@
                                     </div>
                                     ${event.description ? `<div class="timeline-description">${event.description}</div>` : ''}
                                 </div>
-                                <button class="btn btn-icon btn-small" onclick="event.stopPropagation(); deleteTimelineEvent(${event.id})" title="Supprimer">�</button>
+                                <button class="btn btn-icon btn-small" onclick="event.stopPropagation(); deleteTimelineEvent(${event.id})" title="Supprimer">×</button>
                             </div>
                         </div>
                     `).join('')}
                 </div>
             `;
-        }
+}
 
-        function openTimelineDetail(id) {
-            const event = project.timeline.find(e => e.id === id);
-            if (!event) return;
+// [MVVM : View]
+// Construit la vue détaillée d'un événement chronologique
+function openTimelineDetail(id) {
+    const event = project.timeline.find(e => e.id === id);
+    if (!event) return;
 
-            const editorView = document.getElementById('editorView');
-            editorView.innerHTML = `
+    const editorView = document.getElementById('editorView');
+    editorView.innerHTML = `
                 <div class="detail-view">
                     <div class="detail-header">
                         <div class="detail-title">${event.title}</div>
-                        <button class="btn" onclick="switchView('editor')">? Retour � l'�diteur</button>
+                        <button class="btn" onclick="switchView('editor')">? Retour à l'éditeur</button>
                     </div>
                     
                     <div class="detail-section">
@@ -107,7 +119,7 @@
                                    onchange="updateTimelineField(${id}, 'location', this.value)">
                         </div>
                         <div class="detail-field">
-                            <div class="detail-label">Personnages impliqu�s</div>
+                            <div class="detail-label">Personnages impliqués</div>
                             <input type="text" class="form-input" value="${event.characters}" 
                                    onchange="updateTimelineField(${id}, 'characters', this.value)">
                         </div>
@@ -120,10 +132,10 @@
                     </div>
 
                     <div class="detail-section">
-                        <div class="detail-section-title">Cons�quences</div>
+                        <div class="detail-section-title">Conséquences</div>
                         <textarea class="form-input" rows="6" 
                                   onchange="updateTimelineField(${id}, 'consequences', this.value)">${event.consequences}</textarea>
-                        <small style="color: var(--text-muted); font-style: italic;">Qu'est-ce que cet �v�nement d�clenche ou change dans l'histoire ?</small>
+                        <small style="color: var(--text-muted); font-style: italic;">Qu'est-ce que cet événement déclenche ou change dans l'histoire ?</small>
                     </div>
 
                     <div class="detail-section">
@@ -133,13 +145,15 @@
                     </div>
                 </div>
             `;
-        }
+}
 
-        function updateTimelineField(id, field, value) {
-            const event = project.timeline.find(e => e.id === id);
-            if (event) {
-                event[field] = value;
-                saveProject();
-                renderTimelineList();
-            }
-        }
+// [MVVM : ViewModel]
+// Met à jour un champ de l'événement et rafraîchit la View
+function updateTimelineField(id, field, value) {
+    const event = project.timeline.find(e => e.id === id);
+    if (event) {
+        event[field] = value;
+        saveProject();
+        renderTimelineList();
+    }
+}

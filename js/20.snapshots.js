@@ -1,101 +1,110 @@
 
-        // Version Control Management
-        function createVersion() {
-            const label = prompt('Nom de la version (ex: "Version 1.0", "Avant révision", etc.)');
-            if (!label || !label.trim()) return;
+// Version Control Management
 
-            const totalWords = project.acts.reduce((sum, act) => {
-                return sum + act.chapters.reduce((chSum, chapter) => {
-                    return chSum + chapter.scenes.reduce((sceneSum, scene) => {
-                        return sceneSum + getWordCount(scene.content);
-                    }, 0);
-                }, 0);
+// [MVVM : ViewModel]
+// Coordonne la crÃ©ation d'un snapshot du project, persiste et demande la mise Ã  jour de la vue.
+function createVersion() {
+    const label = prompt('Nom de la version (ex: "Version 1.0", "Avant rÃ©vision", etc.)');
+    if (!label || !label.trim()) return;
+
+    const totalWords = project.acts.reduce((sum, act) => {
+        return sum + act.chapters.reduce((chSum, chapter) => {
+            return chSum + chapter.scenes.reduce((sceneSum, scene) => {
+                return sceneSum + getWordCount(scene.content);
             }, 0);
+        }, 0);
+    }, 0);
 
-            const version = {
-                id: Date.now(),
-                label: label.trim(),
-                timestamp: new Date().toISOString(),
-                wordCount: totalWords,
-                snapshot: JSON.parse(JSON.stringify({ 
-                    acts: project.acts,
-                    characters: project.characters,
-                    world: project.world,
-                    timeline: project.timeline,
-                    notes: project.notes,
-                    codex: project.codex
-                }))
-            };
+    const version = {
+        id: Date.now(),
+        label: label.trim(),
+        timestamp: new Date().toISOString(),
+        wordCount: totalWords,
+        snapshot: JSON.parse(JSON.stringify({
+            acts: project.acts,
+            characters: project.characters,
+            world: project.world,
+            timeline: project.timeline,
+            notes: project.notes,
+            codex: project.codex
+        }))
+    };
 
-            project.versions.push(version);
-            saveProject();
-            renderVersionsList();
-            alert('Version créée avec succès !');
-        }
+    project.versions.push(version);
+    saveProject();
+    renderVersionsList();
+    alert('Version crÃ©Ã©e avec succÃ¨s !');
+}
 
-        function deleteVersion(id) {
-            if (!confirm('Êtes-vous sûr de vouloir supprimer cette version ?')) return;
-            project.versions = project.versions.filter(v => v.id !== id);
-            saveProject();
-            renderVersionsList();
-        }
+// [MVVM : ViewModel]
+// Modifie le project (Model) en supprimant une version, persiste et notifie la vue.
+function deleteVersion(id) {
+    if (!confirm('ÃŠtes-vous sÃ»r de vouloir supprimer cette version ?')) return;
+    project.versions = project.versions.filter(v => v.id !== id);
+    saveProject();
+    renderVersionsList();
+}
 
-        function restoreVersion(id) {
-            if (!confirm('?? ATTENTION: Restaurer cette version va remplacer votre travail actuel. Voulez-vous créer une sauvegarde avant de continuer ?')) {
-                return;
-            }
+// [MVVM : ViewModel]
+// Restaure l'Ã©tat du project (Model) depuis un snapshot.
+function restoreVersion(id) {
+    if (!confirm('?? ATTENTION: Restaurer cette version va remplacer votre travail actuel. Voulez-vous crÃ©er une sauvegarde avant de continuer ?')) {
+        return;
+    }
 
-            // Create backup of current state
-            createVersion();
+    // Create backup of current state
+    createVersion();
 
-            const version = project.versions.find(v => v.id === id);
-            if (!version) return;
+    const version = project.versions.find(v => v.id === id);
+    if (!version) return;
 
-            // Restore snapshot
-            project.acts = JSON.parse(JSON.stringify(version.snapshot.acts));
-            project.characters = JSON.parse(JSON.stringify(version.snapshot.characters || []));
-            project.world = JSON.parse(JSON.stringify(version.snapshot.world || []));
-            project.timeline = JSON.parse(JSON.stringify(version.snapshot.timeline || []));
-            project.notes = JSON.parse(JSON.stringify(version.snapshot.notes || []));
-            project.codex = JSON.parse(JSON.stringify(version.snapshot.codex || []));
+    // Restore snapshot
+    project.acts = JSON.parse(JSON.stringify(version.snapshot.acts));
+    project.characters = JSON.parse(JSON.stringify(version.snapshot.characters || []));
+    project.world = JSON.parse(JSON.stringify(version.snapshot.world || []));
+    project.timeline = JSON.parse(JSON.stringify(version.snapshot.timeline || []));
+    project.notes = JSON.parse(JSON.stringify(version.snapshot.notes || []));
+    project.codex = JSON.parse(JSON.stringify(version.snapshot.codex || []));
 
-            saveProject();
-            switchView('editor');
-            renderActsList();
-            alert('Version restaurée avec succès !');
-        }
+    saveProject();
+    switchView('editor');
+    renderActsList();
+    alert('Version restaurÃ©e avec succÃ¨s !');
+}
 
-        function renderVersionsList() {
-            const editorView = document.getElementById('editorView');
-            if (!editorView) {
-                console.error('editorView not found');
-                return;
-            }
-            
-            // Sort by most recent first
-            const sortedVersions = [...project.versions].sort((a, b) => 
-                new Date(b.timestamp) - new Date(a.timestamp)
-            );
+// [MVVM : View]
+// GÃ©nÃ¨re directement du HTML et manipule le DOM (Vue).
+function renderVersionsList() {
+    const editorView = document.getElementById('editorView');
+    if (!editorView) {
+        console.error('editorView not found');
+        return;
+    }
 
-            editorView.innerHTML = `
+    // Sort by most recent first
+    const sortedVersions = [...project.versions].sort((a, b) =>
+        new Date(b.timestamp) - new Date(a.timestamp)
+    );
+
+    editorView.innerHTML = `
                 <div style="height: 100%; overflow-y: auto; padding: 2rem 3rem;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
                         <h2 style="color: var(--accent-gold);"><i data-lucide="history" style="width:24px;height:24px;vertical-align:middle;margin-right:8px;"></i>Gestion des Versions</h2>
                         <button class="btn btn-primary" onclick="createVersion()">
-                            + Créer une version
+                            + CrÃ©er une version
                         </button>
                     </div>
                     
                     ${project.versions.length === 0 ? `
                         <div style="text-align: center; padding: 4rem 2rem; color: var(--text-muted);">
                             <div style="font-size: 3rem; margin-bottom: 1rem;">??</div>
-                            <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">Aucune version sauvegardée</div>
+                            <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">Aucune version sauvegardÃ©e</div>
                             <div style="font-size: 0.9rem; margin-bottom: 2rem;">
-                                Les versions vous permettent de créer des snapshots de votre projet<br>
-                                pour revenir à un état antérieur si nécessaire.
+                                Les versions vous permettent de crÃ©er des snapshots de votre projet<br>
+                                pour revenir Ã  un Ã©tat antÃ©rieur si nÃ©cessaire.
                             </div>
                             <button class="btn btn-primary" onclick="createVersion()">
-                                Créer votre première version
+                                CrÃ©er votre premiÃ¨re version
                             </button>
                         </div>
                     ` : `
@@ -108,10 +117,10 @@
                                                 ${version.label}
                                             </div>
                                             <div style="font-size: 0.85rem; color: var(--text-muted);">
-                                                ${new Date(version.timestamp).toLocaleString('fr-FR', { 
-                                                    dateStyle: 'long', 
-                                                    timeStyle: 'short' 
-                                                })}
+                                                ${new Date(version.timestamp).toLocaleString('fr-FR', {
+        dateStyle: 'long',
+        timeStyle: 'short'
+    })}
                                             </div>
                                         </div>
                                         <div style="text-align: right;">
@@ -146,22 +155,24 @@
                     `}
                 </div>
             `;
-        }
+}
 
-        function compareVersion(id) {
-            const version = project.versions.find(v => v.id === id);
-            if (!version) return;
+// [MVVM : Other]
+// Calcule une diffÃ©rence (ViewModel) et l'affiche via alert (View).
+function compareVersion(id) {
+    const version = project.versions.find(v => v.id === id);
+    if (!version) return;
 
-            const currentWords = project.acts.reduce((sum, act) => {
-                return sum + act.chapters.reduce((chSum, chapter) => {
-                    return chSum + chapter.scenes.reduce((sceneSum, scene) => {
-                        return sceneSum + getWordCount(scene.content);
-                    }, 0);
-                }, 0);
+    const currentWords = project.acts.reduce((sum, act) => {
+        return sum + act.chapters.reduce((chSum, chapter) => {
+            return chSum + chapter.scenes.reduce((sceneSum, scene) => {
+                return sceneSum + getWordCount(scene.content);
             }, 0);
+        }, 0);
+    }, 0);
 
-            const diff = currentWords - version.wordCount;
-            const diffText = diff > 0 ? `+${diff}` : diff;
+    const diff = currentWords - version.wordCount;
+    const diffText = diff > 0 ? `+${diff}` : diff;
 
-            alert(`Comparaison avec "${version.label}":\n\nVersion sauvegardée: ${version.wordCount.toLocaleString('fr-FR')} mots\nVersion actuelle: ${currentWords.toLocaleString('fr-FR')} mots\nDifférence: ${diffText} mots`);
-        }
+    alert(`Comparaison avec "${version.label}":\n\nVersion sauvegardÃ©e: ${version.wordCount.toLocaleString('fr-FR')} mots\nVersion actuelle: ${currentWords.toLocaleString('fr-FR')} mots\nDiffÃ©rence: ${diffText} mots`);
+}
