@@ -129,6 +129,7 @@ const ThrillerRowModel = {
      * @returns {Object} La ligne.
      */
     createFromCharacter: function (character) {
+        if (!character) return null;
         return {
             id: `character_${character.id}`,
             title: character.name || 'Personnage sans nom',
@@ -145,6 +146,7 @@ const ThrillerRowModel = {
      * @returns {Object} La ligne.
      */
     createFromLocation: function (location) {
+        if (!location) return null;
         return {
             id: `location_${location.id}`,
             title: location.name || 'Lieu sans nom',

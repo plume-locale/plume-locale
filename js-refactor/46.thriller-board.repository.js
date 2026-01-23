@@ -466,14 +466,18 @@ const ThrillerRowRepository = {
         // Lignes pour les personnages
         if (typeof project !== 'undefined' && project.characters) {
             project.characters.forEach(character => {
-                rows.push(ThrillerRowModel.createFromCharacter(character));
+                if (character) {
+                    rows.push(ThrillerRowModel.createFromCharacter(character));
+                }
             });
         }
 
         // Lignes pour les lieux
         if (typeof project !== 'undefined' && project.locations) {
             project.locations.forEach(location => {
-                rows.push(ThrillerRowModel.createFromLocation(location));
+                if (location) {
+                    rows.push(ThrillerRowModel.createFromLocation(location));
+                }
             });
         }
 
@@ -581,11 +585,13 @@ const ThrillerColumnRepository = {
 
         if (typeof project !== 'undefined' && project.acts && project.acts.length > 0) {
             project.acts.forEach(act => {
-                if (act.chapters && act.chapters.length > 0) {
+                if (act && act.chapters && act.chapters.length > 0) {
                     act.chapters.forEach(chapter => {
-                        if (chapter.scenes && chapter.scenes.length > 0) {
+                        if (chapter && chapter.scenes && chapter.scenes.length > 0) {
                             chapter.scenes.forEach(scene => {
-                                columns.push(ThrillerColumnModel.createFromScene(scene, act, chapter));
+                                if (scene) {
+                                    columns.push(ThrillerColumnModel.createFromScene(scene, act, chapter));
+                                }
                             });
                         }
                     });

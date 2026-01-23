@@ -73,6 +73,9 @@ function renderThrillerCanvasView() {
 /**
  * Affiche les éléments sur le canvas.
  */
+/**
+ * Affiche les éléments sur le canvas.
+ */
 function renderThrillerElements() {
     const content = document.getElementById('thrillerBoardContent');
     if (!content) return;
@@ -81,19 +84,54 @@ function renderThrillerElements() {
     const elements = ThrillerElementRepository.getByType(currentFilter);
 
     if (elements.length === 0) {
-        content.innerHTML = '';
+        content.innerHTML = `
+            <div class="thriller-empty-state">
+                <div class="thriller-empty-icon">
+                    <i data-lucide="search" style="width: 48px; height: 48px; color: var(--text-secondary);"></i>
+                </div>
+                <h3>Aucun élément trouvé</h3>
+                <p>
+                    Il n'y a pas d'éléments de type "${currentFilter}" sur le tableau.<br>
+                    Utilisez le bouton "+" pour en ajouter un.
+                </p>
+                <div style="display: flex; gap: 10px; justify-content: center;">
+                    <button class="btn btn-primary" onclick="handleAddElement('${currentFilter}')">
+                        <i data-lucide="plus"></i> Créer ${currentFilter}
+                    </button>
+                    <button class="btn btn-secondary" onclick="ThrillerStateRepository.setCurrentFilter('clue'); renderThrillerBoard();">
+                         Voir tout
+                    </button>
+                </div>
+            </div>
+        `;
+
+        // Initialiser les icônes pour l'état vide
+        setTimeout(() => {
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        }, 50);
         return;
     }
 
     content.innerHTML = elements.map(element => {
-        const typeData = THRILLER_TYPES[element.type];
+        // Résolution sécurisée du type
+        let typeData = THRILLER_TYPES[element.type];
+        if (!typeData && typeof ThrillerTypeRepository !== 'undefined') {
+            typeData = ThrillerTypeRepository.getTypeDefinition(element.type);
+        }
+        // Fallback si le type est introuvable
+        if (!typeData) typeData = THRILLER_TYPES.clue;
+
+        // Sécurisation des données de position et taille
+        const safePos = element.position || { x: 100, y: 100 };
+        const safeSize = element.size || { width: 280, height: 200 };
+
         return `
             <div class="thriller-element-card"
                  id="thriller-element-${element.id}"
-                 style="left: ${element.position.x}px; top: ${element.position.y}px; width: ${element.size.width}px; min-height: ${element.size.height}px;"
+                 style="left: ${safePos.x}px; top: ${safePos.y}px; width: ${safeSize.width}px; min-height: ${safeSize.height}px;"
                  onclick="handleSelectElement('${element.id}')"
                  ondblclick="handleEditElement('${element.id}')">
-                <div class="thriller-element-header" style="background-color: ${element.color}">
+                <div class="thriller-element-header" style="background-color: ${element.color || typeData.color}">
                     <div class="thriller-element-icon">
                         <i data-lucide="${typeData.icon}"></i>
                     </div>
@@ -105,7 +143,7 @@ function renderThrillerElements() {
                     </div>
                 </div>
                 <div class="thriller-element-content">
-                    <div class="thriller-element-description">${element.description || 'Aucune description'}</div>
+                    <div class="thriller-element-description">${element.description || '<em style="opacity: 0.6">Aucune description</em>'}</div>
                 </div>
             </div>
         `;
