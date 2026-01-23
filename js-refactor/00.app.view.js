@@ -161,11 +161,17 @@ function switchView(view) {
         world: '<button class="btn btn-primary" onclick="openAddWorldModal()">+ Élément</button>',
         notes: '<button class="btn btn-primary" onclick="openAddNoteModal()">+ Note</button>',
         codex: '<button class="btn btn-primary" onclick="openAddCodexModal()">+ Entrée</button>',
-        arcs: '<button class="btn btn-primary" onclick="createNewArc()">+ Arc narratif</button>'
+        arcs: '<button class="btn btn-primary" onclick="createNewArc()">+ Arc narratif</button>',
+        plotgrid: '<button class="btn btn-primary" onclick="PlotGridUI.addNewColumn()">+ Colonne</button>'
     };
     const sidebarActions = document.getElementById('sidebarActions');
     if (sidebarActions) {
         sidebarActions.innerHTML = actionsHTML[view] || '';
+    }
+
+    // Hide plot sidebar when leaving editor
+    if (view !== 'editor' && !splitViewActive) {
+        document.getElementById('sidebarPlot')?.classList.add('hidden');
     }
 
     // Rendu du contenu
@@ -379,6 +385,11 @@ function openScene(actId, chapterId, sceneId) {
     if (typeof refreshLinksPanel === 'function') refreshLinksPanel();
     if (typeof renderSceneVersionsList === 'function') renderSceneVersionsList();
 
+    // Refresh plot sidebar if open
+    if (typeof PlotGridUI !== 'undefined' && !document.getElementById('sidebarPlot').classList.contains('hidden')) {
+        PlotGridUI.renderSidebar(sceneId);
+    }
+
     // Annotations automatic opening
     const annotations = typeof getVersionAnnotations === 'function' ? getVersionAnnotations(scene) : [];
     if (annotations && annotations.length > 0 && window.innerWidth > 900) {
@@ -542,6 +553,7 @@ function renderEditor(act, chapter, scene) {
                 <div class="toolbar-group">
                     <button class="toolbar-btn" onclick="toggleAnnotationsPanel()" id="toolbarAnnotationsBtn"><i data-lucide="message-square"></i></button>
                     <button class="toolbar-btn" onclick="toggleArcScenePanel()" id="toolbarArcsBtn"><i data-lucide="git-commit-horizontal"></i></button>
+                    <button class="toolbar-btn" onclick="PlotGridUI.toggleSidebar()" id="toolbarPlotBtn" title="Afficher l'intrigue"><i data-lucide="trending-up"></i></button>
                 </div>
                 <div class="toolbar-group">
                     <button class="toolbar-btn" onclick="toggleRevisionMode()" id="toolbarRevisionBtn" style="color: var(--accent-gold); font-weight: 600;">✏️ RÉVISION</button>

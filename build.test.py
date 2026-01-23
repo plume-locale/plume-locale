@@ -104,7 +104,12 @@ JS_ORDER = [
     'js-refactor/46.thriller-board.helpers.js',
     'js-refactor/46.thriller-board.viewmodel.js',
     'js-refactor/46.thriller-board.type-editor.js',
-    'js-refactor/46.thriller-board.view.js'
+    'js-refactor/46.thriller-board.view.js',
+    # Plot Grid Module (Module 47)
+    'js-refactor/47.plot-grid.model.js',
+    'js-refactor/47.plot-grid.repository.js',
+    'js-refactor/47.plot-grid.viewmodel.js',
+    'js-refactor/47.plot-grid.view.js'
 ]
 
 def read_file(path):
