@@ -72,7 +72,7 @@ JS_ORDER = [
     '18.timeline.js',
     '19.notes.js',
     '20.snapshots.js',
-    '21.sceneVersions.js',
+    'js-refactor/21.sceneVersions.refactor.js',
     '22.diff.js',
     '23.stats.js',
     '24.codex.js',
@@ -80,7 +80,7 @@ JS_ORDER = [
     '26.focusMode.js',
     '27.keyboardShortcuts.js',
     'js-refactor/28.revision.refactor.js',
-    '29.todos.js',
+    'js-refactor/29.todos.refactor.js',
     'js-refactor/30.corkboard.refactor.js',
     '31.mindmap.js',
     '32.touch-events.js',
@@ -94,7 +94,7 @@ JS_ORDER = [
     '40.sidebar-views.js',
     '41.storageMonitoring.js',
     '42.mobile-swipe.js',
-    '43.arcs.js',
+    'js-refactor/43.arcs.refactor.js',
     '44.storygrid.js',
     '45.arc-board.js',
     # Thriller Board refactored files (order: constants -> model -> repository -> helpers -> viewmodel -> view)
@@ -175,9 +175,12 @@ IGNORED_ORIGINALS = [
     '17.world.js',
     '01.app.js',
     '10.colorpalette.js',
+    '21.sceneVersions.js',
     '28.revision.js',
+    '29.todos.js',
     '30.corkboard.js',
     '33.plot.js',
+    '43.arcs.js',
     '46.thriller-board.js'  # Remplacé par les fichiers refactorisés 46.thriller-board.*.js
 ]
 

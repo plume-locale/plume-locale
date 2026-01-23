@@ -428,6 +428,41 @@ function updateAnnotationsButton(isOpen) {
             todosBadge.style.display = 'none';
         }
     }
+
+    // Mettre à jour les nouveaux badges de la toolbar verticale
+    const toolAnnotationsBtn = document.getElementById('toolAnnotationsBtn');
+    const toolAnnotationsBadge = document.getElementById('toolAnnotationsBadge');
+    const toolTodosBtn = document.getElementById('toolTodosBtn');
+    const toolTodosBadge = document.getElementById('toolTodosBadge');
+
+    // Badge annotations de la toolbar verticale
+    if (toolAnnotationsBadge) {
+        if (annotationCount > 0) {
+            toolAnnotationsBadge.style.display = 'inline';
+            toolAnnotationsBadge.textContent = annotationCount > 9 ? '9+' : annotationCount;
+        } else {
+            toolAnnotationsBadge.style.display = 'none';
+        }
+    }
+
+    // Badge TODOs de la toolbar verticale
+    if (toolTodosBadge) {
+        if (totalTodos > 0) {
+            toolTodosBadge.style.display = 'inline';
+            toolTodosBadge.textContent = totalTodos > 9 ? '9+' : totalTodos;
+        } else {
+            toolTodosBadge.style.display = 'none';
+        }
+    }
+
+    // État actif des boutons de la toolbar
+    if (toolAnnotationsBtn) {
+        if (isOpen) {
+            toolAnnotationsBtn.classList.add('active');
+        } else {
+            toolAnnotationsBtn.classList.remove('active');
+        }
+    }
 }
 
 // [MVVM : Other]
