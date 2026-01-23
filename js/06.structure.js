@@ -1060,7 +1060,7 @@ function openScene(actId, chapterId, sceneId) {
         updateAnnotationsButton(true);
     } else {
         if (annotationsPanel) {
-            annotationsPanel.classList.remove('visible');
+            annotationsPanel.classList.add('hidden');
         }
         updateAnnotationsButton(false);
     }

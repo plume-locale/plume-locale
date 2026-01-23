@@ -489,7 +489,7 @@ function openScene(actId, chapterId, sceneId) {
         if (typeof renderAnnotationsPanel === 'function') renderAnnotationsPanel();
         if (typeof updateAnnotationsButton === 'function') updateAnnotationsButton(true);
     } else {
-        document.getElementById('annotationsPanel')?.classList.remove('visible');
+        document.getElementById('annotationsPanel')?.classList.add('hidden');
         if (typeof updateAnnotationsButton === 'function') updateAnnotationsButton(false);
     }
 }

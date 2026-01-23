@@ -10,15 +10,15 @@ function toggleTodosPanel() {
     const btn = document.getElementById('sidebarTodosBtn');
     const toolBtn = document.getElementById('toolTodosBtn');
 
-    if (panel.classList.contains('visible')) {
-        panel.classList.remove('visible');
-        if (btn) btn.classList.remove('active');
-        if (toolBtn) toolBtn.classList.remove('active');
-    } else {
+    if (panel.classList.contains('hidden')) {
         renderTodosPanel();
-        panel.classList.add('visible');
+        panel.classList.remove('hidden');
         if (btn) btn.classList.add('active');
         if (toolBtn) toolBtn.classList.add('active');
+    } else {
+        panel.classList.add('hidden');
+        if (btn) btn.classList.remove('active');
+        if (toolBtn) toolBtn.classList.remove('active');
     }
 }
 
@@ -29,7 +29,7 @@ function closeTodosPanel() {
     const btn = document.getElementById('sidebarTodosBtn');
     const toolBtn = document.getElementById('toolTodosBtn');
     if (panel) {
-        panel.classList.remove('visible');
+        panel.classList.add('hidden');
     }
     if (btn) btn.classList.remove('active');
     if (toolBtn) toolBtn.classList.remove('active');
@@ -125,7 +125,7 @@ function renderTodosPanel() {
     }
 
     // Afficher le panneau
-    parentPanel.classList.add('visible');
+    parentPanel.classList.remove('hidden');
 
     // Rafraîchir les icônes Lucide
     setTimeout(() => {

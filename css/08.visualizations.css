@@ -1376,22 +1376,22 @@
 
 /* Arc Scene Panel Styles */
 .arc-scene-panel {
-    position: fixed;
-    right: 0;
-    top: 60px;
-    width: 350px;
-    height: calc(100vh - 60px);
-    background: var(--bg-primary);
+    background: var(--bg-secondary);
     border-left: 2px solid var(--border-color);
-    box-shadow: -4px 0 12px var(--shadow);
-    z-index: 900;
-    transition: transform 0.3s ease;
+    border-right: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
+    overflow: hidden;
+    min-width: 250px;
+    width: 280px;
+    height: 100%;
+    z-index: 10;
 }
 
 .arc-scene-panel.hidden {
-    transform: translateX(100%);
+    display: none;
+    min-width: 0;
+    width: 0;
 }
 
 .arc-scene-panel-header {
