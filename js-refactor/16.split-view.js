@@ -881,23 +881,15 @@ function renderEditorInContainer(act, chapter, scene, container, panel) {
                         <div style="display: flex; gap: 2rem; align-items: start;">
                             <div style="flex: 1;">
                                 <div style="font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-muted);"><i data-lucide="users" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Personnages</div>
-                                <div class="quick-links">
-                                    ${renderSceneCharacters(act.id, chapter.id, scene)}
-                                    <button class="btn btn-small" onclick="openCharacterLinker(${act.id}, ${chapter.id}, ${scene.id})" style="font-size: 0.75rem; padding: 0.3rem 0.6rem;">+ Lier</button>
-                                </div>
+                                <div class="quick-links"></div>
                             </div>
                             <div style="flex: 1;">
                                 <div style="font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-muted);"><i data-lucide="globe" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Lieux/Éléments</div>
-                                <div class="quick-links">
-                                    ${renderSceneElements(act.id, chapter.id, scene)}
-                                    <button class="btn btn-small" onclick="openElementLinker(${act.id}, ${chapter.id}, ${scene.id})" style="font-size: 0.75rem; padding: 0.3rem 0.6rem;">+ Lier</button>
-                                </div>
+                                <div class="quick-links"></div>
                             </div>
                             <div style="flex: 1;">
                                 <div style="font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-muted);"><i data-lucide="train-track" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Timeline</div>
-                                <div class="quick-links">
-                                    ${renderSceneMetroEvents(scene.id)}
-                                </div>
+                                <div class="quick-links"></div>
                             </div>
                         </div>
                     </div>

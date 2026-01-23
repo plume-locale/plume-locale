@@ -686,15 +686,15 @@ function renderEditor(act, chapter, scene) {
                 <div style="display: flex; gap: 2rem; align-items: start;">
                     <div style="flex: 1;">
                         <div class="quick-links-title"><i data-lucide="users" style="width:14px;height:14px;"></i> Personnages</div>
-                        <div class="quick-links">${typeof renderSceneCharacters === 'function' ? renderSceneCharacters(act.id, chapter.id, scene) : ''}</div>
+                        <div class="quick-links"></div>
                     </div>
                     <div style="flex: 1;">
                         <div class="quick-links-title"><i data-lucide="globe" style="width:14px;height:14px;"></i> Univers</div>
-                        <div class="quick-links">${typeof renderSceneElements === 'function' ? renderSceneElements(act.id, chapter.id, scene) : ''}</div>
+                        <div class="quick-links"></div>
                     </div>
                     <div style="flex: 1;">
                         <div class="quick-links-title"><i data-lucide="train-track" style="width:14px;height:14px;"></i> Timeline</div>
-                        <div class="quick-links">${typeof renderSceneMetroEvents === 'function' ? renderSceneMetroEvents(scene.id) : ''}</div>
+                        <div class="quick-links"></div>
                     </div>
                 </div>
             </div>
