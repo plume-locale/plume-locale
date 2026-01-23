@@ -11,6 +11,7 @@ let sceneVersionsSidebarVisible = false;
 function toggleVersionsSidebar() {
     const sidebar = document.getElementById('sidebarVersions');
     const toggleBtn = document.getElementById('headerVersionsToggle');
+    const toolBtn = document.getElementById('toolVersionsBtn');
     sceneVersionsSidebarVisible = !sceneVersionsSidebarVisible;
 
     if (sceneVersionsSidebarVisible) {
@@ -19,11 +20,17 @@ function toggleVersionsSidebar() {
             toggleBtn.classList.add('active');
             toggleBtn.title = 'Masquer les versions de scène';
         }
+        if (toolBtn) {
+            toolBtn.classList.add('active');
+        }
     } else {
         sidebar.classList.add('hidden');
         if (toggleBtn) {
             toggleBtn.classList.remove('active');
             toggleBtn.title = 'Afficher les versions de scène';
+        }
+        if (toolBtn) {
+            toolBtn.classList.remove('active');
         }
     }
 }
@@ -33,10 +40,14 @@ function toggleVersionsSidebar() {
 function showVersionsSidebar() {
     const sidebar = document.getElementById('sidebarVersions');
     const toggleBtn = document.getElementById('headerVersionsToggle');
+    const toolBtn = document.getElementById('toolVersionsBtn');
     sceneVersionsSidebarVisible = true;
     sidebar.classList.remove('hidden');
     if (toggleBtn) {
         toggleBtn.classList.add('active');
+    }
+    if (toolBtn) {
+        toolBtn.classList.add('active');
     }
 }
 

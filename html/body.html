@@ -480,6 +480,33 @@
                 </div>
             </div>
 
+            <!-- Vertical Tools Sidebar -->
+            <div class="tools-sidebar" id="toolsSidebar">
+                <button class="tool-btn" onclick="toggleVersionsSidebar()" id="toolVersionsBtn"
+                    title="Versions de scène">
+                    <i data-lucide="git-branch"></i>
+                </button>
+                <button class="tool-btn" onclick="toggleAnnotationsPanel()" id="toolAnnotationsBtn"
+                    title="Annotations">
+                    <i data-lucide="message-square"></i>
+                    <span class="tool-badge" id="toolAnnotationsBadge" style="display: none;">0</span>
+                </button>
+                <button class="tool-btn" onclick="toggleTodosPanel()" id="toolTodosBtn"
+                    title="TODOs">
+                    <i data-lucide="check-square"></i>
+                    <span class="tool-badge" id="toolTodosBadge" style="display: none;">0</span>
+                </button>
+                <button class="tool-btn" onclick="toggleArcScenePanel()" id="toolArcsBtn"
+                    title="Arcs Narratifs">
+                    <i data-lucide="git-commit-horizontal"></i>
+                </button>
+                <button class="tool-btn" onclick="PlotGridUI.toggleSidebar()" id="toolPlotBtn"
+                    title="Intrigue">
+                    <i data-lucide="trending-up"></i>
+                </button>
+            </div>
+
+
             <!-- Sidebar Versions (pour les versions de scènes) -->
             <div class="sidebar-versions hidden" id="sidebarVersions">
                 <div class="sidebar-versions-header">

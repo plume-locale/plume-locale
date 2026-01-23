@@ -8,6 +8,81 @@
     overflow: hidden;
 }
 
+/* Vertical Tools Sidebar */
+.tools-sidebar {
+    background: var(--bg-secondary);
+    border-right: 2px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 0;
+    width: 60px;
+    flex-shrink: 0;
+    overflow-y: auto;
+}
+
+.tool-btn {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.tool-btn:hover {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+    transform: translateX(2px);
+}
+
+.tool-btn.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.tool-btn i {
+    width: 20px;
+    height: 20px;
+}
+
+.tool-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: var(--accent-red);
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 0.15rem 0.35rem;
+    border-radius: 10px;
+    line-height: 1;
+    min-width: 18px;
+    text-align: center;
+}
+
+/* Hide old scene-tools */
+.scene-tools {
+    display: none !important;
+}
+
+/* Mobile: hide tools-sidebar on small screens */
+@media (max-width: 900px) {
+    .tools-sidebar {
+        display: none !important;
+    }
+}
+
 /* Sidebar Versions (pour les versions de scènes) */
 .sidebar-versions {
     background: var(--bg-secondary);

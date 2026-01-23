@@ -8,14 +8,17 @@
 function toggleTodosPanel() {
     const panel = document.getElementById('todosPanel');
     const btn = document.getElementById('sidebarTodosBtn');
+    const toolBtn = document.getElementById('toolTodosBtn');
 
     if (panel.classList.contains('visible')) {
         panel.classList.remove('visible');
         if (btn) btn.classList.remove('active');
+        if (toolBtn) toolBtn.classList.remove('active');
     } else {
         renderTodosPanel();
         panel.classList.add('visible');
         if (btn) btn.classList.add('active');
+        if (toolBtn) toolBtn.classList.add('active');
     }
 }
 
@@ -24,10 +27,12 @@ function toggleTodosPanel() {
 function closeTodosPanel() {
     const panel = document.getElementById('todosPanel');
     const btn = document.getElementById('sidebarTodosBtn');
+    const toolBtn = document.getElementById('toolTodosBtn');
     if (panel) {
         panel.classList.remove('visible');
     }
     if (btn) btn.classList.remove('active');
+    if (toolBtn) toolBtn.classList.remove('active');
 }
 
 // [MVVM : Other]

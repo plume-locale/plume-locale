@@ -345,7 +345,7 @@ function updateSidebarForSplitPanel(panel) {
     }
 
     // Update structure-only elements visibility
-    const structureOnlyElements = ['projectProgressBar', 'statusFilters', 'sceneTools'];
+    const structureOnlyElements = ['projectProgressBar', 'statusFilters', 'sceneTools', 'toolsSidebar'];
     structureOnlyElements.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.display = (view === 'editor') ? '' : 'none';

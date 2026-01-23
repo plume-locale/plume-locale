@@ -431,11 +431,18 @@ function deleteNarrativeArc(arcId) {
 // Alterne la visibilité du panneau des arcs pour une scène.
 function toggleArcScenePanel() {
     const panel = document.getElementById('arcScenePanel');
+    const toolBtn = document.getElementById('toolArcsBtn');
+    const sidebarBtn = document.getElementById('sidebarArcsBtn');
     if (!panel) return;
 
     panel.classList.toggle('hidden');
     if (!panel.classList.contains('hidden')) {
         renderArcScenePanel();
+        if (toolBtn) toolBtn.classList.add('active');
+        if (sidebarBtn) sidebarBtn.classList.add('active');
+    } else {
+        if (toolBtn) toolBtn.classList.remove('active');
+        if (sidebarBtn) sidebarBtn.classList.remove('active');
     }
 }
 

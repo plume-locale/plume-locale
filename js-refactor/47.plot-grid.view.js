@@ -722,11 +722,18 @@ const PlotGridUI = {
     // --- Sidebar Integration ---
     toggleSidebar: function () {
         const sidebar = document.getElementById('sidebarPlot');
+        const toolBtn = document.getElementById('toolPlotBtn');
+        const sidebarBtn = document.getElementById('sidebarPlotBtn');
         if (!sidebar) return;
 
         const isHidden = sidebar.classList.toggle('hidden');
         if (!isHidden && currentSceneId) {
             this.renderSidebar(currentSceneId);
+            if (toolBtn) toolBtn.classList.add('active');
+            if (sidebarBtn) sidebarBtn.classList.add('active');
+        } else {
+            if (toolBtn) toolBtn.classList.remove('active');
+            if (sidebarBtn) sidebarBtn.classList.remove('active');
         }
 
         // Refresh icons

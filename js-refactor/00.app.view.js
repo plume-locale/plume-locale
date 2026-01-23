@@ -70,7 +70,8 @@ function switchView(view) {
     const structureOnlyElements = [
         'projectProgressBar',
         'statusFilters',
-        'sceneTools'
+        'sceneTools',
+        'toolsSidebar'
     ];
 
     structureOnlyElements.forEach(id => {
