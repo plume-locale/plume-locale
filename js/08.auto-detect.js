@@ -250,6 +250,14 @@ function refreshLinksPanel() {
     const linksPanel = document.getElementById('linksPanel');
     if (!linksPanel) return;
 
+    // Si c'est la nouvelle sidebar, utiliser renderLinksPanelSidebar
+    if (linksPanel.classList.contains('links-panel-sidebar')) {
+        if (typeof renderLinksPanelSidebar === 'function' && !linksPanel.classList.contains('hidden')) {
+            renderLinksPanelSidebar();
+        }
+        return;
+    }
+
     const scene = getCurrentScene();
     if (!scene) return;
 
@@ -492,4 +500,120 @@ function escapeRegex(string) {
 function formatText(command, value = null) {
     document.execCommand(command, false, value);
     document.querySelector('.editor-textarea').focus();
+}
+// [MVVM : View]
+// Fonction de rendu pour le panneau des liens en mode sidebar
+function renderLinksPanelSidebar() {
+    const linksPanelContent = document.getElementById('linksPanelContent');
+    if (!linksPanelContent) return;
+
+    const scene = getCurrentScene();
+    if (!scene) {
+        linksPanelContent.innerHTML = '<p style="text-align: center; color: var(--text-muted); padding: 2rem;">Sélectionnez une scène</p>';
+        return;
+    }
+
+    // Construire le HTML pour les trois sections
+    let html = '';
+
+    // SECTION 1 : PERSONNAGES
+    html += '<div style="margin-bottom: 1.5rem;">';
+    html += '<div class="quick-links-title" style="font-size: 0.85rem; font-weight: 600; margin-bottom: 0.75rem; color: var(--text-muted);"><i data-lucide="users" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> Personnages</div>';
+
+    const allCharacters = project.characters || [];
+    const confirmedIds = scene.confirmedPresentCharacters || [];
+    const suggestedIds = scene.suggestedCharacters || [];
+    const absentIds = scene.confirmedAbsentCharacters || [];
+
+    const presentList = allCharacters.filter(c => confirmedIds.includes(c.id));
+    const suggestedList = allCharacters.filter(c => suggestedIds.includes(c.id));
+    const absentList = allCharacters.filter(c => absentIds.includes(c.id));
+
+    // Présents confirmés
+    html += '<h4 style="margin: 0 0 8px 0; font-size: 0.8rem; opacity: 0.8;"><i data-lucide="check-circle" style="width: 14px; height: 14px; vertical-align: -2px; margin-right: 4px;"></i> Confirmés Présents</h4>';
+    if (presentList.length > 0) {
+        html += presentList.map(char => `
+            <div class="link-item present" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    ${getAvatarHTML(char)}
+                    <span>${char.name}</span>
+                </div>
+                <button onclick="confirmCharacterAbsence(${char.id})" title="Retirer" class="btn-icon">
+                    <i data-lucide="x" style="width: 16px; height: 16px;"></i>
+                </button>
+            </div>
+        `).join('');
+    } else {
+        html += '<p class="text-muted small" style="font-size: 0.75rem; margin-bottom: 12px; opacity: 0.7;">Aucun personnage confirmé présent.</p>';
+    }
+
+    // Suggestions
+    html += '<h4 style="margin: 12px 0 8px 0; font-size: 0.8rem; opacity: 0.8; color: var(--accent-color);"><i data-lucide="help-circle" style="width: 14px; height: 14px; vertical-align: -2px; margin-right: 4px;"></i> Suggestions</h4>';
+    if (suggestedList.length > 0) {
+        html += suggestedList.map(char => `
+            <div class="link-item suggested" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    ${getAvatarHTML(char)}
+                    <span>${char.name}</span>
+                </div>
+                <div style="display: flex; gap: 4px;">
+                    <button onclick="confirmCharacterAbsence(${char.id})" title="Ignorer" class="btn-icon">
+                        <i data-lucide="x" style="width: 16px; height: 16px;"></i>
+                    </button>
+                    <button onclick="confirmCharacterPresence(${char.id})" title="Valider" class="btn-icon">
+                        <i data-lucide="check" style="width: 16px; height: 16px;"></i>
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    } else {
+        html += '<p class="text-muted small" style="font-size: 0.75rem; margin-bottom: 12px; opacity: 0.7;">Aucune suggestion.</p>';
+    }
+
+    // Absents
+    html += '<h4 style="margin: 12px 0 8px 0; font-size: 0.8rem; opacity: 0.8;"><i data-lucide="x-circle" style="width: 14px; height: 14px; vertical-align: -2px; margin-right: 4px;"></i> Confirmés Absents</h4>';
+    if (absentList.length > 0) {
+        html += absentList.map(char => `
+            <div class="link-item absent" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    ${getAvatarHTML(char)}
+                    <span style="text-decoration: line-through;">${char.name}</span>
+                </div>
+                <button onclick="confirmCharacterPresence(${char.id})" title="Rétablir" class="btn-icon">
+                    <i data-lucide="rotate-ccw" style="width: 16px; height: 16px;"></i>
+                </button>
+            </div>
+        `).join('');
+    } else {
+        html += '<p class="text-muted small" style="font-size: 0.75rem; margin-bottom: 12px; opacity: 0.7;">Aucun personnage ignoré.</p>';
+    }
+
+    html += '</div>';
+
+    // SECTION 2 : UNIVERS
+    html += '<div style="margin-bottom: 1.5rem;">';
+    html += '<div class="quick-links-title" style="font-size: 0.85rem; font-weight: 600; margin-bottom: 0.75rem; color: var(--text-muted);"><i data-lucide="globe" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> Univers</div>';
+    const locations = (scene.locations || []).map(loc => {
+        const locData = project.locations ? project.locations.find(l => l.id === loc.id) : null;
+        return locData ? `<div class="link-item" style="margin-bottom: 4px;"><i data-lucide="map-pin" style="width:12px;height:12px;vertical-align:middle;margin-right:4px;"></i>${locData.name}</div>` : '';
+    }).join('');
+    html += locations || '<p class="text-muted small" style="font-size: 0.75rem; opacity: 0.7;">Aucun lieu.</p>';
+    html += '</div>';
+
+    // SECTION 3 : TIMELINE
+    html += '<div>';
+    html += '<div class="quick-links-title" style="font-size: 0.85rem; font-weight: 600; margin-bottom: 0.75rem; color: var(--text-muted);"><i data-lucide="train-track" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> Timeline</div>';
+    const events = (scene.events || []).map(ev => {
+        const evData = project.events ? project.events.find(e => e.id === ev.id) : null;
+        return evData ? `<div class="link-item" style="margin-bottom: 4px;"><i data-lucide="calendar" style="width:12px;height:12px;vertical-align:middle;margin-right:4px;"></i>${evData.title}</div>` : '';
+    }).join('');
+    html += events || '<p class="text-muted small" style="font-size: 0.75rem; opacity: 0.7;">Aucun événement.</p>';
+    html += '</div>';
+
+    linksPanelContent.innerHTML = html;
+
+    // Rafraîchir les icônes Lucide
+    setTimeout(() => {
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    }, 10);
 }

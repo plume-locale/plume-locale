@@ -773,23 +773,6 @@ function renderEditor(act, chapter, scene) {
             <div class="editor-toolbar" id="editorToolbar">
                 ${getEditorToolbarHTML()}
             </div>
-            
-            <div class="links-panel-sticky" id="linksPanel">
-                <div style="display: flex; gap: 2rem; align-items: start;">
-                    <div style="flex: 1;">
-                        <div class="quick-links-title"><i data-lucide="users" style="width:14px;height:14px;"></i> Personnages</div>
-                        <div class="quick-links"></div>
-                    </div>
-                    <div style="flex: 1;">
-                        <div class="quick-links-title"><i data-lucide="globe" style="width:14px;height:14px;"></i> Univers</div>
-                        <div class="quick-links"></div>
-                    </div>
-                    <div style="flex: 1;">
-                        <div class="quick-links-title"><i data-lucide="train-track" style="width:14px;height:14px;"></i> Timeline</div>
-                        <div class="quick-links"></div>
-                    </div>
-                </div>
-            </div>
         </div>
         <div class="editor-workspace">
             <div class="editor-content">

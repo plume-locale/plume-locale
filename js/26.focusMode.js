@@ -134,38 +134,23 @@ function toggleLinksPanelVisibility() {
 
     if (!linksPanel) return;
 
-    // Si appelé depuis la checkbox du mode focus
-    if (checkbox && checkbox.checked !== undefined) {
-        const isChecked = checkbox.checked;
-        linksPanelVisible = !isChecked;
-        linksPanel.style.display = isChecked ? 'none' : 'block';
+    const isCurrentlyHidden = linksPanel.classList.contains('hidden');
 
-        // Synchroniser le bouton de la toolbar
-        if (toolBtn) {
-            if (isChecked) {
-                toolBtn.classList.add('active');
-            } else {
-                toolBtn.classList.remove('active');
-            }
+    if (isCurrentlyHidden) {
+        // Afficher le panneau
+        if (typeof renderLinksPanelSidebar === 'function') {
+            renderLinksPanelSidebar();
         }
+        linksPanel.classList.remove('hidden');
+        linksPanelVisible = true;
+        if (toolBtn) toolBtn.classList.add('active');
+        if (checkbox) checkbox.checked = false;
     } else {
-        // Si appelé depuis le bouton de la toolbar - toggle simple
-        linksPanelVisible = !linksPanelVisible;
-        linksPanel.style.display = linksPanelVisible ? 'block' : 'none';
-
-        // Mettre à jour l'état actif du bouton
-        if (toolBtn) {
-            if (linksPanelVisible) {
-                toolBtn.classList.remove('active');
-            } else {
-                toolBtn.classList.add('active');
-            }
-        }
-
-        // Synchroniser la checkbox si elle existe
-        if (checkbox) {
-            checkbox.checked = !linksPanelVisible;
-        }
+        // Masquer le panneau
+        linksPanel.classList.add('hidden');
+        linksPanelVisible = false;
+        if (toolBtn) toolBtn.classList.remove('active');
+        if (checkbox) checkbox.checked = true;
     }
 }
 
