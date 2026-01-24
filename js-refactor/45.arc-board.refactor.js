@@ -895,7 +895,7 @@ function renderArcCard(card, columnId) {
     `;
 
     // Attributs communs de drag
-    const dragAttrs = `draggable="true" ondragstart="handleCardDragStart(event, '${card.id}', '${columnId}')" ondragend="handleCardDragEnd(event)"`;
+    const dragAttrs = `draggable="true" ondragstart="handleCardDragStart(event, '${card.id}', '${columnId}')" ondragend="handleCardDragEnd(event)" onmousedown="event.stopPropagation()"`;
 
     switch (card.type) {
         case 'note':
