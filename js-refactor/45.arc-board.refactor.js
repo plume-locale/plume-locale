@@ -895,7 +895,7 @@ function renderArcCard(card, columnId) {
     `;
 
     // Attributs communs de drag
-    const dragAttrs = `draggable="true" ondragstart="handleCardDragStart(event, '${card.id}', '${columnId}')" ondragend="handleCardDragEnd(event)" onmousedown="event.stopPropagation()"`;
+    const dragAttrs = `draggable="true" ondragstart="handleCardDragStart(event, '${card.id}', '${columnId}')" ondragend="handleCardDragEnd(event)"`;
 
     switch (card.type) {
         case 'note':
@@ -2312,8 +2312,8 @@ function handleItemMouseDown(event, itemId) {
     // Ne pas intercepter le drag des cartes dans les colonnes (qui utilisent l'API HTML5 drag & drop)
     // Vérifier si on clique sur une carte qui est DANS une colonne (pas un floating item)
     const cardElement = event.target.closest('.arc-card');
-    if (cardElement && !event.target.closest('.arc-floating-item')) {
-        // C'est une carte dans une colonne, ne pas intercepter
+    if (cardElement && cardElement.hasAttribute('draggable') && !event.target.closest('.arc-floating-item')) {
+        // C'est une carte draggable dans une colonne, ne pas intercepter
         return;
     }
 
