@@ -1022,13 +1022,6 @@ function deleteArcCard(event, columnId, cardId) {
     renderArcBoardItems(arc);
 }
 
-// Fonction pour fin de drag
-// [MVVM : View]
-// Supprime les classes de feedback visuel à la fin du drag d'une carte.
-function handleCardDragEnd(event) {
-    event.target.classList.remove('dragging');
-}
-
 // [MVVM : View]
 // Génère le code HTML d'une note flottante.
 function renderArcNote(item, isSelected) {
@@ -2851,6 +2844,7 @@ function handleCardDragEnd(event) {
         el.classList.remove('drop-target', 'drop-hover');
     });
     document.getElementById('arcBoardContent')?.classList.remove('drop-zone-active');
+    document.getElementById('arcBoardCanvas')?.classList.remove('drop-hover');
 
     dragData = { type: null, itemId: null, sourceColumnId: null, element: null };
 }
@@ -2865,6 +2859,7 @@ function handleFloatingDragEnd(event) {
     document.querySelectorAll('.arc-column-body').forEach(el => {
         el.classList.remove('drop-target', 'drop-hover');
     });
+    document.getElementById('arcBoardCanvas')?.classList.remove('drop-hover');
 
     dragData = { type: null, itemId: null, sourceColumnId: null, element: null };
 }
@@ -2892,51 +2887,54 @@ function handleCardDrop(event, targetColumnId) {
     event.stopPropagation();
     event.currentTarget.classList.remove('drop-hover');
 
-    const arc = project.narrativeArcs.find(a => a.id === arcBoardState.currentArcId);
-    if (!arc) return;
+    try {
+        const arc = project.narrativeArcs.find(a => a.id === arcBoardState.currentArcId);
+        if (!arc) return;
 
-    const targetColumn = arc.board.items.find(i => i.id === targetColumnId);
-    if (!targetColumn) return;
+        const targetColumn = arc.board.items.find(i => i.id === targetColumnId);
+        if (!targetColumn) return;
 
-    if (!targetColumn.cards) targetColumn.cards = [];
+        if (!targetColumn.cards) targetColumn.cards = [];
 
-    if (dragData.type === 'card') {
-        // Déplacer une carte d'une colonne à une autre
-        if (dragData.sourceColumnId === targetColumnId) return; // Même colonne
+        if (dragData.type === 'card') {
+            // Déplacer une carte d'une colonne à une autre
+            if (dragData.sourceColumnId === targetColumnId) return; // Même colonne
 
-        const sourceColumn = arc.board.items.find(i => i.id === dragData.sourceColumnId);
-        if (!sourceColumn || !sourceColumn.cards) return;
+            const sourceColumn = arc.board.items.find(i => i.id === dragData.sourceColumnId);
+            if (!sourceColumn || !sourceColumn.cards) return;
 
-        const cardIndex = sourceColumn.cards.findIndex(c => c.id === dragData.itemId);
-        if (cardIndex === -1) return;
+            const cardIndex = sourceColumn.cards.findIndex(c => c.id === dragData.itemId);
+            if (cardIndex === -1) return;
 
-        const [card] = sourceColumn.cards.splice(cardIndex, 1);
-        targetColumn.cards.push(card);
+            const [card] = sourceColumn.cards.splice(cardIndex, 1);
+            targetColumn.cards.push(card);
 
-    } else if (dragData.type === 'floating') {
-        // Convertir un élément flottant en carte
-        const floatingIndex = arc.board.items.findIndex(i => i.id === dragData.itemId);
-        if (floatingIndex === -1) return;
+        } else if (dragData.type === 'floating') {
+            // Convertir un élément flottant en carte
+            const floatingIndex = arc.board.items.findIndex(i => i.id === dragData.itemId);
+            if (floatingIndex === -1) return;
 
-        const [floatingItem] = arc.board.items.splice(floatingIndex, 1);
+            const [floatingItem] = arc.board.items.splice(floatingIndex, 1);
 
-        // Supprimer les connexions liées à cet élément
-        if (arc.board.connections) {
-            arc.board.connections = arc.board.connections.filter(c =>
-                c.from !== floatingItem.id && c.to !== floatingItem.id
-            );
+            // Supprimer les connexions liées à cet élément
+            if (arc.board.connections) {
+                arc.board.connections = arc.board.connections.filter(c =>
+                    c.from !== floatingItem.id && c.to !== floatingItem.id
+                );
+            }
+
+            // Convertir en carte
+            const newCard = convertFloatingToCard(floatingItem);
+            targetColumn.cards.push(newCard);
         }
 
-        // Convertir en carte
-        const newCard = convertFloatingToCard(floatingItem);
-        targetColumn.cards.push(newCard);
+        saveProject();
+        renderArcBoardItems(arc);
+        renderArcConnections(arc);
+    } finally {
+        // TOUJOURS réinitialiser dragData, même en cas d'erreur ou de return précoce
+        dragData = { type: null, itemId: null, sourceColumnId: null, element: null };
     }
-
-    saveProject();
-    renderArcBoardItems(arc);
-    renderArcConnections(arc);
-
-    dragData = { type: null, itemId: null, sourceColumnId: null, element: null };
 }
 
 // Drop sur le canvas - convertir une carte en élément flottant
@@ -2952,37 +2950,40 @@ function handleCanvasDrop(event) {
     // Retirer le feedback visuel
     document.getElementById('arcBoardCanvas')?.classList.remove('drop-hover');
 
-    if (dragData.type !== 'card') return;
+    try {
+        if (dragData.type !== 'card') return;
 
-    const arc = project.narrativeArcs.find(a => a.id === arcBoardState.currentArcId);
-    if (!arc) return;
+        const arc = project.narrativeArcs.find(a => a.id === arcBoardState.currentArcId);
+        if (!arc) return;
 
-    const sourceColumn = arc.board.items.find(i => i.id === dragData.sourceColumnId);
-    if (!sourceColumn || !sourceColumn.cards) return;
+        const sourceColumn = arc.board.items.find(i => i.id === dragData.sourceColumnId);
+        if (!sourceColumn || !sourceColumn.cards) return;
 
-    const cardIndex = sourceColumn.cards.findIndex(c => c.id === dragData.itemId);
-    if (cardIndex === -1) return;
+        const cardIndex = sourceColumn.cards.findIndex(c => c.id === dragData.itemId);
+        if (cardIndex === -1) return;
 
-    const [card] = sourceColumn.cards.splice(cardIndex, 1);
+        const [card] = sourceColumn.cards.splice(cardIndex, 1);
 
-    // Calculer la position du drop
-    const content = document.getElementById('arcBoardContent');
-    const contentRect = content.getBoundingClientRect();
-    const x = (event.clientX - contentRect.left) / arcBoardState.zoom;
-    const y = (event.clientY - contentRect.top) / arcBoardState.zoom;
+        // Calculer la position du drop
+        const content = document.getElementById('arcBoardContent');
+        const contentRect = content.getBoundingClientRect();
+        const x = (event.clientX - contentRect.left) / arcBoardState.zoom;
+        const y = (event.clientY - contentRect.top) / arcBoardState.zoom;
 
-    // Snap to grid
-    const snappedX = ARC_BOARD_CONFIG.snapToGrid ? Math.round(x / ARC_BOARD_CONFIG.gridSize) * ARC_BOARD_CONFIG.gridSize : x;
-    const snappedY = ARC_BOARD_CONFIG.snapToGrid ? Math.round(y / ARC_BOARD_CONFIG.gridSize) * ARC_BOARD_CONFIG.gridSize : y;
+        // Snap to grid
+        const snappedX = ARC_BOARD_CONFIG.snapToGrid ? Math.round(x / ARC_BOARD_CONFIG.gridSize) * ARC_BOARD_CONFIG.gridSize : x;
+        const snappedY = ARC_BOARD_CONFIG.snapToGrid ? Math.round(y / ARC_BOARD_CONFIG.gridSize) * ARC_BOARD_CONFIG.gridSize : y;
 
-    // Convertir la carte en élément flottant
-    const floatingItem = convertCardToFloating(card, snappedX, snappedY);
-    arc.board.items.push(floatingItem);
+        // Convertir la carte en élément flottant
+        const floatingItem = convertCardToFloating(card, snappedX, snappedY);
+        arc.board.items.push(floatingItem);
 
-    saveProject();
-    renderArcBoardItems(arc);
-
-    dragData = { type: null, itemId: null, sourceColumnId: null, element: null };
+        saveProject();
+        renderArcBoardItems(arc);
+    } finally {
+        // TOUJOURS réinitialiser dragData, même en cas d'erreur ou de return précoce
+        dragData = { type: null, itemId: null, sourceColumnId: null, element: null };
+    }
 }
 
 // Dragover sur le canvas
