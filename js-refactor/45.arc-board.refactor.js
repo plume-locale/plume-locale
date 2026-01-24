@@ -1061,7 +1061,7 @@ function deleteArcCard(event, columnId, cardId) {
 
     // Si c'est une carte scene, retirer le columnId du presence
     const card = column.cards.find(c => c.id === cardId);
-    if (card && card.type === 'scene' && card.sceneId) {
+    if (card && card.type === 'scene' && card.sceneId && arc.scenePresence) {
         const presence = arc.scenePresence.find(p => p.sceneId == card.sceneId);
         if (presence) {
             presence.columnId = null;
@@ -3003,7 +3003,7 @@ function handleCardDrop(event, targetColumnId) {
         targetColumn.cards.push(card);
 
         // Si c'est une carte scene, mettre à jour le columnId dans arc.scenePresence
-        if (card.type === 'scene' && card.sceneId) {
+        if (card.type === 'scene' && card.sceneId && arc.scenePresence) {
             const presence = arc.scenePresence.find(p => p.sceneId == card.sceneId);
             if (presence) {
                 presence.columnId = targetColumnId;
