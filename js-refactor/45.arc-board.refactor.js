@@ -39,8 +39,7 @@ const CARD_TYPES = {
     comment: { label: 'Commentaire', icon: 'message-square' },
     table: { label: 'Tableau', icon: 'table' },
     audio: { label: 'Audio', icon: 'music' },
-    divider: { label: 'Séparateur', icon: 'minus' },
-    scene: { label: 'Scène liée', icon: 'book-open' }
+    divider: { label: 'Séparateur', icon: 'minus' }
 };
 
 // ============================================
@@ -994,47 +993,6 @@ function renderArcCard(card, columnId) {
                 </div>
             `;
 
-        case 'scene':
-            const statusLabels = {
-                'setup': 'Introduction',
-                'development': 'Développement',
-                'climax': 'Point culminant',
-                'resolution': 'Résolution'
-            };
-            const intensityDots = '●'.repeat(card.intensity || 3) + '○'.repeat(5 - (card.intensity || 3));
-            const sceneTitle = card.sceneTitle || 'Scène sans titre';
-            const breadcrumb = card.breadcrumb || sceneTitle;
-            const status = statusLabels[card.status] || 'Développement';
-            const notes = card.notes || '';
-
-            return `
-                <div class="arc-card arc-card-scene" data-card-id="${card.id}" data-scene-id="${card.sceneId || ''}" ${dragAttrs}
-                     onclick="selectArcCard(event, '${card.id}', '${columnId}')">
-                    ${deleteBtn}
-                    <div class="arc-card-scene-header">
-                        <i data-lucide="book-open"></i>
-                        <div class="arc-card-scene-title-wrapper">
-                            <div class="arc-card-scene-breadcrumb">${breadcrumb}</div>
-                            <div class="arc-card-scene-title">${sceneTitle}</div>
-                        </div>
-                    </div>
-                    <div class="arc-card-scene-meta">
-                        <div class="arc-card-scene-intensity">
-                            <span class="arc-card-scene-label">Intensité:</span>
-                            <span class="arc-card-scene-value">${intensityDots}</span>
-                        </div>
-                        <div class="arc-card-scene-status">
-                            <span class="arc-card-scene-label">Statut:</span>
-                            <span class="arc-card-scene-value">${status}</span>
-                        </div>
-                        ${notes ? `<div class="arc-card-scene-notes">${notes}</div>` : ''}
-                    </div>
-                    <button class="arc-card-scene-open" onclick="openSceneFromCard(event, '${card.sceneId || ''}'); event.stopPropagation();">
-                        <i data-lucide="external-link"></i> Ouvrir la scène
-                    </button>
-                </div>
-            `;
-
         default:
             return `
                 <div class="arc-card arc-card-note" data-card-id="${card.id}" ${dragAttrs}
@@ -1059,15 +1017,6 @@ function deleteArcCard(event, columnId, cardId) {
     const column = arc.board.items.find(i => i.id === columnId);
     if (!column || !column.cards) return;
 
-    // Si c'est une carte scene, retirer le columnId du presence
-    const card = column.cards.find(c => c.id === cardId);
-    if (card && card.type === 'scene' && card.sceneId && arc.scenePresence) {
-        const presence = arc.scenePresence.find(p => p.sceneId == card.sceneId);
-        if (presence) {
-            presence.columnId = null;
-        }
-    }
-
     column.cards = column.cards.filter(c => c.id !== cardId);
 
     saveProject();
@@ -1079,37 +1028,6 @@ function deleteArcCard(event, columnId, cardId) {
 // Supprime les classes de feedback visuel à la fin du drag d'une carte.
 function handleCardDragEnd(event) {
     event.target.classList.remove('dragging');
-}
-
-// [MVVM : ViewModel]
-// Ouvre une scène depuis une carte scene du arc-board
-function openSceneFromCard(event, sceneId) {
-    if (event) {
-        event.stopPropagation();
-        event.preventDefault();
-    }
-
-    if (!sceneId) {
-        console.error('No scene ID provided');
-        return;
-    }
-
-    // Trouver l'acte et le chapitre contenant cette scène
-    // Utiliser == au lieu de === pour gérer les conversions de type (number vs string)
-    for (const act of project.acts) {
-        for (const chapter of act.chapters) {
-            const scene = chapter.scenes.find(s => s.id == sceneId);
-            if (scene) {
-                // Basculer vers la vue éditeur
-                switchView('editor');
-                // Ouvrir la scène
-                openScene(act.id, chapter.id, scene.id);
-                return;
-            }
-        }
-    }
-
-    console.error('Scene not found:', sceneId);
 }
 
 // [MVVM : View]
@@ -2202,13 +2120,6 @@ function addCardToColumn(columnId, cardType = 'note') {
         case 'audio':
             newCard.url = '';
             break;
-        case 'scene':
-            newCard.sceneId = '';
-            newCard.sceneTitle = '';
-            newCard.intensity = 3;
-            newCard.status = 'development';
-            newCard.notes = '';
-            break;
     }
 
     column.cards.push(newCard);
@@ -2308,14 +2219,6 @@ function handleItemMouseDown(event, itemId) {
     if (event.target.classList.contains('arc-column-resize')) return;
     if (event.target.closest('.arc-connection-point')) return;
     if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA' || event.target.contentEditable === 'true') return;
-    
-    // Ne pas intercepter le drag des cartes dans les colonnes (qui utilisent l'API HTML5 drag & drop)
-    // Vérifier si on clique sur une carte qui est DANS une colonne (pas un floating item)
-    const cardElement = event.target.closest('.arc-card');
-    if (cardElement && cardElement.hasAttribute('draggable') && !event.target.closest('.arc-floating-item')) {
-        // C'est une carte draggable dans une colonne, ne pas intercepter
-        return;
-    }
 
     event.stopPropagation();
 
@@ -3009,14 +2912,6 @@ function handleCardDrop(event, targetColumnId) {
 
         const [card] = sourceColumn.cards.splice(cardIndex, 1);
         targetColumn.cards.push(card);
-
-        // Si c'est une carte scene, mettre à jour le columnId dans arc.scenePresence
-        if (card.type === 'scene' && card.sceneId && arc.scenePresence) {
-            const presence = arc.scenePresence.find(p => p.sceneId == card.sceneId);
-            if (presence) {
-                presence.columnId = targetColumnId;
-            }
-        }
 
     } else if (dragData.type === 'floating') {
         // Convertir un élément flottant en carte
