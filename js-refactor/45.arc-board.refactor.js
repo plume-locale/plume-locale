@@ -2213,6 +2213,13 @@ function handleItemMouseDown(event, itemId) {
     if (event.target.closest('.arc-connection-point')) return;
     if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA' || event.target.contentEditable === 'true') return;
 
+    // Ne pas intercepter le drag des cartes dans les colonnes (qui utilisent l'API HTML5 drag & drop)
+    const cardElement = event.target.closest('.arc-card');
+    if (cardElement && cardElement.hasAttribute('draggable') && !event.target.closest('.arc-floating-item')) {
+        // C'est une carte draggable dans une colonne, ne pas intercepter
+        return;
+    }
+
     event.stopPropagation();
 
     arcBoardState.isDragging = true;
