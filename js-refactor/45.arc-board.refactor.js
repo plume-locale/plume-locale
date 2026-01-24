@@ -901,7 +901,7 @@ function renderArcCard(card, columnId) {
                 <div class="arc-card arc-card-note" data-card-id="${card.id}" ${dragAttrs}
                      onclick="selectArcCard(event, '${card.id}', '${columnId}')">
                     ${deleteBtn}
-                    <div class="arc-card-content" contenteditable="true"
+                    <div class="arc-card-content" contenteditable="true" draggable="false"
                          onblur="updateArcCardContent('${columnId}', '${card.id}', this.innerHTML)"
                          onclick="event.stopPropagation()">${card.content || ''}</div>
                 </div>
@@ -954,7 +954,7 @@ function renderArcCard(card, columnId) {
                          onclick="toggleArcTodo('${columnId}', '${card.id}', ${idx})">
                         ${todo.completed ? '<i data-lucide="check"></i>' : ''}
                     </div>
-                    <input type="text" class="arc-todo-text ${todo.completed ? 'completed' : ''}"
+                    <input type="text" class="arc-todo-text ${todo.completed ? 'completed' : ''}" draggable="false"
                            value="${todo.text || ''}"
                            onchange="updateArcTodoText('${columnId}', '${card.id}', ${idx}, this.value)"
                            onclick="event.stopPropagation()">
@@ -965,7 +965,7 @@ function renderArcCard(card, columnId) {
                 <div class="arc-card arc-card-todo" data-card-id="${card.id}" ${dragAttrs}
                      onclick="selectArcCard(event, '${card.id}', '${columnId}')">
                     ${deleteBtn}
-                    <input type="text" class="arc-card-title" value="${card.title || ''}"
+                    <input type="text" class="arc-card-title" value="${card.title || ''}" draggable="false"
                            placeholder="Titre de la liste"
                            onchange="updateArcCardTitle('${columnId}', '${card.id}', this.value)"
                            onclick="event.stopPropagation()">
