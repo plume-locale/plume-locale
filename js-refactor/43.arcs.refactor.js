@@ -481,7 +481,7 @@ function renderArcScenePanel() {
 
     // Get arcs present in this scene
     const arcsInScene = arcs.filter(arc =>
-        arc.scenePresence && arc.scenePresence.some(p => p.sceneId === scene.id)
+        arc.scenePresence && arc.scenePresence.some(p => p.sceneId == scene.id)
     );
 
     if (arcsInScene.length === 0 && arcs.length === 0) {
@@ -505,7 +505,7 @@ function renderArcScenePanel() {
     // Show arcs in scene
     if (arcsInScene.length > 0) {
         arcsInScene.forEach(arc => {
-            const presence = arc.scenePresence.find(p => p.sceneId === scene.id);
+            const presence = arc.scenePresence.find(p => p.sceneId == scene.id);
             if (!presence) return;
 
             const typeData = ARC_TYPES[arc.type] || ARC_TYPES.plot;
@@ -634,7 +634,7 @@ function updateArcIntensity(arcId, intensity) {
     const arc = project.narrativeArcs.find(a => a.id === arcId);
     if (!arc) return;
 
-    const presence = arc.scenePresence.find(p => p.sceneId === currentSceneId);
+    const presence = arc.scenePresence.find(p => p.sceneId == currentSceneId);
     if (presence) {
         presence.intensity = parseInt(intensity);
 
@@ -649,7 +649,7 @@ function updateArcIntensity(arcId, intensity) {
         if (presence.columnId && arc.board && arc.board.items) {
             const column = arc.board.items.find(item => item.id === presence.columnId && item.type === 'column');
             if (column && column.cards) {
-                const sceneCard = column.cards.find(card => card.type === 'scene' && card.sceneId === currentSceneId);
+                const sceneCard = column.cards.find(card => card.type === 'scene' && card.sceneId == currentSceneId);
                 if (sceneCard) {
                     sceneCard.intensity = parseInt(intensity);
                 }
@@ -668,7 +668,7 @@ function updateArcStatus(arcId, status) {
     const arc = project.narrativeArcs.find(a => a.id === arcId);
     if (!arc) return;
 
-    const presence = arc.scenePresence.find(p => p.sceneId === currentSceneId);
+    const presence = arc.scenePresence.find(p => p.sceneId == currentSceneId);
     if (presence) {
         presence.status = status;
 
@@ -676,7 +676,7 @@ function updateArcStatus(arcId, status) {
         if (presence.columnId && arc.board && arc.board.items) {
             const column = arc.board.items.find(item => item.id === presence.columnId && item.type === 'column');
             if (column && column.cards) {
-                const sceneCard = column.cards.find(card => card.type === 'scene' && card.sceneId === currentSceneId);
+                const sceneCard = column.cards.find(card => card.type === 'scene' && card.sceneId == currentSceneId);
                 if (sceneCard) {
                     sceneCard.status = status;
                 }
@@ -695,7 +695,7 @@ function updateArcNotes(arcId, notes) {
     const arc = project.narrativeArcs.find(a => a.id === arcId);
     if (!arc) return;
 
-    const presence = arc.scenePresence.find(p => p.sceneId === currentSceneId);
+    const presence = arc.scenePresence.find(p => p.sceneId == currentSceneId);
     if (presence) {
         presence.notes = notes;
 
@@ -703,7 +703,7 @@ function updateArcNotes(arcId, notes) {
         if (presence.columnId && arc.board && arc.board.items) {
             const column = arc.board.items.find(item => item.id === presence.columnId && item.type === 'column');
             if (column && column.cards) {
-                const sceneCard = column.cards.find(card => card.type === 'scene' && card.sceneId === currentSceneId);
+                const sceneCard = column.cards.find(card => card.type === 'scene' && card.sceneId == currentSceneId);
                 if (sceneCard) {
                     sceneCard.notes = notes;
                 }
@@ -722,7 +722,7 @@ function updateArcColumn(arcId, columnId) {
     const arc = project.narrativeArcs.find(a => a.id === arcId);
     if (!arc) return;
 
-    const presence = arc.scenePresence.find(p => p.sceneId === currentSceneId);
+    const presence = arc.scenePresence.find(p => p.sceneId == currentSceneId);
     if (!presence) return;
 
     // Récupérer l'ancienne columnId
@@ -747,7 +747,7 @@ function updateArcColumn(arcId, columnId) {
     if (oldColumnId) {
         const oldColumn = arc.board.items.find(item => item.id === oldColumnId && item.type === 'column');
         if (oldColumn && oldColumn.cards) {
-            oldColumn.cards = oldColumn.cards.filter(card => !(card.type === 'scene' && card.sceneId === currentSceneId));
+            oldColumn.cards = oldColumn.cards.filter(card => !(card.type === 'scene' && card.sceneId == currentSceneId));
         }
     }
 
@@ -758,7 +758,7 @@ function updateArcColumn(arcId, columnId) {
             if (!column.cards) column.cards = [];
 
             // Vérifier si une carte scene pour cette scène existe déjà dans cette colonne
-            let sceneCard = column.cards.find(card => card.type === 'scene' && card.sceneId === currentSceneId);
+            let sceneCard = column.cards.find(card => card.type === 'scene' && card.sceneId == currentSceneId);
 
             if (sceneCard) {
                 // Mettre à jour la carte existante

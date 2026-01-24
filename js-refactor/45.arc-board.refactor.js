@@ -1058,7 +1058,7 @@ function deleteArcCard(event, columnId, cardId) {
     // Si c'est une carte scene, retirer le columnId du presence
     const card = column.cards.find(c => c.id === cardId);
     if (card && card.type === 'scene' && card.sceneId) {
-        const presence = arc.scenePresence.find(p => p.sceneId === card.sceneId);
+        const presence = arc.scenePresence.find(p => p.sceneId == card.sceneId);
         if (presence) {
             presence.columnId = null;
         }
@@ -1091,14 +1091,15 @@ function openSceneFromCard(event, sceneId) {
     }
 
     // Trouver l'acte et le chapitre contenant cette scène
+    // Utiliser == au lieu de === pour gérer les conversions de type (number vs string)
     for (const act of project.acts) {
         for (const chapter of act.chapters) {
-            const scene = chapter.scenes.find(s => s.id === sceneId);
+            const scene = chapter.scenes.find(s => s.id == sceneId);
             if (scene) {
                 // Basculer vers la vue éditeur
                 switchView('editor');
                 // Ouvrir la scène
-                openScene(act.id, chapter.id, sceneId);
+                openScene(act.id, chapter.id, scene.id);
                 return;
             }
         }
@@ -2999,7 +3000,7 @@ function handleCardDrop(event, targetColumnId) {
 
         // Si c'est une carte scene, mettre à jour le columnId dans arc.scenePresence
         if (card.type === 'scene' && card.sceneId) {
-            const presence = arc.scenePresence.find(p => p.sceneId === card.sceneId);
+            const presence = arc.scenePresence.find(p => p.sceneId == card.sceneId);
             if (presence) {
                 presence.columnId = targetColumnId;
             }
