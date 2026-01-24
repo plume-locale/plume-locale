@@ -652,6 +652,8 @@ function updateArcIntensity(arcId, intensity) {
                 const sceneCard = column.cards.find(card => card.type === 'scene' && card.sceneId == currentSceneId);
                 if (sceneCard) {
                     sceneCard.intensity = parseInt(intensity);
+                    sceneCard.sceneTitle = getSceneTitle(currentSceneId);
+                    sceneCard.breadcrumb = generateSceneBreadcrumb(currentSceneId);
                 }
             }
         }
@@ -679,6 +681,8 @@ function updateArcStatus(arcId, status) {
                 const sceneCard = column.cards.find(card => card.type === 'scene' && card.sceneId == currentSceneId);
                 if (sceneCard) {
                     sceneCard.status = status;
+                    sceneCard.sceneTitle = getSceneTitle(currentSceneId);
+                    sceneCard.breadcrumb = generateSceneBreadcrumb(currentSceneId);
                 }
             }
         }
@@ -706,12 +710,42 @@ function updateArcNotes(arcId, notes) {
                 const sceneCard = column.cards.find(card => card.type === 'scene' && card.sceneId == currentSceneId);
                 if (sceneCard) {
                     sceneCard.notes = notes;
+                    sceneCard.sceneTitle = getSceneTitle(currentSceneId);
+                    sceneCard.breadcrumb = generateSceneBreadcrumb(currentSceneId);
                 }
             }
         }
 
         saveProject();
     }
+}
+
+// Helper: Génère le breadcrumb pour une scène
+function generateSceneBreadcrumb(sceneId) {
+    for (const act of project.acts) {
+        for (const chapter of act.chapters) {
+            const scene = chapter.scenes.find(s => s.id == sceneId);
+            if (scene) {
+                const actTitle = act.title || `Acte ${project.acts.indexOf(act) + 1}`;
+                const chapterTitle = chapter.title || `Chapitre ${act.chapters.indexOf(chapter) + 1}`;
+                return `${actTitle} › ${chapterTitle}`;
+            }
+        }
+    }
+    return '';
+}
+
+// Helper: Récupère le titre d'une scène
+function getSceneTitle(sceneId) {
+    for (const act of project.acts) {
+        for (const chapter of act.chapters) {
+            const scene = chapter.scenes.find(s => s.id == sceneId);
+            if (scene) {
+                return scene.title || 'Scène sans titre';
+            }
+        }
+    }
+    return 'Scène sans titre';
 }
 
 // [MVVM : ViewModel]
@@ -757,12 +791,18 @@ function updateArcColumn(arcId, columnId) {
         if (column) {
             if (!column.cards) column.cards = [];
 
+            // Construire le breadcrumb
+            const actTitle = act.title || `Acte ${project.acts.indexOf(act) + 1}`;
+            const chapterTitle = chapter.title || `Chapitre ${act.chapters.indexOf(chapter) + 1}`;
+            const breadcrumb = `${actTitle} › ${chapterTitle}`;
+
             // Vérifier si une carte scene pour cette scène existe déjà dans cette colonne
             let sceneCard = column.cards.find(card => card.type === 'scene' && card.sceneId == currentSceneId);
 
             if (sceneCard) {
                 // Mettre à jour la carte existante
                 sceneCard.sceneTitle = scene.title;
+                sceneCard.breadcrumb = breadcrumb;
                 sceneCard.intensity = presence.intensity;
                 sceneCard.status = presence.status;
                 sceneCard.notes = presence.notes;
@@ -773,6 +813,7 @@ function updateArcColumn(arcId, columnId) {
                     type: 'scene',
                     sceneId: currentSceneId,
                     sceneTitle: scene.title,
+                    breadcrumb: breadcrumb,
                     intensity: presence.intensity,
                     status: presence.status,
                     notes: presence.notes

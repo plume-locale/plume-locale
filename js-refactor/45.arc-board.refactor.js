@@ -1003,6 +1003,7 @@ function renderArcCard(card, columnId) {
             };
             const intensityDots = '●'.repeat(card.intensity || 3) + '○'.repeat(5 - (card.intensity || 3));
             const sceneTitle = card.sceneTitle || 'Scène sans titre';
+            const breadcrumb = card.breadcrumb || sceneTitle;
             const status = statusLabels[card.status] || 'Développement';
             const notes = card.notes || '';
 
@@ -1012,7 +1013,10 @@ function renderArcCard(card, columnId) {
                     ${deleteBtn}
                     <div class="arc-card-scene-header">
                         <i data-lucide="book-open"></i>
-                        <span class="arc-card-scene-title">${sceneTitle}</span>
+                        <div class="arc-card-scene-title-wrapper">
+                            <div class="arc-card-scene-breadcrumb">${breadcrumb}</div>
+                            <div class="arc-card-scene-title">${sceneTitle}</div>
+                        </div>
                     </div>
                     <div class="arc-card-scene-meta">
                         <div class="arc-card-scene-intensity">
