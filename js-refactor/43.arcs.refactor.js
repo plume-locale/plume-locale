@@ -538,8 +538,18 @@ function renderArcScenePanel() {
                             </div>
 
                             <div class="arc-in-scene-control">
+                                <label class="arc-in-scene-label">Colonne du arc-board</label>
+                                <select class="arc-column-select" onchange="updateArcColumn('${arc.id}', this.value)">
+                                    <option value="">Arc général (aucune colonne)</option>
+                                    ${(arc.board && arc.board.items ? arc.board.items.filter(item => item.type === 'column').map(column =>
+                                        `<option value="${column.id}" ${presence.columnId === column.id ? 'selected' : ''}>${column.title || 'Colonne sans titre'}</option>`
+                                    ).join('') : '')}
+                                </select>
+                            </div>
+
+                            <div class="arc-in-scene-control">
                                 <label class="arc-in-scene-label">Notes</label>
-                                <textarea class="arc-notes-textarea" 
+                                <textarea class="arc-notes-textarea"
                                     placeholder="Notes pour cette scène..."
                                     onblur="updateArcNotes('${arc.id}', this.value)">${presence.notes || ''}</textarea>
                             </div>
@@ -635,6 +645,17 @@ function updateArcIntensity(arcId, intensity) {
             if (valueDiv) valueDiv.textContent = `${intensity}/5`;
         }
 
+        // Synchroniser avec la carte scene dans le arc-board si elle existe
+        if (presence.columnId && arc.board && arc.board.items) {
+            const column = arc.board.items.find(item => item.id === presence.columnId && item.type === 'column');
+            if (column && column.cards) {
+                const sceneCard = column.cards.find(card => card.type === 'scene' && card.sceneId === currentSceneId);
+                if (sceneCard) {
+                    sceneCard.intensity = parseInt(intensity);
+                }
+            }
+        }
+
         saveProject();
     }
 }
@@ -650,6 +671,18 @@ function updateArcStatus(arcId, status) {
     const presence = arc.scenePresence.find(p => p.sceneId === currentSceneId);
     if (presence) {
         presence.status = status;
+
+        // Synchroniser avec la carte scene dans le arc-board si elle existe
+        if (presence.columnId && arc.board && arc.board.items) {
+            const column = arc.board.items.find(item => item.id === presence.columnId && item.type === 'column');
+            if (column && column.cards) {
+                const sceneCard = column.cards.find(card => card.type === 'scene' && card.sceneId === currentSceneId);
+                if (sceneCard) {
+                    sceneCard.status = status;
+                }
+            }
+        }
+
         saveProject();
     }
 }
@@ -665,8 +698,92 @@ function updateArcNotes(arcId, notes) {
     const presence = arc.scenePresence.find(p => p.sceneId === currentSceneId);
     if (presence) {
         presence.notes = notes;
+
+        // Synchroniser avec la carte scene dans le arc-board si elle existe
+        if (presence.columnId && arc.board && arc.board.items) {
+            const column = arc.board.items.find(item => item.id === presence.columnId && item.type === 'column');
+            if (column && column.cards) {
+                const sceneCard = column.cards.find(card => card.type === 'scene' && card.sceneId === currentSceneId);
+                if (sceneCard) {
+                    sceneCard.notes = notes;
+                }
+            }
+        }
+
         saveProject();
     }
+}
+
+// [MVVM : ViewModel]
+// Met à jour la colonne du arc-board liée à cette scène pour cet arc
+function updateArcColumn(arcId, columnId) {
+    if (!currentSceneId) return;
+
+    const arc = project.narrativeArcs.find(a => a.id === arcId);
+    if (!arc) return;
+
+    const presence = arc.scenePresence.find(p => p.sceneId === currentSceneId);
+    if (!presence) return;
+
+    // Récupérer l'ancienne columnId
+    const oldColumnId = presence.columnId;
+
+    // Mettre à jour le columnId dans presence
+    presence.columnId = columnId || null;
+
+    // Initialiser arc.board si nécessaire
+    if (!arc.board) {
+        arc.board = { items: [], connections: [] };
+    }
+
+    // Récupérer les informations de la scène
+    const act = project.acts.find(a => a.id === currentActId);
+    const chapter = act ? act.chapters.find(c => c.id === currentChapterId) : null;
+    const scene = chapter ? chapter.scenes.find(s => s.id === currentSceneId) : null;
+
+    if (!scene) return;
+
+    // Supprimer l'ancienne carte scene de l'ancienne colonne si elle existe
+    if (oldColumnId) {
+        const oldColumn = arc.board.items.find(item => item.id === oldColumnId && item.type === 'column');
+        if (oldColumn && oldColumn.cards) {
+            oldColumn.cards = oldColumn.cards.filter(card => !(card.type === 'scene' && card.sceneId === currentSceneId));
+        }
+    }
+
+    // Si une nouvelle colonne est sélectionnée, créer/mettre à jour la carte scene
+    if (columnId) {
+        const column = arc.board.items.find(item => item.id === columnId && item.type === 'column');
+        if (column) {
+            if (!column.cards) column.cards = [];
+
+            // Vérifier si une carte scene pour cette scène existe déjà dans cette colonne
+            let sceneCard = column.cards.find(card => card.type === 'scene' && card.sceneId === currentSceneId);
+
+            if (sceneCard) {
+                // Mettre à jour la carte existante
+                sceneCard.sceneTitle = scene.title;
+                sceneCard.intensity = presence.intensity;
+                sceneCard.status = presence.status;
+                sceneCard.notes = presence.notes;
+            } else {
+                // Créer une nouvelle carte scene
+                sceneCard = {
+                    id: 'card_' + Date.now(),
+                    type: 'scene',
+                    sceneId: currentSceneId,
+                    sceneTitle: scene.title,
+                    intensity: presence.intensity,
+                    status: presence.status,
+                    notes: presence.notes
+                };
+                column.cards.push(sceneCard);
+            }
+        }
+    }
+
+    saveProject();
+    renderArcScenePanel();
 }
 
 init();

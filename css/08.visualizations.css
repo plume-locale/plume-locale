@@ -1507,6 +1507,16 @@
     font-size: 0.9rem;
 }
 
+.arc-column-select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 2px solid var(--border-color);
+    border-radius: 6px;
+    background: var(--bg-primary);
+    font-size: 0.9rem;
+    color: var(--text-primary);
+}
+
 .arc-notes-textarea {
     width: 100%;
     min-height: 60px;
