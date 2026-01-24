@@ -331,6 +331,47 @@ function refreshAllViews() {
 }
 
 /**
+ * Ouvre un acte complet et affiche tous ses chapitres et scènes de manière séquentielle.
+ */
+function openAct(actId) {
+    if (window.innerWidth <= 900 && typeof closeMobileSidebar === 'function') {
+        closeMobileSidebar();
+    }
+
+    if (typeof saveToHistoryImmediate === 'function') saveToHistoryImmediate();
+
+    currentActId = actId;
+    currentChapterId = null; // Mode acte, pas de chapitre unique
+    currentSceneId = null; // Mode acte, pas de scène unique
+
+    const act = project.acts.find(a => a.id === actId);
+
+    if (!act || !act.chapters || act.chapters.length === 0) return;
+
+    // Vérifier s'il y a au moins une scène dans l'acte
+    const hasScenes = act.chapters.some(ch => ch.scenes && ch.scenes.length > 0);
+    if (!hasScenes) return;
+
+    // Mise à jour visuelle sidebar
+    document.querySelectorAll('.act-header, .chapter-header, .scene-item').forEach(el => el.classList.remove('active'));
+    const actElement = document.getElementById(`act-${actId}`);
+    if (actElement) {
+        actElement.querySelector('.act-header')?.classList.add('active');
+
+        // Auto-expand l'acte
+        actElement.querySelector('.act-icon')?.classList.add('expanded');
+        actElement.querySelector('.act-chapters')?.classList.add('visible');
+
+        setTimeout(() => actElement.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
+    }
+
+    // Rendu de l'éditeur d'acte
+    if (typeof renderActEditor === 'function') {
+        renderActEditor(act);
+    }
+}
+
+/**
  * Ouvre un chapitre complet et affiche toutes ses scènes de manière séquentielle.
  */
 function openChapter(actId, chapterId) {
@@ -768,6 +809,144 @@ function renderEditor(act, chapter, scene) {
 
 /**
  * [MVVM : View]
+ * Génère et affiche l'éditeur d'acte avec tous les chapitres et scènes séquentiellement.
+ */
+function renderActEditor(act) {
+    const editorView = document.getElementById('editorView');
+    if (!editorView) return;
+
+    // Calculer les statistiques de l'acte
+    let totalWords = 0;
+    const chapterData = [];
+
+    act.chapters.forEach((chapter, chapterIndex) => {
+        let chapterWords = 0;
+        const sceneWordCounts = [];
+
+        chapter.scenes.forEach(scene => {
+            const wc = typeof getWordCount === 'function' ? getWordCount(scene.content) : (scene.wordCount || 0);
+            sceneWordCounts.push(wc);
+            chapterWords += wc;
+        });
+
+        chapterData.push({
+            chapter,
+            chapterWords,
+            sceneWordCounts,
+            chapterIndex
+        });
+
+        totalWords += chapterWords;
+    });
+
+    // Générer le HTML pour tous les chapitres et scènes
+    let contentHTML = '';
+    let allScenes = [];
+
+    chapterData.forEach(({ chapter, chapterWords, sceneWordCounts, chapterIndex }) => {
+        if (chapter.scenes.length === 0) return;
+
+        contentHTML += `
+            <div class="act-chapter-block" data-chapter-id="${chapter.id}" data-chapter-index="${chapterIndex}">
+                <div class="chapter-separator">
+                    <div class="chapter-separator-title">${chapter.title}</div>
+                    <div class="chapter-separator-meta">
+                        <span>${chapterWords} mots</span>
+                        <span>${chapter.scenes.length} scène${chapter.scenes.length > 1 ? 's' : ''}</span>
+                    </div>
+                </div>`;
+
+        chapter.scenes.forEach((scene, sceneIndex) => {
+            const wordCount = sceneWordCounts[sceneIndex];
+            const hasFinalVersion = scene.versions && scene.versions.some(v => v.isFinal === true);
+            const finalVersion = hasFinalVersion ? scene.versions.find(v => v.isFinal === true) : null;
+            const finalVersionBadge = hasFinalVersion
+                ? `<span style="display: inline-flex; align-items: center; gap: 0.25rem; background: var(--accent-gold); color: var(--bg-accent); font-size: 0.7rem; font-weight: 600; padding: 0.2rem 0.5rem; border-radius: 10px; margin-left: 0.5rem;" title="Version finale : ${finalVersion.number}">⭐ ${finalVersion.number}</span>`
+                : '';
+
+            allScenes.push({
+                scene,
+                wordCount,
+                chapterId: chapter.id,
+                chapterTitle: chapter.title
+            });
+
+            contentHTML += `
+                <div class="act-scene-block" data-scene-id="${scene.id}" data-chapter-id="${chapter.id}" data-scene-index="${allScenes.length - 1}">
+                    <div class="scene-separator">
+                        <div class="scene-separator-title">${scene.title}${finalVersionBadge}</div>
+                        <div class="scene-separator-meta">
+                            <span>${wordCount} mots</span>
+                            ${scene.synopsis ? `<span class="scene-separator-synopsis">${scene.synopsis}</span>` : ''}
+                        </div>
+                    </div>
+                    <div class="editor-textarea" contenteditable="true" spellcheck="true"
+                         data-scene-id="${scene.id}"
+                         data-chapter-id="${chapter.id}"
+                         oninput="updateActSceneContent(${act.id}, ${chapter.id}, ${scene.id})">${scene.content || ''}</div>
+                </div>`;
+        });
+
+        contentHTML += `</div>`;
+    });
+
+    editorView.innerHTML = `
+        <div class="editor-fixed-top">
+            <div class="editor-header">
+                <div class="editor-breadcrumb">${act.title}</div>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div class="editor-title" id="actEditorTitle" style="flex: 1;">${act.title} - Tous les chapitres</div>
+                    <button class="btn btn-small" onclick="toggleFocusMode()" title="Mode Focus (F11)" style="white-space: nowrap;">
+                        <i data-lucide="maximize" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Focus
+                    </button>
+                </div>
+                <div class="editor-meta">
+                    <span>${totalWords} mots au total</span>
+                    <span>${act.chapters.length} chapitre${act.chapters.length > 1 ? 's' : ''}</span>
+                    <span>${allScenes.length} scène${allScenes.length > 1 ? 's' : ''}</span>
+                    <span>Dernière modification : ${new Date(act.updatedAt || Date.now()).toLocaleDateString('fr-FR')}</span>
+                </div>
+            </div>
+            <!-- Toolbar -->
+            <button class="toolbar-mobile-toggle" onclick="toggleEditorToolbar()">
+                <span id="toolbarToggleText"><i data-lucide="pen-line" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Afficher les outils</span>
+            </button>
+            <div class="editor-toolbar" id="editorToolbar">
+                ${getEditorToolbarHTML()}
+            </div>
+        </div>
+
+        <!-- Indicateur de position vertical -->
+        <div class="chapter-progress-indicator" id="actProgressIndicator">
+            ${allScenes.map((sceneData, index) => {
+                const heightPercent = totalWords > 0 ? (sceneData.wordCount / totalWords) * 100 : (100 / allScenes.length);
+                return `<div class="progress-scene-segment"
+                            data-scene-id="${sceneData.scene.id}"
+                            data-scene-index="${index}"
+                            style="height: ${heightPercent}%"
+                            title="${sceneData.chapterTitle} - ${sceneData.scene.title} (${sceneData.wordCount} mots)"
+                            onclick="scrollToActScene(${index})"></div>`;
+            }).join('')}
+            <div class="progress-current-indicator" id="progressCurrentIndicator"></div>
+        </div>
+
+        <div class="editor-workspace">
+            <div class="editor-content" id="actEditorContent">
+                ${contentHTML}
+            </div>
+        </div>`;
+
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+    if (typeof initializeColorPickers === 'function') initializeColorPickers();
+
+    // Initialiser le tracking de scroll
+    setTimeout(() => {
+        initActScrollTracking(act.id, allScenes);
+    }, 100);
+}
+
+/**
+ * [MVVM : View]
  * Génère et affiche l'éditeur de chapitre avec toutes les scènes séquentiellement.
  */
 function renderChapterEditor(act, chapter) {
@@ -1067,6 +1246,170 @@ function cleanupChapterScrollTracking() {
  */
 function scrollToChapterScene(sceneIndex) {
     const sceneBlock = document.querySelector(`.chapter-scene-block[data-scene-index="${sceneIndex}"]`);
+    if (sceneBlock) {
+        sceneBlock.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+}
+
+/**
+ * [MVVM : View]
+ * Met à jour le contenu d'une scène dans le mode acte.
+ */
+function updateActSceneContent(actId, chapterId, sceneId) {
+    const editor = document.querySelector(`.editor-textarea[data-scene-id="${sceneId}"][data-chapter-id="${chapterId}"]`);
+    if (!editor) return;
+
+    const act = project.acts.find(a => a.id === actId);
+    const chapter = act?.chapters.find(c => c.id === chapterId);
+    const scene = chapter?.scenes.find(s => s.id === sceneId);
+    if (!scene) return;
+
+    scene.content = editor.innerHTML;
+    const wordCount = typeof getWordCount === 'function' ? getWordCount(editor.innerHTML) : 0;
+    scene.wordCount = wordCount;
+
+    // Mise à jour du compteur de mots de la scène
+    const sceneBlock = document.querySelector(`.act-scene-block[data-scene-id="${sceneId}"][data-chapter-id="${chapterId}"]`);
+    if (sceneBlock) {
+        const metaSpan = sceneBlock.querySelector('.scene-separator-meta span');
+        if (metaSpan) metaSpan.textContent = `${wordCount} mots`;
+    }
+
+    if (typeof saveProject === 'function') saveProject();
+    if (typeof updateStats === 'function') updateStats();
+    if (typeof renderActsList === 'function') renderActsList();
+    if (typeof trackWritingSession === 'function') trackWritingSession();
+
+    // Recalculer les proportions de l'indicateur
+    updateActProgressIndicator(act);
+}
+
+/**
+ * [MVVM : View]
+ * Met à jour les proportions de l'indicateur de progression de l'acte.
+ */
+function updateActProgressIndicator(act) {
+    let totalWords = 0;
+    const allScenes = [];
+
+    act.chapters.forEach(chapter => {
+        chapter.scenes.forEach(scene => {
+            const wc = typeof getWordCount === 'function' ? getWordCount(scene.content) : (scene.wordCount || 0);
+            allScenes.push({ scene, wordCount: wc, chapterTitle: chapter.title });
+            totalWords += wc;
+        });
+    });
+
+    allScenes.forEach((sceneData, index) => {
+        const segment = document.querySelector(`.progress-scene-segment[data-scene-index="${index}"]`);
+        if (segment) {
+            const heightPercent = totalWords > 0 ? (sceneData.wordCount / totalWords) * 100 : (100 / allScenes.length);
+            segment.style.height = `${heightPercent}%`;
+            segment.title = `${sceneData.chapterTitle} - ${sceneData.scene.title} (${sceneData.wordCount} mots)`;
+        }
+    });
+}
+
+/**
+ * [MVVM : View]
+ * Initialise le tracking de scroll pour l'éditeur d'acte.
+ */
+function initActScrollTracking(actId, allScenes) {
+    // Nettoyer le handler précédent s'il existe
+    cleanupChapterScrollTracking();
+
+    const editorContent = document.getElementById('actEditorContent');
+    const indicator = document.getElementById('progressCurrentIndicator');
+    const title = document.getElementById('actEditorTitle');
+
+    if (!editorContent || !indicator) return;
+
+    const act = project.acts.find(a => a.id === actId);
+    if (!act) return;
+
+    let currentSceneIndex = 0;
+
+    function updateScrollPosition() {
+        const sceneBlocks = Array.from(document.querySelectorAll('.act-scene-block'));
+        if (sceneBlocks.length === 0) return;
+
+        // Trouver quelle scène est actuellement visible
+        const viewportMiddle = window.innerHeight / 2;
+        let closestScene = 0;
+        let closestDistance = Infinity;
+
+        sceneBlocks.forEach((block, index) => {
+            const rect = block.getBoundingClientRect();
+            const blockMiddle = rect.top + rect.height / 2;
+            const distance = Math.abs(blockMiddle - viewportMiddle);
+
+            if (distance < closestDistance) {
+                closestDistance = distance;
+                closestScene = index;
+            }
+        });
+
+        // Mettre à jour le titre si la scène a changé
+        if (closestScene !== currentSceneIndex) {
+            currentSceneIndex = closestScene;
+            const sceneData = allScenes[closestScene];
+            if (sceneData && title) {
+                title.textContent = `${sceneData.chapterTitle} - ${sceneData.scene.title}`;
+            }
+        }
+
+        // Calculer la position de l'indicateur
+        const progressIndicator = document.getElementById('actProgressIndicator');
+        if (!progressIndicator) return;
+
+        const segments = Array.from(progressIndicator.querySelectorAll('.progress-scene-segment'));
+        let topOffset = 0;
+
+        // Calculer l'offset jusqu'à la scène actuelle
+        for (let i = 0; i < currentSceneIndex; i++) {
+            const seg = segments[i];
+            if (seg) topOffset += seg.offsetHeight;
+        }
+
+        // Ajouter un pourcentage dans la scène actuelle basé sur le scroll
+        const currentBlock = sceneBlocks[currentSceneIndex];
+        if (currentBlock) {
+            const blockRect = currentBlock.getBoundingClientRect();
+            const viewportTop = 0;
+            const relativeScroll = Math.max(0, Math.min(1, (viewportTop - blockRect.top) / blockRect.height));
+
+            const currentSegment = segments[currentSceneIndex];
+            if (currentSegment) {
+                topOffset += currentSegment.offsetHeight * relativeScroll;
+            }
+        }
+
+        indicator.style.top = `${topOffset}px`;
+
+        // Mettre en surbrillance le segment actif
+        segments.forEach((seg, i) => {
+            if (i === currentSceneIndex) {
+                seg.classList.add('active');
+            } else {
+                seg.classList.remove('active');
+            }
+        });
+    }
+
+    // Stocker le handler pour pouvoir le nettoyer plus tard
+    chapterScrollTrackingHandler = updateScrollPosition;
+
+    // Écouter le scroll
+    window.addEventListener('scroll', chapterScrollTrackingHandler);
+    updateScrollPosition(); // Initial call
+}
+
+/**
+ * [MVVM : View]
+ * Fait défiler jusqu'à une scène spécifique dans le mode acte.
+ */
+function scrollToActScene(sceneIndex) {
+    const sceneBlock = document.querySelector(`.act-scene-block[data-scene-index="${sceneIndex}"]`);
     if (sceneBlock) {
         sceneBlock.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }

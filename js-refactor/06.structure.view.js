@@ -226,7 +226,7 @@ function renderActsList() {
                 <span class="drag-handle" draggable="true" onclick="event.stopPropagation()">⋮⋮</span>
                 <span class="act-icon ${actExpanded ? 'expanded' : ''}" onclick="toggleAct(${act.id}); event.stopPropagation();" style="cursor: pointer;">▶</span>
                 <span class="auto-number">${actIndex + 1}.</span>
-                <span class="act-title" ondblclick="event.stopPropagation(); startEditingAct(${act.id}, this)" onclick="toggleAct(${act.id})">${act.title}</span>
+                <span class="act-title" ondblclick="event.stopPropagation(); startEditingAct(${act.id}, this)" onclick="${act.chapters.length > 0 ? `openAct(${act.id})` : ''}">${act.title}</span>
                 <span class="edit-hint">✏️</span>
                 <span class="word-count-badge" title="${actStats.totalWords.toLocaleString()} mots">${typeof formatWordCount === 'function' ? formatWordCount(actStats.totalWords) : actStats.totalWords}</span>
                 <button class="btn btn-icon btn-small delete-btn" onclick="event.stopPropagation(); deleteAct(${act.id})">×</button>
@@ -244,11 +244,11 @@ function renderActsList() {
                     <span class="drag-handle" draggable="true" onclick="event.stopPropagation()">⋮⋮</span>
                     <span class="chapter-icon ${chExpanded ? 'expanded' : ''}" onclick="toggleChapter(${act.id}, ${chapter.id}); event.stopPropagation();" style="cursor: pointer;">▶</span>
                     <span class="auto-number">${chNumber}</span>
-                    <span class="chapter-title" ondblclick="event.stopPropagation(); ${chapter.scenes.length > 0 ? `openChapter(${act.id}, ${chapter.id})` : `startEditingChapter(${act.id}, ${chapter.id}, this)`}" onclick="toggleChapter(${act.id}, ${chapter.id})">${chapter.title}</span>
+                    <span class="chapter-title" ondblclick="event.stopPropagation(); startEditingChapter(${act.id}, ${chapter.id}, this)" onclick="${chapter.scenes.length > 0 ? `openChapter(${act.id}, ${chapter.id})` : ''}">${chapter.title}</span>
                     <span class="edit-hint">✏️</span>
                     <span class="word-count-badge" title="${chStats.totalWords.toLocaleString()} mots">${typeof formatWordCount === 'function' ? formatWordCount(chStats.totalWords) : chStats.totalWords}</span>
                     <span class="status-badge status-${chStatus}" title="${chStats.progressPercent}%"></span>
-                    <span class="chapter-count" title="Double-cliquez pour ouvrir toutes les scènes" style="cursor: pointer;" ondblclick="event.stopPropagation(); ${chapter.scenes.length > 0 ? `openChapter(${act.id}, ${chapter.id})` : ''}">${chapter.scenes.length}</span>
+                    <span class="chapter-count" title="Nombre de scènes" style="cursor: default;">${chapter.scenes.length}</span>
                     <button class="btn btn-icon btn-small delete-btn" onclick="event.stopPropagation(); deleteChapter(${act.id}, ${chapter.id})">×</button>
                 </div>
                 <div class="scenes-list ${chExpanded ? 'visible' : ''}">`;

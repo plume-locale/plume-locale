@@ -766,3 +766,45 @@ a/* Main Editor */
     transition: top 0.3s ease;
     pointer-events: none;
 }
+
+/* --- ACT EDITOR (SEQUENTIAL CHAPTERS & SCENES) --- */
+
+/* Séparateur de chapitre */
+.chapter-separator {
+    margin: 4rem 0 2rem;
+    padding: 2rem 2.5rem;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color-dark, #2c5aa0) 100%);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.chapter-separator-title {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 0.75rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.chapter-separator-meta {
+    display: flex;
+    gap: 2rem;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.9);
+    font-family: 'Source Code Pro', monospace;
+}
+
+/* Bloc de chapitre dans le mode acte */
+.act-chapter-block {
+    margin-bottom: 2rem;
+}
+
+/* Bloc de scène dans le mode acte */
+.act-scene-block {
+    margin-bottom: 0;
+}
+
+.act-scene-block .editor-textarea {
+    margin-bottom: 0;
+}
