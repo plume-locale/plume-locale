@@ -852,16 +852,15 @@ function renderArcColumn(item, isSelected) {
     const cardCount = (item.cards || []).length;
 
     return `
-        <div class="arc-column ${isSelected ? 'selected' : ''}" 
+        <div class="arc-column ${isSelected ? 'selected' : ''}"
              id="item-${item.id}"
              data-item-id="${item.id}"
              data-item-type="column"
              style="left: ${item.x}px; top: ${item.y}px; width: ${item.width || ARC_BOARD_CONFIG.defaultColumnWidth}px"
-             onmousedown="handleItemMouseDown(event, '${item.id}')"
              onclick="selectArcItem(event, '${item.id}')">
             
-            <div class="arc-column-header">
-                <input type="text" class="arc-column-title" value="${item.title || ''}" 
+            <div class="arc-column-header" onmousedown="handleItemMouseDown(event, '${item.id}')">
+                <input type="text" class="arc-column-title" value="${item.title || ''}"
                        placeholder="Titre de la colonne"
                        onchange="updateArcItemTitle('${item.id}', this.value)"
                        onclick="event.stopPropagation()">
@@ -2216,6 +2215,7 @@ function deselectAllArcItems() {
 // [MVVM : ViewModel]
 // Gère le début du drag d'un item (initialisation des positions).
 function handleItemMouseDown(event, itemId) {
+    // Ne pas intercepter si on clique sur des éléments interactifs
     if (event.target.classList.contains('arc-column-resize')) return;
     if (event.target.closest('.arc-connection-point')) return;
     if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA' || event.target.contentEditable === 'true') return;
