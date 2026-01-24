@@ -96,7 +96,7 @@ JS_ORDER = [
     '42.mobile-swipe.js',
     'js-refactor/43.arcs.refactor.js',
     '44.storygrid.js',
-    '45.arc-board.js',
+    'js-refactor/45.arc-board.refactor.js',
     # Thriller Board refactored files (order: constants -> model -> repository -> helpers -> viewmodel -> view)
     'js-refactor/46.thriller-board.constants.js',
     'js-refactor/46.thriller-board.model.js',
@@ -183,6 +183,7 @@ IGNORED_ORIGINALS = [
     '30.corkboard.js',
     '33.plot.js',
     '43.arcs.js',
+    '45.arc-board.js',  # Remplacé par js-refactor/45.arc-board.refactor.js
     '46.thriller-board.js'  # Remplacé par les fichiers refactorisés 46.thriller-board.*.js
 ]
 
