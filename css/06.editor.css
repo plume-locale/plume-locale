@@ -673,9 +673,96 @@ a/* Main Editor */
 
 #linksPanel .quick-links h4 {
     /* Garantit que le texte est aligné à gauche */
-    text-align: left; 
+    text-align: left;
     /* S'assure qu'ils prennent toute la largeur pour être bien distincts */
-    width: 100%; 
+    width: 100%;
     /* S'assure qu'ils sont des blocs distincts, ce qui est le défaut de <h4> */
-    display: block; 
+    display: block;
+}
+
+/* --- CHAPTER EDITOR (SEQUENTIAL SCENES) --- */
+
+/* Séparateur de scène */
+.scene-separator {
+    margin: 3rem 0 2rem;
+    padding: 1.5rem 2rem;
+    background: var(--bg-secondary);
+    border-left: 4px solid var(--primary-color);
+    border-radius: 8px;
+}
+
+.scene-separator-title {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.scene-separator-meta {
+    display: flex;
+    gap: 1.5rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-family: 'Source Code Pro', monospace;
+}
+
+.scene-separator-synopsis {
+    font-style: italic;
+    color: var(--text-secondary);
+}
+
+/* Bloc de scène dans le mode chapitre */
+.chapter-scene-block {
+    margin-bottom: 0;
+}
+
+.chapter-scene-block .editor-textarea {
+    margin-bottom: 0;
+}
+
+/* Indicateur de progression vertical */
+.chapter-progress-indicator {
+    position: fixed;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 8px;
+    height: 300px;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    z-index: 200;
+}
+
+.progress-scene-segment {
+    width: 100%;
+    background: var(--border-color);
+    border-bottom: 1px solid var(--bg-primary);
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+    position: relative;
+}
+
+.progress-scene-segment:hover {
+    background: var(--text-muted);
+    transform: scaleX(1.5);
+    z-index: 10;
+}
+
+.progress-scene-segment.active {
+    background: var(--primary-color);
+}
+
+.progress-current-indicator {
+    position: absolute;
+    left: -4px;
+    width: 16px;
+    height: 3px;
+    background: var(--accent-gold);
+    border-radius: 2px;
+    box-shadow: 0 0 8px rgba(255, 193, 7, 0.8);
+    transition: top 0.3s ease;
+    pointer-events: none;
 }
