@@ -96,7 +96,15 @@ JS_ORDER = [
     '42.mobile-swipe.js',
     'js-refactor/43.arcs.refactor.js',
     '44.storygrid.js',
-    'js-refactor/45.arc-board.refactor.js',
+    # Arc Board refactored files (order: config -> models -> repository -> viewmodel -> services -> views -> handlers -> main)
+    'js-refactor/arc-board/arc-board.config.js',
+    'js-refactor/arc-board/arc-board.models.js',
+    'js-refactor/arc-board/arc-board.repository.js',
+    'js-refactor/arc-board/arc-board.viewmodel.js',
+    'js-refactor/arc-board/arc-board.services.js',
+    'js-refactor/arc-board/arc-board.views.js',
+    'js-refactor/arc-board/arc-board.handlers.js',
+    'js-refactor/arc-board/arc-board.main.js',
     # Thriller Board refactored files (order: constants -> model -> repository -> helpers -> viewmodel -> view)
     'js-refactor/46.thriller-board.constants.js',
     'js-refactor/46.thriller-board.model.js',
@@ -183,7 +191,8 @@ IGNORED_ORIGINALS = [
     '30.corkboard.js',
     '33.plot.js',
     '43.arcs.js',
-    '45.arc-board.js',  # Remplacé par js-refactor/45.arc-board.refactor.js
+    '45.arc-board.js',  # Remplacé par js-refactor/arc-board/*.js
+    '45.arc-board.refactor.js',  # Fichier bundle, on utilise les modules individuels
     '46.thriller-board.js'  # Remplacé par les fichiers refactorisés 46.thriller-board.*.js
 ]
 
