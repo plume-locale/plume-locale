@@ -494,14 +494,10 @@
     background: var(--bg-primary);
     border: 1px solid var(--border-color);
     border-radius: 8px;
-    padding: 12px;
-    cursor: grab;
+    padding: 12px 12px 12px 36px; /* Extra padding left for drag handle */
+    cursor: pointer;
     transition: all 0.2s ease;
     position: relative;
-}
-
-.arc-card:active {
-    cursor: grabbing;
 }
 
 .arc-card:hover {
@@ -517,6 +513,45 @@
 .arc-card.dragging {
     opacity: 0.7;
     transform: rotate(2deg);
+}
+
+/* Poignée de drag - visible au hover */
+.arc-card-drag-handle {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 28px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+    opacity: 0;
+    transition: opacity 0.2s ease, background 0.2s ease;
+    background: transparent;
+    border-radius: 8px 0 0 8px;
+    z-index: 1;
+}
+
+.arc-card:hover .arc-card-drag-handle {
+    opacity: 1;
+    background: linear-gradient(to right, rgba(255, 140, 66, 0.08), transparent);
+}
+
+.arc-card-drag-handle:hover {
+    background: linear-gradient(to right, rgba(255, 140, 66, 0.15), transparent);
+}
+
+.arc-card-drag-handle:active {
+    cursor: grabbing;
+}
+
+.arc-card-drag-handle svg,
+.arc-card-drag-handle i {
+    width: 16px;
+    height: 16px;
+    color: var(--text-muted);
+    pointer-events: none;
 }
 
 /* Bouton de suppression de carte */

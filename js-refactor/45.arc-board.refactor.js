@@ -888,31 +888,40 @@ function renderArcColumn(item, isSelected) {
 function renderArcCard(card, columnId) {
     // Bouton de suppression commun à toutes les cartes
     const deleteBtn = `
-        <button class="arc-card-delete" onclick="deleteArcCard(event, '${columnId}', '${card.id}')" title="Supprimer" draggable="false">
+        <button class="arc-card-delete" onclick="deleteArcCard(event, '${columnId}', '${card.id}')" title="Supprimer">
             <i data-lucide="x"></i>
         </button>
     `;
 
-    // Attributs de drag pour les cartes
-    const dragAttrs = `draggable="true" ondragstart="handleCardDragStart(event, '${card.id}', '${columnId}')" ondragend="handleCardDragEnd(event)"`;
+    // Poignée de drag - SEUL élément draggable de la carte
+    const dragHandle = `
+        <div class="arc-card-drag-handle"
+             draggable="true"
+             ondragstart="handleCardDragStart(event, '${card.id}', '${columnId}')"
+             ondragend="handleCardDragEnd(event)"
+             title="Glisser pour déplacer">
+            <i data-lucide="grip-vertical"></i>
+        </div>
+    `;
 
     switch (card.type) {
         case 'note':
             return `
-                <div class="arc-card arc-card-note" data-card-id="${card.id}" ${dragAttrs}
+                <div class="arc-card arc-card-note" data-card-id="${card.id}"
                      onclick="selectArcCard(event, '${card.id}', '${columnId}')">
+                    ${dragHandle}
                     ${deleteBtn}
-                    <div class="arc-card-content" contenteditable="true" draggable="false"
+                    <div class="arc-card-content" contenteditable="true"
                          onblur="updateArcCardContent('${columnId}', '${card.id}', this.innerHTML)"
-                         onmousedown="event.stopPropagation()"
                          onclick="event.stopPropagation()">${card.content || ''}</div>
                 </div>
             `;
 
         case 'image':
             return `
-                <div class="arc-card arc-card-image" data-card-id="${card.id}" ${dragAttrs}
+                <div class="arc-card arc-card-image" data-card-id="${card.id}"
                      onclick="selectArcCard(event, '${card.id}', '${columnId}')">
+                    ${dragHandle}
                     ${deleteBtn}
                     ${card.src ?
                     `<img src="${card.src}" alt="">` :
@@ -927,8 +936,9 @@ function renderArcCard(card, columnId) {
 
         case 'link':
             return `
-                <div class="arc-card arc-card-link" data-card-id="${card.id}" ${dragAttrs}
+                <div class="arc-card arc-card-link" data-card-id="${card.id}"
                      onclick="selectArcCard(event, '${card.id}', '${columnId}')">
+                    ${dragHandle}
                     ${deleteBtn}
                     ${card.url ? `
                         <div class="arc-link-preview">
@@ -966,10 +976,11 @@ function renderArcCard(card, columnId) {
             `).join('');
 
             return `
-                <div class="arc-card arc-card-todo" data-card-id="${card.id}" ${dragAttrs}
+                <div class="arc-card arc-card-todo" data-card-id="${card.id}"
                      onclick="selectArcCard(event, '${card.id}', '${columnId}')">
+                    ${dragHandle}
                     ${deleteBtn}
-                    <input type="text" class="arc-card-title" value="${card.title || ''}" draggable="false"
+                    <input type="text" class="arc-card-title" value="${card.title || ''}"
                            placeholder="Titre de la liste"
                            onchange="updateArcCardTitle('${columnId}', '${card.id}', this.value)"
                            onmousedown="event.stopPropagation()"
@@ -987,8 +998,9 @@ function renderArcCard(card, columnId) {
 
         case 'audio':
             return `
-                <div class="arc-card arc-card-audio" data-card-id="${card.id}" ${dragAttrs}
+                <div class="arc-card arc-card-audio" data-card-id="${card.id}"
                      onclick="selectArcCard(event, '${card.id}', '${columnId}')">
+                    ${dragHandle}
                     ${deleteBtn}
                     <div class="arc-audio-placeholder">
                         <i data-lucide="music"></i>
@@ -1011,8 +1023,9 @@ function renderArcCard(card, columnId) {
             const notes = card.notes || '';
 
             return `
-                <div class="arc-card arc-card-scene" data-card-id="${card.id}" data-scene-id="${card.sceneId || ''}" ${dragAttrs}
+                <div class="arc-card arc-card-scene" data-card-id="${card.id}" data-scene-id="${card.sceneId || ''}"
                      onclick="selectArcCard(event, '${card.id}', '${columnId}')">
+                    ${dragHandle}
                     ${deleteBtn}
                     <div class="arc-card-scene-header">
                         <i data-lucide="book-open"></i>
@@ -1040,8 +1053,9 @@ function renderArcCard(card, columnId) {
 
         default:
             return `
-                <div class="arc-card arc-card-note" data-card-id="${card.id}" ${dragAttrs}
+                <div class="arc-card arc-card-note" data-card-id="${card.id}"
                      onclick="selectArcCard(event, '${card.id}', '${columnId}')">
+                    ${dragHandle}
                     ${deleteBtn}
                     <div class="arc-card-content">${card.content || ''}</div>
                 </div>
