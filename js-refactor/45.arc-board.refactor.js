@@ -225,6 +225,17 @@ function createCardModel(type, data = {}) {
                 notes: data.notes || ''
             };
 
+        case 'comment':
+            return { ...base, content: data.content || '' };
+
+        case 'table':
+            return {
+                ...base,
+                rows: data.rows || 3,
+                cols: data.cols || 3,
+                data: data.data || []
+            };
+
         default:
             return { ...base, content: data.content || '' };
     }
@@ -269,7 +280,7 @@ function createCategoryModel(name, color) {
  * Convertit un item flottant en carte
  */
 function convertItemToCard(item) {
-    const card = createCardModel(item.type === 'comment' ? 'note' : item.type);
+    const card = createCardModel(item.type);
 
     switch (item.type) {
         case 'note':
@@ -289,8 +300,9 @@ function convertItemToCard(item) {
             card.title = item.title || '';
             break;
         case 'table':
-            card.type = 'note';
-            card.content = 'Tableau converti';
+            card.rows = item.rows || 3;
+            card.cols = item.cols || 3;
+            card.data = item.data || [];
             break;
     }
 
@@ -2578,6 +2590,63 @@ const ArcBoardView = {
                     </div>
                 `;
 
+            case 'link':
+                return `
+                    <div class="arc-card arc-card-link" data-card-id="${card.id}">
+                        ${dragHandle}${deleteBtn}
+                        ${card.url ? `
+                            <div class="arc-link-preview">
+                                ${card.previewImage ? `<div class="arc-link-preview-image" style="background-image:url(${card.previewImage})"></div>` : ''}
+                                <div class="arc-link-preview-info">
+                                    <div class="arc-link-preview-title">${card.title || card.url}</div>
+                                    <div class="arc-link-preview-url">${card.url}</div>
+                                </div>
+                            </div>
+                        ` : `
+                            <div class="arc-link-input">
+                                <i data-lucide="link"></i>
+                                <input type="text" placeholder="Entrer une URL"
+                                       onkeypress="ArcBoardEventHandlers.handleCardLinkInput(event, '${columnId}', '${card.id}')"
+                                       onclick="event.stopPropagation()">
+                            </div>
+                        `}
+                    </div>
+                `;
+
+            case 'comment':
+                return `
+                    <div class="arc-card arc-card-comment" data-card-id="${card.id}">
+                        ${dragHandle}${deleteBtn}
+                        <div class="arc-card-content" contenteditable="true"
+                             onblur="ArcBoardViewModel.updateCard('${columnId}', '${card.id}', { content: this.innerHTML })"
+                             onclick="event.stopPropagation()">${card.content || ''}</div>
+                    </div>
+                `;
+
+            case 'table':
+                const rows = card.rows || 3;
+                const cols = card.cols || 3;
+                const data = card.data || [];
+                let tableHtml = '<table>';
+                for (let r = 0; r < rows; r++) {
+                    tableHtml += '<tr>';
+                    for (let c = 0; c < cols; c++) {
+                        const cellData = data[r]?.[c] || '';
+                        const tag = r === 0 ? 'th' : 'td';
+                        tableHtml += `<${tag} contenteditable="true"
+                                       onblur="ArcBoardEventHandlers.updateCardTableCell('${columnId}', '${card.id}', ${r}, ${c}, this.textContent)"
+                                       onclick="event.stopPropagation()">${cellData}</${tag}>`;
+                    }
+                    tableHtml += '</tr>';
+                }
+                tableHtml += '</table>';
+                return `
+                    <div class="arc-card arc-card-table" data-card-id="${card.id}">
+                        ${dragHandle}${deleteBtn}
+                        ${tableHtml}
+                    </div>
+                `;
+
             default:
                 return `
                     <div class="arc-card arc-card-note" data-card-id="${card.id}">
@@ -3220,6 +3289,20 @@ const ArcBoardEventHandlers = {
         saveProject();
     },
 
+    updateCardTableCell(columnId, cardId, row, col, value) {
+        const arc = ArcBoardViewModel.getCurrentArc();
+        if (!arc) return;
+
+        const card = CardRepository.getById(arc.id, columnId, cardId);
+        if (!card) return;
+
+        if (!card.data) card.data = [];
+        if (!card.data[row]) card.data[row] = [];
+
+        card.data[row][col] = value;
+        saveProject();
+    },
+
     // ==========================================
     // LINKS
     // ==========================================
@@ -3231,6 +3314,16 @@ const ArcBoardEventHandlers = {
         if (!url) return;
 
         ArcBoardViewModel.updateItem(itemId, { url, title: url });
+        ArcBoardViewModel.renderItems();
+    },
+
+    handleCardLinkInput(event, columnId, cardId) {
+        if (event.key !== 'Enter') return;
+
+        const url = event.target.value.trim();
+        if (!url) return;
+
+        ArcBoardViewModel.updateCard(columnId, cardId, { url, title: url });
         ArcBoardViewModel.renderItems();
     },
 

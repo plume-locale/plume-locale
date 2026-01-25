@@ -285,6 +285,20 @@ const ArcBoardEventHandlers = {
         saveProject();
     },
 
+    updateCardTableCell(columnId, cardId, row, col, value) {
+        const arc = ArcBoardViewModel.getCurrentArc();
+        if (!arc) return;
+
+        const card = CardRepository.getById(arc.id, columnId, cardId);
+        if (!card) return;
+
+        if (!card.data) card.data = [];
+        if (!card.data[row]) card.data[row] = [];
+
+        card.data[row][col] = value;
+        saveProject();
+    },
+
     // ==========================================
     // LINKS
     // ==========================================
@@ -296,6 +310,16 @@ const ArcBoardEventHandlers = {
         if (!url) return;
 
         ArcBoardViewModel.updateItem(itemId, { url, title: url });
+        ArcBoardViewModel.renderItems();
+    },
+
+    handleCardLinkInput(event, columnId, cardId) {
+        if (event.key !== 'Enter') return;
+
+        const url = event.target.value.trim();
+        if (!url) return;
+
+        ArcBoardViewModel.updateCard(columnId, cardId, { url, title: url });
         ArcBoardViewModel.renderItems();
     },
 

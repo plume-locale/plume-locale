@@ -138,6 +138,17 @@ function createCardModel(type, data = {}) {
                 notes: data.notes || ''
             };
 
+        case 'comment':
+            return { ...base, content: data.content || '' };
+
+        case 'table':
+            return {
+                ...base,
+                rows: data.rows || 3,
+                cols: data.cols || 3,
+                data: data.data || []
+            };
+
         default:
             return { ...base, content: data.content || '' };
     }
@@ -182,7 +193,7 @@ function createCategoryModel(name, color) {
  * Convertit un item flottant en carte
  */
 function convertItemToCard(item) {
-    const card = createCardModel(item.type === 'comment' ? 'note' : item.type);
+    const card = createCardModel(item.type);
 
     switch (item.type) {
         case 'note':
@@ -202,8 +213,9 @@ function convertItemToCard(item) {
             card.title = item.title || '';
             break;
         case 'table':
-            card.type = 'note';
-            card.content = 'Tableau converti';
+            card.rows = item.rows || 3;
+            card.cols = item.cols || 3;
+            card.data = item.data || [];
             break;
     }
 
