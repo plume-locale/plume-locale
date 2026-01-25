@@ -2944,6 +2944,7 @@ let dragData = {
 // [MVVM : ViewModel]
 // Initialise le transfert de données pour le drag d'une carte.
 function handleCardDragStart(event, cardId, columnId) {
+    console.log('🟢 DRAG START CARD:', { cardId, columnId, target: event.target });
     event.stopPropagation();
 
     dragData = {
@@ -2952,6 +2953,8 @@ function handleCardDragStart(event, cardId, columnId) {
         sourceColumnId: columnId,
         element: event.target
     };
+
+    console.log('🟢 dragData set:', dragData);
 
     event.dataTransfer.effectAllowed = 'move';
     event.dataTransfer.setData('text/plain', JSON.stringify({
@@ -2968,6 +2971,7 @@ function handleCardDragStart(event, cardId, columnId) {
             el.classList.add('drop-target');
         });
         document.getElementById('arcBoardContent')?.classList.add('drop-zone-active');
+        console.log('🟢 Drop zones activées');
     }, 0);
 }
 
@@ -2975,6 +2979,7 @@ function handleCardDragStart(event, cardId, columnId) {
 // [MVVM : ViewModel]
 // Initialise le transfert de données pour le drag d'un item flottant.
 function handleFloatingDragStart(event, itemId) {
+    console.log('🔵 DRAG START FLOATING:', { itemId, target: event.target });
     event.stopPropagation();
 
     dragData = {
@@ -2983,6 +2988,8 @@ function handleFloatingDragStart(event, itemId) {
         sourceColumnId: null,
         element: event.target.closest('.arc-floating-item')
     };
+
+    console.log('🔵 dragData set:', dragData);
 
     event.dataTransfer.effectAllowed = 'move';
     event.dataTransfer.setData('text/plain', JSON.stringify({
@@ -2999,11 +3006,13 @@ function handleFloatingDragStart(event, itemId) {
         document.querySelectorAll('.arc-column-body').forEach(el => {
             el.classList.add('drop-target');
         });
+        console.log('🔵 Drop zones (colonnes) activées');
     }, 0);
 }
 
 // Fin du drag
 function handleCardDragEnd(event) {
+    console.log('🔴 DRAG END CARD');
     event.target.classList.remove('dragging');
 
     // Nettoyer les zones de drop
@@ -3013,12 +3022,14 @@ function handleCardDragEnd(event) {
     document.getElementById('arcBoardContent')?.classList.remove('drop-zone-active');
     document.getElementById('arcBoardCanvas')?.classList.remove('drop-hover');
 
+    console.log('🔴 dragData reset');
     dragData = { type: null, itemId: null, sourceColumnId: null, element: null };
 }
 
 // [MVVM : View]
 // Réinitialise les styles visuels après le drag d'un item flottant.
 function handleFloatingDragEnd(event) {
+    console.log('🟣 DRAG END FLOATING');
     if (dragData.element) {
         dragData.element.classList.remove('dragging');
     }
@@ -3028,6 +3039,7 @@ function handleFloatingDragEnd(event) {
     });
     document.getElementById('arcBoardCanvas')?.classList.remove('drop-hover');
 
+    console.log('🟣 dragData reset');
     dragData = { type: null, itemId: null, sourceColumnId: null, element: null };
 }
 
@@ -3035,6 +3047,7 @@ function handleFloatingDragEnd(event) {
 // [MVVM : View]
 // Gère le survol d'une colonne pendant un drag (feedback visuel).
 function handleCardDragOver(event) {
+    console.log('🟡 DRAGOVER COLUMN:', { dragDataType: dragData.type });
     event.preventDefault();
     event.dataTransfer.dropEffect = 'move';
     event.currentTarget.classList.add('drop-hover');
@@ -3043,6 +3056,7 @@ function handleCardDragOver(event) {
 // [MVVM : View]
 // Gère la sortie de survol d'une colonne pendant un drag.
 function handleCardDragLeave(event) {
+    console.log('🟠 DRAGLEAVE COLUMN');
     event.currentTarget.classList.remove('drop-hover');
 }
 
@@ -3050,31 +3064,49 @@ function handleCardDragLeave(event) {
 // [MVVM : Other]
 // Gère le drop sur une colonne (déplacement de carte ou conversion d'item flottant en carte).
 function handleCardDrop(event, targetColumnId) {
+    console.log('🟢 DROP ON COLUMN:', { targetColumnId, dragData });
     event.preventDefault();
     event.stopPropagation();
     event.currentTarget.classList.remove('drop-hover');
 
     try {
         const arc = project.narrativeArcs.find(a => a.id === arcBoardState.currentArcId);
-        if (!arc) return;
+        if (!arc) {
+            console.log('❌ Pas d\'arc trouvé');
+            return;
+        }
 
         const targetColumn = arc.board.items.find(i => i.id === targetColumnId);
-        if (!targetColumn) return;
+        if (!targetColumn) {
+            console.log('❌ Colonne cible non trouvée');
+            return;
+        }
 
         if (!targetColumn.cards) targetColumn.cards = [];
 
         if (dragData.type === 'card') {
+            console.log('📋 Déplacement CARTE vers colonne');
             // Déplacer une carte d'une colonne à une autre
-            if (dragData.sourceColumnId === targetColumnId) return; // Même colonne
+            if (dragData.sourceColumnId === targetColumnId) {
+                console.log('⚠️ Même colonne, abandon');
+                return;
+            }
 
             const sourceColumn = arc.board.items.find(i => i.id === dragData.sourceColumnId);
-            if (!sourceColumn || !sourceColumn.cards) return;
+            if (!sourceColumn || !sourceColumn.cards) {
+                console.log('❌ Colonne source non trouvée ou sans cartes');
+                return;
+            }
 
             const cardIndex = sourceColumn.cards.findIndex(c => c.id === dragData.itemId);
-            if (cardIndex === -1) return;
+            if (cardIndex === -1) {
+                console.log('❌ Carte non trouvée dans colonne source');
+                return;
+            }
 
             const [card] = sourceColumn.cards.splice(cardIndex, 1);
             targetColumn.cards.push(card);
+            console.log('✅ Carte déplacée avec succès');
 
             // Si c'est une carte scene, mettre à jour le columnId dans arc.scenePresence
             if (card.type === 'scene' && card.sceneId && arc.scenePresence) {
@@ -3085,9 +3117,13 @@ function handleCardDrop(event, targetColumnId) {
             }
 
         } else if (dragData.type === 'floating') {
+            console.log('📦 Conversion FLOATING vers carte');
             // Convertir un élément flottant en carte
             const floatingIndex = arc.board.items.findIndex(i => i.id === dragData.itemId);
-            if (floatingIndex === -1) return;
+            if (floatingIndex === -1) {
+                console.log('❌ Élément flottant non trouvé');
+                return;
+            }
 
             const [floatingItem] = arc.board.items.splice(floatingIndex, 1);
 
@@ -3101,13 +3137,18 @@ function handleCardDrop(event, targetColumnId) {
             // Convertir en carte
             const newCard = convertFloatingToCard(floatingItem);
             targetColumn.cards.push(newCard);
+            console.log('✅ Élément flottant converti en carte');
+        } else {
+            console.log('❌ Type de drag inconnu:', dragData.type);
         }
 
         saveProject();
         renderArcBoardItems(arc);
         renderArcConnections(arc);
+        console.log('✅ Rendu mis à jour');
     } finally {
         // TOUJOURS réinitialiser dragData, même en cas d'erreur ou de return précoce
+        console.log('🔄 Reset dragData');
         dragData = { type: null, itemId: null, sourceColumnId: null, element: null };
     }
 }
@@ -3116,9 +3157,16 @@ function handleCardDrop(event, targetColumnId) {
 // [MVVM : Other]
 // Gère le drop sur le canvas (conversion d'une carte en item flottant à la position du drop).
 function handleCanvasDrop(event) {
+    console.log('🔵 DROP ON CANVAS:', { target: event.target, dragData });
     // Ne pas traiter si on drop sur une colonne
-    if (event.target.closest('.arc-column-body')) return;
-    if (event.target.closest('.arc-column')) return;
+    if (event.target.closest('.arc-column-body')) {
+        console.log('⚠️ Drop sur colonne-body, abandon');
+        return;
+    }
+    if (event.target.closest('.arc-column')) {
+        console.log('⚠️ Drop sur colonne, abandon');
+        return;
+    }
 
     event.preventDefault();
 
@@ -3126,18 +3174,31 @@ function handleCanvasDrop(event) {
     document.getElementById('arcBoardCanvas')?.classList.remove('drop-hover');
 
     try {
-        if (dragData.type !== 'card') return;
+        if (dragData.type !== 'card') {
+            console.log('⚠️ Type pas "card", abandon:', dragData.type);
+            return;
+        }
 
         const arc = project.narrativeArcs.find(a => a.id === arcBoardState.currentArcId);
-        if (!arc) return;
+        if (!arc) {
+            console.log('❌ Pas d\'arc trouvé');
+            return;
+        }
 
         const sourceColumn = arc.board.items.find(i => i.id === dragData.sourceColumnId);
-        if (!sourceColumn || !sourceColumn.cards) return;
+        if (!sourceColumn || !sourceColumn.cards) {
+            console.log('❌ Colonne source non trouvée');
+            return;
+        }
 
         const cardIndex = sourceColumn.cards.findIndex(c => c.id === dragData.itemId);
-        if (cardIndex === -1) return;
+        if (cardIndex === -1) {
+            console.log('❌ Carte non trouvée dans colonne source');
+            return;
+        }
 
         const [card] = sourceColumn.cards.splice(cardIndex, 1);
+        console.log('📋 Carte extraite de la colonne');
 
         // Calculer la position du drop
         const content = document.getElementById('arcBoardContent');
@@ -3152,11 +3213,14 @@ function handleCanvasDrop(event) {
         // Convertir la carte en élément flottant
         const floatingItem = convertCardToFloating(card, snappedX, snappedY);
         arc.board.items.push(floatingItem);
+        console.log('✅ Carte convertie en élément flottant à', { x: snappedX, y: snappedY });
 
         saveProject();
         renderArcBoardItems(arc);
+        console.log('✅ Rendu mis à jour');
     } finally {
         // TOUJOURS réinitialiser dragData, même en cas d'erreur ou de return précoce
+        console.log('🔄 Reset dragData');
         dragData = { type: null, itemId: null, sourceColumnId: null, element: null };
     }
 }
@@ -3165,6 +3229,7 @@ function handleCanvasDrop(event) {
 // [MVVM : View]
 // Gère le dragover sur le canvas pour permettre le drop de cartes.
 function handleCanvasDragOver(event) {
+    console.log('🟡 DRAGOVER CANVAS:', { dragDataType: dragData.type });
     // Permettre le drop seulement pour les cartes (pas les éléments flottants)
     if (dragData.type === 'card') {
         event.preventDefault();
@@ -3174,6 +3239,8 @@ function handleCanvasDragOver(event) {
         if (!event.target.closest('.arc-column')) {
             document.getElementById('arcBoardCanvas')?.classList.add('drop-hover');
         }
+    } else {
+        console.log('⚠️ Type pas "card", pas de preventDefault');
     }
 }
 
@@ -3181,6 +3248,7 @@ function handleCanvasDragOver(event) {
 // [MVVM : View]
 // Réinitialise le feedback visuel quand le drag quitte le canvas.
 function handleCanvasDragLeave(event) {
+    console.log('🟠 DRAGLEAVE CANVAS');
     // Vérifier qu'on quitte vraiment le canvas
     if (!event.relatedTarget || !event.currentTarget.contains(event.relatedTarget)) {
         document.getElementById('arcBoardCanvas')?.classList.remove('drop-hover');
