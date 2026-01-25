@@ -1128,7 +1128,10 @@ function openSceneFromCard(event, sceneId) {
 function renderArcNote(item, isSelected) {
     const floatingDragHandle = `
         <div class="arc-floating-drag-handle"
-             onmousedown="handleItemMouseDown(event, '${item.id}')"
+             draggable="true"
+             ondragstart="handleFloatingDragStart(event, '${item.id}')"
+             ondragend="handleFloatingDragEnd(event)"
+             onmousedown="event.stopPropagation()"
              title="Glisser pour déplacer">
             <i data-lucide="grip-vertical"></i>
         </div>
@@ -1154,7 +1157,10 @@ function renderArcNote(item, isSelected) {
 function renderArcImage(item, isSelected) {
     const floatingDragHandle = `
         <div class="arc-floating-drag-handle"
-             onmousedown="handleItemMouseDown(event, '${item.id}')"
+             draggable="true"
+             ondragstart="handleFloatingDragStart(event, '${item.id}')"
+             ondragend="handleFloatingDragEnd(event)"
+             onmousedown="event.stopPropagation()"
              title="Glisser pour déplacer">
             <i data-lucide="grip-vertical"></i>
         </div>
@@ -1184,7 +1190,10 @@ function renderArcImage(item, isSelected) {
 function renderArcLink(item, isSelected) {
     const floatingDragHandle = `
         <div class="arc-floating-drag-handle"
-             onmousedown="handleItemMouseDown(event, '${item.id}')"
+             draggable="true"
+             ondragstart="handleFloatingDragStart(event, '${item.id}')"
+             ondragend="handleFloatingDragEnd(event)"
+             onmousedown="event.stopPropagation()"
              title="Glisser pour déplacer">
             <i data-lucide="grip-vertical"></i>
         </div>
@@ -1224,7 +1233,10 @@ function renderArcLink(item, isSelected) {
 function renderArcTodo(item, isSelected) {
     const floatingDragHandle = `
         <div class="arc-floating-drag-handle"
-             onmousedown="handleItemMouseDown(event, '${item.id}')"
+             draggable="true"
+             ondragstart="handleFloatingDragStart(event, '${item.id}')"
+             ondragend="handleFloatingDragEnd(event)"
+             onmousedown="event.stopPropagation()"
              title="Glisser pour déplacer">
             <i data-lucide="grip-vertical"></i>
         </div>
@@ -1270,7 +1282,10 @@ function renderArcTodo(item, isSelected) {
 function renderArcComment(item, isSelected) {
     const floatingDragHandle = `
         <div class="arc-floating-drag-handle"
-             onmousedown="handleItemMouseDown(event, '${item.id}')"
+             draggable="true"
+             ondragstart="handleFloatingDragStart(event, '${item.id}')"
+             ondragend="handleFloatingDragEnd(event)"
+             onmousedown="event.stopPropagation()"
              title="Glisser pour déplacer">
             <i data-lucide="grip-vertical"></i>
         </div>
@@ -1298,7 +1313,10 @@ function renderArcComment(item, isSelected) {
 function renderArcTable(item, isSelected) {
     const floatingDragHandle = `
         <div class="arc-floating-drag-handle"
-             onmousedown="handleItemMouseDown(event, '${item.id}')"
+             draggable="true"
+             ondragstart="handleFloatingDragStart(event, '${item.id}')"
+             ondragend="handleFloatingDragEnd(event)"
+             onmousedown="event.stopPropagation()"
              title="Glisser pour déplacer">
             <i data-lucide="grip-vertical"></i>
         </div>
@@ -2352,8 +2370,8 @@ function handleItemMouseDown(event, itemId) {
     if (event.target.closest('.arc-connection-point')) return;
     if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA' || event.target.contentEditable === 'true') return;
 
-    // Ne pas intercepter le drag handle des cartes
-    if (event.target.closest('.arc-card-drag-handle')) {
+    // Ne pas intercepter les drag handles (ni cartes ni éléments flottants)
+    if (event.target.closest('.arc-card-drag-handle') || event.target.closest('.arc-floating-drag-handle')) {
         return;
     }
 
