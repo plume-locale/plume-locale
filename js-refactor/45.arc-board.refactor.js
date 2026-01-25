@@ -899,6 +899,7 @@ function renderArcCard(card, columnId) {
              draggable="true"
              ondragstart="handleCardDragStart(event, '${card.id}', '${columnId}')"
              ondragend="handleCardDragEnd(event)"
+             onmousedown="event.stopPropagation()"
              title="Glisser pour déplacer">
             <i data-lucide="grip-vertical"></i>
         </div>
@@ -2321,10 +2322,13 @@ function handleItemMouseDown(event, itemId) {
     if (event.target.closest('.arc-connection-point')) return;
     if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA' || event.target.contentEditable === 'true') return;
 
-    // Ne pas intercepter le drag des cartes dans les colonnes (qui utilisent l'API HTML5 drag & drop)
-    const cardElement = event.target.closest('.arc-card');
-    if (cardElement && cardElement.hasAttribute('draggable') && !event.target.closest('.arc-floating-item')) {
-        // C'est une carte draggable dans une colonne, ne pas intercepter
+    // Ne pas intercepter le drag handle des cartes
+    if (event.target.closest('.arc-card-drag-handle')) {
+        return;
+    }
+
+    // Ne pas intercepter les cartes (elles ont leur propre drag via le handle)
+    if (event.target.closest('.arc-card') && !event.target.closest('.arc-floating-item')) {
         return;
     }
 
