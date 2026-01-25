@@ -2,6 +2,15 @@
 // ARC BOARD - Configuration & Constants
 // ============================================
 
+/**
+ * Génère un ID unique avec un préfixe
+ * @param {string} prefix - Préfixe de l'ID (ex: 'arc', 'item', 'card', 'conn')
+ * @returns {string} ID unique
+ */
+function generateUniqueId(prefix = 'id') {
+    return `${prefix}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+}
+
 const ArcBoardConfig = {
     canvas: {
         minZoom: 0.25,
