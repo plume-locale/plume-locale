@@ -554,6 +554,45 @@
     pointer-events: none;
 }
 
+/* Poignée de drag pour les éléments flottants sur le canvas */
+.arc-floating-drag-handle {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+    opacity: 0;
+    transition: opacity 0.2s ease, background 0.2s ease;
+    background: transparent;
+    border-radius: 8px;
+    z-index: 2;
+}
+
+.arc-floating-item:hover .arc-floating-drag-handle {
+    opacity: 1;
+    background: rgba(255, 140, 66, 0.12);
+}
+
+.arc-floating-drag-handle:hover {
+    background: rgba(255, 140, 66, 0.2);
+}
+
+.arc-floating-drag-handle:active {
+    cursor: grabbing;
+}
+
+.arc-floating-drag-handle svg,
+.arc-floating-drag-handle i {
+    width: 16px;
+    height: 16px;
+    color: var(--text-muted);
+    pointer-events: none;
+}
+
 /* Bouton de suppression de carte */
 .arc-card-delete {
     position: absolute;

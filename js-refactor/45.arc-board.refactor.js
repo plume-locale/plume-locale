@@ -1126,17 +1126,22 @@ function openSceneFromCard(event, sceneId) {
 // [MVVM : View]
 // Génère le code HTML d'une note flottante.
 function renderArcNote(item, isSelected) {
+    const floatingDragHandle = `
+        <div class="arc-floating-drag-handle"
+             onmousedown="handleItemMouseDown(event, '${item.id}')"
+             title="Glisser pour déplacer">
+            <i data-lucide="grip-vertical"></i>
+        </div>
+    `;
+
     return `
         <div class="arc-floating-item arc-floating-note ${isSelected ? 'selected' : ''}"
              id="item-${item.id}"
              data-item-id="${item.id}"
              data-item-type="note"
              style="left: ${item.x}px; top: ${item.y}px; width: ${item.width || 250}px"
-             draggable="true"
-             ondragstart="handleFloatingDragStart(event, '${item.id}')"
-             ondragend="handleFloatingDragEnd(event)"
-             onmousedown="handleItemMouseDown(event, '${item.id}')"
              onclick="selectArcItem(event, '${item.id}')">
+            ${floatingDragHandle}
             <div class="arc-card-content" contenteditable="true"
                  onblur="updateArcItemContent('${item.id}', this.innerHTML)"
                  onclick="event.stopPropagation()">${item.content || ''}</div>
@@ -1147,17 +1152,22 @@ function renderArcNote(item, isSelected) {
 // [MVVM : View]
 // Génère le code HTML d'une image flottante.
 function renderArcImage(item, isSelected) {
+    const floatingDragHandle = `
+        <div class="arc-floating-drag-handle"
+             onmousedown="handleItemMouseDown(event, '${item.id}')"
+             title="Glisser pour déplacer">
+            <i data-lucide="grip-vertical"></i>
+        </div>
+    `;
+
     return `
         <div class="arc-floating-item arc-floating-image ${isSelected ? 'selected' : ''}"
              id="item-${item.id}"
              data-item-id="${item.id}"
              data-item-type="image"
              style="left: ${item.x}px; top: ${item.y}px"
-             draggable="true"
-             ondragstart="handleFloatingDragStart(event, '${item.id}')"
-             ondragend="handleFloatingDragEnd(event)"
-             onmousedown="handleItemMouseDown(event, '${item.id}')"
              onclick="selectArcItem(event, '${item.id}')">
+            ${floatingDragHandle}
             ${item.src ?
             `<img src="${item.src}" alt="" style="max-width: ${item.width || 300}px" draggable="false">` :
             `<div class="arc-card-upload" style="padding: 40px" onclick="triggerItemImageUpload('${item.id}')">
@@ -1172,17 +1182,22 @@ function renderArcImage(item, isSelected) {
 // [MVVM : View]
 // Génère le code HTML d'un lien flottant.
 function renderArcLink(item, isSelected) {
+    const floatingDragHandle = `
+        <div class="arc-floating-drag-handle"
+             onmousedown="handleItemMouseDown(event, '${item.id}')"
+             title="Glisser pour déplacer">
+            <i data-lucide="grip-vertical"></i>
+        </div>
+    `;
+
     return `
         <div class="arc-floating-item ${isSelected ? 'selected' : ''}"
              id="item-${item.id}"
              data-item-id="${item.id}"
              data-item-type="link"
              style="left: ${item.x}px; top: ${item.y}px; width: 280px"
-             draggable="true"
-             ondragstart="handleFloatingDragStart(event, '${item.id}')"
-             ondragend="handleFloatingDragEnd(event)"
-             onmousedown="handleItemMouseDown(event, '${item.id}')"
              onclick="selectArcItem(event, '${item.id}')">
+            ${floatingDragHandle}
             <div class="arc-card arc-card-link" style="margin:0">
                 ${item.url ? `
                     <div class="arc-link-preview">
@@ -1207,6 +1222,14 @@ function renderArcLink(item, isSelected) {
 // [MVVM : View]
 // Génère le code HTML d'une liste de tâches flottante.
 function renderArcTodo(item, isSelected) {
+    const floatingDragHandle = `
+        <div class="arc-floating-drag-handle"
+             onmousedown="handleItemMouseDown(event, '${item.id}')"
+             title="Glisser pour déplacer">
+            <i data-lucide="grip-vertical"></i>
+        </div>
+    `;
+
     const todosHtml = (item.items || []).map((todo, idx) => `
         <div class="arc-todo-item">
             <div class="arc-todo-checkbox ${todo.completed ? 'checked' : ''}"
@@ -1226,11 +1249,8 @@ function renderArcTodo(item, isSelected) {
              data-item-id="${item.id}"
              data-item-type="todo"
              style="left: ${item.x}px; top: ${item.y}px; width: 260px"
-             draggable="true"
-             ondragstart="handleFloatingDragStart(event, '${item.id}')"
-             ondragend="handleFloatingDragEnd(event)"
-             onmousedown="handleItemMouseDown(event, '${item.id}')"
              onclick="selectArcItem(event, '${item.id}')">
+            ${floatingDragHandle}
             <div class="arc-card arc-card-todo" style="margin:0">
                 <input type="text" class="arc-card-title" value="${item.title || ''}"
                        placeholder="Liste de tâches"
@@ -1248,17 +1268,22 @@ function renderArcTodo(item, isSelected) {
 // [MVVM : View]
 // Génère le code HTML d'un commentaire flottant.
 function renderArcComment(item, isSelected) {
+    const floatingDragHandle = `
+        <div class="arc-floating-drag-handle"
+             onmousedown="handleItemMouseDown(event, '${item.id}')"
+             title="Glisser pour déplacer">
+            <i data-lucide="grip-vertical"></i>
+        </div>
+    `;
+
     return `
         <div class="arc-floating-item ${isSelected ? 'selected' : ''}"
              id="item-${item.id}"
              data-item-id="${item.id}"
              data-item-type="comment"
              style="left: ${item.x}px; top: ${item.y}px; width: 220px"
-             draggable="true"
-             ondragstart="handleFloatingDragStart(event, '${item.id}')"
-             ondragend="handleFloatingDragEnd(event)"
-             onmousedown="handleItemMouseDown(event, '${item.id}')"
              onclick="selectArcItem(event, '${item.id}')">
+            ${floatingDragHandle}
             <div class="arc-card arc-card-comment" style="margin:0">
                 <div class="arc-card-content" contenteditable="true"
                      onblur="updateArcItemContent('${item.id}', this.innerHTML)"
@@ -1271,6 +1296,14 @@ function renderArcComment(item, isSelected) {
 // [MVVM : View]
 // Génère le code HTML d'un tableau flottant.
 function renderArcTable(item, isSelected) {
+    const floatingDragHandle = `
+        <div class="arc-floating-drag-handle"
+             onmousedown="handleItemMouseDown(event, '${item.id}')"
+             title="Glisser pour déplacer">
+            <i data-lucide="grip-vertical"></i>
+        </div>
+    `;
+
     const rows = item.rows || 3;
     const cols = item.cols || 3;
     const data = item.data || [];
@@ -1281,7 +1314,7 @@ function renderArcTable(item, isSelected) {
         for (let c = 0; c < cols; c++) {
             const cellData = data[r] && data[r][c] ? data[r][c] : '';
             const tag = r === 0 ? 'th' : 'td';
-            tableHtml += `<${tag} contenteditable="true" 
+            tableHtml += `<${tag} contenteditable="true"
                            onblur="updateArcTableCell('${item.id}', ${r}, ${c}, this.textContent)"
                            onclick="event.stopPropagation()">${cellData}</${tag}>`;
         }
@@ -1295,11 +1328,8 @@ function renderArcTable(item, isSelected) {
              data-item-id="${item.id}"
              data-item-type="table"
              style="left: ${item.x}px; top: ${item.y}px"
-             draggable="true"
-             ondragstart="handleFloatingDragStart(event, '${item.id}')"
-             ondragend="handleFloatingDragEnd(event)"
-             onmousedown="handleItemMouseDown(event, '${item.id}')"
              onclick="selectArcItem(event, '${item.id}')">
+            ${floatingDragHandle}
             <div class="arc-card arc-card-table" style="margin:0">
                 ${tableHtml}
             </div>
