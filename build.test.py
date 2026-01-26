@@ -45,7 +45,7 @@ JS_ORDER = [
     '02.storage.js',
     'js-refactor/03.projects.refactor.js',
     '04.init.js',
-    '05.undo-redo.js',
+    'js-refactor/05.undo-redo.refactor.js',
     'js-refactor/06.structure.model.js',
     'js-refactor/06.structure.repository.js',
     'js-refactor/06.structure.viewmodel.js',

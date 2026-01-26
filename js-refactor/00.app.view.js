@@ -914,14 +914,14 @@ function renderActEditor(act) {
         <!-- Indicateur de position vertical -->
         <div class="chapter-progress-indicator" id="actProgressIndicator">
             ${allScenes.map((sceneData, index) => {
-                const heightPercent = totalWords > 0 ? (sceneData.wordCount / totalWords) * 100 : (100 / allScenes.length);
-                return `<div class="progress-scene-segment"
+        const heightPercent = totalWords > 0 ? (sceneData.wordCount / totalWords) * 100 : (100 / allScenes.length);
+        return `<div class="progress-scene-segment"
                             data-scene-id="${sceneData.scene.id}"
                             data-scene-index="${index}"
                             style="height: ${heightPercent}%"
                             title="${sceneData.chapterTitle} - ${sceneData.scene.title} (${sceneData.wordCount} mots)"
                             onclick="scrollToActScene(${index})"></div>`;
-            }).join('')}
+    }).join('')}
             <div class="progress-current-indicator" id="progressCurrentIndicator"></div>
         </div>
 
@@ -1017,15 +1017,15 @@ function renderChapterEditor(act, chapter) {
         <!-- Indicateur de position vertical -->
         <div class="chapter-progress-indicator" id="chapterProgressIndicator">
             ${chapter.scenes.map((scene, index) => {
-                const wordCount = sceneWordCounts[index];
-                const heightPercent = totalWords > 0 ? (wordCount / totalWords) * 100 : (100 / chapter.scenes.length);
-                return `<div class="progress-scene-segment"
+        const wordCount = sceneWordCounts[index];
+        const heightPercent = totalWords > 0 ? (wordCount / totalWords) * 100 : (100 / chapter.scenes.length);
+        return `<div class="progress-scene-segment"
                             data-scene-id="${scene.id}"
                             data-scene-index="${index}"
                             style="height: ${heightPercent}%"
                             title="${scene.title} (${wordCount} mots)"
                             onclick="scrollToChapterScene(${index})"></div>`;
-            }).join('')}
+    }).join('')}
             <div class="progress-current-indicator" id="progressCurrentIndicator"></div>
         </div>
 

@@ -213,7 +213,7 @@ function restoreSnapshot(snapshot, restoreNavigation = false) {
 function _notifyStateRestored() {
     // Sauvegarder le projet
     if (typeof saveProjectToDB === 'function') {
-        saveProjectToDB();
+        saveProjectToDB(project);
     } else if (typeof saveProject === 'function') {
         saveProject();
     }
@@ -238,6 +238,18 @@ function _notifyStateRestored() {
         try { openScene(currentActId, currentChapterId, currentSceneId); } catch (e) { }
     } else if (typeof renderCurrentView === 'function') {
         try { renderCurrentView(); } catch (e) { }
+    }
+
+    // Forcer la mise à jour de l'éditeur si présent
+    const editor = document.querySelector('.editor-textarea');
+    if (editor && currentSceneId && currentActId && currentChapterId) {
+        const act = project.acts.find(a => a.id === currentActId);
+        const chapter = act?.chapters.find(c => c.id === currentChapterId);
+        const scene = chapter?.scenes.find(s => s.id === currentSceneId);
+        if (scene) {
+            editor.innerHTML = scene.content || '';
+            console.log('[UndoRedo] Editeur mis a jour avec le contenu restaure');
+        }
     }
 
     // Rafraichir le plot grid
@@ -342,20 +354,23 @@ function saveToHistoryImmediate(actionType = 'immediate') {
  * @param {string} actionType - Type d'action
  */
 function _saveToHistoryInternal(actionType) {
-    const snapshot = createSnapshot();
-    if (!snapshot) return;
+    const currentSnapshot = createSnapshot();
+    if (!currentSnapshot) return;
 
-    // Verifier s'il y a des changements significatifs
-    if (_lastSnapshot && !hasSignificantChanges(_lastSnapshot.project, snapshot.project)) {
-        // Pas de changements significatifs, ne pas sauvegarder
+    // S'il n'y a pas de snapshot précédent, on initialise et on s'arrête
+    if (!_lastSnapshot) {
+        _lastSnapshot = currentSnapshot;
         return;
     }
 
-    // Ajouter les metadonnees
-    snapshot.actionType = actionType;
+    // Verifier s'il y a des changements significatifs entre l'ancien état et le nouveau
+    if (!hasSignificantChanges(_lastSnapshot.project, currentSnapshot.project)) {
+        // Pas de changements significatifs, on ne fait rien
+        return;
+    }
 
-    // Ajouter au stack
-    historyStack.push(snapshot);
+    // ÉTAT CHANGÉ : On pousse l'ANCIEN état (_lastSnapshot) dans l'historique
+    historyStack.push(_lastSnapshot);
 
     // Limiter la taille de l'historique
     while (historyStack.length > UndoRedoConfig.maxHistorySize) {
@@ -365,13 +380,13 @@ function _saveToHistoryInternal(actionType) {
     // Vider le redo stack car on a fait une nouvelle action
     redoStack = [];
 
-    // Mettre a jour le dernier snapshot
-    _lastSnapshot = snapshot;
+    // Mettre a jour le "dernier snapshot connu" avec l'état actuel
+    _lastSnapshot = currentSnapshot;
 
     // Mettre a jour les boutons
     updateUndoRedoButtons();
 
-    console.log(`[UndoRedo] Etat sauvegarde (${actionType}), historique: ${historyStack.length}`);
+    console.log(`[UndoRedo] Changement détecté (${actionType}), historique: ${historyStack.length}`);
 }
 
 /**
@@ -446,17 +461,34 @@ function redo() {
  * Met a jour l'etat des boutons undo/redo
  */
 function updateUndoRedoButtons() {
-    const undoBtn = document.getElementById('undo-btn');
-    const redoBtn = document.getElementById('redo-btn');
+    // Header buttons (desktop)
+    const headerUndoBtn = document.getElementById('headerUndoBtn');
+    const headerRedoBtn = document.getElementById('headerRedoBtn');
 
-    if (undoBtn) {
-        undoBtn.disabled = historyStack.length === 0;
-        undoBtn.classList.toggle('disabled', historyStack.length === 0);
+    // Mobile buttons
+    const mobileUndoBtn = document.getElementById('mobileUndoBtn');
+    const mobileRedoBtn = document.getElementById('mobileRedoBtn');
+
+    // Update header buttons
+    if (headerUndoBtn) {
+        headerUndoBtn.disabled = historyStack.length === 0;
+        headerUndoBtn.classList.toggle('disabled', historyStack.length === 0);
     }
 
-    if (redoBtn) {
-        redoBtn.disabled = redoStack.length === 0;
-        redoBtn.classList.toggle('disabled', redoStack.length === 0);
+    if (headerRedoBtn) {
+        headerRedoBtn.disabled = redoStack.length === 0;
+        headerRedoBtn.classList.toggle('disabled', redoStack.length === 0);
+    }
+
+    // Update mobile buttons
+    if (mobileUndoBtn) {
+        mobileUndoBtn.disabled = historyStack.length === 0;
+        mobileUndoBtn.classList.toggle('disabled', historyStack.length === 0);
+    }
+
+    if (mobileRedoBtn) {
+        mobileRedoBtn.disabled = redoStack.length === 0;
+        mobileRedoBtn.classList.toggle('disabled', redoStack.length === 0);
     }
 }
 
@@ -503,13 +535,14 @@ function initUndoRedo() {
     window.updateUndoRedoButtons = updateUndoRedoButtons;
     window.clearHistory = clearHistory;
 
-    // Creer un snapshot initial apres un court delai (pour que le projet soit charge)
+    // Initialiser le snapshot de référence dès que le projet est là
     setTimeout(() => {
         if (typeof project !== 'undefined' && project.id) {
             _lastSnapshot = createSnapshot();
-            console.log('[UndoRedo] Snapshot initial cree');
+            updateUndoRedoButtons();
+            console.log('[UndoRedo] État initial capturé');
         }
-    }, 500);
+    }, 200);
 
     _undoRedoInitialized = true;
     console.log('[UndoRedo] Systeme initialise');
@@ -526,7 +559,7 @@ function initUndoRedo() {
  * @returns {Function} - La fonction wrappee
  */
 function withHistory(fn, actionType) {
-    return function(...args) {
+    return function (...args) {
         const result = fn.apply(this, args);
         saveToHistory(actionType);
         return result;
@@ -540,7 +573,7 @@ function withHistory(fn, actionType) {
  * @returns {Function} - La fonction wrappee
  */
 function withHistoryImmediate(fn, actionType) {
-    return function(...args) {
+    return function (...args) {
         saveToHistoryImmediate(actionType);
         const result = fn.apply(this, args);
         return result;
@@ -568,7 +601,7 @@ function integrateWithRepository(repository, name) {
     methodsToWrap.immediate.forEach(method => {
         if (typeof repository[method] === 'function') {
             const original = repository[method].bind(repository);
-            repository[method] = function(...args) {
+            repository[method] = function (...args) {
                 saveToHistoryImmediate(`${name}.${method}`);
                 return original(...args);
             };
@@ -579,7 +612,7 @@ function integrateWithRepository(repository, name) {
     methodsToWrap.debounced.forEach(method => {
         if (typeof repository[method] === 'function') {
             const original = repository[method].bind(repository);
-            repository[method] = function(...args) {
+            repository[method] = function (...args) {
                 const result = original(...args);
                 saveToHistory(`${name}.${method}`);
                 return result;
@@ -649,7 +682,7 @@ function integrateWithAllRepositories() {
  * Timer de debounce pour les modifications de texte
  */
 let _textEditDebounceTimer = null;
-const _textEditDebounceDelay = 1500; // 1.5 secondes
+const _textEditDebounceDelay = 500; // 0.5 secondes - réduit pour une meilleure réactivité
 
 /**
  * Installe les hooks automatiques sur les editeurs de texte
