@@ -74,7 +74,6 @@ function createSceneNavToolbar() {
     sceneNavToolbar.id = 'sceneNavToolbar';
     sceneNavToolbar.className = 'scene-nav-toolbar';
     sceneNavToolbar.innerHTML = `
-        <div class="scene-nav-line"></div>
         <div class="scene-nav-buttons">
             <button class="scene-nav-btn scene-nav-prev" title="Déplacer vers la scène précédente (tout le texte avant le curseur)">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -86,6 +85,11 @@ function createSceneNavToolbar() {
                     <polyline points="9 18 15 12 9 6"></polyline>
                 </svg>
             </button>
+        </div>
+        <div class="scene-nav-line"></div>
+        <div class="scene-nav-word-counts">
+            <span class="scene-nav-words-before" title="Mots avant le curseur">0 mots</span>
+            <span class="scene-nav-words-after" title="Mots après le curseur">0 mots</span>
         </div>
     `;
 
@@ -234,9 +238,76 @@ function updateSceneNavToolbarPosition() {
     sceneNavToolbar.style.left = `${toolbarLeft}px`;
     sceneNavToolbar.style.top = `${toolbarTop}px`;
     sceneNavToolbar.style.width = `${editorRect.width}px`;
+
+    // Calculer et afficher le nombre de mots avant/après le curseur
+    updateWordCountsDisplay(editor, range);
+
     sceneNavToolbar.classList.add('visible');
 
     lastCursorRect = rect;
+}
+
+/**
+ * Calcule et met à jour l'affichage du nombre de mots avant et après le curseur.
+ */
+function updateWordCountsDisplay(editor, range) {
+    if (!sceneNavToolbar) return;
+
+    const wordsBeforeEl = sceneNavToolbar.querySelector('.scene-nav-words-before');
+    const wordsAfterEl = sceneNavToolbar.querySelector('.scene-nav-words-after');
+
+    if (!wordsBeforeEl || !wordsAfterEl) return;
+
+    try {
+        // Créer un range du début de l'éditeur jusqu'au curseur
+        const beforeRange = document.createRange();
+        beforeRange.setStart(editor, 0);
+        beforeRange.setEnd(range.startContainer, range.startOffset);
+
+        // Extraire le texte avant le curseur
+        const beforeFragment = beforeRange.cloneContents();
+        const beforeDiv = document.createElement('div');
+        beforeDiv.appendChild(beforeFragment);
+        const textBefore = beforeDiv.textContent || '';
+
+        // Créer un range du curseur jusqu'à la fin de l'éditeur
+        const afterRange = document.createRange();
+        afterRange.setStart(range.endContainer, range.endOffset);
+        if (editor.lastChild) {
+            afterRange.setEndAfter(editor.lastChild);
+        } else {
+            afterRange.setEnd(editor, editor.childNodes.length);
+        }
+
+        // Extraire le texte après le curseur
+        const afterFragment = afterRange.cloneContents();
+        const afterDiv = document.createElement('div');
+        afterDiv.appendChild(afterFragment);
+        const textAfter = afterDiv.textContent || '';
+
+        // Compter les mots
+        const wordsBefore = countWords(textBefore);
+        const wordsAfter = countWords(textAfter);
+
+        // Mettre à jour l'affichage
+        wordsBeforeEl.textContent = `${wordsBefore} mots`;
+        wordsAfterEl.textContent = `${wordsAfter} mots`;
+    } catch (e) {
+        // En cas d'erreur, ne pas bloquer
+        wordsBeforeEl.textContent = '- mots';
+        wordsAfterEl.textContent = '- mots';
+    }
+}
+
+/**
+ * Compte le nombre de mots dans un texte.
+ */
+function countWords(text) {
+    if (!text || typeof text !== 'string') return 0;
+    // Supprimer les espaces multiples et compter les mots
+    const trimmed = text.trim();
+    if (trimmed === '') return 0;
+    return trimmed.split(/\s+/).filter(word => word.length > 0).length;
 }
 
 /**

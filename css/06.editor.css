@@ -828,18 +828,49 @@ a/* Main Editor */
     pointer-events: auto;
 }
 
-.scene-nav-line {
-    flex: 1;
-    height: 1px;
-    background: linear-gradient(90deg, var(--primary-color) 0%, transparent 100%);
-    margin-left: 50px;
-}
-
 .scene-nav-buttons {
     display: flex;
     gap: 4px;
+    flex-shrink: 0;
+}
+
+.scene-nav-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--primary-color) 0%, transparent 80%);
+    margin: 0 10px;
+}
+
+.scene-nav-word-counts {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+    flex-shrink: 0;
+    position: relative;
+}
+
+.scene-nav-words-before,
+.scene-nav-words-after {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    line-height: 1;
+}
+
+.scene-nav-words-before {
     position: absolute;
-    left: 0;
+    bottom: 4px;
+    right: 0;
+    color: var(--accent-gold);
+}
+
+.scene-nav-words-after {
+    position: absolute;
+    top: 4px;
+    right: 0;
+    color: var(--primary-color);
 }
 
 .scene-nav-btn {
