@@ -794,6 +794,11 @@ function renderEditor(act, chapter, scene) {
         const editor = document.querySelector('.editor-textarea');
         if (editor && editor.textContent.trim() === '') editor.focus();
     }, 100);
+
+    // Initialize scene navigation toolbar
+    setTimeout(() => {
+        if (typeof initSceneNavigation === 'function') initSceneNavigation();
+    }, 200);
 }
 
 /**
@@ -874,6 +879,7 @@ function renderActEditor(act) {
                     <div class="editor-textarea" contenteditable="true" spellcheck="true"
                          data-scene-id="${scene.id}"
                          data-chapter-id="${chapter.id}"
+                         data-act-id="${act.id}"
                          oninput="updateActSceneContent(${act.id}, ${chapter.id}, ${scene.id})">${scene.content || ''}</div>
                 </div>`;
         });
@@ -934,6 +940,11 @@ function renderActEditor(act) {
     setTimeout(() => {
         initActScrollTracking(act.id, allScenes);
     }, 100);
+
+    // Initialize scene navigation toolbar
+    setTimeout(() => {
+        if (typeof initSceneNavigation === 'function') initSceneNavigation();
+    }, 200);
 }
 
 /**
@@ -976,6 +987,8 @@ function renderChapterEditor(act, chapter) {
                 </div>
                 <div class="editor-textarea" contenteditable="true" spellcheck="true"
                      data-scene-id="${scene.id}"
+                     data-chapter-id="${chapter.id}"
+                     data-act-id="${act.id}"
                      oninput="updateChapterSceneContent(${act.id}, ${chapter.id}, ${scene.id})">${scene.content || ''}</div>
             </div>`;
     });
@@ -1033,6 +1046,11 @@ function renderChapterEditor(act, chapter) {
     setTimeout(() => {
         initChapterScrollTracking(act.id, chapter.id);
     }, 100);
+
+    // Initialize scene navigation toolbar
+    setTimeout(() => {
+        if (typeof initSceneNavigation === 'function') initSceneNavigation();
+    }, 200);
 }
 
 /**
