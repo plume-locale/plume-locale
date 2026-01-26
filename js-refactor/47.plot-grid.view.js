@@ -849,7 +849,7 @@ function initPlotGridMenu() {
     btn.className = 'nav-btn';
 
     btn.innerHTML = `
-        <span class="nav-btn-icon"><i data-lucide="grid-3x3"></i></span>
+        <span class="nav-btn-icon"><i data-lucide="layout-grid"></i></span>
         <span class="nav-btn-text">Plot Grid</span>
     `;
     btn.onclick = () => switchView('plotgrid');
@@ -872,7 +872,7 @@ function initPlotGridMenu() {
         mobileBtn.setAttribute('data-view', 'plotgrid');
         mobileBtn.onclick = () => switchViewMobile('plotgrid');
         mobileBtn.innerHTML = `
-            <span class="mobile-nav-item-icon"><i data-lucide="grid-3x3"></i></span>
+            <span class="mobile-nav-item-icon"><i data-lucide="layout-grid"></i></span>
             <span>Plot Grid</span>
         `;
         mobileNavPlotBtn.parentNode.insertBefore(mobileBtn, mobileNavPlotBtn.nextSibling);
