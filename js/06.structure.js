@@ -1049,12 +1049,6 @@ function openScene(actId, chapterId, sceneId) {
     // Update scene versions sidebar
     renderSceneVersionsList();
 
-    // Update arc scene panel if it's visible
-    const arcPanel = document.getElementById('arcScenePanel');
-    if (arcPanel && !arcPanel.classList.contains('hidden')) {
-        renderArcScenePanel();
-    }
-
     // Afficher automatiquement le panneau d'annotations si la scène en contient (sauf sur mobile)
     const annotationsPanel = document.getElementById('annotationsPanel');
     const annotations = getVersionAnnotations(scene);

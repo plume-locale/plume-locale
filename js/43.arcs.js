@@ -427,21 +427,6 @@ function deleteNarrativeArc(arcId) {
 // SCENE PANEL (For editing arcs in a scene)
 // ============================================
 
-// [MVVM : ViewModel]
-// Helper function to get current scene, act, and chapter objects from IDs
-function getArcPanelCurrentContext() {
-    if (!currentActId || !currentChapterId || !currentSceneId) return null;
-
-    const act = project.acts.find(a => a.id === currentActId);
-    if (!act) return null;
-    const chapter = act.chapters.find(c => c.id === currentChapterId);
-    if (!chapter) return null;
-    const scene = chapter.scenes.find(s => s.id === currentSceneId);
-    if (!scene) return null;
-
-    return { act, chapter, scene };
-}
-
 // [MVVM : View]
 // Alterne la visibilité du panneau des arcs pour une scène.
 function toggleArcScenePanel() {
@@ -464,10 +449,7 @@ function toggleArcScenePanel() {
 // [MVVM : View]
 // Affiche le panneau de gestion des arcs narratifs pour la scène courante.
 function renderArcScenePanel() {
-    const context = getArcPanelCurrentContext();
-    if (!context) return;
-
-    const { scene: currentScene } = context;
+    if (!currentScene) return;
 
     const content = document.getElementById('arcScenePanelContent');
     if (!content) return;
@@ -577,18 +559,15 @@ function addArcToCurrentScene() {
     const arcId = select.value;
     if (!arcId) return;
 
-    const context = getArcPanelCurrentContext();
-    if (!context) return;
-
     const arc = project.narrativeArcs.find(a => a.id === arcId);
-    if (!arc) return;
+    if (!arc || !currentScene) return;
 
     if (!arc.scenePresence) arc.scenePresence = [];
 
     arc.scenePresence.push({
-        actId: context.act.id,
-        chapterId: context.chapter.id,
-        sceneId: context.scene.id,
+        actId: currentAct.id,
+        chapterId: currentChapter.id,
+        sceneId: currentScene.id,
         intensity: 3,
         notes: '',
         status: 'development'
@@ -602,13 +581,10 @@ function addArcToCurrentScene() {
 // Group: Use Case | Naming: RemoveArcFromSceneUseCase
 // Retire un arc de la scène courante et met à jour le modèle.
 function removeArcFromScene(arcId) {
-    const context = getArcPanelCurrentContext();
-    if (!context) return;
-
     const arc = project.narrativeArcs.find(a => a.id === arcId);
-    if (!arc) return;
+    if (!arc || !currentScene) return;
 
-    arc.scenePresence = arc.scenePresence.filter(p => p.sceneId !== context.scene.id);
+    arc.scenePresence = arc.scenePresence.filter(p => p.sceneId !== currentScene.id);
     saveProject();
     renderArcScenePanel();
 }
@@ -617,13 +593,10 @@ function removeArcFromScene(arcId) {
 // Group: Use Case | Naming: UpdateArcIntensityUseCase
 // Met à jour l'intensité d'un arc dans une scène (Model) et rafraîchit l'affichage (View).
 function updateArcIntensity(arcId, intensity) {
-    const context = getArcPanelCurrentContext();
-    if (!context) return;
-
     const arc = project.narrativeArcs.find(a => a.id === arcId);
-    if (!arc) return;
+    if (!arc || !currentScene) return;
 
-    const presence = arc.scenePresence.find(p => p.sceneId === context.scene.id);
+    const presence = arc.scenePresence.find(p => p.sceneId === currentScene.id);
     if (presence) {
         presence.intensity = parseInt(intensity);
 
@@ -641,13 +614,10 @@ function updateArcIntensity(arcId, intensity) {
 // [MVVM : ViewModel]
 // Met à jour le statut d'avancement d'un arc pour la scène courante.
 function updateArcStatus(arcId, status) {
-    const context = getArcPanelCurrentContext();
-    if (!context) return;
-
     const arc = project.narrativeArcs.find(a => a.id === arcId);
-    if (!arc) return;
+    if (!arc || !currentScene) return;
 
-    const presence = arc.scenePresence.find(p => p.sceneId === context.scene.id);
+    const presence = arc.scenePresence.find(p => p.sceneId === currentScene.id);
     if (presence) {
         presence.status = status;
         saveProject();
@@ -657,13 +627,10 @@ function updateArcStatus(arcId, status) {
 // [MVVM : ViewModel]
 // Enregistre les notes spécifiques à un arc pour la scène courante.
 function updateArcNotes(arcId, notes) {
-    const context = getArcPanelCurrentContext();
-    if (!context) return;
-
     const arc = project.narrativeArcs.find(a => a.id === arcId);
-    if (!arc) return;
+    if (!arc || !currentScene) return;
 
-    const presence = arc.scenePresence.find(p => p.sceneId === context.scene.id);
+    const presence = arc.scenePresence.find(p => p.sceneId === currentScene.id);
     if (presence) {
         presence.notes = notes;
         saveProject();
