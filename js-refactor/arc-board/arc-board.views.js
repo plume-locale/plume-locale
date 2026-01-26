@@ -544,20 +544,29 @@ const ArcBoardView = {
 
     _renderDragHandle(itemId, isFloating = false) {
         const className = isFloating ? 'arc-floating-drag-handle' : 'arc-card-drag-handle';
-        const handler = isFloating
-            ? `DragDropService.startFloatingDrag(event, '${itemId}')`
-            : `DragDropService.startCardDrag(event, '${itemId}', this.closest('.arc-column').dataset.itemId)`;
 
-        return `
-            <div class="${className}"
-                 draggable="true"
-                 ondragstart="${handler}"
-                 ondragend="DragDropService.endDrag(event)"
-                 onmousedown="event.stopPropagation()"
-                 title="Glisser pour déplacer">
-                <i data-lucide="grip-vertical"></i>
-            </div>
-        `;
+        if (isFloating) {
+            // Pour les éléments flottants: utiliser ItemMoveService pour repositionner sur le canvas
+            return `
+                <div class="${className}"
+                     onmousedown="ItemMoveService.start(event, '${itemId}'); event.stopPropagation();"
+                     title="Glisser pour déplacer">
+                    <i data-lucide="grip-vertical"></i>
+                </div>
+            `;
+        } else {
+            // Pour les cartes: utiliser DragDropService pour le drag & drop entre colonnes
+            return `
+                <div class="${className}"
+                     draggable="true"
+                     ondragstart="DragDropService.startCardDrag(event, '${itemId}', this.closest('.arc-column').dataset.itemId)"
+                     ondragend="DragDropService.endDrag(event)"
+                     onmousedown="event.stopPropagation()"
+                     title="Glisser pour déplacer">
+                    <i data-lucide="grip-vertical"></i>
+                </div>
+            `;
+        }
     },
 
     _renderColumn(item, isSelected) {
