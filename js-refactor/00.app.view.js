@@ -45,6 +45,54 @@ function executeRepositorySideEffect(repoSideEffect) {
 // --- NAVIGATION & ROUTING ---
 
 /**
+ * Ferme tous les panneaux du toolsSidebar (versions, annotations, todos, arcs, plot).
+ */
+function closeAllToolsSidebarPanels() {
+    // Fermer le panneau des versions
+    const sidebarVersions = document.getElementById('sidebarVersions');
+    const toolVersionsBtn = document.getElementById('toolVersionsBtn');
+    const headerVersionsToggle = document.getElementById('headerVersionsToggle');
+    if (sidebarVersions && !sidebarVersions.classList.contains('hidden')) {
+        sidebarVersions.classList.add('hidden');
+        if (toolVersionsBtn) toolVersionsBtn.classList.remove('active');
+        if (headerVersionsToggle) headerVersionsToggle.classList.remove('active');
+        if (typeof sceneVersionsSidebarVisible !== 'undefined') {
+            sceneVersionsSidebarVisible = false;
+        }
+    }
+
+    // Fermer le panneau des annotations
+    if (typeof closeAnnotationsPanel === 'function') {
+        closeAnnotationsPanel();
+    }
+
+    // Fermer le panneau des TODOs
+    if (typeof closeTodosPanel === 'function') {
+        closeTodosPanel();
+    }
+
+    // Fermer le panneau des arcs narratifs
+    const arcScenePanel = document.getElementById('arcScenePanel');
+    const toolArcsBtn = document.getElementById('toolArcsBtn');
+    const sidebarArcsBtn = document.getElementById('sidebarArcsBtn');
+    if (arcScenePanel && !arcScenePanel.classList.contains('hidden')) {
+        arcScenePanel.classList.add('hidden');
+        if (toolArcsBtn) toolArcsBtn.classList.remove('active');
+        if (sidebarArcsBtn) sidebarArcsBtn.classList.remove('active');
+    }
+
+    // Fermer le panneau de l'intrigue (PlotGrid)
+    const sidebarPlot = document.getElementById('sidebarPlot');
+    const toolPlotBtn = document.getElementById('toolPlotBtn');
+    const sidebarPlotBtn = document.getElementById('sidebarPlotBtn');
+    if (sidebarPlot && !sidebarPlot.classList.contains('hidden')) {
+        sidebarPlot.classList.add('hidden');
+        if (toolPlotBtn) toolPlotBtn.classList.remove('active');
+        if (sidebarPlotBtn) sidebarPlotBtn.classList.remove('active');
+    }
+}
+
+/**
  * Change la vue principale de l'application.
  */
 function switchView(view) {
@@ -54,6 +102,11 @@ function switchView(view) {
             switchSplitPanelView(splitActivePanel, view);
         }
         return;
+    }
+
+    // Fermer tous les panneaux du toolsSidebar quand on quitte la vue structure
+    if (currentView === 'editor' && view !== 'editor') {
+        closeAllToolsSidebarPanels();
     }
 
     currentView = view;
