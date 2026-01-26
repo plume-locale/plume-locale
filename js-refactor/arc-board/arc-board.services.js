@@ -191,16 +191,16 @@ const DragDropService = {
 
                         saveProject();
                     }
-
-                    // Rafraîchir le panneau arcScenePanel s'il est visible
-                    const arcPanel = document.getElementById('arcScenePanel');
-                    if (arcPanel && !arcPanel.classList.contains('hidden') && typeof renderArcScenePanel === 'function') {
-                        renderArcScenePanel();
-                    }
                 }
             }
 
             ArcBoardViewModel.renderItems();
+
+            // Rafraîchir le panneau arcScenePanel s'il est visible (pour CARD et FLOATING)
+            const arcPanel = document.getElementById('arcScenePanel');
+            if (arcPanel && !arcPanel.classList.contains('hidden') && typeof renderArcScenePanel === 'function') {
+                renderArcScenePanel();
+            }
         } finally {
             this.reset();
         }
@@ -254,6 +254,12 @@ const DragDropService = {
                 position
             );
             ArcBoardViewModel.renderItems();
+
+            // Rafraîchir le panneau arcScenePanel s'il est visible
+            const arcPanel = document.getElementById('arcScenePanel');
+            if (arcPanel && !arcPanel.classList.contains('hidden') && typeof renderArcScenePanel === 'function') {
+                renderArcScenePanel();
+            }
         } finally {
             this.reset();
         }

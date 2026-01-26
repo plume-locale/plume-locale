@@ -264,6 +264,14 @@ function convertCardToItem(card, position) {
             item.url = card.url || '';
             item.title = card.title || '';
             break;
+        case 'scene':
+            item.sceneId = card.sceneId || '';
+            item.sceneTitle = card.sceneTitle || '';
+            item.breadcrumb = card.breadcrumb || '';
+            item.intensity = card.intensity || 3;
+            item.status = card.status || 'development';
+            item.notes = card.notes || '';
+            break;
     }
 
     return item;

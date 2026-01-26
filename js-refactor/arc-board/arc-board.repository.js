@@ -396,6 +396,14 @@ const CardRepository = {
         const arc = ArcRepository.getById(arcId);
         arc.board.items.push(item);
 
+        // Si c'est une carte scene, mettre à jour scenePresence.columnId à null
+        if (card.type === 'scene' && card.sceneId && arc.scenePresence) {
+            const presence = arc.scenePresence.find(p => p.sceneId == card.sceneId);
+            if (presence) {
+                presence.columnId = null;
+            }
+        }
+
         this._save();
         return item;
     },
