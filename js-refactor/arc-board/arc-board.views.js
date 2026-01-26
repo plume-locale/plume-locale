@@ -997,7 +997,7 @@ const ArcBoardView = {
                  data-item-id="${item.id}"
                  data-item-type="scene"
                  data-scene-id="${item.sceneId || ''}"
-                 style="left: ${item.x}px; top: ${item.y}px; width: ${item.width || 220}px"
+                 style="left: ${item.x}px; top: ${item.y}px; width: ${item.width || 220}px; z-index: ${item.zIndex || 1}"
                  onclick="ArcBoardViewModel.selectItem('${item.id}', event.ctrlKey || event.metaKey)">
                 ${this._renderDragHandle(item.id, true)}
                 <button class="arc-floating-delete" onclick="event.stopPropagation(); deleteArcItem('${item.id}')" title="Supprimer">

@@ -847,18 +847,75 @@ function updateArcColumn(arcId, columnId) {
         }
     } else {
         // Arc général: créer un élément flottant scene sur le canvas
+        // Trouver une position libre qui ne chevauche pas d'autres éléments
+        const itemWidth = 220;
+        const itemHeight = 120;
+        const padding = 20;
+
+        // Calculer les bounding boxes de tous les éléments existants
+        const existingItems = arc.board.items || [];
+        const boundingBoxes = existingItems.map(item => ({
+            x: item.x || 0,
+            y: item.y || 0,
+            width: item.width || (item.type === 'column' ? 280 : 220),
+            height: item.type === 'column' ? 400 : 150
+        }));
+
+        // Fonction pour vérifier si une position chevauche un élément
+        const isOverlapping = (x, y, w, h) => {
+            return boundingBoxes.some(box =>
+                x < box.x + box.width + padding &&
+                x + w + padding > box.x &&
+                y < box.y + box.height + padding &&
+                y + h + padding > box.y
+            );
+        };
+
+        // Trouver une position libre (essayer à droite des éléments existants)
+        let newX = 50;
+        let newY = 50;
+
+        if (boundingBoxes.length > 0) {
+            // Trouver le x maximum (bord droit) de tous les éléments
+            const maxRight = Math.max(...boundingBoxes.map(b => b.x + b.width));
+            newX = maxRight + padding + 30;
+            newY = 50;
+
+            // Si trop à droite (> 1200px), essayer en dessous
+            if (newX > 1200) {
+                newX = 50;
+                const maxBottom = Math.max(...boundingBoxes.map(b => b.y + b.height));
+                newY = maxBottom + padding + 30;
+            }
+
+            // Vérifier si la position chevauche, si oui chercher une autre place
+            let attempts = 0;
+            while (isOverlapping(newX, newY, itemWidth, itemHeight) && attempts < 20) {
+                newY += itemHeight + padding;
+                if (newY > 800) {
+                    newY = 50;
+                    newX += itemWidth + padding;
+                }
+                attempts++;
+            }
+        }
+
+        // Calculer le z-index max actuel + 1
+        const maxZIndex = existingItems.reduce((max, item) => Math.max(max, item.zIndex || 0), 0);
+
         const floatingSceneItem = {
             id: 'item_' + Date.now(),
             type: 'scene',
-            x: 50,
-            y: 50 + (arc.board.items.filter(i => i.type === 'scene').length * 150),
+            x: newX,
+            y: newY,
             sceneId: currentSceneId,
             sceneTitle: scene.title,
             breadcrumb: breadcrumb,
             intensity: presence.intensity,
             status: presence.status,
             notes: presence.notes,
-            width: 220
+            width: itemWidth,
+            zIndex: maxZIndex + 1
         };
         arc.board.items.push(floatingSceneItem);
     }
