@@ -8,6 +8,29 @@
 let sceneNavToolbar = null;
 let sceneNavUpdateTimeout = null;
 let lastCursorRect = null;
+let savedSelection = null;
+
+/**
+ * Sauvegarde la sélection actuelle.
+ */
+function saveSelection() {
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount > 0) {
+        return selection.getRangeAt(0).cloneRange();
+    }
+    return null;
+}
+
+/**
+ * Restaure une sélection sauvegardée.
+ */
+function restoreSelection(range) {
+    if (range) {
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+    }
+}
 
 /**
  * Initialise la barre de navigation entre scènes.
@@ -53,12 +76,12 @@ function createSceneNavToolbar() {
     sceneNavToolbar.innerHTML = `
         <div class="scene-nav-line"></div>
         <div class="scene-nav-buttons">
-            <button class="scene-nav-btn scene-nav-prev" onclick="moveTextToPreviousScene()" title="Déplacer vers la scène précédente (tout le texte avant le curseur)">
+            <button class="scene-nav-btn scene-nav-prev" title="Déplacer vers la scène précédente (tout le texte avant le curseur)">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="15 18 9 12 15 6"></polyline>
                 </svg>
             </button>
-            <button class="scene-nav-btn scene-nav-next" onclick="moveTextToNextScene()" title="Déplacer vers la scène suivante (tout le texte après le curseur)">
+            <button class="scene-nav-btn scene-nav-next" title="Déplacer vers la scène suivante (tout le texte après le curseur)">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="9 18 15 12 9 6"></polyline>
                 </svg>
@@ -67,6 +90,26 @@ function createSceneNavToolbar() {
     `;
 
     document.body.appendChild(sceneNavToolbar);
+
+    // Attacher les événements avec mousedown + preventDefault pour conserver la sélection
+    const prevBtn = sceneNavToolbar.querySelector('.scene-nav-prev');
+    const nextBtn = sceneNavToolbar.querySelector('.scene-nav-next');
+
+    prevBtn.addEventListener('mousedown', (e) => {
+        e.preventDefault(); // Empêche la perte de focus/sélection
+        e.stopPropagation();
+        // Sauvegarder la sélection avant l'action
+        savedSelection = saveSelection();
+        moveTextToPreviousScene();
+    });
+
+    nextBtn.addEventListener('mousedown', (e) => {
+        e.preventDefault(); // Empêche la perte de focus/sélection
+        e.stopPropagation();
+        // Sauvegarder la sélection avant l'action
+        savedSelection = saveSelection();
+        moveTextToNextScene();
+    });
 }
 
 /**
@@ -278,14 +321,21 @@ function moveTextToPreviousScene() {
         return;
     }
 
-    const selection = window.getSelection();
-    if (!selection || selection.rangeCount === 0) return;
+    // Utiliser la sélection sauvegardée ou la sélection courante
+    let range = savedSelection;
+    if (!range) {
+        const selection = window.getSelection();
+        if (!selection || selection.rangeCount === 0) {
+            showNotification('Placez votre curseur dans le texte', 'warning');
+            return;
+        }
+        range = selection.getRangeAt(0);
+    }
 
     // Sauvegarder l'état pour undo
     if (typeof saveToHistoryImmediate === 'function') saveToHistoryImmediate();
 
     // Créer un range du début de l'éditeur jusqu'au curseur
-    const range = selection.getRangeAt(0);
     const beforeRange = document.createRange();
     beforeRange.setStart(editor, 0);
     beforeRange.setEnd(range.startContainer, range.startOffset);
@@ -337,11 +387,15 @@ function moveTextToPreviousScene() {
     if (typeof renderActsList === 'function') renderActsList();
 
     // Placer le curseur au début de l'éditeur
+    const newSelection = window.getSelection();
     const newRange = document.createRange();
     newRange.setStart(editor, 0);
     newRange.collapse(true);
-    selection.removeAllRanges();
-    selection.addRange(newRange);
+    newSelection.removeAllRanges();
+    newSelection.addRange(newRange);
+
+    // Nettoyer la sélection sauvegardée
+    savedSelection = null;
 
     showNotification(`Texte déplacé vers "${prevScene.title}"`, 'success');
     hideSceneNavToolbar();
@@ -360,17 +414,30 @@ function moveTextToNextScene() {
         return;
     }
 
-    const selection = window.getSelection();
-    if (!selection || selection.rangeCount === 0) return;
+    // Utiliser la sélection sauvegardée ou la sélection courante
+    let range = savedSelection;
+    if (!range) {
+        const selection = window.getSelection();
+        if (!selection || selection.rangeCount === 0) {
+            showNotification('Placez votre curseur dans le texte', 'warning');
+            return;
+        }
+        range = selection.getRangeAt(0);
+    }
 
     // Sauvegarder l'état pour undo
     if (typeof saveToHistoryImmediate === 'function') saveToHistoryImmediate();
 
     // Créer un range du curseur jusqu'à la fin de l'éditeur
-    const range = selection.getRangeAt(0);
     const afterRange = document.createRange();
     afterRange.setStart(range.endContainer, range.endOffset);
-    afterRange.setEndAfter(editor.lastChild || editor);
+
+    // Gérer le cas où l'éditeur est vide ou le lastChild n'existe pas
+    if (editor.lastChild) {
+        afterRange.setEndAfter(editor.lastChild);
+    } else {
+        afterRange.setEnd(editor, editor.childNodes.length);
+    }
 
     // Extraire le contenu HTML après le curseur
     const fragment = afterRange.cloneContents();
@@ -417,6 +484,9 @@ function moveTextToNextScene() {
     if (typeof saveProject === 'function') saveProject();
     if (typeof updateStats === 'function') updateStats();
     if (typeof renderActsList === 'function') renderActsList();
+
+    // Nettoyer la sélection sauvegardée
+    savedSelection = null;
 
     showNotification(`Texte déplacé vers "${nextScene.title}"`, 'success');
     hideSceneNavToolbar();
