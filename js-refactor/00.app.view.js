@@ -788,6 +788,11 @@ function renderEditor(act, chapter, scene) {
         const editor = document.querySelector('.editor-textarea');
         if (editor && editor.textContent.trim() === '') editor.focus();
     }, 100);
+
+    // Initialize scene navigation toolbar
+    setTimeout(() => {
+        if (typeof initSceneNavigation === 'function') initSceneNavigation();
+    }, 200);
 }
 
 /**
