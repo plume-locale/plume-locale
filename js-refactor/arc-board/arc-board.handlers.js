@@ -299,6 +299,134 @@ const ArcBoardEventHandlers = {
         saveProject();
     },
 
+    // Ajouter/supprimer lignes et colonnes pour tableaux dans cartes
+    addCardTableRow(columnId, cardId) {
+        const arc = ArcBoardViewModel.getCurrentArc();
+        if (!arc) return;
+
+        const card = CardRepository.getById(arc.id, columnId, cardId);
+        if (!card) return;
+
+        card.rows = (card.rows || 3) + 1;
+        if (!card.data) card.data = [];
+
+        saveProject();
+        ArcBoardViewModel.renderItems();
+    },
+
+    addCardTableCol(columnId, cardId) {
+        const arc = ArcBoardViewModel.getCurrentArc();
+        if (!arc) return;
+
+        const card = CardRepository.getById(arc.id, columnId, cardId);
+        if (!card) return;
+
+        card.cols = (card.cols || 3) + 1;
+
+        saveProject();
+        ArcBoardViewModel.renderItems();
+    },
+
+    removeCardTableRow(columnId, cardId, rowIndex) {
+        const arc = ArcBoardViewModel.getCurrentArc();
+        if (!arc) return;
+
+        const card = CardRepository.getById(arc.id, columnId, cardId);
+        if (!card || (card.rows || 3) <= 1) return;
+
+        card.rows = (card.rows || 3) - 1;
+        if (card.data && card.data[rowIndex]) {
+            card.data.splice(rowIndex, 1);
+        }
+
+        saveProject();
+        ArcBoardViewModel.renderItems();
+    },
+
+    removeCardTableCol(columnId, cardId, colIndex) {
+        const arc = ArcBoardViewModel.getCurrentArc();
+        if (!arc) return;
+
+        const card = CardRepository.getById(arc.id, columnId, cardId);
+        if (!card || (card.cols || 3) <= 1) return;
+
+        card.cols = (card.cols || 3) - 1;
+        if (card.data) {
+            card.data.forEach(row => {
+                if (row && row.length > colIndex) {
+                    row.splice(colIndex, 1);
+                }
+            });
+        }
+
+        saveProject();
+        ArcBoardViewModel.renderItems();
+    },
+
+    // Ajouter/supprimer lignes et colonnes pour tableaux flottants
+    addTableRow(itemId) {
+        const arc = ArcBoardViewModel.getCurrentArc();
+        if (!arc) return;
+
+        const item = BoardItemRepository.getById(arc.id, itemId);
+        if (!item) return;
+
+        item.rows = (item.rows || 3) + 1;
+        if (!item.data) item.data = [];
+
+        saveProject();
+        ArcBoardViewModel.renderItems();
+    },
+
+    addTableCol(itemId) {
+        const arc = ArcBoardViewModel.getCurrentArc();
+        if (!arc) return;
+
+        const item = BoardItemRepository.getById(arc.id, itemId);
+        if (!item) return;
+
+        item.cols = (item.cols || 3) + 1;
+
+        saveProject();
+        ArcBoardViewModel.renderItems();
+    },
+
+    removeTableRow(itemId, rowIndex) {
+        const arc = ArcBoardViewModel.getCurrentArc();
+        if (!arc) return;
+
+        const item = BoardItemRepository.getById(arc.id, itemId);
+        if (!item || (item.rows || 3) <= 1) return;
+
+        item.rows = (item.rows || 3) - 1;
+        if (item.data && item.data[rowIndex]) {
+            item.data.splice(rowIndex, 1);
+        }
+
+        saveProject();
+        ArcBoardViewModel.renderItems();
+    },
+
+    removeTableCol(itemId, colIndex) {
+        const arc = ArcBoardViewModel.getCurrentArc();
+        if (!arc) return;
+
+        const item = BoardItemRepository.getById(arc.id, itemId);
+        if (!item || (item.cols || 3) <= 1) return;
+
+        item.cols = (item.cols || 3) - 1;
+        if (item.data) {
+            item.data.forEach(row => {
+                if (row && row.length > colIndex) {
+                    row.splice(colIndex, 1);
+                }
+            });
+        }
+
+        saveProject();
+        ArcBoardViewModel.renderItems();
+    },
+
     // ==========================================
     // LINKS
     // ==========================================

@@ -736,13 +736,41 @@ const ArcBoardView = {
                                        onblur="ArcBoardEventHandlers.updateCardTableCell('${columnId}', '${card.id}', ${r}, ${c}, this.textContent)"
                                        onclick="event.stopPropagation()">${cellData}</${tag}>`;
                     }
+                    // Bouton supprimer ligne (sauf header)
+                    if (r > 0) {
+                        tableHtml += `<td class="arc-table-action" onclick="ArcBoardEventHandlers.removeCardTableRow('${columnId}', '${card.id}', ${r}); event.stopPropagation();">
+                            <i data-lucide="minus"></i>
+                        </td>`;
+                    } else {
+                        tableHtml += '<th class="arc-table-action"></th>';
+                    }
                     tableHtml += '</tr>';
                 }
+                // Ligne pour supprimer colonnes
+                tableHtml += '<tr class="arc-table-actions-row">';
+                for (let c = 0; c < cols; c++) {
+                    if (cols > 1) {
+                        tableHtml += `<td class="arc-table-action" onclick="ArcBoardEventHandlers.removeCardTableCol('${columnId}', '${card.id}', ${c}); event.stopPropagation();">
+                            <i data-lucide="minus"></i>
+                        </td>`;
+                    } else {
+                        tableHtml += '<td class="arc-table-action"></td>';
+                    }
+                }
+                tableHtml += '<td class="arc-table-action"></td></tr>';
                 tableHtml += '</table>';
                 return `
                     <div class="arc-card arc-card-table" data-card-id="${card.id}">
                         ${dragHandle}${deleteBtn}
                         ${tableHtml}
+                        <div class="arc-table-controls">
+                            <button class="arc-table-btn" onclick="ArcBoardEventHandlers.addCardTableRow('${columnId}', '${card.id}'); event.stopPropagation();" title="Ajouter une ligne">
+                                <i data-lucide="plus"></i> Ligne
+                            </button>
+                            <button class="arc-table-btn" onclick="ArcBoardEventHandlers.addCardTableCol('${columnId}', '${card.id}'); event.stopPropagation();" title="Ajouter une colonne">
+                                <i data-lucide="plus"></i> Colonne
+                            </button>
+                        </div>
                     </div>
                 `;
 
@@ -891,8 +919,28 @@ const ArcBoardView = {
                                onblur="ArcBoardEventHandlers.updateTableCell('${item.id}', ${r}, ${c}, this.textContent)"
                                onclick="event.stopPropagation()">${cellData}</${tag}>`;
             }
+            // Bouton supprimer ligne (sauf header)
+            if (r > 0) {
+                tableHtml += `<td class="arc-table-action" onclick="ArcBoardEventHandlers.removeTableRow('${item.id}', ${r}); event.stopPropagation();">
+                    <i data-lucide="minus"></i>
+                </td>`;
+            } else {
+                tableHtml += '<th class="arc-table-action"></th>';
+            }
             tableHtml += '</tr>';
         }
+        // Ligne pour supprimer colonnes
+        tableHtml += '<tr class="arc-table-actions-row">';
+        for (let c = 0; c < cols; c++) {
+            if (cols > 1) {
+                tableHtml += `<td class="arc-table-action" onclick="ArcBoardEventHandlers.removeTableCol('${item.id}', ${c}); event.stopPropagation();">
+                    <i data-lucide="minus"></i>
+                </td>`;
+            } else {
+                tableHtml += '<td class="arc-table-action"></td>';
+            }
+        }
+        tableHtml += '<td class="arc-table-action"></td></tr>';
         tableHtml += '</table>';
 
         return `
@@ -905,6 +953,14 @@ const ArcBoardView = {
                 ${this._renderDragHandle(item.id, true)}
                 <div class="arc-card arc-card-table" style="margin:0">
                     ${tableHtml}
+                    <div class="arc-table-controls">
+                        <button class="arc-table-btn" onclick="ArcBoardEventHandlers.addTableRow('${item.id}'); event.stopPropagation();" title="Ajouter une ligne">
+                            <i data-lucide="plus"></i> Ligne
+                        </button>
+                        <button class="arc-table-btn" onclick="ArcBoardEventHandlers.addTableCol('${item.id}'); event.stopPropagation();" title="Ajouter une colonne">
+                            <i data-lucide="plus"></i> Colonne
+                        </button>
+                    </div>
                 </div>
             </div>
         `;
