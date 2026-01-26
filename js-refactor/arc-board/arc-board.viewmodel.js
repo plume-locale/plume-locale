@@ -389,6 +389,12 @@ const ArcBoardViewModel = {
 
         CardRepository.delete(arc.id, columnId, cardId);
         this.renderItems();
+
+        // Mettre à jour le panneau arcScenePanel s'il est visible
+        const arcPanel = document.getElementById('arcScenePanel');
+        if (arcPanel && !arcPanel.classList.contains('hidden') && typeof renderArcScenePanel === 'function') {
+            renderArcScenePanel();
+        }
     },
 
     /**

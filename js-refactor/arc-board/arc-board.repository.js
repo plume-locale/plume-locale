@@ -314,6 +314,20 @@ const CardRepository = {
         const index = column.cards.findIndex(c => c.id === cardId);
         if (index === -1) return false;
 
+        // Récupérer la carte avant suppression pour gérer le cas des cartes scene
+        const card = column.cards[index];
+
+        // Si c'est une carte scene, mettre à jour scenePresence (enlever le lien avec la colonne)
+        if (card.type === 'scene' && card.sceneId) {
+            const arc = ArcRepository.getById(arcId);
+            if (arc && arc.scenePresence) {
+                const presence = arc.scenePresence.find(p => p.sceneId == card.sceneId);
+                if (presence) {
+                    presence.columnId = null;
+                }
+            }
+        }
+
         column.cards.splice(index, 1);
         this._save();
         return true;
