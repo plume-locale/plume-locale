@@ -701,6 +701,8 @@ a/* Main Editor */
 
 .scene-separator-meta {
     display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
     gap: 1.5rem;
     font-size: 0.85rem;
     color: var(--text-muted);
@@ -710,6 +712,36 @@ a/* Main Editor */
 .scene-separator-synopsis {
     font-style: italic;
     color: var(--text-secondary);
+    font-family: 'Source Code Pro', monospace;
+    font-size: 0.85rem;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    padding: 0.3rem 0.5rem;
+    resize: none;
+    overflow: hidden;
+    min-height: 1.5em;
+    width: 100%;
+    flex: 1;
+    transition: all 0.2s ease;
+}
+
+.scene-separator-synopsis:hover {
+    background: var(--bg-primary);
+    border-color: var(--border-color);
+}
+
+.scene-separator-synopsis:focus {
+    outline: none;
+    background: var(--bg-primary);
+    border-color: var(--primary-color);
+    font-style: normal;
+}
+
+.scene-separator-synopsis::placeholder {
+    color: var(--text-muted);
+    font-style: italic;
+    opacity: 0.6;
 }
 
 /* Bloc de scène dans le mode chapitre */
