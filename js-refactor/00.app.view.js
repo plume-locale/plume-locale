@@ -871,9 +871,7 @@ function renderActEditor(act) {
                         <div class="scene-separator-title">${scene.title}${finalVersionBadge}</div>
                         <div class="scene-separator-meta">
                             <span>${wordCount} mots</span>
-                            ${scene.synopsis
-                                ? `<span class="scene-separator-synopsis" onclick="editSceneSynopsis(${act.id}, ${chapter.id}, ${scene.id}, this)" style="cursor: pointer;" title="Cliquez pour éditer le résumé">${scene.synopsis}</span>`
-                                : `<span class="scene-separator-synopsis-placeholder" onclick="editSceneSynopsis(${act.id}, ${chapter.id}, ${scene.id}, this)" style="cursor: pointer; opacity: 0.6;" title="Cliquez pour ajouter un résumé">Ajouter un résumé...</span>`}
+                            <textarea class="scene-separator-synopsis" placeholder="Ajouter un résumé..." onblur="saveSceneSynopsis(${act.id}, ${chapter.id}, ${scene.id}, this)" onkeydown="handleSynopsisKeydown(event, this)" rows="1" oninput="autoResizeSynopsis(this)">${scene.synopsis || ''}</textarea>
                         </div>
                     </div>
                     <div class="editor-textarea" contenteditable="true" spellcheck="true"
@@ -980,9 +978,7 @@ function renderChapterEditor(act, chapter) {
                     <div class="scene-separator-title">${scene.title}${finalVersionBadge}</div>
                     <div class="scene-separator-meta">
                         <span>${wordCount} mots</span>
-                        ${scene.synopsis
-                            ? `<span class="scene-separator-synopsis" onclick="editSceneSynopsis(${act.id}, ${chapter.id}, ${scene.id}, this)" style="cursor: pointer;" title="Cliquez pour éditer le résumé">${scene.synopsis}</span>`
-                            : `<span class="scene-separator-synopsis-placeholder" onclick="editSceneSynopsis(${act.id}, ${chapter.id}, ${scene.id}, this)" style="cursor: pointer; opacity: 0.6;" title="Cliquez pour ajouter un résumé">Ajouter un résumé...</span>`}
+                        <textarea class="scene-separator-synopsis" placeholder="Ajouter un résumé..." onblur="saveSceneSynopsis(${act.id}, ${chapter.id}, ${scene.id}, this)" onkeydown="handleSynopsisKeydown(event, this)" rows="1" oninput="autoResizeSynopsis(this)">${scene.synopsis || ''}</textarea>
                     </div>
                 </div>
                 <div class="editor-textarea" contenteditable="true" spellcheck="true"
@@ -1417,84 +1413,39 @@ function initActScrollTracking(actId, allScenes) {
 
 /**
  * [MVVM : View]
- * Permet l'édition du synopsis d'une scène en cliquant dessus.
+ * Sauvegarde le synopsis d'une scène depuis un textarea.
  */
-function editSceneSynopsis(actId, chapterId, sceneId, element) {
+function saveSceneSynopsis(actId, chapterId, sceneId, textarea) {
     const act = project.acts.find(a => a.id === actId);
     const chapter = act?.chapters.find(c => c.id === chapterId);
     const scene = chapter?.scenes.find(s => s.id === sceneId);
     if (!scene) return;
 
-    const originalText = scene.synopsis || '';
-    const isPlaceholder = element.classList.contains('scene-separator-synopsis-placeholder');
+    const newSynopsis = textarea.value.trim();
+    scene.synopsis = newSynopsis;
 
-    // Créer un input pour éditer le synopsis
-    const input = document.createElement('input');
-    input.type = 'text';
-    input.className = 'synopsis-edit-input';
-    input.value = originalText;
-    input.placeholder = 'Résumé de la scène...';
-    input.style.cssText = `
-        width: 100%;
-        padding: 0.3rem 0.5rem;
-        font-size: 0.85rem;
-        font-style: italic;
-        color: var(--text-secondary);
-        background: var(--bg-primary);
-        border: 1px solid var(--primary-color);
-        border-radius: 4px;
-        outline: none;
-    `;
+    // Sauvegarder le projet
+    if (typeof saveProject === 'function') saveProject();
+    if (typeof renderActsList === 'function') renderActsList();
+}
 
-    // Remplacer l'élément par l'input
-    const parent = element.parentNode;
-    parent.replaceChild(input, element);
-    input.focus();
-    input.select();
+/**
+ * [MVVM : View]
+ * Gère les raccourcis clavier dans le textarea de synopsis.
+ */
+function handleSynopsisKeydown(event, textarea) {
+    if (event.key === 'Escape') {
+        textarea.blur();
+    }
+}
 
-    const finish = () => {
-        const newSynopsis = input.value.trim();
-
-        // Mettre à jour le modèle
-        scene.synopsis = newSynopsis;
-
-        // Créer le nouveau span
-        let newElement;
-        if (newSynopsis) {
-            newElement = document.createElement('span');
-            newElement.className = 'scene-separator-synopsis';
-            newElement.textContent = newSynopsis;
-            newElement.onclick = () => editSceneSynopsis(actId, chapterId, sceneId, newElement);
-            newElement.style.cursor = 'pointer';
-            newElement.title = 'Cliquez pour éditer le résumé';
-        } else {
-            newElement = document.createElement('span');
-            newElement.className = 'scene-separator-synopsis-placeholder';
-            newElement.textContent = 'Ajouter un résumé...';
-            newElement.onclick = () => editSceneSynopsis(actId, chapterId, sceneId, newElement);
-            newElement.style.cursor = 'pointer';
-            newElement.style.opacity = '0.6';
-            newElement.title = 'Cliquez pour ajouter un résumé';
-        }
-
-        // Remplacer l'input par le nouveau span
-        parent.replaceChild(newElement, input);
-
-        // Sauvegarder le projet
-        if (typeof saveProject === 'function') saveProject();
-        if (typeof renderActsList === 'function') renderActsList();
-    };
-
-    input.onblur = finish;
-    input.onkeydown = (e) => {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            finish();
-        } else if (e.key === 'Escape') {
-            // Annuler - restaurer l'élément original
-            parent.replaceChild(element, input);
-        }
-    };
+/**
+ * [MVVM : View]
+ * Auto-redimensionne le textarea de synopsis selon son contenu.
+ */
+function autoResizeSynopsis(textarea) {
+    textarea.style.height = 'auto';
+    textarea.style.height = textarea.scrollHeight + 'px';
 }
 
 /**
