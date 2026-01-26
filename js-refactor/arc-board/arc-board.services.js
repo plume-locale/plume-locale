@@ -171,13 +171,31 @@ const DragDropService = {
                 const item = BoardItemRepository.getById(arc.id, this._state.itemId);
                 if (item) {
                     const card = convertItemToCard(item);
+                    const isSceneItem = item.type === 'scene' && item.sceneId;
+
+                    // Supprimer l'item flottant (cela met columnId à null pour les scenes)
                     BoardItemRepository.delete(arc.id, this._state.itemId);
 
                     const column = BoardItemRepository.getById(arc.id, targetColumnId);
                     if (column) {
                         if (!column.cards) column.cards = [];
                         column.cards.push(card);
+
+                        // Si c'est un item scene, mettre à jour scenePresence.columnId APRÈS la suppression
+                        if (isSceneItem && arc.scenePresence) {
+                            const presence = arc.scenePresence.find(p => p.sceneId == item.sceneId);
+                            if (presence) {
+                                presence.columnId = targetColumnId;
+                            }
+                        }
+
                         saveProject();
+                    }
+
+                    // Rafraîchir le panneau arcScenePanel s'il est visible
+                    const arcPanel = document.getElementById('arcScenePanel');
+                    if (arcPanel && !arcPanel.classList.contains('hidden') && typeof renderArcScenePanel === 'function') {
+                        renderArcScenePanel();
                     }
                 }
             }

@@ -229,6 +229,14 @@ function convertItemToCard(item) {
             card.cols = item.cols || 3;
             card.data = item.data || [];
             break;
+        case 'scene':
+            card.sceneId = item.sceneId || '';
+            card.sceneTitle = item.sceneTitle || '';
+            card.breadcrumb = item.breadcrumb || '';
+            card.intensity = item.intensity || 3;
+            card.status = item.status || 'development';
+            card.notes = item.notes || '';
+            break;
     }
 
     return card;
