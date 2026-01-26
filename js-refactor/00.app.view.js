@@ -478,6 +478,12 @@ function openScene(actId, chapterId, sceneId) {
     if (typeof refreshLinksPanel === 'function') refreshLinksPanel();
     if (typeof renderSceneVersionsList === 'function') renderSceneVersionsList();
 
+    // Update arc scene panel if it's visible
+    const arcPanel = document.getElementById('arcScenePanel');
+    if (arcPanel && !arcPanel.classList.contains('hidden') && typeof renderArcScenePanel === 'function') {
+        renderArcScenePanel();
+    }
+
     // Refresh plot sidebar if open
     if (typeof PlotGridUI !== 'undefined' && !document.getElementById('sidebarPlot').classList.contains('hidden')) {
         PlotGridUI.renderSidebar(sceneId);
