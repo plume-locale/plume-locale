@@ -620,9 +620,25 @@ function removeArcFromScene(arcId) {
     const arc = project.narrativeArcs.find(a => a.id === arcId);
     if (!arc) return;
 
-    arc.scenePresence = arc.scenePresence.filter(p => p.sceneId !== currentSceneId);
+    // Récupérer la presence avant suppression pour obtenir le columnId
+    const presence = arc.scenePresence ? arc.scenePresence.find(p => p.sceneId == currentSceneId) : null;
+
+    // Supprimer la carte scene du arc-board si elle existe
+    if (presence && presence.columnId && arc.board && arc.board.items) {
+        const column = arc.board.items.find(item => item.id === presence.columnId && item.type === 'column');
+        if (column && column.cards) {
+            column.cards = column.cards.filter(card => !(card.type === 'scene' && card.sceneId == currentSceneId));
+        }
+    }
+
+    arc.scenePresence = arc.scenePresence.filter(p => p.sceneId != currentSceneId);
     saveProject();
     renderArcScenePanel();
+
+    // Rafraîchir le arc-board s'il est ouvert
+    if (typeof ArcBoardViewModel !== 'undefined' && ArcBoardViewModel.getCurrentArc && ArcBoardViewModel.getCurrentArc()?.id === arcId) {
+        ArcBoardViewModel.renderItems();
+    }
 }
 
 // [MVVM : Other]
