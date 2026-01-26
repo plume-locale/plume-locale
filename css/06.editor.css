@@ -813,63 +813,50 @@ a/* Main Editor */
 
 .scene-nav-toolbar {
     position: fixed;
-    display: flex;
-    align-items: center;
     z-index: 500;
     pointer-events: none;
     opacity: 0;
-    transform: translateY(-5px);
-    transition: opacity 0.2s ease, transform 0.2s ease;
+    transition: opacity 0.2s ease;
 }
 
 .scene-nav-toolbar.visible {
     opacity: 1;
-    transform: translateY(0);
     pointer-events: auto;
 }
 
 .scene-nav-buttons {
+    position: fixed;
     display: flex;
-    gap: 4px;
-    flex-shrink: 0;
+    gap: 2px;
+    pointer-events: auto;
 }
 
 .scene-nav-line {
-    flex: 1;
-    height: 1px;
-    background: linear-gradient(90deg, var(--primary-color) 0%, transparent 80%);
-    margin: 0 10px;
+    display: none;
 }
 
 .scene-nav-word-counts {
+    position: fixed;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 2px;
-    flex-shrink: 0;
-    position: relative;
+    gap: 0;
+    pointer-events: auto;
 }
 
 .scene-nav-words-before,
 .scene-nav-words-after {
     font-family: 'Source Code Pro', monospace;
-    font-size: 0.7rem;
-    color: var(--text-muted);
+    font-size: 0.75rem;
     white-space: nowrap;
-    line-height: 1;
+    line-height: 1.2;
 }
 
 .scene-nav-words-before {
-    position: absolute;
-    bottom: 4px;
-    right: 0;
     color: var(--accent-gold);
 }
 
 .scene-nav-words-after {
-    position: absolute;
-    top: 4px;
-    right: 0;
     color: var(--primary-color);
 }
 

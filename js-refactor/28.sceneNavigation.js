@@ -195,16 +195,29 @@ function updateSceneNavToolbarPosition() {
         return;
     }
 
-    // Calculer la position de la toolbar
+    // Calculer la position - aligné avec la ligne du curseur
     const editorRect = editor.getBoundingClientRect();
-    const toolbarHeight = 30;
-    const toolbarLeft = editorRect.left;
-    const toolbarTop = rect.bottom + 8; // 8px sous la ligne
+    const lineHeight = rect.height || 24;
+    const verticalCenter = rect.top + (lineHeight / 2);
 
-    // Vérifier que la toolbar est visible dans la fenêtre
-    if (toolbarTop + toolbarHeight > window.innerHeight || toolbarTop < editorRect.top) {
+    // Vérifier que la position est visible dans la fenêtre
+    if (verticalCenter < editorRect.top || verticalCenter > window.innerHeight) {
         hideSceneNavToolbar();
         return;
+    }
+
+    // Positionner les boutons dans la marge gauche
+    const buttonsEl = sceneNavToolbar.querySelector('.scene-nav-buttons');
+    if (buttonsEl) {
+        buttonsEl.style.left = `${editorRect.left - 70}px`; // 70px avant le texte
+        buttonsEl.style.top = `${verticalCenter - 14}px`; // Centré verticalement (boutons de 28px)
+    }
+
+    // Positionner les compteurs dans la marge droite
+    const wordCountsEl = sceneNavToolbar.querySelector('.scene-nav-word-counts');
+    if (wordCountsEl) {
+        wordCountsEl.style.left = `${editorRect.right + 15}px`; // 15px après le texte
+        wordCountsEl.style.top = `${verticalCenter - 16}px`; // Centré verticalement
     }
 
     // Vérifier si des scènes adjacentes existent
@@ -233,11 +246,6 @@ function updateSceneNavToolbarPosition() {
             nextBtn.title = `Déplacer vers "${adjacentScenes.next.title}" (texte après le curseur)`;
         }
     }
-
-    // Positionner la toolbar
-    sceneNavToolbar.style.left = `${toolbarLeft}px`;
-    sceneNavToolbar.style.top = `${toolbarTop}px`;
-    sceneNavToolbar.style.width = `${editorRect.width}px`;
 
     // Calculer et afficher le nombre de mots avant/après le curseur
     updateWordCountsDisplay(editor, range);
