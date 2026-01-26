@@ -9,6 +9,7 @@ let sceneNavToolbar = null;
 let sceneNavUpdateTimeout = null;
 let lastCursorRect = null;
 let savedSelection = null;
+let activeSceneContext = null; // Contexte de la scène active (pour modes chapitre/acte)
 
 /**
  * Sauvegarde la sélection actuelle.
@@ -42,23 +43,25 @@ function initSceneNavigation() {
         createSceneNavToolbar();
     }
 
-    // Attacher les événements à l'éditeur
-    const editor = document.querySelector('.editor-textarea[contenteditable="true"]');
-    if (editor && !editor.hasAttribute('data-scene-nav-init')) {
-        editor.setAttribute('data-scene-nav-init', 'true');
+    // Attacher les événements à tous les éditeurs (mode scène, chapitre, acte)
+    const editors = document.querySelectorAll('.editor-textarea[contenteditable="true"]');
+    editors.forEach(editor => {
+        if (!editor.hasAttribute('data-scene-nav-init')) {
+            editor.setAttribute('data-scene-nav-init', 'true');
 
-        // Écouter les événements de sélection et de clic
-        editor.addEventListener('mouseup', handleCursorChange);
-        editor.addEventListener('keyup', handleCursorChange);
-        editor.addEventListener('focus', handleCursorChange);
-        editor.addEventListener('blur', hideSceneNavToolbar);
-
-        // Écouter le scroll pour mettre à jour la position
-        const workspace = document.querySelector('.editor-workspace');
-        if (workspace) {
-            workspace.addEventListener('scroll', debounceUpdateToolbarPosition);
+            // Écouter les événements de sélection et de clic
+            editor.addEventListener('mouseup', handleCursorChange);
+            editor.addEventListener('keyup', handleCursorChange);
+            editor.addEventListener('focus', handleCursorChange);
+            editor.addEventListener('blur', hideSceneNavToolbar);
         }
-        window.addEventListener('scroll', debounceUpdateToolbarPosition);
+    });
+
+    // Écouter le scroll pour mettre à jour la position
+    const workspace = document.querySelector('.editor-workspace');
+    if (workspace && !workspace.hasAttribute('data-scene-nav-scroll')) {
+        workspace.setAttribute('data-scene-nav-scroll', 'true');
+        workspace.addEventListener('scroll', debounceUpdateToolbarPosition);
     }
 }
 
@@ -141,19 +144,68 @@ function debounceUpdateToolbarPosition() {
 }
 
 /**
+ * Détecte le contexte de la scène à partir de l'éditeur actif.
+ * Fonctionne en mode scène unique, chapitre ou acte.
+ */
+function detectSceneContext(editor) {
+    // Mode scène unique : utiliser les variables globales
+    if (currentSceneId && currentChapterId && currentActId) {
+        return {
+            sceneId: currentSceneId,
+            chapterId: currentChapterId,
+            actId: currentActId
+        };
+    }
+
+    // Mode chapitre ou acte : récupérer depuis les attributs data-*
+    const sceneId = editor.getAttribute('data-scene-id');
+    const chapterId = editor.getAttribute('data-chapter-id') || currentChapterId;
+    const actId = editor.getAttribute('data-act-id') || currentActId;
+
+    if (sceneId && chapterId && actId) {
+        return {
+            sceneId: parseInt(sceneId, 10),
+            chapterId: parseInt(chapterId, 10),
+            actId: parseInt(actId, 10)
+        };
+    }
+
+    // Essayer de trouver via le parent (chapter-scene-block ou act-scene-block)
+    const sceneBlock = editor.closest('[data-scene-id]');
+    if (sceneBlock) {
+        const blockSceneId = sceneBlock.getAttribute('data-scene-id');
+        const blockChapterId = sceneBlock.getAttribute('data-chapter-id') || currentChapterId;
+        const blockActId = sceneBlock.getAttribute('data-act-id') || currentActId;
+
+        if (blockSceneId && blockChapterId && blockActId) {
+            return {
+                sceneId: parseInt(blockSceneId, 10),
+                chapterId: parseInt(blockChapterId, 10),
+                actId: parseInt(blockActId, 10)
+            };
+        }
+    }
+
+    return null;
+}
+
+/**
  * Met à jour la position de la barre de navigation.
  */
 function updateSceneNavToolbarPosition() {
     if (!sceneNavToolbar) return;
 
-    const editor = document.querySelector('.editor-textarea[contenteditable="true"]');
-    if (!editor || document.activeElement !== editor) {
+    // Trouver l'éditeur actif (celui qui a le focus)
+    const activeElement = document.activeElement;
+    if (!activeElement || !activeElement.classList.contains('editor-textarea')) {
         hideSceneNavToolbar();
         return;
     }
+    const editor = activeElement;
 
-    // Vérifier qu'on est en mode scène (pas chapitre ou acte)
-    if (!currentSceneId) {
+    // Détecter le contexte de la scène (mode scène unique ou chapitre/acte)
+    activeSceneContext = detectSceneContext(editor);
+    if (!activeSceneContext) {
         hideSceneNavToolbar();
         return;
     }
@@ -339,7 +391,9 @@ function getAdjacentScenes() {
         nextLocation: null
     };
 
-    if (!currentActId || !currentChapterId || !currentSceneId) return result;
+    // Utiliser le contexte actif détecté
+    const ctx = activeSceneContext;
+    if (!ctx || !ctx.actId || !ctx.chapterId || !ctx.sceneId) return result;
 
     // Construire une liste plate de toutes les scènes avec leurs emplacements
     const allScenes = [];
@@ -357,9 +411,9 @@ function getAdjacentScenes() {
 
     // Trouver l'index de la scène actuelle
     const currentIndex = allScenes.findIndex(
-        s => s.actId === currentActId &&
-             s.chapterId === currentChapterId &&
-             s.scene.id === currentSceneId
+        s => s.actId === ctx.actId &&
+             s.chapterId === ctx.chapterId &&
+             s.scene.id === ctx.sceneId
     );
 
     if (currentIndex === -1) return result;
@@ -391,8 +445,14 @@ function getAdjacentScenes() {
  * Déplace le texte avant le curseur vers la fin de la scène précédente.
  */
 function moveTextToPreviousScene() {
-    const editor = document.querySelector('.editor-textarea[contenteditable="true"]');
+    const editor = getActiveEditor();
     if (!editor) return;
+
+    // S'assurer que le contexte est à jour
+    if (!activeSceneContext) {
+        activeSceneContext = detectSceneContext(editor);
+    }
+    if (!activeSceneContext) return;
 
     const adjacentScenes = getAdjacentScenes();
     if (!adjacentScenes.previous) {
@@ -460,6 +520,9 @@ function moveTextToPreviousScene() {
     // Mettre à jour le compteur de mots de la scène précédente
     prevScene.wordCount = typeof getWordCount === 'function' ? getWordCount(prevScene.content) : 0;
 
+    // Mettre à jour l'éditeur de la scène précédente dans le DOM (mode chapitre/acte)
+    updateAdjacentEditorInDOM(prevScene.id, prevScene.content);
+
     // Sauvegarder et rafraîchir
     if (typeof saveProject === 'function') saveProject();
     if (typeof updateStats === 'function') updateStats();
@@ -468,7 +531,11 @@ function moveTextToPreviousScene() {
     // Placer le curseur au début de l'éditeur
     const newSelection = window.getSelection();
     const newRange = document.createRange();
-    newRange.setStart(editor, 0);
+    if (editor.firstChild) {
+        newRange.setStart(editor.firstChild, 0);
+    } else {
+        newRange.setStart(editor, 0);
+    }
     newRange.collapse(true);
     newSelection.removeAllRanges();
     newSelection.addRange(newRange);
@@ -481,11 +548,27 @@ function moveTextToPreviousScene() {
 }
 
 /**
+ * Met à jour le contenu d'un éditeur adjacent dans le DOM (pour mode chapitre/acte).
+ */
+function updateAdjacentEditorInDOM(sceneId, content) {
+    const adjacentEditor = document.querySelector(`.editor-textarea[data-scene-id="${sceneId}"]`);
+    if (adjacentEditor && adjacentEditor !== document.activeElement) {
+        adjacentEditor.innerHTML = content;
+    }
+}
+
+/**
  * Déplace le texte après le curseur vers le début de la scène suivante.
  */
 function moveTextToNextScene() {
-    const editor = document.querySelector('.editor-textarea[contenteditable="true"]');
+    const editor = getActiveEditor();
     if (!editor) return;
+
+    // S'assurer que le contexte est à jour
+    if (!activeSceneContext) {
+        activeSceneContext = detectSceneContext(editor);
+    }
+    if (!activeSceneContext) return;
 
     const adjacentScenes = getAdjacentScenes();
     if (!adjacentScenes.next) {
@@ -559,6 +642,9 @@ function moveTextToNextScene() {
     // Mettre à jour le compteur de mots de la scène suivante
     nextScene.wordCount = typeof getWordCount === 'function' ? getWordCount(nextScene.content) : 0;
 
+    // Mettre à jour l'éditeur de la scène suivante dans le DOM (mode chapitre/acte)
+    updateAdjacentEditorInDOM(nextScene.id, nextScene.content);
+
     // Sauvegarder et rafraîchir
     if (typeof saveProject === 'function') saveProject();
     if (typeof updateStats === 'function') updateStats();
@@ -572,18 +658,39 @@ function moveTextToNextScene() {
 }
 
 /**
- * Obtient la scène actuellement ouverte.
+ * Obtient la scène actuellement ouverte (basée sur activeSceneContext).
  */
 function getCurrentScene() {
-    if (!currentActId || !currentChapterId || !currentSceneId) return null;
+    const ctx = activeSceneContext;
+    if (!ctx || !ctx.actId || !ctx.chapterId || !ctx.sceneId) return null;
 
-    const act = project.acts.find(a => a.id === currentActId);
+    const act = project.acts.find(a => a.id === ctx.actId);
     if (!act) return null;
 
-    const chapter = act.chapters.find(c => c.id === currentChapterId);
+    const chapter = act.chapters.find(c => c.id === ctx.chapterId);
     if (!chapter) return null;
 
-    return chapter.scenes.find(s => s.id === currentSceneId) || null;
+    return chapter.scenes.find(s => s.id === ctx.sceneId) || null;
+}
+
+/**
+ * Trouve l'éditeur actif basé sur le contexte de scène.
+ */
+function getActiveEditor() {
+    // D'abord essayer l'élément actif
+    const activeElement = document.activeElement;
+    if (activeElement && activeElement.classList.contains('editor-textarea')) {
+        return activeElement;
+    }
+
+    // Sinon chercher par data-scene-id si on a un contexte
+    if (activeSceneContext && activeSceneContext.sceneId) {
+        const editor = document.querySelector(`.editor-textarea[data-scene-id="${activeSceneContext.sceneId}"]`);
+        if (editor) return editor;
+    }
+
+    // Fallback : premier éditeur trouvé
+    return document.querySelector('.editor-textarea[contenteditable="true"]');
 }
 
 /**
@@ -677,14 +784,20 @@ function showNotification(message, type = 'info') {
  */
 function cleanupSceneNavigation() {
     hideSceneNavToolbar();
+    activeSceneContext = null;
 
-    const editor = document.querySelector('.editor-textarea[data-scene-nav-init]');
-    if (editor) {
+    const editors = document.querySelectorAll('.editor-textarea[data-scene-nav-init]');
+    editors.forEach(editor => {
         editor.removeAttribute('data-scene-nav-init');
         editor.removeEventListener('mouseup', handleCursorChange);
         editor.removeEventListener('keyup', handleCursorChange);
         editor.removeEventListener('focus', handleCursorChange);
         editor.removeEventListener('blur', hideSceneNavToolbar);
+    });
+
+    const workspace = document.querySelector('.editor-workspace[data-scene-nav-scroll]');
+    if (workspace) {
+        workspace.removeAttribute('data-scene-nav-scroll');
     }
 }
 
