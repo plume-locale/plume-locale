@@ -937,6 +937,8 @@ function renderActEditor(act) {
     // Initialiser le tracking de scroll
     setTimeout(() => {
         initActScrollTracking(act.id, allScenes);
+        // Auto-resize des synopsis existants
+        document.querySelectorAll('.scene-separator-synopsis').forEach(autoResizeSynopsis);
     }, 100);
 
     // Initialize scene navigation toolbar
@@ -1041,6 +1043,8 @@ function renderChapterEditor(act, chapter) {
     // Initialiser le tracking de scroll
     setTimeout(() => {
         initChapterScrollTracking(act.id, chapter.id);
+        // Auto-resize des synopsis existants
+        document.querySelectorAll('.scene-separator-synopsis').forEach(autoResizeSynopsis);
     }, 100);
 
     // Initialize scene navigation toolbar
