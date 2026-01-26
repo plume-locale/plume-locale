@@ -222,6 +222,17 @@ const BoardItemRepository = {
         const index = arc.board.items.findIndex(i => i.id === itemId);
         if (index === -1) return false;
 
+        // Récupérer l'item avant suppression pour gérer le cas des items scene
+        const item = arc.board.items[index];
+
+        // Si c'est un item scene, mettre à jour scenePresence (enlever le lien avec la colonne)
+        if (item.type === 'scene' && item.sceneId && arc.scenePresence) {
+            const presence = arc.scenePresence.find(p => p.sceneId == item.sceneId);
+            if (presence) {
+                presence.columnId = null;
+            }
+        }
+
         arc.board.items.splice(index, 1);
 
         // Supprimer les connexions liées

@@ -68,7 +68,8 @@ const BoardItemTypes = Object.freeze({
     LINK: 'link',
     TODO: 'todo',
     COMMENT: 'comment',
-    TABLE: 'table'
+    TABLE: 'table',
+    SCENE: 'scene'
 });
 
 // Outils disponibles

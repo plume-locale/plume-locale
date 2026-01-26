@@ -97,6 +97,18 @@ function createBoardItemModel(type, position = { x: 0, y: 0 }, data = {}) {
                 data: data.data || []
             };
 
+        case BoardItemTypes.SCENE:
+            return {
+                ...base,
+                sceneId: data.sceneId || '',
+                sceneTitle: data.sceneTitle || '',
+                breadcrumb: data.breadcrumb || '',
+                intensity: data.intensity || 3,
+                status: data.status || 'development',
+                notes: data.notes || '',
+                width: data.width || 220
+            };
+
         default:
             return base;
     }

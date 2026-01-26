@@ -538,6 +538,7 @@ const ArcBoardView = {
             case 'todo': return this._renderTodo(item, isSelected);
             case 'comment': return this._renderComment(item, isSelected);
             case 'table': return this._renderTable(item, isSelected);
+            case 'scene': return this._renderSceneItem(item, isSelected);
             default: return '';
         }
     },
@@ -982,6 +983,43 @@ const ArcBoardView = {
                             <i data-lucide="plus"></i> Colonne
                         </button>
                     </div>
+                </div>
+            </div>
+        `;
+    },
+
+    _renderSceneItem(item, isSelected) {
+        const statusLabels = { 'setup': 'Introduction', 'development': 'Développement', 'climax': 'Point culminant', 'resolution': 'Résolution' };
+
+        return `
+            <div class="arc-floating-item ${isSelected ? 'selected' : ''}"
+                 id="item-${item.id}"
+                 data-item-id="${item.id}"
+                 data-item-type="scene"
+                 data-scene-id="${item.sceneId || ''}"
+                 style="left: ${item.x}px; top: ${item.y}px; width: ${item.width || 220}px"
+                 onclick="ArcBoardViewModel.selectItem('${item.id}', event.ctrlKey || event.metaKey)">
+                ${this._renderDragHandle(item.id, true)}
+                <button class="arc-floating-delete" onclick="event.stopPropagation(); deleteArcItem('${item.id}')" title="Supprimer">
+                    <i data-lucide="x"></i>
+                </button>
+                <div class="arc-card arc-card-scene" style="margin:0">
+                    <div class="arc-card-scene-header">
+                        <i data-lucide="book-open"></i>
+                        <div class="arc-card-scene-title-wrapper">
+                            <div class="arc-card-scene-breadcrumb">${item.breadcrumb || ''}</div>
+                            <div class="arc-card-scene-title">${item.sceneTitle || 'Scène'}</div>
+                        </div>
+                    </div>
+                    <div class="arc-card-scene-meta">
+                        <div class="arc-card-scene-status">
+                            <span class="arc-card-scene-label">Statut:</span>
+                            <span class="arc-card-scene-value">${statusLabels[item.status] || 'Développement'}</span>
+                        </div>
+                    </div>
+                    <button class="arc-card-scene-open" onclick="ArcBoardEventHandlers.openScene('${item.sceneId}'); event.stopPropagation();">
+                        <i data-lucide="external-link"></i> Ouvrir
+                    </button>
                 </div>
             </div>
         `;

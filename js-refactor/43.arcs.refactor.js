@@ -623,12 +623,17 @@ function removeArcFromScene(arcId) {
     // Récupérer la presence avant suppression pour obtenir le columnId
     const presence = arc.scenePresence ? arc.scenePresence.find(p => p.sceneId == currentSceneId) : null;
 
-    // Supprimer la carte scene du arc-board si elle existe
+    // Supprimer la carte scene du arc-board si elle existe (dans une colonne)
     if (presence && presence.columnId && arc.board && arc.board.items) {
         const column = arc.board.items.find(item => item.id === presence.columnId && item.type === 'column');
         if (column && column.cards) {
             column.cards = column.cards.filter(card => !(card.type === 'scene' && card.sceneId == currentSceneId));
         }
+    }
+
+    // Supprimer aussi tout élément flottant scene pour cette scène
+    if (arc.board && arc.board.items) {
+        arc.board.items = arc.board.items.filter(item => !(item.type === 'scene' && item.sceneId == currentSceneId));
     }
 
     arc.scenePresence = arc.scenePresence.filter(p => p.sceneId != currentSceneId);
@@ -793,6 +798,11 @@ function updateArcColumn(arcId, columnId) {
 
     if (!scene) return;
 
+    // Construire le breadcrumb
+    const actTitle = act.title || `Acte ${project.acts.indexOf(act) + 1}`;
+    const chapterTitle = chapter.title || `Chapitre ${act.chapters.indexOf(chapter) + 1}`;
+    const breadcrumb = `${actTitle} › ${chapterTitle}`;
+
     // Supprimer l'ancienne carte scene de l'ancienne colonne si elle existe
     if (oldColumnId) {
         const oldColumn = arc.board.items.find(item => item.id === oldColumnId && item.type === 'column');
@@ -801,16 +811,14 @@ function updateArcColumn(arcId, columnId) {
         }
     }
 
-    // Si une nouvelle colonne est sélectionnée, créer/mettre à jour la carte scene
+    // Supprimer tout élément flottant scene existant pour cette scène
+    arc.board.items = arc.board.items.filter(item => !(item.type === 'scene' && item.sceneId == currentSceneId));
+
+    // Si une nouvelle colonne est sélectionnée, créer/mettre à jour la carte scene dans la colonne
     if (columnId) {
         const column = arc.board.items.find(item => item.id === columnId && item.type === 'column');
         if (column) {
             if (!column.cards) column.cards = [];
-
-            // Construire le breadcrumb
-            const actTitle = act.title || `Acte ${project.acts.indexOf(act) + 1}`;
-            const chapterTitle = chapter.title || `Chapitre ${act.chapters.indexOf(chapter) + 1}`;
-            const breadcrumb = `${actTitle} › ${chapterTitle}`;
 
             // Vérifier si une carte scene pour cette scène existe déjà dans cette colonne
             let sceneCard = column.cards.find(card => card.type === 'scene' && card.sceneId == currentSceneId);
@@ -837,10 +845,31 @@ function updateArcColumn(arcId, columnId) {
                 column.cards.push(sceneCard);
             }
         }
+    } else {
+        // Arc général: créer un élément flottant scene sur le canvas
+        const floatingSceneItem = {
+            id: 'item_' + Date.now(),
+            type: 'scene',
+            x: 50,
+            y: 50 + (arc.board.items.filter(i => i.type === 'scene').length * 150),
+            sceneId: currentSceneId,
+            sceneTitle: scene.title,
+            breadcrumb: breadcrumb,
+            intensity: presence.intensity,
+            status: presence.status,
+            notes: presence.notes,
+            width: 220
+        };
+        arc.board.items.push(floatingSceneItem);
     }
 
     saveProject();
     renderArcScenePanel();
+
+    // Rafraîchir le arc-board s'il est ouvert sur cet arc
+    if (typeof ArcBoardViewModel !== 'undefined' && ArcBoardViewModel.getCurrentArc && ArcBoardViewModel.getCurrentArc()?.id === arcId) {
+        ArcBoardViewModel.renderItems();
+    }
 }
 
 init();

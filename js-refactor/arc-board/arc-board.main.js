@@ -146,6 +146,12 @@ function deleteArcItem(itemId) {
         ArcBoardState.selectedItems = ArcBoardState.selectedItems.filter(id => id !== itemId);
         ArcBoardViewModel.renderItems();
         ArcBoardViewModel.deselectAll();
+
+        // Mettre à jour le panneau arcScenePanel s'il est visible
+        const arcPanel = document.getElementById('arcScenePanel');
+        if (arcPanel && !arcPanel.classList.contains('hidden') && typeof renderArcScenePanel === 'function') {
+            renderArcScenePanel();
+        }
     }
 }
 
