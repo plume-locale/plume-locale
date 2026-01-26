@@ -148,10 +148,11 @@ def collect_js():
     """Collecte tous les fichiers JS dans l'ordre"""
     js_content = []
     js_dir = os.path.join(BUILD_DIR, 'js')
+    js_refactor_dir = os.path.join(BUILD_DIR, 'js-refactor')
     found_count = 0
     missing = []
-    
-    # D'abord les fichiers ordonnés
+
+    # D'abord les fichiers ordonnés depuis js/
     for filename in JS_ORDER:
         filepath = os.path.join(js_dir, filename)
         if os.path.exists(filepath):
@@ -162,8 +163,8 @@ def collect_js():
             found_count += 1
         else:
             missing.append(filename)
-    
-    # Ensuite les fichiers non listés
+
+    # Ensuite les fichiers non listés depuis js/
     extra = []
     for filepath in glob.glob(os.path.join(js_dir, '*.js')):
         filename = os.path.basename(filepath)
@@ -173,7 +174,29 @@ def collect_js():
             js_content.append(content)
             js_content.append('')
             extra.append(filename)
-    
+
+    # Collecter les fichiers js-refactor/ (triés par nom)
+    refactor_files = []
+    if os.path.exists(js_refactor_dir):
+        for filepath in sorted(glob.glob(os.path.join(js_refactor_dir, '*.js'))):
+            filename = os.path.basename(filepath)
+            content = read_file(f'js-refactor/{filename}')
+            js_content.append(f'// ========== js-refactor/{filename} ==========')
+            js_content.append(content)
+            js_content.append('')
+            refactor_files.append(filename)
+
+        # Collecter les fichiers du sous-dossier arc-board/
+        arc_board_dir = os.path.join(js_refactor_dir, 'arc-board')
+        if os.path.exists(arc_board_dir):
+            for filepath in sorted(glob.glob(os.path.join(arc_board_dir, '*.js'))):
+                filename = os.path.basename(filepath)
+                content = read_file(f'js-refactor/arc-board/{filename}')
+                js_content.append(f'// ========== js-refactor/arc-board/{filename} ==========')
+                js_content.append(content)
+                js_content.append('')
+                refactor_files.append(f'arc-board/{filename}')
+
     log(f"   [OK] {found_count} fichiers JS trouves")
     if missing:
         log(f"   [!] {len(missing)} fichiers JS manquants:")
@@ -183,7 +206,9 @@ def collect_js():
         log(f"   [i] {len(extra)} fichiers JS supplementaires:")
         for f in extra:
             log(f"      + {f}")
-    
+    if refactor_files:
+        log(f"   [i] {len(refactor_files)} fichiers js-refactor/ inclus")
+
     return '\n'.join(js_content)
 
 def build(output_file='plume-build.html'):

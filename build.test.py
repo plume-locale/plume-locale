@@ -45,7 +45,7 @@ JS_ORDER = [
     '02.storage.js',
     'js-refactor/03.projects.refactor.js',
     '04.init.js',
-    '05.undo-redo.js',
+    'js-refactor/05.undo-redo.refactor.js',
     'js-refactor/06.structure.model.js',
     'js-refactor/06.structure.repository.js',
     'js-refactor/06.structure.viewmodel.js',
@@ -117,7 +117,9 @@ JS_ORDER = [
     'js-refactor/47.plot-grid.model.js',
     'js-refactor/47.plot-grid.repository.js',
     'js-refactor/47.plot-grid.viewmodel.js',
-    'js-refactor/47.plot-grid.view.js'
+    'js-refactor/47.plot-grid.view.js',
+    # Scene Navigation (floating toolbar for moving text between scenes)
+    'js-refactor/28.sceneNavigation.js'
 ]
 
 def read_file(path):

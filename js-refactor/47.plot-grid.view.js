@@ -843,25 +843,39 @@ function initPlotGridMenu() {
     const writingGroup = document.querySelector('.nav-group');
     if (!writingGroup) return;
 
-    // 3. Create the button
+    // 3. Create the desktop button
     const btn = document.createElement('button');
     btn.id = 'header-tab-plotgrid';
     btn.className = 'nav-btn';
 
     btn.innerHTML = `
-        <span class="nav-btn-icon"><i data-lucide="grid-3x3"></i></span>
+        <span class="nav-btn-icon"><i data-lucide="layout-grid"></i></span>
         <span class="nav-btn-text">Plot Grid</span>
     `;
     btn.onclick = () => switchView('plotgrid');
 
     // 4. Insert it after the 'Intrigue' button if possible
-    // Note: There's a duplicate ID header-tab-plot in the HTML, 
+    // Note: There's a duplicate ID header-tab-plot in the HTML,
     // but getElementById usually returns the first one (Intrigue).
     const plotBtn = document.getElementById('header-tab-plot');
     if (plotBtn) {
         plotBtn.parentNode.insertBefore(btn, plotBtn.nextSibling);
     } else {
         writingGroup.appendChild(btn);
+    }
+
+    // 5. Add to mobile menu as well
+    const mobileNavPlotBtn = document.querySelector('.mobile-nav-item[data-view="plot"]');
+    if (mobileNavPlotBtn && !document.querySelector('.mobile-nav-item[data-view="plotgrid"]')) {
+        const mobileBtn = document.createElement('button');
+        mobileBtn.className = 'mobile-nav-item';
+        mobileBtn.setAttribute('data-view', 'plotgrid');
+        mobileBtn.onclick = () => switchViewMobile('plotgrid');
+        mobileBtn.innerHTML = `
+            <span class="mobile-nav-item-icon"><i data-lucide="layout-grid"></i></span>
+            <span>Plot Grid</span>
+        `;
+        mobileNavPlotBtn.parentNode.insertBefore(mobileBtn, mobileNavPlotBtn.nextSibling);
     }
 
     if (typeof lucide !== 'undefined') lucide.createIcons();
