@@ -680,6 +680,11 @@ function updateArcIntensity(arcId, intensity) {
         }
 
         saveProject();
+
+        // Rafraîchir le arc-board s'il est ouvert sur cet arc
+        if (typeof ArcBoardViewModel !== 'undefined' && ArcBoardViewModel.getCurrentArc && ArcBoardViewModel.getCurrentArc()?.id === arcId) {
+            ArcBoardViewModel.renderItems();
+        }
     }
 }
 
@@ -709,6 +714,11 @@ function updateArcStatus(arcId, status) {
         }
 
         saveProject();
+
+        // Rafraîchir le arc-board s'il est ouvert sur cet arc
+        if (typeof ArcBoardViewModel !== 'undefined' && ArcBoardViewModel.getCurrentArc && ArcBoardViewModel.getCurrentArc()?.id === arcId) {
+            ArcBoardViewModel.renderItems();
+        }
     }
 }
 
@@ -738,6 +748,11 @@ function updateArcNotes(arcId, notes) {
         }
 
         saveProject();
+
+        // Rafraîchir le arc-board s'il est ouvert sur cet arc
+        if (typeof ArcBoardViewModel !== 'undefined' && ArcBoardViewModel.getCurrentArc && ArcBoardViewModel.getCurrentArc()?.id === arcId) {
+            ArcBoardViewModel.renderItems();
+        }
     }
 }
 
