@@ -559,38 +559,56 @@
     position: absolute;
     top: 0;
     left: 0;
-    width: 28px;
-    height: 28px;
     display: flex;
     align-items: center;
-    justify-content: center;
-    cursor: grab;
+    gap: 2px;
     opacity: 0;
-    transition: opacity 0.2s ease, background 0.2s ease;
-    background: transparent;
-    border-radius: 8px;
+    transition: opacity 0.2s ease;
     z-index: 2;
 }
 
 .arc-floating-item:hover .arc-floating-drag-handle {
     opacity: 1;
+}
+
+.arc-drag-move,
+.arc-drag-to-column {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
     background: rgba(255, 140, 66, 0.12);
+    border-radius: 6px;
+    transition: background 0.2s ease;
 }
 
-.arc-floating-drag-handle:hover {
-    background: rgba(255, 140, 66, 0.2);
+.arc-drag-move:hover {
+    background: rgba(255, 140, 66, 0.25);
 }
 
-.arc-floating-drag-handle:active {
+.arc-drag-to-column:hover {
+    background: rgba(100, 180, 255, 0.25);
+}
+
+.arc-drag-move:active,
+.arc-drag-to-column:active {
     cursor: grabbing;
 }
 
-.arc-floating-drag-handle svg,
-.arc-floating-drag-handle i {
-    width: 16px;
-    height: 16px;
+.arc-drag-move svg,
+.arc-drag-move i,
+.arc-drag-to-column svg,
+.arc-drag-to-column i {
+    width: 14px;
+    height: 14px;
     color: var(--text-muted);
     pointer-events: none;
+}
+
+.arc-drag-to-column i {
+    color: var(--accent-color, #64b4ff);
 }
 
 /* Bouton de suppression de carte */

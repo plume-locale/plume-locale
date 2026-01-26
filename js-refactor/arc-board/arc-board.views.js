@@ -546,12 +546,24 @@ const ArcBoardView = {
         const className = isFloating ? 'arc-floating-drag-handle' : 'arc-card-drag-handle';
 
         if (isFloating) {
-            // Pour les éléments flottants: utiliser ItemMoveService pour repositionner sur le canvas
+            // Pour les éléments flottants: deux poignées
+            // 1. Poignée de repositionnement (ItemMoveService)
+            // 2. Poignée de drop dans colonne (DragDropService)
             return `
-                <div class="${className}"
-                     onmousedown="ItemMoveService.start(event, '${itemId}'); event.stopPropagation();"
-                     title="Glisser pour déplacer">
-                    <i data-lucide="grip-vertical"></i>
+                <div class="${className}">
+                    <div class="arc-drag-move"
+                         onmousedown="ItemMoveService.start(event, '${itemId}'); event.stopPropagation();"
+                         title="Déplacer sur le canvas">
+                        <i data-lucide="grip-vertical"></i>
+                    </div>
+                    <div class="arc-drag-to-column"
+                         draggable="true"
+                         ondragstart="DragDropService.startFloatingDrag(event, '${itemId}')"
+                         ondragend="DragDropService.endDrag(event)"
+                         onmousedown="event.stopPropagation()"
+                         title="Déposer dans une colonne">
+                        <i data-lucide="columns-3"></i>
+                    </div>
                 </div>
             `;
         } else {
