@@ -71,8 +71,9 @@ const PlotGridUI = {
                     .pg-header-cell {
                         background: transparent;
                         padding: 10px;
-                        font-weight: 500;
-                        color: #888;
+                        font-size: 1.1rem;
+                        font-weight: bolder;
+                        color: #666;
                         text-align: center;
                         position: sticky;
                         top: 0;
@@ -92,7 +93,8 @@ const PlotGridUI = {
                         text-align: center;
                         width: 100%;
                         font-family: inherit;
-                        font-size: 0.9rem;
+                        font-size: 1.1rem;
+                        font-weight: bolder;
                     }
                     .pg-header-input:hover, .pg-header-input:focus {
                         border-bottom-color: #aaa;
@@ -132,14 +134,14 @@ const PlotGridUI = {
                         color: #333;
                         background: #fff;
                         border: 1px solid #ccc;
-                        border-bottom: none;
+                        /* border-bottom: none; */
                         padding: 3px 10px;
                         display: inline-block;
-                        border-radius: 4px 4px 0 0;
+                        border-radius: 4px;
                         margin-bottom: -1px;
                         position: absolute;
-                        top: -24px;
-                        left: 0;
+                        top: -25px;
+                        left: -50px;
                     }
 
                     .pg-card {
