@@ -36,7 +36,8 @@ CSS_ORDER = [
     '09.utilities.css',
     '10.mobile.css',
     '11.storygrid.css',
-    '12.arc-board.css'
+    '12.arc-board.css',
+    'undo-redo.css'
 ]
 
 # Ordre des fichiers JS - MODIFIÉ pour js-refactor

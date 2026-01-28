@@ -18,8 +18,38 @@ const UndoRedoConfig = {
     ],
     // Actions qui necessitent une sauvegarde immediate (pas de debounce)
     immediateActions: [
-        'add', 'remove', 'delete', 'create', 'reorder', 'move'
-    ]
+        'add', 'remove', 'delete', 'create', 'reorder', 'move', 'toggle'
+    ],
+    // Traduction des types d'actions en libellés lisibles
+    actionLabels: {
+        'Act.add': 'Ajout d\'un acte',
+        'Act.delete': 'Suppression d\'un acte',
+        'Act.reorder': 'Réordonnancement des actes',
+        'Chapter.add': 'Ajout d\'un chapitre',
+        'Chapter.delete': 'Suppression d\'un chapitre',
+        'Chapter.reorder': 'Réordonnancement des chapitres',
+        'Scene.add': 'Ajout d\'une scène',
+        'Scene.delete': 'Suppression d\'une scène',
+        'Scene.reorder': 'Réordonnancement des scènes',
+        'Scene.move': 'Déplacement d\'une scène',
+        'Character.add': 'Nouveau personnage',
+        'Character.delete': 'Suppression d\'un personnage',
+        'World.add': 'Nouvel élément de monde',
+        'World.delete': 'Suppression d\'un élément',
+        'text-edit': 'Modification de texte',
+        'text-edit-start': 'Début d\'édition',
+        'text-edit-end': 'Fin d\'édition',
+        'Arc.create': 'Nouvel arc narratif',
+        'Arc.delete': 'Suppression d\'un arc',
+        'BoardItem.create': 'Nouvel élément sur le tableau',
+        'BoardItem.delete': 'Suppression d\'un élément',
+        'Card.create': 'Nouvelle carte',
+        'Card.delete': 'Suppression d\'une carte',
+        'Card.move': 'Déplacement d\'une carte',
+        'Connection.create': 'Nouvelle connexion',
+        'Connection.delete': 'Suppression de connexion',
+        'toggleTodo': 'Changement d\'état TODO'
+    }
 };
 
 // ============================================
@@ -121,9 +151,10 @@ function hasSignificantChanges(obj1, obj2) {
 
 /**
  * Cree un snapshot complet de l'etat du projet
+ * @param {string} actionLabel - Libellé de l'action
  * @returns {Object} - Le snapshot de l'etat
  */
-function createSnapshot() {
+function createSnapshot(actionLabel = 'Action') {
     if (typeof project === 'undefined') {
         console.warn('[UndoRedo] project non defini');
         return null;
@@ -131,6 +162,7 @@ function createSnapshot() {
 
     const snapshot = {
         timestamp: Date.now(),
+        label: actionLabel,
         project: deepClone(project),
         // Etat de navigation (optionnel, pour restauration complete)
         navigation: {
@@ -354,7 +386,10 @@ function saveToHistoryImmediate(actionType = 'immediate') {
  * @param {string} actionType - Type d'action
  */
 function _saveToHistoryInternal(actionType) {
-    const currentSnapshot = createSnapshot();
+    // Obtenir le libellé lisible
+    const actionLabel = UndoRedoConfig.actionLabels[actionType] || actionType;
+
+    const currentSnapshot = createSnapshot(actionLabel);
     if (!currentSnapshot) return;
 
     // S'il n'y a pas de snapshot précédent, on initialise et on s'arrête
@@ -370,6 +405,8 @@ function _saveToHistoryInternal(actionType) {
     }
 
     // ÉTAT CHANGÉ : On pousse l'ANCIEN état (_lastSnapshot) dans l'historique
+    // Mais on lui donne le label de l'action qui vient d'être faite
+    _lastSnapshot.label = actionLabel;
     historyStack.push(_lastSnapshot);
 
     // Limiter la taille de l'historique
@@ -386,7 +423,7 @@ function _saveToHistoryInternal(actionType) {
     // Mettre a jour les boutons
     updateUndoRedoButtons();
 
-    console.log(`[UndoRedo] Changement détecté (${actionType}), historique: ${historyStack.length}`);
+    console.log(`[UndoRedo] Changement détecté: ${actionLabel}, historique: ${historyStack.length}`);
 }
 
 /**
@@ -473,11 +510,33 @@ function updateUndoRedoButtons() {
     if (headerUndoBtn) {
         headerUndoBtn.disabled = historyStack.length === 0;
         headerUndoBtn.classList.toggle('disabled', historyStack.length === 0);
+
+        // Attacher les events de survol une seule fois
+        if (!headerUndoBtn.dataset.popupInitialized) {
+            headerUndoBtn.addEventListener('mouseenter', () => showUndoRedoPopup('undo', headerUndoBtn));
+            headerUndoBtn.addEventListener('mouseleave', (e) => {
+                if (!e.relatedTarget?.closest('.undo-redo-popup')) {
+                    hideUndoRedoPopup();
+                }
+            });
+            headerUndoBtn.dataset.popupInitialized = 'true';
+        }
     }
 
     if (headerRedoBtn) {
         headerRedoBtn.disabled = redoStack.length === 0;
         headerRedoBtn.classList.toggle('disabled', redoStack.length === 0);
+
+        // Attacher les events de survol
+        if (!headerRedoBtn.dataset.popupInitialized) {
+            headerRedoBtn.addEventListener('mouseenter', () => showUndoRedoPopup('redo', headerRedoBtn));
+            headerRedoBtn.addEventListener('mouseleave', (e) => {
+                if (!e.relatedTarget?.closest('.undo-redo-popup')) {
+                    hideUndoRedoPopup();
+                }
+            });
+            headerRedoBtn.dataset.popupInitialized = 'true';
+        }
     }
 
     // Update mobile buttons
@@ -490,6 +549,90 @@ function updateUndoRedoButtons() {
         mobileRedoBtn.disabled = redoStack.length === 0;
         mobileRedoBtn.classList.toggle('disabled', redoStack.length === 0);
     }
+}
+
+/**
+ * Affiche la popup d'historique
+ */
+function showUndoRedoPopup(type, buttonElement) {
+    let popup = document.getElementById('undoRedoPopup');
+    if (!popup) {
+        popup = document.createElement('div');
+        popup.id = 'undoRedoPopup';
+        popup.className = 'undo-redo-popup';
+        popup.addEventListener('mouseleave', () => hideUndoRedoPopup());
+        document.body.appendChild(popup);
+    }
+
+    const stack = type === 'undo' ? historyStack : redoStack;
+    const title = type === 'undo' ? 'Historique d\'annulation' : 'Historique de rétablissement';
+
+    if (stack.length === 0) {
+        popup.innerHTML = `
+            <div class="undo-redo-header"><span>${title}</span></div>
+            <div class="undo-redo-empty">Aucune action disponible</div>
+        `;
+    } else {
+        // Inverser pour avoir les plus récents en haut
+        const displayStack = [...stack].reverse().slice(0, 15);
+
+        popup.innerHTML = `
+            <div class="undo-redo-header">
+                <span>${title}</span>
+                <span>${stack.length} action${stack.length > 1 ? 's' : ''}</span>
+            </div>
+            <ul class="undo-redo-list">
+                ${displayStack.map((snap, idx) => `
+                    <li class="undo-redo-item" onclick="jumpToHistoryState('${type}', ${stack.length - 1 - idx})">
+                        <span class="undo-redo-item-label">${snap.label || 'Action sans nom'}</span>
+                        <span class="undo-redo-item-time">${formatTimestamp(snap.timestamp)}</span>
+                    </li>
+                `).join('')}
+            </ul>
+        `;
+    }
+
+    // Positionner la popup
+    const rect = buttonElement.getBoundingClientRect();
+    popup.style.top = (rect.bottom + window.scrollY) + 'px';
+    popup.style.left = (rect.left + rect.width / 2 + window.scrollX) + 'px';
+    popup.classList.add('active');
+}
+
+/**
+ * Cache la popup
+ */
+function hideUndoRedoPopup() {
+    const popup = document.getElementById('undoRedoPopup');
+    if (popup) {
+        popup.classList.remove('active');
+    }
+}
+
+/**
+ * Formate un timestamp
+ */
+function formatTimestamp(timestamp) {
+    const date = new Date(timestamp);
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+}
+
+/**
+ * Annule ou rétablit plusieurs actions d'un coup
+ */
+function jumpToHistoryState(type, targetIndex) {
+    if (type === 'undo') {
+        const count = historyStack.length - targetIndex;
+        for (let i = 0; i < count; i++) {
+            undo();
+        }
+    } else {
+        const count = redoStack.length - targetIndex;
+        for (let i = 0; i < count; i++) {
+            redo();
+        }
+    }
+    hideUndoRedoPopup();
 }
 
 /**
@@ -625,54 +768,48 @@ function integrateWithRepository(repository, name) {
  * Integre l'undo/redo dans tous les repositories connus
  */
 function integrateWithAllRepositories() {
+    const integrate = (repo, name) => {
+        try {
+            if (typeof repo !== 'undefined') {
+                integrateWithRepository(repo, name);
+            }
+        } catch (e) {
+            console.error(`[UndoRedo] Erreur d'integration pour ${name}:`, e);
+        }
+    };
+
     // Structure
-    if (typeof ActRepository !== 'undefined') {
-        integrateWithRepository(ActRepository, 'Act');
-    }
-    if (typeof ChapterRepository !== 'undefined') {
-        integrateWithRepository(ChapterRepository, 'Chapter');
-    }
-    if (typeof SceneRepository !== 'undefined') {
-        integrateWithRepository(SceneRepository, 'Scene');
-    }
+    integrate(ActRepository, 'Act');
+    integrate(ChapterRepository, 'Chapter');
+    integrate(SceneRepository, 'Scene');
 
     // Characters
-    if (typeof CharacterRepository !== 'undefined') {
-        integrateWithRepository(CharacterRepository, 'Character');
-    }
+    integrate(CharacterRepository, 'Character');
 
     // World
-    if (typeof WorldRepository !== 'undefined') {
-        integrateWithRepository(WorldRepository, 'World');
-    }
+    integrate(WorldRepository, 'World');
 
     // PlotGrid
-    if (typeof PlotGridRepository !== 'undefined') {
-        integrateWithRepository(PlotGridRepository, 'PlotGrid');
-    }
+    integrate(PlotGridRepository, 'PlotGrid');
 
     // Thriller Board
-    if (typeof ThrillerElementRepository !== 'undefined') {
-        integrateWithRepository(ThrillerElementRepository, 'ThrillerElement');
-    }
-    if (typeof ThrillerCardRepository !== 'undefined') {
-        integrateWithRepository(ThrillerCardRepository, 'ThrillerCard');
-    }
-    if (typeof ThrillerRowRepository !== 'undefined') {
-        integrateWithRepository(ThrillerRowRepository, 'ThrillerRow');
-    }
-    if (typeof ThrillerColumnRepository !== 'undefined') {
-        integrateWithRepository(ThrillerColumnRepository, 'ThrillerColumn');
-    }
-    if (typeof ThrillerConnectionRepository !== 'undefined') {
-        integrateWithRepository(ThrillerConnectionRepository, 'ThrillerConnection');
-    }
-    if (typeof ThrillerTypeRepository !== 'undefined') {
-        integrateWithRepository(ThrillerTypeRepository, 'ThrillerType');
-    }
+    //integrate(ThrillerElementRepository, 'ThrillerElement');
+    //integrate(ThrillerCardRepository, 'ThrillerCard');
+    //integrate(ThrillerRowRepository, 'ThrillerRow');
+    //integrate(ThrillerColumnRepository, 'ThrillerColumn');
+    //integrate(ThrillerConnectionRepository, 'ThrillerConnection');
+    //integrate(ThrillerTypeRepository, 'ThrillerType');
+
+    // Arc Board
+    integrate(ArcRepository, 'Arc');
+    integrate(BoardItemRepository, 'BoardItem');
+    integrate(CardRepository, 'Card');
+    integrate(ConnectionRepository, 'Connection');
 
     console.log('[UndoRedo] Integration avec tous les repositories effectuee');
 }
+
+
 
 // ============================================
 // HOOKS AUTOMATIQUES POUR LES CHAMPS DE TEXTE

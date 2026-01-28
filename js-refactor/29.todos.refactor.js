@@ -154,6 +154,9 @@ function toggleTodoFromPanel(actId, chapterId, sceneId, todoId) {
     if (todo) {
         todo.completed = !todo.completed;
         saveProject();
+        if (typeof saveToHistory === 'function') {
+            saveToHistory('toggleTodo');
+        }
         renderTodosPanel();
         updateAnnotationsButton(false);
         renderActsList();
@@ -228,9 +231,13 @@ renderActsList = function () {
                         badgeHTML += `<span class="scene-badge" style="background: var(--accent-red);">✓${todoCount}</span>`;
                     }
 
-                    const textSpan = sceneElement.querySelector('div > span:not(.drag-handle)');
-                    if (textSpan && !textSpan.querySelector('.scene-badge')) {
-                        textSpan.innerHTML += badgeHTML;
+                    // Chercher spécifiquement le span du titre
+                    const titleSpan = sceneElement.querySelector('.scene-title') ||
+                        sceneElement.querySelector('span[ondblclick*="startEditingScene"]') ||
+                        sceneElement.querySelector('div > span:not(.drag-handle)');
+
+                    if (titleSpan && !titleSpan.querySelector('.scene-badge')) {
+                        titleSpan.innerHTML += badgeHTML;
                     }
                 }
             });
@@ -351,6 +358,9 @@ function toggleTodoFromList(todoId, actId, chapterId, sceneId) {
     if (todo) {
         todo.completed = !todo.completed;
         saveProject();
+        if (typeof saveToHistory === 'function') {
+            saveToHistory('toggleTodo');
+        }
         renderTodosList();
         renderActsList();
     }

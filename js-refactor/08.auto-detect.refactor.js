@@ -498,8 +498,16 @@ function escapeRegex(string) {
 // [MVVM : View]
 // Manipulation directe du DOM/API du navigateur pour le formatage.
 function formatText(command, value = null) {
+    // Cibler l'éditeur spécifique de la scène courante pour éviter le scroll jump
+    let selector = '.editor-textarea';
+    if (typeof currentSceneId !== 'undefined' && currentSceneId) {
+        selector = `.editor-textarea[data-scene-id="${currentSceneId}"]`;
+    }
+
+    const editor = document.querySelector(selector);
+    if (editor) editor.focus();
+
     document.execCommand(command, false, value);
-    document.querySelector('.editor-textarea').focus();
 }
 // [MVVM : View]
 // Fonction de rendu pour le panneau des liens en mode sidebar

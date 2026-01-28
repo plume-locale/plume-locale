@@ -420,6 +420,7 @@
     overflow: hidden;
     line-height: 1.4;
 }
+
 /* Links Panel (Sidebar) */
 .links-panel-sidebar {
     background: var(--bg-secondary);

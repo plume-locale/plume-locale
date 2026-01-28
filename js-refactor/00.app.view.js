@@ -1422,12 +1422,39 @@ function cleanupChapterScrollTracking() {
 
 /**
  * [MVVM : View]
+ * Place le curseur au début d'un élément contenteditable.
+ */
+function setCursorAtBeginning(element) {
+    if (!element) return;
+    element.focus();
+
+    // Pour contenteditable, on utilise Selection et Range
+    if (typeof window.getSelection !== "undefined" && typeof document.createRange !== "undefined") {
+        const range = document.createRange();
+        range.selectNodeContents(element);
+        range.collapse(true); // true pour le début
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+    }
+}
+
+/**
+ * [MVVM : View]
  * Fait défiler jusqu'à une scène spécifique dans le mode chapitre.
  */
 function scrollToChapterScene(sceneIndex) {
     const sceneBlock = document.querySelector(`.chapter-scene-block[data-scene-index="${sceneIndex}"]`);
     if (sceneBlock) {
         sceneBlock.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        // Placer le curseur au début de l'éditeur de cette scène
+        const editor = sceneBlock.querySelector('.editor-textarea');
+        if (editor) {
+            // Un petit délai pour laisser l'animation de scroll commencer/finir si nécessaire
+            // mais l'appel à focus() peut être immédiat
+            setCursorAtBeginning(editor);
+        }
     }
 }
 
@@ -1649,6 +1676,12 @@ function scrollToActScene(sceneIndex) {
     const sceneBlock = document.querySelector(`.act-scene-block[data-scene-index="${sceneIndex}"]`);
     if (sceneBlock) {
         sceneBlock.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        // Placer le curseur au début de l'éditeur de cette scène
+        const editor = sceneBlock.querySelector('.editor-textarea');
+        if (editor) {
+            setCursorAtBeginning(editor);
+        }
     }
 }
 

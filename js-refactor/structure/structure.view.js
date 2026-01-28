@@ -204,6 +204,9 @@ function renderActsList() {
     const container = document.getElementById('chaptersList');
     if (!container) return;
 
+    // Sauvegarder la position du scroll avant le rendu
+    const scrollTop = container.scrollTop;
+
     const vm = getStructureViewModel();
     if (!vm.acts || vm.acts.length === 0) {
         container.innerHTML = `
@@ -295,7 +298,10 @@ function renderActsList() {
     if (typeof updateStats === 'function') updateStats();
     if (typeof updateProgressBar === 'function') updateProgressBar();
     if (typeof applyStatusFilters === 'function') applyStatusFilters();
-    if (typeof restoreTreeState === 'function') setTimeout(() => restoreTreeState(), 50);
+    if (typeof restoreTreeState === 'function') restoreTreeState();
+
+    // Restaurer la position du scroll
+    container.scrollTop = scrollTop;
 }
 
 // --- ORCHESTRATION ---
