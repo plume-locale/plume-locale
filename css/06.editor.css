@@ -1,25 +1,22 @@
-a
-
 /* Main Editor */
 .editor-container {
-    display: flex;
-    flex-direction: column;
+    display: block;
+    /* Mieux pour le sticky que flex */
     background: var(--bg-primary);
     height: calc(100vh - 60px);
     overflow-y: auto;
     overflow-x: hidden;
 }
 
-.editor-fixed-top {
-    flex-shrink: 0;
-    z-index: 100;
+#editorView {
+    position: relative;
+    min-height: 100%;
 }
 
 .editor-header {
     padding: 2rem 3rem 1rem;
     border-bottom: 1px solid var(--border-color);
     background: var(--bg-primary);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .editor-breadcrumb {
@@ -102,8 +99,11 @@ a
     background: var(--bg-primary);
     flex-wrap: wrap;
     align-items: center;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     overflow: visible;
+    position: sticky;
+    top: 0;
+    z-index: 110;
 }
 
 .editor-toolbar::-webkit-scrollbar {
@@ -138,13 +138,6 @@ a
 
 .links-panel-sticky.hidden {
     display: none;
-}
-
-.editor-workspace {
-    flex: 1 1 auto;
-    overflow-y: scroll;
-    overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
 }
 
 .editor-content {

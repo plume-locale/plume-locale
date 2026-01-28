@@ -770,12 +770,6 @@ function getEditorToolbarHTML(panel = null) {
             <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'removeFormat')" title="Supprimer le formatage">✕ Format</button>
         </div>
 
-        <!-- Annotations, Arcs & Plot -->
-        <div class="toolbar-group">
-            <button class="toolbar-btn" onclick="${panel ? `toggleAnnotationsPanel()` : 'toggleAnnotationsPanel()'}" id="toolbarAnnotationsBtn${idSuffix}" title="Annotations"><i data-lucide="message-square"></i></button>
-            <button class="toolbar-btn" onclick="${panel ? `toggleArcScenePanel()` : 'toggleArcScenePanel()'}" id="toolbarArcsBtn${idSuffix}" title="Arcs Narratifs"><i data-lucide="git-commit-horizontal"></i></button>
-            <button class="toolbar-btn" onclick="PlotGridUI.toggleSidebar()" id="toolbarPlotBtn${idSuffix}" title="Afficher l'intrigue"><i data-lucide="trending-up"></i></button>
-        </div>
         
         <!-- Revision mode button -->
         <div class="toolbar-group">
@@ -802,41 +796,39 @@ function renderEditor(act, chapter, scene) {
         : '';
 
     editorView.innerHTML = `
-        <div class="editor-fixed-top">
-            <div class="editor-header">
-                <div class="editor-breadcrumb">${act.title} > ${chapter.title}</div>
-                <div style="display: flex; align-items: center; gap: 1rem;">
-                    <div class="editor-title" style="flex: 1;">${scene.title}${finalVersionBadge}</div>
-                    <button class="btn btn-small" onclick="toggleFocusMode()" title="Mode Focus (F11)" style="white-space: nowrap;">
-                        <i data-lucide="maximize" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Focus
-                    </button>
-                </div>
-                <div class="editor-meta">
-                    <span id="sceneWordCount">${wordCount} mots</span>
-                    <span>Dernière modification : ${new Date(scene.updatedAt || Date.now()).toLocaleDateString('fr-FR')}</span>
-                </div>
-                <div class="editor-synopsis">
-                    <span class="synopsis-label"><i data-lucide="file-text" style="width:12px;height:12px;"></i> Résumé :</span>
-                    <input type="text" 
-                           class="synopsis-input" 
-                           value="${(scene.synopsis || '').replace(/"/g, '&quot;')}" 
-                           placeholder="Ajouter un résumé de la scène..."
-                           onchange="updateSceneSynopsis(${act.id}, ${chapter.id}, ${scene.id}, this.value)"
-                           oninput="this.style.width = Math.max(200, this.scrollWidth) + 'px'">
-                </div>
+        <div class="editor-header">
+            <div class="editor-breadcrumb">${act.title} > ${chapter.title}</div>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <div class="editor-title" style="flex: 1;">${scene.title}${finalVersionBadge}</div>
+                <button class="btn btn-small" onclick="toggleFocusMode()" title="Mode Focus (F11)" style="white-space: nowrap;">
+                    <i data-lucide="maximize" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Focus
+                </button>
             </div>
-            <!-- Toolbar and Links Panels -->
-            <button class="toolbar-mobile-toggle" onclick="toggleEditorToolbar()">
-                <span id="toolbarToggleText"><i data-lucide="pen-line" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Afficher les outils</span>
-            </button>
-            <div class="editor-toolbar" id="editorToolbar">
-                ${getEditorToolbarHTML()}
+            <div class="editor-meta">
+                <span id="sceneWordCount">${wordCount} mots</span>
+                <span>Dernière modification : ${new Date(scene.updatedAt || Date.now()).toLocaleDateString('fr-FR')}</span>
+            </div>
+            <div class="editor-synopsis">
+                <span class="synopsis-label"><i data-lucide="file-text" style="width:12px;height:12px;"></i> Résumé :</span>
+                <input type="text" 
+                       class="synopsis-input" 
+                       value="${(scene.synopsis || '').replace(/"/g, '&quot;')}" 
+                       placeholder="Ajouter un résumé de la scène..."
+                       onchange="updateSceneSynopsis(${act.id}, ${chapter.id}, ${scene.id}, this.value)"
+                       oninput="this.style.width = Math.max(200, this.scrollWidth) + 'px'">
             </div>
         </div>
-        <div class="editor-workspace">
-            <div class="editor-content">
-                <div class="editor-textarea" contenteditable="true" spellcheck="true" oninput="updateSceneContent()">${scene.content || ''}</div>
-            </div>
+
+        <button class="toolbar-mobile-toggle" onclick="toggleEditorToolbar()">
+            <span id="toolbarToggleText"><i data-lucide="pen-line" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Afficher les outils</span>
+        </button>
+        
+        <div class="editor-toolbar" id="editorToolbar">
+            ${getEditorToolbarHTML()}
+        </div>
+
+        <div class="editor-content">
+            <div class="editor-textarea" contenteditable="true" spellcheck="true" oninput="updateSceneContent()">${scene.content || ''}</div>
         </div>`;
 
     if (typeof lucide !== 'undefined') lucide.createIcons();
@@ -846,6 +838,7 @@ function renderEditor(act, chapter, scene) {
     setTimeout(() => {
         const editor = document.querySelector('.editor-textarea');
         if (editor && editor.textContent.trim() === '') editor.focus();
+
     }, 100);
 
     // Initialize scene navigation toolbar
@@ -939,29 +932,28 @@ function renderActEditor(act) {
     });
 
     editorView.innerHTML = `
-        <div class="editor-fixed-top">
-            <div class="editor-header">
-                <div class="editor-breadcrumb">${act.title}</div>
-                <div style="display: flex; align-items: center; gap: 1rem;">
-                    <div class="editor-title" id="actEditorTitle" style="flex: 1;">${act.title} - Tous les chapitres</div>
-                    <button class="btn btn-small" onclick="toggleFocusMode()" title="Mode Focus (F11)" style="white-space: nowrap;">
-                        <i data-lucide="maximize" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Focus
-                    </button>
-                </div>
-                <div class="editor-meta">
-                    <span>${totalWords} mots au total</span>
-                    <span>${act.chapters.length} chapitre${act.chapters.length > 1 ? 's' : ''}</span>
-                    <span>${allScenes.length} scène${allScenes.length > 1 ? 's' : ''}</span>
-                    <span>Dernière modification : ${new Date(act.updatedAt || Date.now()).toLocaleDateString('fr-FR')}</span>
-                </div>
+        <div class="editor-header">
+            <div class="editor-breadcrumb">${act.title}</div>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <div class="editor-title" id="actEditorTitle" style="flex: 1;">${act.title} - Tous les chapitres</div>
+                <button class="btn btn-small" onclick="toggleFocusMode()" title="Mode Focus (F11)" style="white-space: nowrap;">
+                    <i data-lucide="maximize" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Focus
+                </button>
             </div>
-            <!-- Toolbar -->
-            <button class="toolbar-mobile-toggle" onclick="toggleEditorToolbar()">
-                <span id="toolbarToggleText"><i data-lucide="pen-line" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Afficher les outils</span>
-            </button>
-            <div class="editor-toolbar" id="editorToolbar">
-                ${getEditorToolbarHTML()}
+            <div class="editor-meta">
+                <span>${totalWords} mots au total</span>
+                <span>${act.chapters.length} chapitre${act.chapters.length > 1 ? 's' : ''}</span>
+                <span>${allScenes.length} scène${allScenes.length > 1 ? 's' : ''}</span>
+                <span>Dernière modification : ${new Date(act.updatedAt || Date.now()).toLocaleDateString('fr-FR')}</span>
             </div>
+        </div>
+
+        <button class="toolbar-mobile-toggle" onclick="toggleEditorToolbar()">
+            <span id="toolbarToggleText"><i data-lucide="pen-line" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Afficher les outils</span>
+        </button>
+        
+        <div class="editor-toolbar" id="editorToolbar">
+            ${getEditorToolbarHTML()}
         </div>
 
         <!-- Indicateur de position vertical -->
@@ -978,10 +970,8 @@ function renderActEditor(act) {
             <div class="progress-current-indicator" id="progressCurrentIndicator"></div>
         </div>
 
-        <div class="editor-workspace">
-            <div class="editor-content" id="actEditorContent">
-                ${contentHTML}
-            </div>
+        <div class="editor-content" id="actEditorContent">
+            ${contentHTML}
         </div>`;
 
     if (typeof lucide !== 'undefined') lucide.createIcons();
@@ -1045,28 +1035,27 @@ function renderChapterEditor(act, chapter) {
     });
 
     editorView.innerHTML = `
-        <div class="editor-fixed-top">
-            <div class="editor-header">
-                <div class="editor-breadcrumb">${act.title} > ${chapter.title}</div>
-                <div style="display: flex; align-items: center; gap: 1rem;">
-                    <div class="editor-title" id="chapterEditorTitle" style="flex: 1;">${chapter.title} - Toutes les scènes</div>
-                    <button class="btn btn-small" onclick="toggleFocusMode()" title="Mode Focus (F11)" style="white-space: nowrap;">
-                        <i data-lucide="maximize" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Focus
-                    </button>
-                </div>
-                <div class="editor-meta">
-                    <span>${totalWords} mots au total</span>
-                    <span>${chapter.scenes.length} scène${chapter.scenes.length > 1 ? 's' : ''}</span>
-                    <span>Dernière modification : ${new Date(chapter.updatedAt || Date.now()).toLocaleDateString('fr-FR')}</span>
-                </div>
+        <div class="editor-header">
+            <div class="editor-breadcrumb">${act.title} > ${chapter.title}</div>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <div class="editor-title" id="chapterEditorTitle" style="flex: 1;">${chapter.title} - Toutes les scènes</div>
+                <button class="btn btn-small" onclick="toggleFocusMode()" title="Mode Focus (F11)" style="white-space: nowrap;">
+                    <i data-lucide="maximize" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Focus
+                </button>
             </div>
-            <!-- Toolbar -->
-            <button class="toolbar-mobile-toggle" onclick="toggleEditorToolbar()">
-                <span id="toolbarToggleText"><i data-lucide="pen-line" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Afficher les outils</span>
-            </button>
-            <div class="editor-toolbar" id="editorToolbar">
-                ${getEditorToolbarHTML()}
+            <div class="editor-meta">
+                <span>${totalWords} mots au total</span>
+                <span>${chapter.scenes.length} scène${chapter.scenes.length > 1 ? 's' : ''}</span>
+                <span>Dernière modification : ${new Date(chapter.updatedAt || Date.now()).toLocaleDateString('fr-FR')}</span>
             </div>
+        </div>
+
+        <button class="toolbar-mobile-toggle" onclick="toggleEditorToolbar()">
+            <span id="toolbarToggleText"><i data-lucide="pen-line" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Afficher les outils</span>
+        </button>
+        
+        <div class="editor-toolbar" id="editorToolbar">
+            ${getEditorToolbarHTML()}
         </div>
 
         <!-- Indicateur de position vertical -->
@@ -1084,10 +1073,8 @@ function renderChapterEditor(act, chapter) {
             <div class="progress-current-indicator" id="progressCurrentIndicator"></div>
         </div>
 
-        <div class="editor-workspace">
-            <div class="editor-content" id="chapterEditorContent">
-                ${scenesHTML}
-            </div>
+        <div class="editor-content" id="chapterEditorContent">
+            ${scenesHTML}
         </div>`;
 
     if (typeof lucide !== 'undefined') lucide.createIcons();

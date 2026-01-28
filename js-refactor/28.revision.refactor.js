@@ -348,7 +348,6 @@ function closeAnnotationsPanel() {
 // [MVVM : View]
 // Met à jour les compteurs et l'état visuel des boutons d' accès aux annotations.
 function updateAnnotationsButton(isOpen) {
-    const toolbarBtn = document.getElementById('toolbarAnnotationsBtn');
     const sidebarBtn = document.getElementById('sidebarAnnotationsBtn');
     const sidebarBadge = document.getElementById('annotationsBadge');
     const todosBadge = document.getElementById('todosBadge');
@@ -383,22 +382,6 @@ function updateAnnotationsButton(isOpen) {
         });
     });
 
-    // Mettre à jour le badge toolbar
-    if (toolbarBtn) {
-        if (annotationCount > 0) {
-            toolbarBtn.classList.add('has-annotations');
-            toolbarBtn.setAttribute('data-count', annotationCount > 9 ? '9+' : annotationCount);
-        } else {
-            toolbarBtn.classList.remove('has-annotations');
-            toolbarBtn.removeAttribute('data-count');
-        }
-
-        if (isOpen) {
-            toolbarBtn.classList.add('panel-open');
-        } else {
-            toolbarBtn.classList.remove('panel-open');
-        }
-    }
 
     // Mettre à jour le bouton sidebar annotations
     if (sidebarBtn) {
