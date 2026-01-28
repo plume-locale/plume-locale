@@ -42,6 +42,7 @@ CSS_ORDER = [
 # Ordre des fichiers JS - MODIFIÉ pour js-refactor
 JS_ORDER = [
     'js-refactor/01.app.refactor.js',
+    '38.tension.js',
     '02.storage.js',
     'js-refactor/03.projects.refactor.js',
     '04.init.js',
@@ -94,7 +95,6 @@ JS_ORDER = [
     '35.renderMap.js',
     '36.timeline-metro.js',
     '37.theme-manager.js',
-    '38.tension.js',
     '39.export.js',
     '40.sidebar-views.js',
     '41.storageMonitoring.js',

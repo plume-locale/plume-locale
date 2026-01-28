@@ -99,6 +99,13 @@ function toggleFocusMode() {
         focusPanelOpen = false;
         document.getElementById('focusPanel').classList.remove('active');
     }
+
+    // Gestion visuelle du Tension Meter en mode Focus
+    const tensionMeter = document.getElementById('liveTensionMeter');
+    if (tensionMeter) {
+        if (focusModeActive) tensionMeter.classList.add('focus-hide');
+        else tensionMeter.classList.remove('focus-hide');
+    }
 }
 
 // [MVVM : View]

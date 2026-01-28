@@ -64,24 +64,30 @@ function loadTensionWordsInEditor() {
 
     // Charger les mots de haute tension
     const highList = document.getElementById('highTensionList');
-    highList.innerHTML = '';
-    words.high.forEach((word, index) => {
-        highList.innerHTML += createWordElement(word, 'high', index);
-    });
+    if (highList) {
+        highList.innerHTML = '';
+        words.high.forEach((word, index) => {
+            highList.innerHTML += createWordElement(word, 'high', index);
+        });
+    }
 
     // Charger les mots de tension moyenne
     const mediumList = document.getElementById('mediumTensionList');
-    mediumList.innerHTML = '';
-    words.medium.forEach((word, index) => {
-        mediumList.innerHTML += createWordElement(word, 'medium', index);
-    });
+    if (mediumList) {
+        mediumList.innerHTML = '';
+        words.medium.forEach((word, index) => {
+            mediumList.innerHTML += createWordElement(word, 'medium', index);
+        });
+    }
 
     // Charger les mots de faible tension
     const lowList = document.getElementById('lowTensionList');
-    lowList.innerHTML = '';
-    words.low.forEach((word, index) => {
-        lowList.innerHTML += createWordElement(word, 'low', index);
-    });
+    if (lowList) {
+        lowList.innerHTML = '';
+        words.low.forEach((word, index) => {
+            lowList.innerHTML += createWordElement(word, 'low', index);
+        });
+    }
 }
 
 // Créer un élément de mot avec bouton de suppression
@@ -367,3 +373,190 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
+/**
+ * [MVVM : Model]
+ * Calcule la tension en temps réel pour un bloc de texte donné.
+ * @param {string} text - Le contenu HTML ou brut à analyser.
+ * @returns {Object} Un objet contenant le score (0-100) et le détail des mots trouvés.
+ */
+/**
+ * [MVVM : Model]
+ * Calcule la tension en temps réel pour un bloc de texte donné.
+ * @param {string} text - Le contenu HTML ou brut à analyser.
+ * @returns {Object} Un objet contenant le score (0-100) et le détail des mots trouvés.
+ */
+function calculateLiveTension(text) {
+    if (!text || text.trim() === '') return { score: 15, details: { high: 0, medium: 0, low: 0 }, foundWords: { high: [], medium: [], low: [] } };
+
+    // Nettoyer le HTML de manière consistante
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = text;
+    // Remplacer les blocks par des espaces pour éviter les mots collés lors du stripping
+    const blocks = tempDiv.querySelectorAll('p, div, br, h1, h2, h3');
+    blocks.forEach(b => {
+        if (b.tagName === 'BR') b.after(' ');
+        else b.after(' ');
+    });
+
+    const cleanText = tempDiv.textContent.toLowerCase();
+    const tensionWords = getTensionWords();
+    const foundWords = { high: [], medium: [], low: [] };
+    let lexicalScore = 0;
+
+    // 1. ANALYSE LEXICALE
+    tensionWords.high.forEach(word => {
+        if (!word) return;
+        const regex = new RegExp(`\\b${word}\\b`, 'gi');
+        const matches = cleanText.match(regex);
+        if (matches) {
+            lexicalScore += matches.length * 8;
+            foundWords.high.push(word);
+        }
+    });
+
+    tensionWords.medium.forEach(word => {
+        if (!word) return;
+        const regex = new RegExp(`\\b${word}\\b`, 'gi');
+        const matches = cleanText.match(regex);
+        if (matches) {
+            lexicalScore += matches.length * 4;
+            foundWords.medium.push(word);
+        }
+    });
+
+    tensionWords.low.forEach(word => {
+        if (!word) return;
+        const regex = new RegExp(`\\b${word}\\b`, 'gi');
+        const matches = cleanText.match(regex);
+        if (matches) {
+            lexicalScore -= matches.length * 5;
+            foundWords.low.push(word);
+        }
+    });
+
+    // 2. ANALYSE PONCTUATION
+    const exclamations = (cleanText.match(/!/g) || []).length;
+    const questions = (cleanText.match(/\?/g) || []).length;
+    const suspensions = (cleanText.match(/\.\.\./g) || []).length;
+    lexicalScore += (exclamations * 1.5 + questions * 0.5 + suspensions * 2);
+
+    // 3. FACTEUR DE DENSITÉ
+    // Utiliser la même logique que getWordCount pour la consistance
+    const wordCount = typeof getWordCount === 'function' ? getWordCount(text) : (cleanText.split(/\s+/).filter(w => w.length > 0).length || 1);
+
+    // Formule ajustée pour être plus stable
+    let finalScore = 25 + (lexicalScore / Math.sqrt(Math.max(50, wordCount))) * 5.2;
+
+    // Normalisation 15-95
+    finalScore = Math.max(15, Math.min(95, finalScore));
+
+    return {
+        score: Math.round(finalScore),
+        details: {
+            high: foundWords.high.length,
+            medium: foundWords.medium.length,
+            low: foundWords.low.length
+        },
+        foundWords: foundWords
+    };
+}
+
+/**
+ * [MVVM : View]
+ * Met à jour le "Tension Meter" dans l'UI.
+ */
+function updateLiveTensionMeter(text) {
+    const meter = document.getElementById('liveTensionMeter');
+    if (!meter) {
+        injectTensionMeter();
+        return;
+    }
+
+    const result = calculateLiveTension(text);
+    const score = result.score;
+
+    const circle = document.getElementById('tensionMeterFill');
+    if (circle) {
+        const radius = 22;
+        const circumference = 2 * Math.PI * radius;
+        const offset = circumference - (score / 100) * circumference;
+        circle.style.strokeDasharray = `${circumference} ${circumference}`;
+        circle.style.strokeDashoffset = offset;
+
+        if (score > 65) circle.style.stroke = 'var(--accent-red)';
+        else if (score > 40) circle.style.stroke = 'var(--accent-gold)';
+        else circle.style.stroke = 'var(--accent-blue)';
+    }
+
+    const valueDisplay = document.getElementById('tensionValueDisplay');
+    if (valueDisplay) valueDisplay.textContent = `${score}%`;
+
+    updateTensionTooltip(result);
+}
+
+/**
+ * [MVVM : View]
+ * Met à jour le contenu du tooltip de tension.
+ */
+function updateTensionTooltip(result) {
+    const tooltip = document.getElementById('tensionTooltip');
+    if (!tooltip) return;
+
+    const highTags = result.foundWords.high.slice(0, 5).map(w => `<span class="tension-tag tension-tag-high">${w}</span>`).join('');
+    const mediumTags = result.foundWords.medium.slice(0, 5).map(w => `<span class="tension-tag tension-tag-medium">${w}</span>`).join('');
+
+    tooltip.innerHTML = `
+        <div class="tension-tooltip-title">
+            <i data-lucide="zap" style="width:14px;height:14px;"></i> Tension Directe
+        </div>
+        <div class="tension-tooltip-item">
+            <span>Indice d'intensité</span>
+            <strong>${result.score}%</strong>
+        </div>
+        <div class="tension-tooltip-item">
+            <span>Mots-clés forts</span>
+            <span style="color: var(--accent-red)">${result.details.high}</span>
+        </div>
+        <div class="tension-tooltip-item">
+            <span>Mots-clés modérés</span>
+            <span style="color: var(--accent-gold)">${result.details.medium}</span>
+        </div>
+        <div class="tension-tags-container">
+            ${highTags}
+            ${mediumTags}
+        </div>
+        <div style="margin-top: 0.75rem; font-size: 0.65rem; color: var(--text-muted); font-style: italic;">
+            Analyse la scène active (sous le curseur ou visible à l'écran).
+        </div>
+    `;
+
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+/**
+ * [MVVM : View]
+ * Injecte le composant Tension Meter dans le DOM s'il n'existe pas.
+ */
+function injectTensionMeter() {
+    if (document.getElementById('liveTensionMeter')) return;
+
+    const div = document.createElement('div');
+    div.id = 'liveTensionMeter';
+    div.className = 'tension-meter-container';
+    div.setAttribute('title', 'Tension dramatique en temps réel');
+
+    div.innerHTML = `
+        <svg class="tension-meter-svg" viewBox="0 0 50 50">
+            <circle class="tension-meter-bg" cx="25" cy="25" r="22"></circle>
+            <circle class="tension-meter-fill" id="tensionMeterFill" cx="25" cy="25" r="22" stroke-dasharray="138.2" stroke-dashoffset="138.2"></circle>
+        </svg>
+        <div class="tension-value-display" id="tensionValueDisplay">--</div>
+        <div class="tension-tooltip" id="tensionTooltip"></div>
+    `;
+
+    document.body.appendChild(div);
+
+    if (typeof focusModeActive !== 'undefined' && focusModeActive) {
+        div.classList.add('focus-hide');
+    }
+}

@@ -232,6 +232,12 @@ function switchView(view) {
     // Rendu du contenu
     renderViewContent(view, 'editorView');
 
+    // Live Tension Meter Visibility
+    const tensionMeter = document.getElementById('liveTensionMeter');
+    if (tensionMeter) {
+        tensionMeter.style.display = (view === 'editor') ? 'flex' : 'none';
+    }
+
     // Refresh icons
     setTimeout(() => {
         if (typeof lucide !== 'undefined') lucide.createIcons();
@@ -844,6 +850,7 @@ function renderEditor(act, chapter, scene) {
     // Initialize scene navigation toolbar
     setTimeout(() => {
         if (typeof initSceneNavigation === 'function') initSceneNavigation();
+        if (typeof updateLiveTensionMeter === 'function') updateLiveTensionMeter(scene.content || '');
     }, 200);
 }
 
@@ -987,6 +994,9 @@ function renderActEditor(act) {
     // Initialize scene navigation toolbar
     setTimeout(() => {
         if (typeof initSceneNavigation === 'function') initSceneNavigation();
+        if (typeof updateLiveTensionMeter === 'function' && allScenes.length > 0) {
+            updateLiveTensionMeter(allScenes[0].scene.content || '');
+        }
     }, 200);
 }
 
@@ -1090,6 +1100,9 @@ function renderChapterEditor(act, chapter) {
     // Initialize scene navigation toolbar
     setTimeout(() => {
         if (typeof initSceneNavigation === 'function') initSceneNavigation();
+        if (typeof updateLiveTensionMeter === 'function' && chapter.scenes.length > 0) {
+            updateLiveTensionMeter(chapter.scenes[0].content || '');
+        }
     }, 200);
 }
 
@@ -1126,6 +1139,7 @@ function updateSceneContent() {
     }
 
     if (typeof autoDetectLinksDebounced === 'function') autoDetectLinksDebounced();
+    if (typeof updateLiveTensionMeter === 'function') updateLiveTensionMeter(editor.innerHTML);
 }
 
 /**
@@ -1159,6 +1173,10 @@ function updateChapterSceneContent(actId, chapterId, sceneId) {
 
     // Recalculer les proportions de l'indicateur
     updateChapterProgressIndicator(chapter);
+
+    if (typeof updateLiveTensionMeter === 'function') {
+        updateLiveTensionMeter(editor.innerHTML);
+    }
 }
 
 /**
@@ -1232,6 +1250,13 @@ function initChapterScrollTracking(actId, chapterId) {
             if (scene && title) {
                 title.textContent = scene.title;
             }
+
+            // Update tension meter with current visible scene text from DOM
+            if (typeof updateLiveTensionMeter === 'function' && scene) {
+                const sceneEditor = document.querySelector(`.editor-textarea[data-scene-id="${scene.id}"]`);
+                const textToAnalyze = sceneEditor ? sceneEditor.innerHTML : (scene.content || '');
+                updateLiveTensionMeter(textToAnalyze);
+            }
         }
 
         // Calculer la position de l'indicateur
@@ -1275,9 +1300,18 @@ function initChapterScrollTracking(actId, chapterId) {
     // Stocker le handler pour pouvoir le nettoyer plus tard
     chapterScrollTrackingHandler = updateScrollPosition;
 
-    // Écouter le scroll
-    window.addEventListener('scroll', chapterScrollTrackingHandler);
-    updateScrollPosition(); // Initial call
+    // Forcer un premier appel immédiat pour synchroniser la scène 1 (index 0)
+    currentSceneIndex = -1;
+    updateScrollPosition();
+
+    // Écouter le scroll sur le conteneur principal
+    const container = document.querySelector('.editor-container');
+    if (container) {
+        container.addEventListener('scroll', chapterScrollTrackingHandler);
+    } else {
+        // Fallback
+        window.addEventListener('scroll', chapterScrollTrackingHandler);
+    }
 }
 
 /**
@@ -1286,6 +1320,10 @@ function initChapterScrollTracking(actId, chapterId) {
  */
 function cleanupChapterScrollTracking() {
     if (chapterScrollTrackingHandler) {
+        const container = document.querySelector('.editor-container');
+        if (container) {
+            container.removeEventListener('scroll', chapterScrollTrackingHandler);
+        }
         window.removeEventListener('scroll', chapterScrollTrackingHandler);
         chapterScrollTrackingHandler = null;
     }
@@ -1333,6 +1371,10 @@ function updateActSceneContent(actId, chapterId, sceneId) {
 
     // Recalculer les proportions de l'indicateur
     updateActProgressIndicator(act);
+
+    if (typeof updateLiveTensionMeter === 'function') {
+        updateLiveTensionMeter(editor.innerHTML);
+    }
 }
 
 /**
@@ -1407,6 +1449,13 @@ function initActScrollTracking(actId, allScenes) {
             if (sceneData && title) {
                 title.textContent = `${sceneData.chapterTitle} - ${sceneData.scene.title}`;
             }
+
+            // Update tension meter with current visible scene text from DOM for maximum accuracy
+            if (typeof updateLiveTensionMeter === 'function' && sceneData) {
+                const sceneEditor = document.querySelector(`.editor-textarea[data-scene-id="${sceneData.scene.id}"]`);
+                const textToAnalyze = sceneEditor ? sceneEditor.innerHTML : (sceneData.scene.content || '');
+                updateLiveTensionMeter(textToAnalyze);
+            }
         }
 
         // Calculer la position de l'indicateur
@@ -1450,9 +1499,18 @@ function initActScrollTracking(actId, allScenes) {
     // Stocker le handler pour pouvoir le nettoyer plus tard
     chapterScrollTrackingHandler = updateScrollPosition;
 
-    // Écouter le scroll
-    window.addEventListener('scroll', chapterScrollTrackingHandler);
-    updateScrollPosition(); // Initial call
+    // Forcer un premier appel immédiat pour synchroniser la scène 1 (index 0)
+    currentSceneIndex = -1;
+    updateScrollPosition();
+
+    // Écouter le scroll sur le conteneur principal
+    const container = document.querySelector('.editor-container');
+    if (container) {
+        container.addEventListener('scroll', chapterScrollTrackingHandler);
+    } else {
+        // Fallback
+        window.addEventListener('scroll', chapterScrollTrackingHandler);
+    }
 }
 
 /**

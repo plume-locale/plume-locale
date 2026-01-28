@@ -798,7 +798,7 @@
     left: -4px;
     width: 16px;
     height: 3px;
-    background: var(--accent-gold);
+    background: var(--bg-accent);
     border-radius: 2px;
     box-shadow: 0 0 8px rgba(255, 193, 7, 0.8);
     transition: top 0.3s ease;
