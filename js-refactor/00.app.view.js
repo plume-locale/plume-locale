@@ -632,6 +632,7 @@ function openProjectsModal() {
     document.getElementById('projectsModal')?.classList.add('active');
 }
 
+
 function toggleStatusFilter(status) {
     const index = activeStatusFilters.indexOf(status);
     const btn = document.querySelector(`.status-filter-btn[data-status="${status}"]`);
@@ -645,6 +646,94 @@ function toggleStatusFilter(status) {
     }
 
     if (typeof applyStatusFilters === 'function') applyStatusFilters();
+}
+
+/**
+ * [MVVM : View]
+ * Définit la scène active pour les outils de la barre latérale.
+ * Utile pour les vues séquentielles (Acte/Chapitre) où plusieurs scènes sont affichées.
+ */
+function setActiveScene(actId, chapterId, sceneId) {
+    if (currentSceneId === sceneId) return;
+
+    currentActId = actId;
+    currentChapterId = chapterId;
+    currentSceneId = sceneId;
+
+    // Mettre à jour les titres et breadcrumbs si on est en vue Acte ou Chapitre
+    const act = project.acts.find(a => a.id === actId);
+    const chapter = act?.chapters.find(c => c.id === chapterId);
+    const scene = chapter?.scenes.find(s => s.id === sceneId);
+
+    if (scene) {
+        // En vue chapitre
+        const chapterTitleEl = document.getElementById('chapterEditorTitle');
+        if (chapterTitleEl) chapterTitleEl.textContent = scene.title;
+
+        // En vue acte
+        const actTitleEl = document.getElementById('actEditorTitle');
+        if (actTitleEl) actTitleEl.textContent = scene.title;
+
+        const breadcrumbEl = document.querySelector('.act-editor-header .editor-breadcrumb');
+        if (breadcrumbEl && act && chapter) {
+            breadcrumbEl.textContent = `${act.title} › ${chapter.title}`;
+        }
+
+        // Mettre à jour les indicateurs de navigation (points sur le côté ou segments)
+        const dots = document.querySelectorAll('.scene-nav-dot');
+        dots.forEach(dot => {
+            dot.classList.remove('active');
+            if (dot.getAttribute('onclick')?.includes(scene.id)) {
+                dot.classList.add('active');
+            }
+        });
+
+        const segments = document.querySelectorAll('.progress-scene-segment');
+        segments.forEach(seg => {
+            seg.classList.remove('active');
+            if (seg.dataset.sceneId == scene.id) {
+                seg.classList.add('active');
+            }
+        });
+    }
+
+    // Mettre à jour les indicateurs visuels des sidebars si ouverts
+
+    // 1. Versions
+    if (typeof renderSceneVersionsList === 'function' && !document.getElementById('sidebarVersions').classList.contains('hidden')) {
+        renderSceneVersionsList();
+    }
+
+    // 2. Annotations
+    if (typeof renderAnnotationsPanel === 'function' && !document.getElementById('annotationsPanel').classList.contains('hidden')) {
+        renderAnnotationsPanel();
+    }
+
+    // 3. Arcs
+    if (typeof renderArcScenePanel === 'function' && !document.getElementById('arcScenePanel').classList.contains('hidden')) {
+        renderArcScenePanel();
+    }
+
+    // 4. Plot Grid Sidebar
+    if (typeof PlotGridUI !== 'undefined' && typeof PlotGridUI.renderSidebar === 'function' && !document.getElementById('sidebarPlot').classList.contains('hidden')) {
+        PlotGridUI.renderSidebar(sceneId);
+    }
+
+    // 5. Liens (Characters, World, etc.)
+    if (typeof updateLinksPanel === 'function' && !document.getElementById('linksPanel').classList.contains('hidden')) {
+        updateLinksPanel();
+    }
+
+    // Mettre à jour le badge d'annotations dans la sidebar
+    if (typeof updateAnnotationsButton === 'function') {
+        updateAnnotationsButton(false);
+    }
+
+    // Mettre à jour l'indicateur de tension si disponible
+    const editor = document.querySelector(`.editor-textarea[data-scene-id="${sceneId}"]`);
+    if (editor && typeof updateLiveTensionMeter === 'function') {
+        updateLiveTensionMeter(editor.innerHTML);
+    }
 }
 
 // --- EDITOR RENDERING ---
@@ -931,6 +1020,7 @@ function renderActEditor(act) {
                          data-scene-id="${scene.id}"
                          data-chapter-id="${chapter.id}"
                          data-act-id="${act.id}"
+                         onfocus="setActiveScene(${act.id}, ${chapter.id}, ${scene.id})"
                          oninput="updateActSceneContent(${act.id}, ${chapter.id}, ${scene.id})">${scene.content || ''}</div>
                 </div>`;
         });
@@ -1040,6 +1130,7 @@ function renderChapterEditor(act, chapter) {
                      data-scene-id="${scene.id}"
                      data-chapter-id="${chapter.id}"
                      data-act-id="${act.id}"
+                     onfocus="setActiveScene(${act.id}, ${chapter.id}, ${scene.id})"
                      oninput="updateChapterSceneContent(${act.id}, ${chapter.id}, ${scene.id})">${scene.content || ''}</div>
             </div>`;
     });
