@@ -16,7 +16,7 @@
     padding: 0;
     margin-top: 10px;
     display: none;
-    animation: fadeIn 0.2s ease-out;
+    animation: undoRedoFadeIn 0.2s ease-out;
 }
 
 .undo-redo-popup.active {
@@ -90,7 +90,7 @@
     font-size: 0.85rem;
 }
 
-@keyframes fadeIn {
+@keyframes undoRedoFadeIn {
     from {
         opacity: 0;
         transform: translateX(-50%) translateY(-10px);
