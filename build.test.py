@@ -88,7 +88,13 @@ JS_ORDER = [
     '27.keyboardShortcuts.js',
     'js-refactor/28.revision.refactor.js',
     'js-refactor/29.todos.refactor.js',
-    'js-refactor/30.corkboard.refactor.js',
+    # Corkboard refactored files (order: model -> repository -> viewmodel -> view -> handlers -> main)
+    'js-refactor/corkboard/corkboard.model.js',
+    'js-refactor/corkboard/corkboard.repository.js',
+    'js-refactor/corkboard/corkboard.viewmodel.js',
+    'js-refactor/corkboard/corkboard.view.js',
+    'js-refactor/corkboard/corkboard.handlers.js',
+    'js-refactor/corkboard/corkboard.main.js',
     '31.mindmap.js',
     '32.touch-events.js',
     'js-refactor/33.plot.refactor.js',
@@ -198,6 +204,7 @@ IGNORED_ORIGINALS = [
     '28.revision.js',
     '29.todos.js',
     '30.corkboard.js',
+    '30.corkboard.refactor.js',  # Remplacé par js-refactor/corkboard/*.js
     '33.plot.js',
     '43.arcs.js',
     '45.arc-board.js',  # Remplacé par js-refactor/arc-board/*.js

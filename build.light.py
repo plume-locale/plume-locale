@@ -89,7 +89,13 @@ JS_ORDER = [
     '27.keyboardShortcuts.js',
     'js-refactor/28.revision.refactor.js',
     'js-refactor/29.todos.refactor.js',
-    'js-refactor/30.corkboard.refactor.js',
+    # Corkboard refactored files (order: model -> repository -> viewmodel -> view -> handlers -> main)
+    'js-refactor/corkboard/corkboard.model.js',
+    'js-refactor/corkboard/corkboard.repository.js',
+    'js-refactor/corkboard/corkboard.viewmodel.js',
+    'js-refactor/corkboard/corkboard.view.js',
+    'js-refactor/corkboard/corkboard.handlers.js',
+    'js-refactor/corkboard/corkboard.main.js',
     '31.mindmap.js',
     '32.touch-events.js',
     'js-refactor/33.plot.refactor.js',
@@ -181,7 +187,7 @@ IGNORED_ORIGINALS = [
     '03.project.js', '06.structure.js', '07.stats.js', '08.auto-detect.js',
     '15.characters.js', '17.world.js', '01.app.js', '10.colorpalette.js',
     '21.sceneVersions.js', '26.focusMode.js', '28.revision.js', '29.todos.js',
-    '30.corkboard.js', '33.plot.js', '43.arcs.js', '45.arc-board.js',
+    '30.corkboard.js', '30.corkboard.refactor.js', '33.plot.js', '43.arcs.js', '45.arc-board.js',
     '45.arc-board.refactor.js', '46.thriller-board.js', '44.storygrid.js'
 ]
 
