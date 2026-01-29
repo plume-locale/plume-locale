@@ -33,6 +33,26 @@ function rgbaToHex(color) {
     return '#000000';
 }
 
+function hexToRgb(hex) {
+    if (!hex) return '0, 0, 0';
+    if (hex.startsWith('rgba') || hex.startsWith('rgb')) {
+        const match = hex.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+        return match ? `${match[1]}, ${match[2]}, ${match[3]}` : '0, 0, 0';
+    }
+    // Handle #FFF
+    if (hex.length === 4) {
+        const r = parseInt(hex[1] + hex[1], 16);
+        const g = parseInt(hex[2] + hex[2], 16);
+        const b = parseInt(hex[3] + hex[3], 16);
+        return `${r}, ${g}, ${b}`;
+    }
+    // Handle #FFFFFF
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `${r}, ${g}, ${b}`;
+}
+
 const themeManager = {
     currentTheme: null,
     customThemes: [],
@@ -78,15 +98,18 @@ const themeManager = {
         'Sombre': {
             '--bg-primary': '#1a1a1a',
             '--bg-secondary': '#252525',
+            '--bg-tertiary': '#121212',
             '--bg-accent': '#f5f3ed',
             '--text-primary': '#e8e6e3',
             '--text-secondary': '#b8b6b3',
-            '--text-muted': '#888683',
+            '--text-muted': '#a8a6a3',
             '--border-color': '#3a3a3a',
             '--primary-color': '#ffd700',
             '--primary-hover': '#ffed4e',
             '--accent-red': '#ff6b5a',
             '--accent-gold': '#ffd700',
+            '--shadow-color': '0, 0, 0',
+            '--cork-bg-default': '#2a2a2a',
             '--highlight-yellow': 'rgba(255, 235, 59, 0.3)',
             '--highlight-green': 'rgba(76, 175, 80, 0.25)',
             '--highlight-blue': 'rgba(33, 150, 243, 0.25)',
@@ -297,15 +320,18 @@ const themeManager = {
         'Luxe': {
             '--bg-primary': '#050505',
             '--bg-secondary': '#111111',
+            '--bg-tertiary': '#000000',
             '--bg-accent': '#1a1a1a',
             '--text-primary': '#e0e0e0',
             '--text-secondary': '#a0a0a0',
-            '--text-muted': '#505050',
+            '--text-muted': '#808080',
             '--border-color': '#333333',
             '--primary-color': '#cfb53b',
             '--primary-hover': '#e6c94c',
             '--accent-red': '#800020',
             '--accent-gold': '#cfb53b',
+            '--shadow-color': '0, 0, 0',
+            '--cork-bg-default': '#1a1a1a',
             '--highlight-yellow': 'rgba(207, 181, 59, 0.25)',
             '--highlight-green': 'rgba(85, 107, 47, 0.3)',
             '--highlight-blue': 'rgba(70, 130, 180, 0.3)',
@@ -328,6 +354,16 @@ const themeManager = {
         const root = document.documentElement;
         Object.entries(colors).forEach(([variable, value]) => {
             root.style.setProperty(variable, value);
+
+            // Gérer les variables RGB correspondantes si possible
+            if (!variable.endsWith('-rgb') && !variable.includes('highlight') && !variable.includes('shadow')) {
+                try {
+                    const rgbValue = hexToRgb(value);
+                    root.style.setProperty(`${variable}-rgb`, rgbValue);
+                } catch (e) {
+                    // Ignorer les échecs de conversion (ex: dégradés ou valeurs complexes)
+                }
+            }
         });
         this.currentTheme = colors;
         this.saveCurrentTheme();

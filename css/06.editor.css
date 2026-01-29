@@ -172,7 +172,7 @@
 .btn {
     padding: 0.6rem 1.2rem;
     border: 1px solid var(--border-color);
-    background: white;
+    background: var(--bg-primary);
     color: var(--text-primary);
     cursor: pointer;
     font-family: 'Crimson Pro', serif;
@@ -277,7 +277,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(42, 38, 34, 0.6);
+    background: rgba(var(--bg-accent-rgb), 0.6);
     backdrop-filter: blur(4px);
     z-index: 1000;
     align-items: center;
@@ -309,7 +309,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(42, 38, 34, 0.85);
+    background: rgba(var(--bg-accent-rgb), 0.85);
     backdrop-filter: blur(4px);
     align-items: center;
     justify-content: center;
@@ -350,7 +350,7 @@
 
 .modal-close:hover {
     color: var(--accent-red);
-    background: rgba(196, 69, 54, 0.1);
+    background: rgba(var(--accent-red-rgb), 0.1);
 }
 
 .modal-close:active {
@@ -579,9 +579,9 @@
 
 /* 1. Présent (Validé) - Vert subtil */
 .link-item.present {
-    background-color: rgba(46, 204, 113, 0.1);
+    background-color: rgba(var(--accent-green-rgb), 0.1);
     /* Vert très clair */
-    border-left: 3px solid #2ecc71;
+    border-left: 3px solid var(--accent-green);
 }
 
 .link-item.present:hover {
@@ -590,9 +590,9 @@
 
 /* 2. Suggéré (En attente) - Orange/Accent */
 .link-item.suggested {
-    background-color: rgba(255, 165, 0, 0.1);
+    background-color: rgba(var(--accent-gold-rgb), 0.1);
     /* Orange très clair */
-    border-left: 3px solid orange;
+    border-left: 3px solid var(--accent-gold);
 }
 
 .link-item.suggested:hover {

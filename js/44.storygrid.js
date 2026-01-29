@@ -11,37 +11,37 @@ const STORYGRID_ROW_TYPES = {
     character: {
         icon: 'user',
         label: 'Personnage',
-        defaultColor: '#3498db',
+        defaultColor: 'var(--accent-blue)',
         source: 'characters'
     },
     arc: {
         icon: 'drama',
         label: 'Arc narratif',
-        defaultColor: '#e74c3c',
+        defaultColor: 'var(--accent-red)',
         source: 'narrativeArcs'
     },
     location: {
         icon: 'map-pin',
         label: 'Lieu',
-        defaultColor: '#27ae60',
+        defaultColor: 'var(--accent-green)',
         source: 'world'
     },
     theme: {
         icon: 'lightbulb',
         label: 'Thème / Motif',
-        defaultColor: '#9b59b6',
+        defaultColor: 'var(--accent-purple)',
         source: 'custom'
     },
     structure: {
         icon: 'layout',
         label: 'Structure narrative',
-        defaultColor: '#f39c12',
+        defaultColor: 'var(--accent-gold)',
         source: 'custom'
     },
     custom: {
         icon: 'tag',
         label: 'Personnalisé',
-        defaultColor: '#95a5a6',
+        defaultColor: 'var(--text-muted)',
         source: 'custom'
     }
 };
@@ -68,10 +68,10 @@ const STORYGRID_ZOOM_LEVELS = {
 };
 
 const CARD_STATUSES = {
-    draft: { label: 'Brouillon', color: '#95a5a6', icon: 'file' },
-    inProgress: { label: 'En cours', color: '#f39c12', icon: 'edit-3' },
-    review: { label: 'A réviser', color: '#3498db', icon: 'eye' },
-    done: { label: 'Finalisé', color: '#27ae60', icon: 'check-circle' }
+    draft: { label: 'Brouillon', color: 'var(--text-muted)', icon: 'file' },
+    inProgress: { label: 'En cours', color: 'var(--accent-gold)', icon: 'edit-3' },
+    review: { label: 'A réviser', color: 'var(--accent-blue)', icon: 'eye' },
+    done: { label: 'Finalisé', color: 'var(--accent-green)', icon: 'check-circle' }
 };
 
 // ============================================

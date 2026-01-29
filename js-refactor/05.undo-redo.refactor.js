@@ -48,7 +48,10 @@ const UndoRedoConfig = {
         'Card.move': 'Déplacement d\'une carte',
         'Connection.create': 'Nouvelle connexion',
         'Connection.delete': 'Suppression de connexion',
-        'toggleTodo': 'Changement d\'état TODO'
+        'toggleTodo': 'Changement d\'état TODO',
+        'Scene.update': 'Modification de scène',
+        'Chapter.update': 'Modification de chapitre',
+        'Act.update': 'Modification d\'acte'
     }
 };
 
@@ -250,19 +253,28 @@ function _notifyStateRestored() {
         saveProject();
     }
 
-    // Rafraichir la vue structure
-    if (typeof renderStructureTree === 'function') {
-        try { renderStructureTree(); } catch (e) { }
-    }
+    // 0. Rafraîchir tout le système de vue si possible (Recommandé)
+    if (typeof refreshAllViews === 'function') {
+        try { refreshAllViews(); } catch (e) {
+            console.error('[UndoRedo] Erreur dans refreshAllViews:', e);
+        }
+    } else {
+        // Rafraichir la vue structure
+        if (typeof renderActsList === 'function') {
+            try { renderActsList(); } catch (e) { }
+        } else if (typeof renderStructureTree === 'function') {
+            try { renderStructureTree(); } catch (e) { }
+        }
 
-    // Rafraichir la vue caracteres
-    if (typeof renderCharactersList === 'function') {
-        try { renderCharactersList(); } catch (e) { }
-    }
+        // Rafraichir la vue caracteres
+        if (typeof renderCharactersList === 'function') {
+            try { renderCharactersList(); } catch (e) { }
+        }
 
-    // Rafraichir la vue monde
-    if (typeof renderWorldList === 'function') {
-        try { renderWorldList(); } catch (e) { }
+        // Rafraichir la vue monde
+        if (typeof renderWorldList === 'function') {
+            try { renderWorldList(); } catch (e) { }
+        }
     }
 
     // Rafraichir la scene courante
@@ -717,8 +729,8 @@ function withHistory(fn, actionType) {
  */
 function withHistoryImmediate(fn, actionType) {
     return function (...args) {
-        saveToHistoryImmediate(actionType);
         const result = fn.apply(this, args);
+        saveToHistoryImmediate(actionType);
         return result;
     };
 }
@@ -735,9 +747,9 @@ function withHistoryImmediate(fn, actionType) {
 function integrateWithRepository(repository, name) {
     const methodsToWrap = {
         // Methodes avec sauvegarde immediate (avant l'action)
-        immediate: ['add', 'remove', 'delete', 'create', 'reorder', 'move', 'moveToCell'],
+        immediate: ['add', 'remove', 'delete', 'create', 'reorder', 'move', 'moveToCell', 'update'],
         // Methodes avec debounce (apres l'action)
-        debounced: ['update', 'set', 'save']
+        debounced: ['set', 'save']
     };
 
     // Wrapper les methodes immediates
@@ -745,8 +757,9 @@ function integrateWithRepository(repository, name) {
         if (typeof repository[method] === 'function') {
             const original = repository[method].bind(repository);
             repository[method] = function (...args) {
+                const result = original(...args);
                 saveToHistoryImmediate(`${name}.${method}`);
-                return original(...args);
+                return result;
             };
         }
     });

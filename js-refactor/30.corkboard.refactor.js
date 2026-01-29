@@ -307,7 +307,7 @@ function renderCorkBoardFullView() {
         // Si l'acte n'a pas de chapitres, afficher un message
         if (act.chapters.length === 0) {
             html += `
-                        <div style="padding: 2rem; text-align: center; color: var(--bg-primary); opacity: 0.7; font-style: italic;">
+                        <div style="padding: 2rem; text-align: center; color: var(--text-muted); opacity: 0.7; font-style: italic;">
                             Cet acte est vide. Cliquez sur "+ Nouveau Chapitre" pour commencer.
                         </div>
                     `;

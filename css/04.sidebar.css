@@ -195,13 +195,13 @@
 
 .version-card:hover {
     border-color: var(--primary-color);
-    background: rgba(255, 140, 66, 0.05);
+    background: rgba(var(--primary-color-rgb), 0.05);
 }
 
 .version-card.active {
     border-color: var(--primary-color);
-    background: rgba(255, 140, 66, 0.1);
-    box-shadow: 0 0 0 3px rgba(255, 140, 66, 0.15);
+    background: rgba(var(--primary-color-rgb), 0.1);
+    box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.15);
 }
 
 .version-card-header {
@@ -244,7 +244,7 @@
 }
 
 .version-card-btn.delete:hover {
-    background: rgba(255, 107, 107, 0.1);
+    background: rgba(var(--accent-red-rgb), 0.1);
     color: var(--accent-red);
 }
 
@@ -269,7 +269,7 @@
 /* Version finale */
 .version-card.final {
     border-color: var(--accent-gold);
-    background: rgba(255, 217, 61, 0.1);
+    background: rgba(var(--accent-gold-rgb), 0.1);
 }
 
 .version-card.final .version-card-number::after {
@@ -295,7 +295,7 @@
 }
 
 .version-card-btn.final:hover {
-    background: rgba(255, 217, 61, 0.2);
+    background: rgba(var(--accent-gold-rgb), 0.2);
     color: var(--accent-gold);
 }
 

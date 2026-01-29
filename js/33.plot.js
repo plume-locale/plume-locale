@@ -168,7 +168,7 @@ function renderPlotView() {
 
             // Points cliquables avec menu contextuel
             pointsHTML += `
-                        <circle cx="${x}" cy="${y}" r="6" fill="var(--accent-gold)" stroke="white" stroke-width="2" 
+                        <circle cx="${x}" cy="${y}" r="6" fill="var(--accent-gold)" stroke="var(--bg-primary)" stroke-width="2" 
                                 style="cursor: pointer;" 
                                 onclick="editPlotPointIntensity(${index})"
                                 oncontextmenu="event.preventDefault(); openPlotPoint(${point.actId}, ${point.chapterId}, ${point.sceneId})">
@@ -180,18 +180,15 @@ Clic droit: Ouvrir scène "${point.title}"</title>
     }
 
     container.innerHTML = `
-                <div style="padding: 2rem;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                        <div>
-                            <h3 style="margin: 0;"><i data-lucide="trending-up" style="width:18px;height:18px;vertical-align:middle;margin-right:6px;"></i>Graphique d'Intrigue</h3>
+        <div class="plot-container" style="padding: 30px; background: var(--bg-primary); height: 100%; overflow-y: auto;">
+            <div class="plot-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                <h2 style="margin: 0; color: var(--text-primary);"><i data-lucide="line-chart" style="vertical-align: middle; margin-right: 10px;"></i>Graphique de Tension Narrative</h2>
                             <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem;">
                                 📊 ${plotPoints.length} point(s) d'intrigue • 🎯 Tension moyenne: ${plotPoints.length > 0 ? Math.round(plotPoints.reduce((sum, p) => sum + p.intensity, 0) / plotPoints.length) : 0}%
                             </div>
                         </div>
                         <button onclick="openTensionWordsEditor()" 
-                                style="padding: 10px 18px; background: #3a7bc8; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.9rem; font-weight: 500; transition: all 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"
-                                onmouseover="this.style.background='#2d6bb3'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.15)'"
-                                onmouseout="this.style.background='#3a7bc8'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'">
+                                class="btn btn-primary">
                             ✏️ Personnaliser les mots de tension
                         </button>
                     </div>

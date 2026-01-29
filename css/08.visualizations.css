@@ -6,9 +6,9 @@
     padding: 2rem;
     background: var(--bg-tertiary);
     background-image:
-        radial-gradient(circle at 20% 30%, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
-        radial-gradient(circle at 70% 60%, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
-        radial-gradient(circle at 40% 80%, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+        radial-gradient(circle at 20% 30%, rgba(var(--text-primary-rgb), 0.05) 1px, transparent 1px),
+        radial-gradient(circle at 70% 60%, rgba(var(--text-primary-rgb), 0.05) 1px, transparent 1px),
+        radial-gradient(circle at 40% 80%, rgba(var(--text-primary-rgb), 0.05) 1px, transparent 1px);
     background-size: 100px 100px, 150px 150px, 120px 120px;
     min-height: calc(100vh - 200px);
     overflow-y: auto;
@@ -175,39 +175,39 @@
 
 /* Couleurs prédéfinies pour POV/Intrigues */
 .cork-color-yellow {
-    background: #ffd93d;
+    background: var(--cork-bg-yellow);
 }
 
 .cork-color-pink {
-    background: #ff6b9d;
+    background: var(--cork-bg-pink);
 }
 
 .cork-color-blue {
-    background: #6bcfff;
+    background: var(--cork-bg-blue);
 }
 
 .cork-color-green {
-    background: #6bff9d;
+    background: var(--cork-bg-green);
 }
 
 .cork-color-purple {
-    background: #c26bff;
+    background: var(--cork-bg-purple);
 }
 
 .cork-color-orange {
-    background: #ffb56b;
+    background: var(--cork-bg-orange);
 }
 
 .cork-color-red {
-    background: #ff6b6b;
+    background: var(--cork-bg-red);
 }
 
 .cork-color-teal {
-    background: #6bffd9;
+    background: var(--cork-bg-teal);
 }
 
 .cork-color-default {
-    background: #fef9e7;
+    background: var(--cork-bg-default);
 }
 
 .cork-board-empty {
@@ -560,7 +560,7 @@
 .visualization-canvas {
     width: 100%;
     height: 750px;
-    background: white;
+    background: var(--bg-primary);
     border: 2px solid var(--border-color);
     border-radius: 4px;
     position: relative;
@@ -637,8 +637,8 @@
     position: relative;
     overflow: hidden;
     background:
-        linear-gradient(90deg, rgba(212, 175, 55, 0.05) 1px, transparent 1px),
-        linear-gradient(rgba(212, 175, 55, 0.05) 1px, transparent 1px);
+        linear-gradient(90deg, rgba(var(--accent-gold-rgb), 0.05) 1px, transparent 1px),
+        linear-gradient(rgba(var(--accent-gold-rgb), 0.05) 1px, transparent 1px);
     background-size: 20px 20px;
 }
 
@@ -789,17 +789,17 @@
 
 .mindmap-node.type-character {
     border-color: var(--accent-red);
-    background: rgba(196, 69, 54, 0.05);
+    background: rgba(var(--accent-red-rgb), 0.05);
 }
 
 .mindmap-node.type-element {
-    border-color: #4caf50;
-    background: rgba(76, 175, 80, 0.05);
+    border-color: var(--accent-green);
+    background: rgba(var(--accent-green-rgb), 0.05);
 }
 
 .mindmap-node.type-scene {
-    border-color: #2196f3;
-    background: rgba(33, 150, 243, 0.05);
+    border-color: var(--accent-blue);
+    background: rgba(var(--accent-blue-rgb), 0.05);
 }
 
 .mindmap-node.type-note {
@@ -809,17 +809,17 @@
 
 .mindmap-node.type-codex {
     border-color: var(--accent-purple);
-    background: rgba(167, 139, 250, 0.05);
+    background: rgba(var(--accent-purple-rgb), 0.05);
 }
 
 .mindmap-node.type-act {
     border-color: var(--primary-color);
-    background: rgba(255, 140, 66, 0.08);
+    background: rgba(var(--primary-color-rgb), 0.08);
 }
 
 .mindmap-node.type-chapter {
     border-color: var(--accent-blue);
-    background: rgba(74, 158, 255, 0.05);
+    background: rgba(var(--accent-blue-rgb), 0.05);
 }
 
 .mindmap-link-line {
