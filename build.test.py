@@ -123,6 +123,7 @@ JS_ORDER = [
     'js-refactor/plotgrid/plot-grid.model.js',
     'js-refactor/plotgrid/plot-grid.repository.js',
     'js-refactor/plotgrid/plot-grid.viewmodel.js',
+    'js-refactor/plotgrid/plot-grid.import-export.js',
     'js-refactor/plotgrid/plot-grid.view.js',
     # Scene Navigation (floating toolbar for moving text between scenes)
     'js-refactor/28.sceneNavigation.js'

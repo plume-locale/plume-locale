@@ -377,7 +377,20 @@ const PlotGridUI = {
 
                 <div class="plot-grid-toolbar">
                     <h2 style="margin: 0; font-size: 1.2rem; color: #444; flex: 1;">Grille d'intrigue pour ${project.title || 'Livre sans titre'}</h2>
+                    
                     <button class="btn btn-secondary" onclick="renderPlotGridView()"><i data-lucide="refresh-cw" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Rafraîchir</button>
+                    
+                    <div style="display: flex; gap: 5px; border-left: 1px solid #ccc; padding-left: 15px; margin-left: 5px;">
+                        <button class="btn btn-secondary" onclick="PlotGridImportExport.exportToExcel()" title="Exporter vers Excel">
+                            <i data-lucide="download" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Exporter
+                        </button>
+                        
+                        <button class="btn btn-secondary" onclick="document.getElementById('pgImportFile').click()" title="Importer depuis Excel">
+                            <i data-lucide="upload" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Importer
+                        </button>
+                        <input type="file" id="pgImportFile" style="display: none;" accept=".xlsx, .xls" onchange="PlotGridImportExport.importFromExcel(this.files[0])">
+                    </div>
+
                     ${typeof lucide !== 'undefined' ? '<i data-lucide="help-circle" title="Faites glisser les cartes (col 2+); Cliquez pour éditer; Les scènes éditent le résumé."></i>' : ''}
                 </div>
 

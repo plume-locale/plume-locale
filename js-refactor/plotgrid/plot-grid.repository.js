@@ -20,7 +20,7 @@ const PlotGridRepository = {
     ensureStructureColumns: function () {
         if (!project.plotGrid.columns.find(c => c.type === 'structure')) {
             const structCol = PlotGridModel.createColumn({
-                titulo: 'Structure Narrative',
+                title: 'Structure Narrative',
                 type: 'structure',
                 order: -1
             });
