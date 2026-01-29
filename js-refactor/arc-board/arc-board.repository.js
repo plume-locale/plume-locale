@@ -225,12 +225,10 @@ const BoardItemRepository = {
         // Récupérer l'item avant suppression pour gérer le cas des items scene
         const item = arc.board.items[index];
 
-        // Si c'est un item scene, mettre à jour scenePresence (enlever le lien avec la colonne)
+        // Si c'est un item scene, retirer complètement de la scenePresence
+        // Cela permet de mettre à jour la vue Structure > Arcs
         if (item.type === 'scene' && item.sceneId && arc.scenePresence) {
-            const presence = arc.scenePresence.find(p => p.sceneId == item.sceneId);
-            if (presence) {
-                presence.columnId = null;
-            }
+            arc.scenePresence = arc.scenePresence.filter(p => p.sceneId != item.sceneId);
         }
 
         arc.board.items.splice(index, 1);
@@ -328,14 +326,12 @@ const CardRepository = {
         // Récupérer la carte avant suppression pour gérer le cas des cartes scene
         const card = column.cards[index];
 
-        // Si c'est une carte scene, mettre à jour scenePresence (enlever le lien avec la colonne)
+        // Si c'est une carte scene, retirer complètement de la scenePresence
+        // Cela permet de mettre à jour la vue Structure > Arcs
         if (card.type === 'scene' && card.sceneId) {
             const arc = ArcRepository.getById(arcId);
             if (arc && arc.scenePresence) {
-                const presence = arc.scenePresence.find(p => p.sceneId == card.sceneId);
-                if (presence) {
-                    presence.columnId = null;
-                }
+                arc.scenePresence = arc.scenePresence.filter(p => p.sceneId != card.sceneId);
             }
         }
 

@@ -666,15 +666,26 @@ function updateArcIntensity(arcId, intensity) {
             if (valueDiv) valueDiv.textContent = `${intensity}/5`;
         }
 
-        // Synchroniser avec la carte scene dans le arc-board si elle existe
-        if (presence.columnId && arc.board && arc.board.items) {
-            const column = arc.board.items.find(item => item.id === presence.columnId && item.type === 'column');
-            if (column && column.cards) {
-                const sceneCard = column.cards.find(card => card.type === 'scene' && card.sceneId == currentSceneId);
-                if (sceneCard) {
-                    sceneCard.intensity = parseInt(intensity);
-                    sceneCard.sceneTitle = getSceneTitle(currentSceneId);
-                    sceneCard.breadcrumb = generateSceneBreadcrumb(currentSceneId);
+        // Synchroniser avec la carte scene dans le arc-board (colonne ou flottant)
+        if (arc.board && arc.board.items) {
+            // 1. Chercher dans les colonnes
+            if (presence.columnId) {
+                const column = arc.board.items.find(item => item.id === presence.columnId && item.type === 'column');
+                if (column && column.cards) {
+                    const sceneCard = column.cards.find(card => card.type === 'scene' && card.sceneId == currentSceneId);
+                    if (sceneCard) {
+                        sceneCard.intensity = parseInt(intensity);
+                        sceneCard.sceneTitle = getSceneTitle(currentSceneId);
+                        sceneCard.breadcrumb = generateSceneBreadcrumb(currentSceneId);
+                    }
+                }
+            } else {
+                // 2. Chercher en flottant
+                const floatingItem = arc.board.items.find(item => item.type === 'scene' && item.sceneId == currentSceneId);
+                if (floatingItem) {
+                    floatingItem.intensity = parseInt(intensity);
+                    floatingItem.sceneTitle = getSceneTitle(currentSceneId);
+                    floatingItem.breadcrumb = generateSceneBreadcrumb(currentSceneId);
                 }
             }
         }
@@ -700,15 +711,26 @@ function updateArcStatus(arcId, status) {
     if (presence) {
         presence.status = status;
 
-        // Synchroniser avec la carte scene dans le arc-board si elle existe
-        if (presence.columnId && arc.board && arc.board.items) {
-            const column = arc.board.items.find(item => item.id === presence.columnId && item.type === 'column');
-            if (column && column.cards) {
-                const sceneCard = column.cards.find(card => card.type === 'scene' && card.sceneId == currentSceneId);
-                if (sceneCard) {
-                    sceneCard.status = status;
-                    sceneCard.sceneTitle = getSceneTitle(currentSceneId);
-                    sceneCard.breadcrumb = generateSceneBreadcrumb(currentSceneId);
+        // Synchroniser avec la carte scene dans le arc-board (colonne ou flottant)
+        if (arc.board && arc.board.items) {
+            // 1. Chercher dans les colonnes
+            if (presence.columnId) {
+                const column = arc.board.items.find(item => item.id === presence.columnId && item.type === 'column');
+                if (column && column.cards) {
+                    const sceneCard = column.cards.find(card => card.type === 'scene' && card.sceneId == currentSceneId);
+                    if (sceneCard) {
+                        sceneCard.status = status;
+                        sceneCard.sceneTitle = getSceneTitle(currentSceneId);
+                        sceneCard.breadcrumb = generateSceneBreadcrumb(currentSceneId);
+                    }
+                }
+            } else {
+                // 2. Chercher en flottant
+                const floatingItem = arc.board.items.find(item => item.type === 'scene' && item.sceneId == currentSceneId);
+                if (floatingItem) {
+                    floatingItem.status = status;
+                    floatingItem.sceneTitle = getSceneTitle(currentSceneId);
+                    floatingItem.breadcrumb = generateSceneBreadcrumb(currentSceneId);
                 }
             }
         }
@@ -735,14 +757,25 @@ function updateArcNotes(arcId, notes) {
         presence.notes = notes;
 
         // Synchroniser avec la carte scene dans le arc-board si elle existe
-        if (presence.columnId && arc.board && arc.board.items) {
-            const column = arc.board.items.find(item => item.id === presence.columnId && item.type === 'column');
-            if (column && column.cards) {
-                const sceneCard = column.cards.find(card => card.type === 'scene' && card.sceneId == currentSceneId);
-                if (sceneCard) {
-                    sceneCard.notes = notes;
-                    sceneCard.sceneTitle = getSceneTitle(currentSceneId);
-                    sceneCard.breadcrumb = generateSceneBreadcrumb(currentSceneId);
+        if (arc.board && arc.board.items) {
+            // 1. Chercher dans les colonnes
+            if (presence.columnId) {
+                const column = arc.board.items.find(item => item.id === presence.columnId && item.type === 'column');
+                if (column && column.cards) {
+                    const sceneCard = column.cards.find(card => card.type === 'scene' && card.sceneId == currentSceneId);
+                    if (sceneCard) {
+                        sceneCard.notes = notes;
+                        sceneCard.sceneTitle = getSceneTitle(currentSceneId);
+                        sceneCard.breadcrumb = generateSceneBreadcrumb(currentSceneId);
+                    }
+                }
+            } else {
+                // 2. Chercher en flottant
+                const floatingItem = arc.board.items.find(item => item.type === 'scene' && item.sceneId == currentSceneId);
+                if (floatingItem) {
+                    floatingItem.notes = notes;
+                    floatingItem.sceneTitle = getSceneTitle(currentSceneId);
+                    floatingItem.breadcrumb = generateSceneBreadcrumb(currentSceneId);
                 }
             }
         }
@@ -787,158 +820,136 @@ function getSceneTitle(sceneId) {
 // [MVVM : ViewModel]
 // Met à jour la colonne du arc-board liée à cette scène pour cet arc
 function updateArcColumn(arcId, columnId) {
-    if (!currentSceneId) return;
-
-    const arc = project.narrativeArcs.find(a => a.id === arcId);
-    if (!arc) return;
-
-    const presence = arc.scenePresence.find(p => p.sceneId == currentSceneId);
-    if (!presence) return;
-
-    // Récupérer l'ancienne columnId
-    const oldColumnId = presence.columnId;
-
-    // Mettre à jour le columnId dans presence
-    presence.columnId = columnId || null;
-
-    // Initialiser arc.board si nécessaire
-    if (!arc.board) {
-        arc.board = { items: [], connections: [] };
+    if (!currentSceneId) {
+        console.error("updateArcColumn: currentSceneId is missing");
+        return;
     }
 
-    // Récupérer les informations de la scène
+    const arc = project.narrativeArcs.find(a => a.id === arcId);
+    if (!arc) {
+        console.error("updateArcColumn: Arc not found", arcId);
+        return;
+    }
+
+    // Ensure board structure exists
+    if (!arc.board) arc.board = { items: [], connections: [] };
+    if (!arc.board.items) arc.board.items = [];
+
+    const presence = arc.scenePresence ? arc.scenePresence.find(p => p.sceneId == currentSceneId) : null;
+    if (!presence) {
+        // Create presence if missing (fallback)
+        if (!arc.scenePresence) arc.scenePresence = [];
+        arc.scenePresence.push({
+            sceneId: currentSceneId,
+            columnId: null,
+            status: 'development',
+            intensity: 3,
+            notes: ''
+        });
+    }
+
+    // Update presence columnId
+    // Treat string "null" or empty string as actual null
+    const targetColumnId = (columnId && columnId !== 'null') ? columnId : null;
+
+    // Update the presence record
+    if (arc.scenePresence) {
+        const p = arc.scenePresence.find(p => p.sceneId == currentSceneId);
+        if (p) p.columnId = targetColumnId;
+    }
+
+    // Retrieve scene info for card/item
     const act = project.acts.find(a => a.id === currentActId);
     const chapter = act ? act.chapters.find(c => c.id === currentChapterId) : null;
     const scene = chapter ? chapter.scenes.find(s => s.id === currentSceneId) : null;
+    const breadcrumb = scene ? ((act.title || `Acte`) + ' › ' + (chapter.title || `Chapitre`)) : '';
+    const sceneTitle = scene ? scene.title : 'Scène sans titre';
 
-    if (!scene) return;
+    // 1. CLEANUP: Remove any existing Floating Item for this scene
+    // We will recreate/update it only if needed (i.e. if targetColumnId is null)
+    // Or we can update it in place. But for safety when switching modes, let's allow finding it.
 
-    // Construire le breadcrumb
-    const actTitle = act.title || `Acte ${project.acts.indexOf(act) + 1}`;
-    const chapterTitle = chapter.title || `Chapitre ${act.chapters.indexOf(chapter) + 1}`;
-    const breadcrumb = `${actTitle} › ${chapterTitle}`;
+    let existingFloatingItem = arc.board.items.find(i => i.type === 'scene' && i.sceneId == currentSceneId);
 
-    // Supprimer l'ancienne carte scene de l'ancienne colonne si elle existe
-    if (oldColumnId) {
-        const oldColumn = arc.board.items.find(item => item.id === oldColumnId && item.type === 'column');
-        if (oldColumn && oldColumn.cards) {
-            oldColumn.cards = oldColumn.cards.filter(card => !(card.type === 'scene' && card.sceneId == currentSceneId));
+    // 2. CLEANUP: Remove card from any column (including the target one to avoid dupes before re-adding)
+    arc.board.items.forEach(item => {
+        if (item.type === 'column' && item.cards) {
+            item.cards = item.cards.filter(c => !(c.type === 'scene' && c.sceneId == currentSceneId));
         }
-    }
+    });
 
-    // Supprimer tout élément flottant scene existant pour cette scène
-    arc.board.items = arc.board.items.filter(item => !(item.type === 'scene' && item.sceneId == currentSceneId));
+    // 3. LOGIC
+    if (targetColumnId) {
+        // CASE: Assigned to a Column
+        // Remove floating item if it exists
+        if (existingFloatingItem) {
+            arc.board.items = arc.board.items.filter(i => i.id !== existingFloatingItem.id);
+        }
 
-    // Si une nouvelle colonne est sélectionnée, créer/mettre à jour la carte scene dans la colonne
-    if (columnId) {
-        const column = arc.board.items.find(item => item.id === columnId && item.type === 'column');
+        // Add to new column
+        const column = arc.board.items.find(i => i.id === targetColumnId && i.type === 'column');
         if (column) {
             if (!column.cards) column.cards = [];
-
-            // Vérifier si une carte scene pour cette scène existe déjà dans cette colonne
-            let sceneCard = column.cards.find(card => card.type === 'scene' && card.sceneId == currentSceneId);
-
-            if (sceneCard) {
-                // Mettre à jour la carte existante
-                sceneCard.sceneTitle = scene.title;
-                sceneCard.breadcrumb = breadcrumb;
-                sceneCard.intensity = presence.intensity;
-                sceneCard.status = presence.status;
-                sceneCard.notes = presence.notes;
-            } else {
-                // Créer une nouvelle carte scene
-                sceneCard = {
-                    id: 'card_' + Date.now(),
-                    type: 'scene',
-                    sceneId: currentSceneId,
-                    sceneTitle: scene.title,
-                    breadcrumb: breadcrumb,
-                    intensity: presence.intensity,
-                    status: presence.status,
-                    notes: presence.notes
-                };
-                column.cards.push(sceneCard);
-            }
+            column.cards.push({
+                id: 'card_' + Date.now(),
+                type: 'scene',
+                sceneId: currentSceneId,
+                sceneTitle: sceneTitle,
+                breadcrumb: breadcrumb,
+                intensity: presence ? presence.intensity : 3,
+                status: presence ? presence.status : 'development',
+                notes: presence ? presence.notes : ''
+            });
         }
     } else {
-        // Arc général: créer un élément flottant scene sur le canvas
-        // Trouver une position libre qui ne chevauche pas d'autres éléments
-        const itemWidth = 220;
-        const itemHeight = 120;
-        const padding = 20;
+        // CASE: Floating (Arc Général)
+        if (existingFloatingItem) {
+            // Update existing
+            existingFloatingItem.sceneTitle = sceneTitle;
+            existingFloatingItem.breadcrumb = breadcrumb;
+            existingFloatingItem.intensity = presence ? presence.intensity : 3;
+            existingFloatingItem.status = presence ? presence.status : 'development';
+            existingFloatingItem.notes = presence ? presence.notes : '';
+        } else {
+            // Create new floating item
+            // Position Calculation
+            const existingItems = arc.board.items || [];
+            let newX = 50, newY = 50;
 
-        // Calculer les bounding boxes de tous les éléments existants
-        const existingItems = arc.board.items || [];
-        const boundingBoxes = existingItems.map(item => ({
-            x: item.x || 0,
-            y: item.y || 0,
-            width: item.width || (item.type === 'column' ? 280 : 220),
-            height: item.type === 'column' ? 400 : 150
-        }));
+            if (existingItems.length > 0) {
+                // Positionner en dessous de tout le monde, à gauche
+                // Trouver le Y maximum (bord bas) de tous les éléments
+                const maxBottom = existingItems.reduce((max, item) => {
+                    const itemH = item.type === 'column' ? 600 : (item.height || 200); // Estimation optimiste hauteur colonne
+                    return Math.max(max, (item.y || 0) + itemH);
+                }, 0);
 
-        // Fonction pour vérifier si une position chevauche un élément
-        const isOverlapping = (x, y, w, h) => {
-            return boundingBoxes.some(box =>
-                x < box.x + box.width + padding &&
-                x + w + padding > box.x &&
-                y < box.y + box.height + padding &&
-                y + h + padding > box.y
-            );
-        };
-
-        // Trouver une position libre (essayer à droite des éléments existants)
-        let newX = 50;
-        let newY = 50;
-
-        if (boundingBoxes.length > 0) {
-            // Trouver le x maximum (bord droit) de tous les éléments
-            const maxRight = Math.max(...boundingBoxes.map(b => b.x + b.width));
-            newX = maxRight + padding + 30;
-            newY = 50;
-
-            // Si trop à droite (> 1200px), essayer en dessous
-            if (newX > 1200) {
                 newX = 50;
-                const maxBottom = Math.max(...boundingBoxes.map(b => b.y + b.height));
-                newY = maxBottom + padding + 30;
+                newY = maxBottom + 50;
             }
 
-            // Vérifier si la position chevauche, si oui chercher une autre place
-            let attempts = 0;
-            while (isOverlapping(newX, newY, itemWidth, itemHeight) && attempts < 20) {
-                newY += itemHeight + padding;
-                if (newY > 800) {
-                    newY = 50;
-                    newX += itemWidth + padding;
-                }
-                attempts++;
-            }
+            const maxZ = existingItems.reduce((max, i) => Math.max(max, i.zIndex || 0), 0);
+
+            arc.board.items.push({
+                id: 'item_' + Date.now(),
+                type: 'scene',
+                x: newX,
+                y: newY,
+                width: 220,
+                zIndex: maxZ + 1,
+                sceneId: currentSceneId,
+                sceneTitle: sceneTitle,
+                breadcrumb: breadcrumb,
+                intensity: presence ? presence.intensity : 3,
+                status: presence ? presence.status : 'development',
+                notes: presence ? presence.notes : ''
+            });
         }
-
-        // Calculer le z-index max actuel + 1
-        const maxZIndex = existingItems.reduce((max, item) => Math.max(max, item.zIndex || 0), 0);
-
-        const floatingSceneItem = {
-            id: 'item_' + Date.now(),
-            type: 'scene',
-            x: newX,
-            y: newY,
-            sceneId: currentSceneId,
-            sceneTitle: scene.title,
-            breadcrumb: breadcrumb,
-            intensity: presence.intensity,
-            status: presence.status,
-            notes: presence.notes,
-            width: itemWidth,
-            zIndex: maxZIndex + 1
-        };
-        arc.board.items.push(floatingSceneItem);
     }
 
     saveProject();
     renderArcScenePanel();
 
-    // Rafraîchir le arc-board s'il est ouvert sur cet arc
     if (typeof ArcBoardViewModel !== 'undefined' && ArcBoardViewModel.getCurrentArc && ArcBoardViewModel.getCurrentArc()?.id === arcId) {
         ArcBoardViewModel.renderItems();
     }
