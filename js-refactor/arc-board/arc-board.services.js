@@ -108,6 +108,40 @@ const DragDropService = {
     },
 
     /**
+     * Démarre le drag d'une carte de la zone "Non attribué"
+     */
+    startUnassignedDrag(event, sceneId) {
+        event.stopPropagation();
+
+        this._state = {
+            active: true,
+            type: DragTypes.UNASSIGNED,
+            sceneId: sceneId,
+            sourceColumnId: null,
+            element: event.target.closest('.arc-card'),
+            startX: event.clientX,
+            startY: event.clientY
+        };
+
+        event.dataTransfer.effectAllowed = 'move';
+        event.dataTransfer.setData('application/json', JSON.stringify({
+            type: 'unassigned',
+            sceneId: sceneId
+        }));
+
+        if (this._state.element) {
+            this._state.element.classList.add('dragging');
+        }
+
+        // Activer les zones de drop (colonnes uniquement)
+        requestAnimationFrame(() => {
+            document.querySelectorAll('.arc-column-body').forEach(el => {
+                el.classList.add('drop-target');
+            });
+        });
+    },
+
+    /**
      * Fin du drag
      */
     endDrag(event) {
@@ -197,6 +231,55 @@ const DragDropService = {
             ArcBoardViewModel.renderItems();
 
             // Rafraîchir le panneau arcScenePanel s'il est visible (pour CARD et FLOATING)
+            const arcPanel = document.getElementById('arcScenePanel');
+            if (arcPanel && !arcPanel.classList.contains('hidden') && typeof renderArcScenePanel === 'function') {
+                renderArcScenePanel();
+            }
+        } finally {
+            this.reset();
+        }
+    },
+
+    /**
+     * Gère le drop sur la zone "Non attribué"
+     */
+    handleUnassignedDrop(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        event.currentTarget.classList.remove('drop-hover', 'drag-over');
+
+        if (!this._state.active) return;
+
+        const arc = ArcBoardViewModel.getCurrentArc();
+        if (!arc) return;
+
+        try {
+            if (this._state.type === DragTypes.CARD) {
+                // Retirer la carte de sa colonne
+                const sourceColumn = BoardItemRepository.getById(arc.id, this._state.sourceColumnId);
+                if (sourceColumn && sourceColumn.cards) {
+                    const card = sourceColumn.cards.find(c => c.id === this._state.itemId);
+                    if (card) {
+                        // Retirer la carte de la colonne
+                        sourceColumn.cards = sourceColumn.cards.filter(c => c.id !== this._state.itemId);
+
+                        // Si c'est une carte de scène, mettre à jour scenePresence.columnId à null
+                        if (card.type === 'scene' && card.sceneId && arc.scenePresence) {
+                            const presence = arc.scenePresence.find(p => p.sceneId == card.sceneId);
+                            if (presence) {
+                                presence.columnId = null;
+                            }
+                        }
+
+                        saveProject();
+                    }
+                }
+            }
+            // Si c'est déjà un item flottant, il reste flottant (rien à faire)
+
+            ArcBoardViewModel.renderItems();
+
+            // Rafraîchir le panneau arcScenePanel
             const arcPanel = document.getElementById('arcScenePanel');
             if (arcPanel && !arcPanel.classList.contains('hidden') && typeof renderArcScenePanel === 'function') {
                 renderArcScenePanel();

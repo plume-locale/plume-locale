@@ -313,7 +313,7 @@
     overflow: auto;
     cursor: grab;
     /* Grille de fond style Milanote */
-    background-image: 
+    background-image:
         radial-gradient(circle, var(--border-color) 1px, transparent 1px);
     background-size: 24px 24px;
     background-position: 0 0;
@@ -494,7 +494,8 @@
     background: var(--bg-primary);
     border: 1px solid var(--border-color);
     border-radius: 8px;
-    padding: 12px 12px 12px 36px; /* Extra padding left for drag handle */
+    padding: 12px 12px 12px 36px;
+    /* Extra padding left for drag handle */
     cursor: pointer;
     transition: all 0.2s ease;
     position: relative;
@@ -1471,7 +1472,7 @@
 
 /* Zone de drop sur le canvas (pour sortir les cartes) */
 .arc-board-canvas.drop-hover {
-    background: 
+    background:
         radial-gradient(circle at center, rgba(255, 140, 66, 0.1) 0%, transparent 70%),
         radial-gradient(circle, var(--border-color) 1px, transparent 1px);
     background-size: 100% 100%, 24px 24px;
@@ -1669,6 +1670,7 @@
         opacity: 0;
         transform: translateY(-10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -1688,8 +1690,8 @@
     color: var(--text-primary);
 }
 
-.sidebar-inline-form-header > i,
-.sidebar-inline-form-header > svg {
+.sidebar-inline-form-header>i,
+.sidebar-inline-form-header>svg {
     width: 16px;
     height: 16px;
     color: var(--primary-color);
@@ -1771,9 +1773,19 @@
 }
 
 @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-4px); }
-    75% { transform: translateX(4px); }
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-4px);
+    }
+
+    75% {
+        transform: translateX(4px);
+    }
 }
 
 .sidebar-inline-input::placeholder {
@@ -1887,12 +1899,12 @@
         width: 48px;
         padding: 8px 0;
     }
-    
+
     .arc-toolbar-btn {
         width: 36px;
         height: 36px;
     }
-    
+
     .arc-board-context-panel {
         position: absolute;
         right: 0;
@@ -1901,15 +1913,105 @@
         z-index: 200;
         box-shadow: -4px 0 16px var(--shadow);
     }
-    
+
     .arc-zoom-controls {
         bottom: 10px;
         right: 10px;
     }
-    
+
     .arc-minimap {
         display: none;
     }
+}
+
+/* ============================================
+   ZONE NON ATTRIBUÉ (Unassigned Sidebar)
+   ============================================ */
+
+.arc-unassigned-zone {
+    width: 280px;
+    background: var(--bg-primary);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    height: 100%;
+    overflow: hidden;
+}
+
+.arc-unassigned-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-primary);
+    flex-shrink: 0;
+}
+
+.arc-unassigned-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.arc-unassigned-title i,
+.arc-unassigned-title svg {
+    width: 16px;
+    height: 16px;
+    color: var(--text-muted);
+}
+
+.arc-unassigned-count {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    color: var(--text-muted);
+    background: var(--bg-secondary);
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-weight: 500;
+}
+
+.arc-unassigned-body {
+    flex: 1;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.arc-unassigned-body.drag-over {
+    background: rgba(255, 140, 66, 0.05);
+}
+
+.arc-unassigned-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 32px 16px;
+    color: var(--text-muted);
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+/* Cards dans la zone non attribué */
+.arc-unassigned-body .arc-card {
+    margin: 0;
+    cursor: pointer;
+}
+
+.arc-unassigned-body .arc-card-scene {
+    padding: 10px 10px 10px 32px;
 }
 
 /* ============================================
@@ -1921,6 +2023,7 @@
         opacity: 0;
         transform: scale(0.95);
     }
+
     to {
         opacity: 1;
         transform: scale(1);
@@ -1937,13 +2040,14 @@
    ============================================ */
 
 @media print {
+
     .arc-board-toolbar,
     .arc-board-context-panel,
     .arc-zoom-controls,
     .arc-minimap {
         display: none !important;
     }
-    
+
     .arc-board-canvas {
         background: white !important;
     }

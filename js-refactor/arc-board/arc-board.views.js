@@ -176,8 +176,8 @@ const ArcBoardView = {
                         <label>Catégorie</label>
                         <select id="inlineArcCategory" class="sidebar-inline-select" onchange="ArcBoardEventHandlers.updateArcFormColor()">
                             ${Object.entries(allCategories).map(([key, cat]) =>
-                                `<option value="${key}" ${key === arcCategory ? 'selected' : ''}>${cat.label}</option>`
-                            ).join('')}
+            `<option value="${key}" ${key === arcCategory ? 'selected' : ''}>${cat.label}</option>`
+        ).join('')}
                         </select>
                     </div>
                     <div class="sidebar-inline-form-group">
@@ -246,6 +246,9 @@ const ArcBoardView = {
         view.innerHTML = `
             <div class="arc-board-container">
                 ${this._renderToolbar()}
+                
+                <!-- Zone Non attribué en sidebar -->
+                <div id="arcUnassignedSidebar"></div>
 
                 <div class="arc-board-canvas-wrapper">
                     <div class="arc-board-canvas" id="arcBoardCanvas"
@@ -513,10 +516,54 @@ const ArcBoardView = {
      * Rendu de tous les items du board
      */
     renderItems(arc) {
-        const container = document.getElementById('arcBoardItems');
-        if (!container || !arc.board) return;
+        const itemsContainer = document.getElementById('arcBoardItems');
+        const sidebarContainer = document.getElementById('arcUnassignedSidebar');
+        if (!itemsContainer || !arc.board) return;
 
-        container.innerHTML = arc.board.items.map(item => this._renderItem(item)).join('');
+        // Construire la liste des scènes non attribuées depuis scenePresence
+        const unassignedScenes = [];
+        if (arc.scenePresence) {
+            arc.scenePresence
+                .filter(p => !p.columnId || p.columnId === null)
+                .forEach(presence => {
+                    // Récupérer les infos de la scène
+                    let sceneTitle = 'Scène sans titre';
+                    let breadcrumb = '';
+
+                    for (const act of project.acts) {
+                        for (const chapter of act.chapters) {
+                            const scene = chapter.scenes.find(s => s.id == presence.sceneId);
+                            if (scene) {
+                                sceneTitle = scene.title || 'Scène sans titre';
+                                breadcrumb = `${act.title || 'Acte'} › ${chapter.title || 'Chapitre'}`;
+                                break;
+                            }
+                        }
+                    }
+
+                    unassignedScenes.push({
+                        id: 'unassigned_' + presence.sceneId,
+                        type: 'scene',
+                        sceneId: presence.sceneId,
+                        sceneTitle,
+                        breadcrumb,
+                        intensity: presence.intensity || 3,
+                        status: presence.status || 'development',
+                        notes: presence.notes || ''
+                    });
+                });
+        }
+
+        // Filtrer les items réguliers (plus de scènes flottantes dans arc.board.items)
+        const regularItems = arc.board.items.filter(item => item.type !== 'scene');
+
+        // Rendre la zone "Non attribué" dans la sidebar
+        if (sidebarContainer) {
+            sidebarContainer.innerHTML = this._renderUnassignedZone(unassignedScenes);
+        }
+
+        // Rendre les items normaux dans le canvas
+        itemsContainer.innerHTML = regularItems.map(item => this._renderItem(item)).join('');
 
         if (typeof lucide !== 'undefined') lucide.createIcons();
 
@@ -525,6 +572,77 @@ const ArcBoardView = {
         if (emptyState) {
             emptyState.style.display = arc.board.items.length > 0 ? 'none' : 'block';
         }
+    },
+
+    _renderUnassignedZone(floatingScenes) {
+        const cardsHtml = floatingScenes.map(scene => this._renderSceneCard(scene)).join('');
+
+        return `
+            <div class="arc-unassigned-zone" id="arc-unassigned-zone">
+                <div class="arc-unassigned-header">
+                    <div class="arc-unassigned-title">
+                        <i data-lucide="inbox"></i>
+                        <span>Non attribué</span>
+                    </div>
+                    <span class="arc-unassigned-count">${floatingScenes.length}</span>
+                </div>
+                <div class="arc-unassigned-body"
+                     ondrop="DragDropService.handleUnassignedDrop(event)"
+                     ondragover="DragDropService.handleColumnDragOver(event)"
+                     ondragleave="DragDropService.handleColumnDragLeave(event)">
+                    ${cardsHtml}
+                    ${floatingScenes.length === 0 ? `
+                        <div class="arc-unassigned-empty">
+                            <i data-lucide="check-circle" style="width:24px;height:24px;opacity:0.3;"></i>
+                            <span>Toutes les scènes sont organisées</span>
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+    },
+
+    _renderSceneCard(scene, isUnassigned = true) {
+        const statusLabels = { 'setup': 'Introduction', 'development': 'Développement', 'climax': 'Point culminant', 'resolution': 'Résolution' };
+
+        const dragHandle = `
+            <div class="arc-card-drag-handle"
+                 draggable="true"
+                 ondragstart="DragDropService.startUnassignedDrag(event, '${scene.sceneId}')"
+                 ondragend="DragDropService.endDrag(event)"
+                 onmousedown="event.stopPropagation()"
+                 title="Glisser pour déplacer">
+                <i data-lucide="grip-vertical"></i>
+            </div>
+        `;
+
+        const deleteBtn = `
+            <button class="arc-card-delete" onclick="event.stopPropagation(); deleteArcItem('${scene.id}')" title="Supprimer">
+                <i data-lucide="x"></i>
+            </button>
+        `;
+
+        return `
+            <div class="arc-card arc-card-scene" data-card-id="${scene.id}" data-scene-id="${scene.sceneId || ''}">
+                ${dragHandle}${deleteBtn}
+                <div class="arc-card-scene-header">
+                    <i data-lucide="book-open"></i>
+                    <div class="arc-card-scene-title-wrapper">
+                        <div class="arc-card-scene-breadcrumb">${scene.breadcrumb || ''}</div>
+                        <div class="arc-card-scene-title">${scene.sceneTitle || 'Scène'}</div>
+                    </div>
+                </div>
+                <div class="arc-card-scene-meta">
+                    <div class="arc-card-scene-status">
+                        <span class="arc-card-scene-label">Statut:</span>
+                        <span class="arc-card-scene-value">${statusLabels[scene.status] || 'Développement'}</span>
+                    </div>
+                </div>
+                <button class="arc-card-scene-open" onclick="ArcBoardEventHandlers.openScene('${scene.sceneId}'); event.stopPropagation();">
+                    <i data-lucide="external-link"></i> Ouvrir
+                </button>
+            </div>
+        `;
     },
 
     _renderItem(item) {
@@ -650,12 +768,12 @@ const ArcBoardView = {
                     <div class="arc-card arc-card-image" data-card-id="${card.id}">
                         ${dragHandle}${deleteBtn}
                         ${card.src
-                            ? `<img src="${card.src}" alt="" draggable="false">`
-                            : `<div class="arc-card-upload" onclick="ArcBoardEventHandlers.triggerCardImageUpload('${columnId}', '${card.id}')">
+                        ? `<img src="${card.src}" alt="" draggable="false">`
+                        : `<div class="arc-card-upload" onclick="ArcBoardEventHandlers.triggerCardImageUpload('${columnId}', '${card.id}')">
                                     <i data-lucide="cloud-upload"></i>
                                     <span>Ajouter une image</span>
                                 </div>`
-                        }
+                    }
                     </div>
                 `;
 
@@ -832,12 +950,12 @@ const ArcBoardView = {
                  onclick="ArcBoardViewModel.selectItem('${item.id}', event.ctrlKey || event.metaKey)">
                 ${this._renderDragHandle(item.id, true)}
                 ${item.src
-                    ? `<img src="${item.src}" alt="" style="max-width: ${item.width || 300}px" draggable="false">`
-                    : `<div class="arc-card-upload" style="padding: 40px" onclick="ArcBoardEventHandlers.triggerItemImageUpload('${item.id}')">
+                ? `<img src="${item.src}" alt="" style="max-width: ${item.width || 300}px" draggable="false">`
+                : `<div class="arc-card-upload" style="padding: 40px" onclick="ArcBoardEventHandlers.triggerItemImageUpload('${item.id}')">
                             <i data-lucide="cloud-upload"></i>
                             <span>Ajouter une image</span>
                         </div>`
-                }
+            }
             </div>
         `;
     },
@@ -1127,9 +1245,9 @@ const ArcBoardView = {
                 <div class="empty-state-title">${arcs.length === 0 ? 'Gérez vos arcs narratifs' : 'Sélectionnez un arc'}</div>
                 <div class="empty-state-text">
                     ${arcs.length === 0
-                        ? 'Créez des boards visuels pour planifier vos arcs narratifs,<br>organiser vos idées et suivre la progression de votre histoire.'
-                        : 'Choisissez un arc dans la barre latérale<br>ou créez-en un nouveau.'
-                    }
+                ? 'Créez des boards visuels pour planifier vos arcs narratifs,<br>organiser vos idées et suivre la progression de votre histoire.'
+                : 'Choisissez un arc dans la barre latérale<br>ou créez-en un nouveau.'
+            }
                 </div>
                 <button class="btn btn-primary" onclick="ArcBoardViewModel.showArcForm()">
                     <i data-lucide="${arcs.length === 0 ? 'sparkles' : 'plus'}"></i>
