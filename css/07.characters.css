@@ -2536,18 +2536,13 @@ select.toolbar-btn:hover {
     width: 0 !important;
 }
 
-.app-container.focus-mode .sidebar-versions {
-    display: none !important;
-    width: 0 !important;
-}
+
 
 .app-container.focus-mode .app-header {
     display: none !important;
 }
 
-.app-container.focus-mode .annotations-panel {
-    display: none !important;
-}
+
 
 .app-container.focus-mode .editor-container {
     background: var(--bg-primary);

@@ -58,6 +58,38 @@ function toggleFocusMode() {
         console.log('ACTIVATING FOCUS MODE');
         appContainer.classList.add('focus-mode');
 
+        // Hide left sidebar
+        const sidebar = document.querySelector('.sidebar');
+        if (sidebar) sidebar.style.display = 'none';
+
+        // Ensure tools sidebar and its panels are visible and accessible
+        const toolsSidebar = document.getElementById('toolsSidebar');
+        if (toolsSidebar) {
+            toolsSidebar.style.display = 'flex';
+            toolsSidebar.style.zIndex = '105'; // Above editor
+        }
+
+        // Configure sidebars to be visible over the fullscreen editor
+        const panels = [
+            'sidebarVersions',
+            'annotationsPanel',
+            'todosPanel',
+            'linksPanel',
+            'arcScenePanel',
+            'sidebarPlot'
+        ];
+
+        panels.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                // Ensure they have higher z-index to show on top of fullscreen mode
+                el.style.zIndex = '110';
+                // We don't force display here, as their specific toggle functions manage .hidden class
+                // But we act as if they are part of the focus layout
+                el.style.position = 'relative'; // Or keep default flex behavior if parent allows
+            }
+        });
+
         // Track starting word count
         if (currentSceneId) {
             const act = project.acts.find(a => a.id === currentActId);
@@ -81,11 +113,28 @@ function toggleFocusMode() {
 
         // Forcer la réinitialisation des styles inline si nécessaire
         const sidebar = document.querySelector('.sidebar');
+        const toolsSidebar = document.getElementById('toolsSidebar');
         const sidebarVersions = document.querySelector('.sidebar-versions');
         const appContent = document.querySelector('.app-content');
         const editorContainer = document.querySelector('.editor-container');
 
         if (sidebar) sidebar.style.cssText = '';
+        if (toolsSidebar) toolsSidebar.style.cssText = '';
+
+        // Reset panels styles
+        const panels = [
+            'sidebarVersions',
+            'annotationsPanel',
+            'todosPanel',
+            'linksPanel',
+            'arcScenePanel',
+            'sidebarPlot'
+        ];
+        panels.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.style.zIndex = '';
+        });
+
         if (sidebarVersions && !sidebarVersions.classList.contains('hidden')) {
             sidebarVersions.style.cssText = '';
         }

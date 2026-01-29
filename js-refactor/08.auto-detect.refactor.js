@@ -49,7 +49,15 @@ function autoDetectLinks() {
     if (!scene) return;
 
     // Obtenir le texte brut de la scène depuis l'éditeur
-    const editor = document.querySelector('.editor-textarea');
+    let editor = null;
+    if (typeof currentSceneId !== 'undefined' && currentSceneId) {
+        editor = document.querySelector(`.editor-textarea[data-scene-id="${currentSceneId}"]`);
+    }
+    // Fallback si pas de sélecteur spécifique ou pas trouvé (ex: vue simple)
+    if (!editor) {
+        editor = document.querySelector('.editor-textarea');
+    }
+
     if (!editor) return;
 
     const temp = document.createElement('div');
@@ -252,7 +260,7 @@ function refreshLinksPanel() {
 
     // Si c'est la nouvelle sidebar, utiliser renderLinksPanelSidebar
     if (linksPanel.classList.contains('links-panel-sidebar')) {
-        if (typeof renderLinksPanelSidebar === 'function' && !linksPanel.classList.contains('hidden')) {
+        if (typeof renderLinksPanelSidebar === 'function') {
             renderLinksPanelSidebar();
         }
         return;

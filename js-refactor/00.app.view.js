@@ -421,7 +421,8 @@ function openAct(actId) {
         actElement.querySelector('.act-icon')?.classList.add('expanded');
         actElement.querySelector('.act-chapters')?.classList.add('visible');
 
-        setTimeout(() => actElement.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
+        // Mettre à jour l'état mémorisé (indispensable pour que ça reste ouvert au prochain rendu)
+        if (typeof expandedActs !== 'undefined') expandedActs.add(actId);
     }
 
     // Rendu de l'éditeur d'acte
@@ -463,9 +464,9 @@ function openChapter(actId, chapterId) {
         if (actElement) {
             actElement.querySelector('.act-icon')?.classList.add('expanded');
             actElement.querySelector('.act-chapters')?.classList.add('visible');
+            if (typeof expandedActs !== 'undefined') expandedActs.add(actId);
         }
-
-        setTimeout(() => chapterElement.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
+        if (typeof expandedChapters !== 'undefined') expandedChapters.add(chapterId);
     }
 
     // Rendu de l'éditeur de chapitre
@@ -513,9 +514,9 @@ function openScene(actId, chapterId, sceneId) {
         if (actElement) {
             actElement.querySelector('.act-icon')?.classList.add('expanded');
             actElement.querySelector('.act-chapters')?.classList.add('visible');
+            if (typeof expandedActs !== 'undefined') expandedActs.add(actId);
         }
-
-        setTimeout(() => sceneElement.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
+        if (typeof expandedChapters !== 'undefined') expandedChapters.add(chapterId);
     }
 
     // Gestion Split View vs Normal
@@ -720,8 +721,8 @@ function setActiveScene(actId, chapterId, sceneId) {
     }
 
     // 5. Liens (Characters, World, etc.)
-    if (typeof updateLinksPanel === 'function' && !document.getElementById('linksPanel').classList.contains('hidden')) {
-        updateLinksPanel();
+    if (typeof refreshLinksPanel === 'function') {
+        refreshLinksPanel();
     }
 
     // Mettre à jour le badge d'annotations dans la sidebar
@@ -1268,6 +1269,8 @@ function updateChapterSceneContent(actId, chapterId, sceneId) {
     if (typeof updateLiveTensionMeter === 'function') {
         updateLiveTensionMeter(editor.innerHTML, { actId, chapterId, sceneId });
     }
+
+    if (typeof autoDetectLinksDebounced === 'function') autoDetectLinksDebounced();
 }
 
 /**
@@ -1338,8 +1341,10 @@ function initChapterScrollTracking(actId, chapterId) {
         if (closestScene !== currentSceneIndex) {
             currentSceneIndex = closestScene;
             const scene = chapter.scenes[closestScene];
-            if (scene && title) {
-                title.textContent = scene.title;
+            if (scene) {
+                if (title) title.textContent = scene.title;
+                // Mettre à jour la scène active dans tout l'application (Sidebar, Links, etc.)
+                setActiveScene(actId, chapterId, scene.id);
             }
 
             // Update tension meter with current visible scene text from DOM
@@ -1493,6 +1498,8 @@ function updateActSceneContent(actId, chapterId, sceneId) {
     if (typeof updateLiveTensionMeter === 'function') {
         updateLiveTensionMeter(editor.innerHTML);
     }
+
+    if (typeof autoDetectLinksDebounced === 'function') autoDetectLinksDebounced();
 }
 
 /**
@@ -1564,8 +1571,10 @@ function initActScrollTracking(actId, allScenes) {
         if (closestScene !== currentSceneIndex) {
             currentSceneIndex = closestScene;
             const sceneData = allScenes[closestScene];
-            if (sceneData && title) {
-                title.textContent = `${sceneData.chapterTitle} - ${sceneData.scene.title}`;
+            if (sceneData) {
+                if (title) title.textContent = `${sceneData.chapterTitle} - ${sceneData.scene.title}`;
+                // Mettre à jour la scène active dans tout l'application (Sidebar, Links, etc.)
+                setActiveScene(actId, sceneData.chapterId, sceneData.scene.id);
             }
 
             // Update tension meter with current visible scene text from DOM for maximum accuracy
