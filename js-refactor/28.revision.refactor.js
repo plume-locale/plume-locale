@@ -60,6 +60,11 @@ function toggleRevisionMode() {
         // Réinitialiser les color pickers après reconstruction de la toolbar
         initializeColorPickers();
     }
+
+    // Refresh Lucide icons
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
 }
 
 // [MVVM : ViewModel]

@@ -38,8 +38,8 @@ const PlotGridRepository = {
         const structureRows = [];
 
         // Walk the structure - ONLY Scenes get rows
-        project.acts.forEach(act => {
-            act.chapters.forEach(chapter => {
+        project.acts.forEach((act, aIdx) => {
+            act.chapters.forEach((chapter, cIdx) => {
                 chapter.scenes.forEach((scene, sIdx) => {
                     let row = project.plotGrid.rows.find(r => r.structureId === scene.id && r.structureType === 'scene');
                     if (!row) {
@@ -49,14 +49,17 @@ const PlotGridRepository = {
                             type: 'structure',
                             title: scene.title
                         });
-                        // Calculate an order for the new row? 
-                        // For now, if it's new, we'll append it logically in the next step
                     } else {
                         row.title = scene.title;
                     }
+                    row.parentActTitle = act.title;
                     row.parentChapterTitle = chapter.title;
+                    row.isFirstInAct = (sIdx === 0 && cIdx === 0);
                     row.isFirstInChapter = (sIdx === 0);
                     row.synopsis = scene.synopsis || scene.title;
+
+                    // Force the order based on manuscript position
+                    // We'll normalize all orders at the end of this function anyway.
                     structureRows.push(row);
                 });
             });
@@ -66,24 +69,31 @@ const PlotGridRepository = {
         // are either custom rows OR deleted scene rows.
         const customRows = project.plotGrid.rows.filter(r => r.type === 'custom');
 
-        // Final list: all structure rows + current custom rows
-        project.plotGrid.rows = [...structureRows, ...customRows];
+        // Update structural rows order to match manuscript position.
+        // We use a gap of 10 to allow custom rows to exist between them.
+        structureRows.forEach((row, idx) => {
+            row.order = idx * 10;
+        });
 
-        // IMPORTANT: We must ensure orders are unique and sequential for the first pass,
-        // then subsequent inserts will use fractional orders.
-        // If ALL rows have order 0 or similar, we fix it.
-        const needsReorder = project.plotGrid.rows.length > 0 &&
-            project.plotGrid.rows.every(r => r.order === 0);
+        // Combined list
+        const allRows = [...structureRows, ...customRows];
 
-        if (needsReorder) {
-            // Give them a default order 0, 10, 20... to allow room for interleaving
-            project.plotGrid.rows.sort((a, b) => {
-                // This is tricky because we don't have a reliable sort key for custom rows yet
-                // during a "clean" reorder. 
-                // Let's just use current array index as a fallback.
-                return 0;
-            }).forEach((r, idx) => r.order = idx * 10);
-        }
+        // Sort everything by the updated order. 
+        // In case of a tie, structural rows take precedence.
+        allRows.sort((a, b) => {
+            if (a.order !== b.order) return a.order - b.order;
+            if (a.type === 'structure' && b.type !== 'structure') return -1;
+            if (a.type !== 'structure' && b.type === 'structure') return 1;
+            return 0;
+        });
+
+        // Final normalization: ensure orders are strictly 0, 10, 20...
+        // This maintains the interleaving but cleans up the values.
+        allRows.forEach((r, idx) => {
+            r.order = idx * 10;
+        });
+
+        project.plotGrid.rows = allRows;
     },
 
     // --- CRUD Columns ---

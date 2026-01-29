@@ -128,20 +128,35 @@ const PlotGridUI = {
                         min-height: 110px;
                         position: relative;
                     }
+                    .dabble-act-label {
+                        font-size: 0.75rem;
+                        font-weight: bold;
+                        color: #fff;
+                        background: #34495e;
+                        padding: 4px 12px;
+                        display: inline-block;
+                        border-radius: 4px;
+                        position: absolute;
+                        top: -55px;
+                        left: -90px;
+                        text-transform: uppercase;
+                        letter-spacing: 0.5px;
+                        z-index: 5;
+                        white-space: nowrap;
+                    }
                     .dabble-chapter-label {
                         font-size: 0.7rem;
                         font-weight: bold;
                         color: #333;
                         background: #fff;
                         border: 1px solid #ccc;
-                        /* border-bottom: none; */
                         padding: 3px 10px;
                         display: inline-block;
                         border-radius: 4px;
-                        margin-bottom: -1px;
                         position: absolute;
                         top: -25px;
                         left: -50px;
+                        white-space: nowrap;
                     }
 
                     .pg-card {
@@ -362,7 +377,7 @@ const PlotGridUI = {
 
                 <div class="plot-grid-toolbar">
                     <h2 style="margin: 0; font-size: 1.2rem; color: #444; flex: 1;">Grille d'intrigue pour ${project.title || 'Livre sans titre'}</h2>
-                    <button class="btn btn-secondary" onclick="renderPlotGridView()">🔄 Rafraîchir</button>
+                    <button class="btn btn-secondary" onclick="renderPlotGridView()"><i data-lucide="refresh-cw" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Rafraîchir</button>
                     ${typeof lucide !== 'undefined' ? '<i data-lucide="help-circle" title="Faites glisser les cartes (col 2+); Cliquez pour éditer; Les scènes éditent le résumé."></i>' : ''}
                 </div>
 
@@ -529,6 +544,7 @@ const PlotGridUI = {
                     if (row.type === 'structure') {
                         html += `
                             <div class="pg-cell" ondragover="event.preventDefault()">
+                                ${row.isFirstInAct ? `<div class="dabble-act-label">${row.parentActTitle}</div>` : ''}
                                 ${row.isFirstInChapter ? `<div class="dabble-chapter-label">${row.parentChapterTitle}</div>` : ''}
                                 <div class="pg-card structure-card" onclick="PlotGridUI.openSceneModal('${row.structureId}', this)">
                                     <div class="pg-card-title">${row.title}</div>

@@ -176,12 +176,12 @@ function switchView(view) {
         'thriller': 'thrillerList'
     };
 
-    const editorViewVues = ['stats', 'analysis', 'versions', 'todos', 'timeline', 'corkboard', 'plot', 'relations', 'map'];
+    const editorViewVues = ['stats', 'analysis', 'versions', 'todos', 'timeline', 'corkboard', 'plot', 'plotgrid', 'relations', 'map'];
 
     const viewLabelsNoSidebar = {
         'stats': 'Statistiques', 'analysis': 'Analyse', 'versions': 'Versions',
         'todos': 'TODOs', 'timeline': 'Timeline', 'corkboard': 'Tableau',
-        'plot': 'Intrigue', 'relations': 'Relations', 'map': 'Carte',
+        'plot': 'Intrigue', 'plotgrid': 'Plot grid', 'relations': 'Relations', 'map': 'Carte',
         'thriller': 'Thriller', 'storygrid': 'Story Grid'
     };
 
@@ -217,7 +217,7 @@ function switchView(view) {
         notes: '<button class="btn btn-primary" onclick="openAddNoteModal()">+ Note</button>',
         codex: '<button class="btn btn-primary" onclick="openAddCodexModal()">+ Entrée</button>',
         arcs: '<button class="btn btn-primary" onclick="createNewArc()">+ Arc narratif</button>',
-        plotgrid: '<button class="btn btn-primary" onclick="PlotGridUI.addNewColumn()">+ Colonne</button>'
+
     };
     const sidebarActions = document.getElementById('sidebarActions');
     if (sidebarActions) {
@@ -752,16 +752,16 @@ function getEditorToolbarHTML(panel = null) {
         <!-- Basic formatting -->
         <div class="toolbar-group">
             <button class="toolbar-btn" data-format="bold" onclick="${fnName}(${fnPrefix}'bold')" title="Gras (Ctrl+B)">
-                <strong>B</strong>
+                <i data-lucide="bold" style="width:14px;height:14px;"></i>
             </button>
             <button class="toolbar-btn" data-format="italic" onclick="${fnName}(${fnPrefix}'italic')" title="Italique (Ctrl+I)">
-                <em>I</em>
+                <i data-lucide="italic" style="width:14px;height:14px;"></i>
             </button>
             <button class="toolbar-btn" data-format="underline" onclick="${fnName}(${fnPrefix}'underline')" title="Souligné (Ctrl+U)">
-                <u>U</u>
+                <i data-lucide="underline" style="width:14px;height:14px;"></i>
             </button>
             <button class="toolbar-btn" data-format="strikethrough" onclick="${fnName}(${fnPrefix}'strikeThrough')" title="Barré">
-                <s>S</s>
+                <i data-lucide="strikethrough" style="width:14px;height:14px;"></i>
             </button>
         </div>
         
@@ -792,7 +792,7 @@ function getEditorToolbarHTML(panel = null) {
         <div class="toolbar-group">
             <div class="color-picker-wrapper">
                 <button class="toolbar-btn" onclick="toggleColorPicker('text', event, ${panel ? `'${panel}'` : 'null'})" title="Couleur du texte">
-                    <span style="border-bottom: 3px solid currentColor;">A</span>
+                    <i data-lucide="baseline" style="width:14px;height:14px; border-bottom: 2px solid currentColor;"></i>
                 </button>
                 <div class="color-picker-dropdown" id="textColorPicker${idSuffix}">
                     <div class="color-grid" id="textColorGrid${idSuffix}"></div>
@@ -804,7 +804,7 @@ function getEditorToolbarHTML(panel = null) {
             </div>
             <div class="color-picker-wrapper">
                 <button class="toolbar-btn" onclick="toggleColorPicker('background', event, ${panel ? `'${panel}'` : 'null'})" title="Couleur de fond">
-                    <span style="background: yellow; padding: 0 4px;">A</span>
+                    <i data-lucide="highlighter" style="width:14px;height:14px; border-bottom: 2px solid yellow;"></i>
                 </button>
                 <div class="color-picker-dropdown" id="backgroundColorPicker${idSuffix}">
                     <div class="color-grid" id="backgroundColorGrid${idSuffix}"></div>
@@ -834,17 +834,17 @@ function getEditorToolbarHTML(panel = null) {
         
         <!-- Headings -->
         <div class="toolbar-group">
-            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'formatBlock', 'h1')" title="Titre 1">H1</button>
-            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'formatBlock', 'h2')" title="Titre 2">H2</button>
-            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'formatBlock', 'h3')" title="Titre 3">H3</button>
-            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'formatBlock', 'p')" title="Paragraphe">P</button>
+            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'formatBlock', 'h1')" title="Titre 1"><i data-lucide="heading-1" style="width:14px;height:14px;"></i></button>
+            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'formatBlock', 'h2')" title="Titre 2"><i data-lucide="heading-2" style="width:14px;height:14px;"></i></button>
+            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'formatBlock', 'h3')" title="Titre 3"><i data-lucide="heading-3" style="width:14px;height:14px;"></i></button>
+            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'formatBlock', 'p')" title="Paragraphe"><i data-lucide="pilcrow" style="width:14px;height:14px;"></i></button>
         </div>
         
         <!-- Lists and quotes -->
         <div class="toolbar-group">
-            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'insertUnorderedList')" title="Liste à puces"><i data-lucide="list" style="width:14px;height:14px;vertical-align:middle;margin-right:2px;"></i> Liste</button>
-            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'insertOrderedList')" title="Liste numérotée"><i data-lucide="list-ordered" style="width:14px;height:14px;vertical-align:middle;margin-right:2px;"></i> Liste</button>
-            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'formatBlock', 'blockquote')" title="Citation"><i data-lucide="quote" style="width:14px;height:14px;vertical-align:middle;margin-right:2px;"></i> Citation</button>
+            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'insertUnorderedList')" title="Liste à puces"><i data-lucide="list" style="width:14px;height:14px;"></i></button>
+            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'insertOrderedList')" title="Liste numérotée"><i data-lucide="list-ordered" style="width:14px;height:14px;"></i></button>
+            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'formatBlock', 'blockquote')" title="Citation"><i data-lucide="quote" style="width:14px;height:14px;"></i></button>
         </div>
         
         <!-- Indentation -->
@@ -855,14 +855,14 @@ function getEditorToolbarHTML(panel = null) {
         
         <!-- Superscript, subscript -->
         <div class="toolbar-group">
-            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'superscript')" title="Exposant">x²</button>
-            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'subscript')" title="Indice">x₂</button>
+            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'superscript')" title="Exposant"><i data-lucide="superscript" style="width:14px;height:14px;"></i></button>
+            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'subscript')" title="Indice"><i data-lucide="subscript" style="width:14px;height:14px;"></i></button>
         </div>
         
         <!-- Other -->
         <div class="toolbar-group">
             <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'insertHorizontalRule')" title="Ligne horizontale"><i data-lucide="minus" style="width:14px;height:14px;"></i></button>
-            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'removeFormat')" title="Supprimer le formatage"><i data-lucide="eraser" style="width:14px;height:14px;vertical-align:middle;margin-right:2px;"></i> Format</button>
+            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'removeFormat')" title="Supprimer le formatage"><i data-lucide="eraser" style="width:14px;height:14px;"></i></button>
         </div>
 
         

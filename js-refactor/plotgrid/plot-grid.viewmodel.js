@@ -50,10 +50,12 @@ const PlotGridViewModel = {
     // --- Row Actions ---
 
     addNewCustomRow: function () {
+        const rows = PlotGridRepository.getRows();
+        const maxOrder = rows.length > 0 ? Math.max(...rows.map(r => r.order)) : -10;
         const row = PlotGridModel.createRow({
             title: 'Nouvelle ligne',
             type: 'custom',
-            order: PlotGridRepository.getRows().length
+            order: maxOrder + 10
         });
         PlotGridRepository.addCustomRow(row);
         return row;
