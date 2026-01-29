@@ -84,5 +84,6 @@ const DragTypes = Object.freeze({
     NONE: null,
     CARD: 'card',
     FLOATING: 'floating',
-    COLUMN: 'column'
+    COLUMN: 'column',
+    UNASSIGNED: 'unassigned'
 });

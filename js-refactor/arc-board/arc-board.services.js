@@ -226,6 +226,52 @@ const DragDropService = {
                         saveProject();
                     }
                 }
+            } else if (this._state.type === DragTypes.UNASSIGNED) {
+                // Déplacer une scène non attribuée vers une colonne
+                const sceneId = this._state.sceneId;
+                if (sceneId && arc.scenePresence) {
+                    const presence = arc.scenePresence.find(p => p.sceneId == sceneId);
+                    if (presence) {
+                        // Récupérer les infos de la scène
+                        let sceneTitle = 'Scène sans titre';
+                        let breadcrumb = '';
+
+                        for (const act of project.acts || []) {
+                            for (const chapter of act.chapters || []) {
+                                const scene = chapter.scenes?.find(s => s.id == sceneId);
+                                if (scene) {
+                                    sceneTitle = scene.title || 'Scène sans titre';
+                                    breadcrumb = `${act.title || 'Acte'} › ${chapter.title || 'Chapitre'}`;
+                                    break;
+                                }
+                            }
+                        }
+
+                        // Créer la carte scene
+                        const card = {
+                            id: generateUniqueId('card'),
+                            type: 'scene',
+                            sceneId: sceneId,
+                            sceneTitle: sceneTitle,
+                            breadcrumb: breadcrumb,
+                            intensity: presence.intensity || 3,
+                            status: presence.status || 'development',
+                            notes: presence.notes || ''
+                        };
+
+                        // Ajouter à la colonne cible
+                        const column = BoardItemRepository.getById(arc.id, targetColumnId);
+                        if (column) {
+                            if (!column.cards) column.cards = [];
+                            column.cards.push(card);
+
+                            // Mettre à jour scenePresence.columnId
+                            presence.columnId = targetColumnId;
+
+                            saveProject();
+                        }
+                    }
+                }
             }
 
             ArcBoardViewModel.renderItems();
