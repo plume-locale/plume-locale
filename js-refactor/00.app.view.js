@@ -389,6 +389,84 @@ function refreshAllViews() {
     }
 }
 
+// --- GOOGLE FONTS SUPPORT ---
+
+const POPULAR_GOOGLE_FONTS = [
+    "Merriweather", "Roboto", "Open Sans", "Lato", "Montserrat", "Oswald", "Raleway", "Noto Sans", "Poppins", "Nunito",
+    "Playfair Display", "Rubik", "Mukta", "Lora", "Work Sans", "Nunito Sans", "Fira Sans", "Quicksand", "Inter", "Barlow",
+    "PT Serif", "PT Sans", "Inconsolata", "Kanit", "Exo 2", "Titillium Web", "Crimson Pro", "Libre Baskerville", "Arvo",
+    "Josefin Sans", "Anton", "Bitter", "Dosis", "Teko", "Oxygen", "Cabin", "Hind", "Patua One", "Muli", "Abel", "Varela Round",
+    "Pacifico", "Dancing Script", "Shadows Into Light", "Indie Flower", "Amatic SC", "Caveat", "Satisfy", "Great Vibes", "Sacramento",
+    "Space Mono", "Source Code Pro", "IBM Plex Mono", "Ubuntu Mono", "Courier New", "Georgia", "Times New Roman", "Verdana", "Arial"
+].sort();
+
+function loadGoogleFont(fontName) {
+    if (!fontName) return;
+    const linkId = `font-${fontName.replace(/\s+/g, '-').toLowerCase()}`;
+    if (!document.getElementById(linkId)) {
+        const link = document.createElement('link');
+        link.id = linkId;
+        link.rel = 'stylesheet';
+        link.href = `https://fonts.googleapis.com/css2?family=${fontName.replace(/\s+/g, '+')}:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,700&display=swap`;
+        document.head.appendChild(link);
+    }
+}
+
+function applyFont(fontName, panel = null) {
+    if (fontName === 'custom') {
+        const customFont = prompt("Entrez le nom de la police Google Font exact (ex: 'Roboto Slab') :");
+        if (customFont && customFont.trim()) {
+            const cleanFontName = customFont.trim();
+            loadGoogleFont(cleanFontName);
+            // Add option to select if not exists
+            const selects = document.querySelectorAll('.font-family-selector');
+            selects.forEach(select => {
+                // Check duplicate
+                let exists = false;
+                for (let i = 0; i < select.options.length; i++) {
+                    if (select.options[i].value === cleanFontName) exists = true;
+                }
+                if (!exists) {
+                    const opt = document.createElement('option');
+                    opt.value = cleanFontName;
+                    opt.text = cleanFontName;
+                    // Insert before the last option "Autre..."
+                    if (select.options.length > 0) {
+                        select.add(opt, select.options[select.options.length - 1]);
+                    } else {
+                        select.add(opt);
+                    }
+                    select.value = cleanFontName;
+                } else {
+                    select.value = cleanFontName;
+                }
+            });
+
+            if (panel) {
+                if (typeof formatTextInPanel === 'function') formatTextInPanel(panel, 'fontName', cleanFontName);
+            } else {
+                if (typeof formatText === 'function') formatText('fontName', cleanFontName);
+            }
+        } else {
+            // Reset select to default or previous? For now do nothing
+        }
+    } else {
+        // Standard fonts usually don't need loading, but we load everything in our list just in case it's a google font version
+        // Except standard websafe fonts
+        const standardFonts = ["Arial", "Georgia", "Times New Roman", "Courier New", "Verdana", "Garamond", "Palatino"];
+        if (!standardFonts.includes(fontName)) {
+            loadGoogleFont(fontName);
+        }
+
+        if (panel) {
+            if (typeof formatTextInPanel === 'function') formatTextInPanel(panel, 'fontName', fontName);
+        } else {
+            if (typeof formatText === 'function') formatText('fontName', fontName);
+        }
+    }
+}
+
+
 /**
  * Ouvre un acte complet et affiche tous ses chapitres et scènes de manière séquentielle.
  */
@@ -768,15 +846,10 @@ function getEditorToolbarHTML(panel = null) {
         
         <!-- Font family and size -->
         <div class="toolbar-group">
-            <select class="font-family-selector" onchange="${fnName}(${fnPrefix}'fontName', this.value)" title="Police de caractères">
-                <option value="Crimson Pro">Crimson Pro</option>
-                <option value="Arial">Arial</option>
-                <option value="Georgia">Georgia</option>
-                <option value="Times New Roman">Times New Roman</option>
-                <option value="Courier New">Courier New</option>
-                <option value="Verdana">Verdana</option>
-                <option value="Garamond">Garamond</option>
-                <option value="Palatino">Palatino</option>
+            <select class="font-family-selector" onchange="applyFont(this.value, ${panel ? `'${panel}'` : 'null'})" title="Police de caractères" style="max-width: 150px;">
+                ${POPULAR_GOOGLE_FONTS.map(font => `<option value="${font}" style="font-family: '${font}', sans-serif;">${font}</option>`).join('')}
+                <option value="" disabled>──────────</option>
+                <option value="custom" style="font-weight: bold; color: var(--accent-color);">+ Autre Google Font...</option>
             </select>
             <select class="font-size-selector" onchange="${fnName}(${fnPrefix}'fontSize', this.value)" title="Taille de police">
                 <option value="1">Très petit</option>
