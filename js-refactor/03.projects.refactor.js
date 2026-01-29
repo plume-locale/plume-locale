@@ -301,6 +301,36 @@ function renderProjectsList() {
     container.innerHTML = projects.map(proj => {
         const isActive = proj.id === currentProjectId;
 
+        // Calcul des statistiques
+        const actCount = proj.acts ? proj.acts.length : 0;
+        let chapterCount = 0;
+        let sceneCount = 0;
+        let wordCount = 0;
+
+        if (proj.acts) {
+            proj.acts.forEach(act => {
+                if (act.chapters) {
+                    chapterCount += act.chapters.length;
+                    act.chapters.forEach(chap => {
+                        if (chap.scenes) {
+                            sceneCount += chap.scenes.length;
+                            chap.scenes.forEach(scene => {
+                                const text = scene.content ? stripHTML(scene.content) : '';
+                                if (text.trim().length > 0) {
+                                    const words = text.trim().match(/[\w\u00C0-\u00FF]+(?:[''’][\w\u00C0-\u00FF]+)*/g);
+                                    if (words) wordCount += words.length;
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        }
+
+        const charCount = proj.characters ? proj.characters.length : 0;
+        const worldCount = proj.world ? proj.world.length : 0;
+        const codexCount = proj.codex ? proj.codex.length : 0;
+
         return `
             <div class="project-card ${isActive ? 'active' : ''}" onclick="switchToProject(${proj.id}); closeModal('projectsModal');">
                 <div class="project-card-header">
@@ -311,12 +341,50 @@ function renderProjectsList() {
                     ${isActive ? '<span style="color: var(--accent-red); font-weight: 600;">● Actif</span>' : ''}
                 </div>
                 ${proj.description ? `<div class="project-card-desc">${proj.description}</div>` : ''}
+                
+                <!-- Statistiques rapides -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 0.5rem; margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--border-color); font-size: 0.8rem; color: var(--text-muted);">
+                    <div style="display: flex; align-items: center; gap: 6px;" title="Nombre de mots total">
+                        <i data-lucide="align-left" style="width: 14px; height: 14px; color: var(--accent-gold);"></i> 
+                        <span style="font-weight: 600;">${wordCount.toLocaleString('fr-FR')}</span> mots
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px;" title="Nombre d'actes">
+                        <i data-lucide="book" style="width: 14px; height: 14px;"></i> 
+                        <span>${actCount} actes</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px;" title="Nombre de chapitres">
+                        <i data-lucide="bookmark" style="width: 14px; height: 14px;"></i> 
+                        <span>${chapterCount} chapitres</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px;" title="Nombre de scènes">
+                        <i data-lucide="file-text" style="width: 14px; height: 14px;"></i> 
+                        <span>${sceneCount} scènes</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px;" title="Personnages">
+                        <i data-lucide="users" style="width: 14px; height: 14px;"></i> 
+                        <span>${charCount} pers.</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px;" title="Entrées Univers">
+                        <i data-lucide="globe" style="width: 14px; height: 14px;"></i> 
+                        <span>${worldCount} univ.</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px;" title="Entrées Codex">
+                        <i data-lucide="book-open" style="width: 14px; height: 14px;"></i> 
+                        <span>${codexCount} codex</span>
+                    </div>
+                </div>
+
                 <div class="project-card-actions">
                     <button class="btn btn-small" onclick="event.stopPropagation(); showBackupMenu()"><i data-lucide="upload" style="width:12px;height:12px;margin-right:4px;vertical-align:middle;"></i> Exporter</button>
                     <button class="btn btn-small" onclick="event.stopPropagation(); deleteProject(${proj.id})"><i data-lucide="trash-2" style="width:12px;height:12px;margin-right:4px;vertical-align:middle;"></i> Supprimer</button>
                 </div>
             </div>`;
     }).join('');
+
+    // Re-trigger icons
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
 }
 
 /**
