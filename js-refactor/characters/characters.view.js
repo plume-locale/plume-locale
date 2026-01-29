@@ -263,6 +263,19 @@ function renderCharacterSheet(character, racesList, linkedScenes) {
                         </div>
                     </div>
                     <div class="character-field-row">
+                        <div class="character-field" style="max-width: 100px;"></div>
+                        <div class="character-field">
+                            <label class="character-field-label">Date de décès</label>
+                            <input type="text" value="${character.deathDate || ''}" placeholder="JJ/MM/AAAA"
+                                   onchange="updateCharacterField(${character.id}, 'deathDate', this.value)">
+                        </div>
+                        <div class="character-field">
+                            <label class="character-field-label">Lieu de décès</label>
+                            <input type="text" value="${character.deathPlace || ''}" 
+                                   onchange="updateCharacterField(${character.id}, 'deathPlace', this.value)">
+                        </div>
+                    </div>
+                    <div class="character-field-row">
                         <div class="character-field">
                             <label class="character-field-label">Lieu de résidence</label>
                             <input type="text" value="${character.residence || ''}" 

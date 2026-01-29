@@ -22,7 +22,9 @@ const CharacterModel = {
             race: data.race || 'Humain',
             age: data.age || '',
             birthDate: data.birthDate || '',
+            deathDate: data.deathDate || '',
             birthPlace: data.birthPlace || '',
+            deathPlace: data.deathPlace || '',
             residence: data.residence || '',
             occupation: data.occupation || '',
             // Header
