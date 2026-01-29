@@ -36,6 +36,9 @@ const UndoRedoConfig = {
         'Character.delete': 'Suppression d\'un personnage',
         'World.add': 'Nouvel élément de monde',
         'World.delete': 'Suppression d\'un élément',
+        'Codex.add': 'Ajout au codex',
+        'Codex.delete': 'Suppression du codex',
+        'Codex.update': 'Modification du codex',
         'text-edit': 'Modification de texte',
         'text-edit-start': 'Début d\'édition',
         'text-edit-end': 'Fin d\'édition',
@@ -274,6 +277,11 @@ function _notifyStateRestored() {
         // Rafraichir la vue monde
         if (typeof renderWorldList === 'function') {
             try { renderWorldList(); } catch (e) { }
+        }
+
+        // Rafraichir la vue codex
+        if (typeof renderCodexList === 'function') {
+            try { renderCodexList(); } catch (e) { }
         }
     }
 
@@ -801,6 +809,9 @@ function integrateWithAllRepositories() {
 
     // World
     integrate(WorldRepository, 'World');
+
+    // Codex
+    integrate(CodexRepository, 'Codex');
 
     // PlotGrid
     integrate(PlotGridRepository, 'PlotGrid');

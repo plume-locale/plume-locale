@@ -27,7 +27,7 @@ function toggleRevisionMode() {
 
     if (revisionMode) {
         // Activer le mode révision
-        toolbar.className = 'revision-toolbar';
+        toolbar.className = 'editor-toolbar revision-toolbar';
         toolbar.innerHTML = `
                     <span class="revision-badge">✏️ MODE RÉVISION</span>
                     <button class="highlight-btn yellow ${selectedHighlightColor === 'yellow' ? 'active' : ''}" 

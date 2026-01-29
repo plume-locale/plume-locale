@@ -83,7 +83,11 @@ JS_ORDER = [
     'js-refactor/21.sceneVersions.refactor.js',
     '22.diff.js',
     '23.stats.js',
-    '24.codex.js',
+    # Codex refactored files
+    'js-refactor/codex/codex.model.js',
+    'js-refactor/codex/codex.repository.js',
+    'js-refactor/codex/codex.viewmodel.js',
+    'js-refactor/codex/codex.view.js',
     '25.globalSearch.js',
     'js-refactor/26.focusMode.refactor.js',
     '27.keyboardShortcuts.js',
@@ -187,6 +191,7 @@ IGNORED_ORIGINALS = [
     '03.project.js', '06.structure.js', '07.stats.js', '08.auto-detect.js',
     '15.characters.js', '17.world.js', '01.app.js', '10.colorpalette.js',
     '21.sceneVersions.js', '26.focusMode.js', '28.revision.js', '29.todos.js',
+    '24.codex.js',
     '30.corkboard.js', '30.corkboard.refactor.js', '33.plot.js', '43.arcs.js', '45.arc-board.js',
     '45.arc-board.refactor.js', '46.thriller-board.js', '44.storygrid.js'
 ]
