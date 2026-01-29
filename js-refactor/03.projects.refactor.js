@@ -312,8 +312,8 @@ function renderProjectsList() {
                 </div>
                 ${proj.description ? `<div class="project-card-desc">${proj.description}</div>` : ''}
                 <div class="project-card-actions">
-                    <button class="btn btn-small" onclick="event.stopPropagation(); showBackupMenu()">📤 Exporter</button>
-                    <button class="btn btn-small" onclick="event.stopPropagation(); deleteProject(${proj.id})">🗑️ Supprimer</button>
+                    <button class="btn btn-small" onclick="event.stopPropagation(); showBackupMenu()"><i data-lucide="upload" style="width:12px;height:12px;margin-right:4px;vertical-align:middle;"></i> Exporter</button>
+                    <button class="btn btn-small" onclick="event.stopPropagation(); deleteProject(${proj.id})"><i data-lucide="trash-2" style="width:12px;height:12px;margin-right:4px;vertical-align:middle;"></i> Supprimer</button>
                 </div>
             </div>`;
     }).join('');

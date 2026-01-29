@@ -114,6 +114,8 @@ function openCorkBoardView() {
 
     // Setup drag and drop
     setupCorkBoardDragAndDrop();
+
+    if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
 // [MVVM : View]
@@ -228,7 +230,7 @@ function renderCorkBoardFullView() {
                     <div class="structured-act-container">
                         <div class="structured-act-header">
                             <button class="structured-collapse-btn" onclick="toggleStructuredAct(${act.id})">
-                                <span class="collapse-icon" id="collapse-icon-${act.id}">▼</span>
+                                <span class="collapse-icon" id="collapse-icon-${act.id}"><i data-lucide="chevron-down" style="width:16px;height:16px;"></i></span>
                             </button>
                             <span class="structured-act-title">${act.title}</span>
                             <button class="btn btn-primary" onclick="createChapterFromCork(${act.id})">+ Nouveau Chapitre</button>
@@ -246,7 +248,7 @@ function renderCorkBoardFullView() {
                         <div class="structured-chapter-container">
                             <div class="structured-chapter-header">
                                 <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                    <span class="structured-chapter-icon">::</span>
+                                    <span class="structured-chapter-icon"><i data-lucide="grip-vertical" style="width:14px;height:14px;"></i></span>
                                     <span class="structured-chapter-title">${chapter.title}</span>
                                 </div>
                             </div>
@@ -268,7 +270,7 @@ function renderCorkBoardFullView() {
                                  draggable="true"
                                  onclick="openSceneFromCork(${scene.actId}, ${scene.chapterId}, ${scene.id})">
                                 <div class="structured-scene-header">
-                                    <span class="structured-scene-icon">::</span>
+                                    <span class="structured-scene-icon"><i data-lucide="grip-vertical" style="width:14px;height:14px;"></i></span>
                                     <span class="structured-scene-title">${scene.title}</span>
                                 </div>
                                 
@@ -350,7 +352,7 @@ function renderCorkCard(scene, index) {
                                 <div class="cork-color-option cork-color-red" onclick="setCorkColor(${scene.actId}, ${scene.chapterId}, ${scene.id}, 'red')"></div>
                                 <div class="cork-color-option cork-color-teal" onclick="setCorkColor(${scene.actId}, ${scene.chapterId}, ${scene.id}, 'teal')"></div>
                                 <div class="cork-color-option cork-color-default" onclick="setCorkColor(${scene.actId}, ${scene.chapterId}, ${scene.id}, 'default')">
-                                    <span style="font-size: 1.2rem;">×</span>
+                                    <i data-lucide="x" style="width:14px;height:14px;vertical-align:middle;"></i>
                                 </div>
                             </div>
                         </div>
@@ -364,13 +366,13 @@ function renderCorkCard(scene, index) {
                          data-placeholder="Cliquez pour ajouter un synopsis...">${synopsis}</div>
                     
                     <div class="cork-card-meta">
-                        <span>📍 ${scene.chapterTitle}</span>
+                        <span><i data-lucide="map-pin" style="width:10px;height:10px;margin-right:4px;vertical-align:middle;"></i> ${scene.chapterTitle}</span>
                         <span>${wordCount} mots</span>
                     </div>
                     
                     <div class="cork-card-actions">
                         <button class="btn btn-small" onclick="openSceneFromCork(${scene.actId}, ${scene.chapterId}, ${scene.id})">
-                            ✏️ Éditer
+                            <i data-lucide="pencil" style="width:12px;height:12px;margin-right:4px;vertical-align:middle;"></i> Éditer
                         </button>
                     </div>
                 </div>
@@ -444,11 +446,12 @@ function toggleStructuredAct(actId) {
 
     if (content.style.display === 'none') {
         content.style.display = 'grid';
-        icon.textContent = '▼';
+        icon.innerHTML = '<i data-lucide="chevron-down" style="width:16px;height:16px;"></i>';
     } else {
         content.style.display = 'none';
-        icon.textContent = '▶';
+        icon.innerHTML = '<i data-lucide="chevron-right" style="width:16px;height:16px;"></i>';
     }
+    if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
 // [MVVM : ViewModel]

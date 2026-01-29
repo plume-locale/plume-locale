@@ -105,7 +105,7 @@ function renderCharactersList() {
                         <i data-lucide="user" style="width:14px;height:14px;vertical-align:middle;"></i>
                     </span>
                     <span class="treeview-item-label">${displayName}</span>
-                    <button class="treeview-item-delete" onclick="event.stopPropagation(); deleteCharacter(${char.id})" title="Supprimer">×</button>
+                    <button class="treeview-item-delete" onclick="event.stopPropagation(); deleteCharacter(${char.id})" title="Supprimer"><i data-lucide="x" style="width:12px;height:12px;"></i></button>
                 </div>
             `;
         });
@@ -180,7 +180,7 @@ function renderCharacterSheet(character, racesList, linkedScenes) {
                         ${metaInfo.map(m => `<li>${m}</li>`).join('')}
                     </ul>
                 </div>
-                <button class="character-close-btn" onclick="switchView('editor')" title="Fermer">×</button>
+                <button class="character-close-btn" onclick="switchView('editor')" title="Fermer"><i data-lucide="x" style="width:20px;height:20px;"></i></button>
             </div>
             
 
@@ -397,7 +397,7 @@ function renderCharacterSheet(character, racesList, linkedScenes) {
                         <label class="character-field-label">Traits sélectionnés</label>
                         <div class="selected-traits-container" id="selectedTraits-${character.id}">
                             ${(character.traits || []).map((t, i) => `
-                                <span class="selected-trait">${t}<span class="trait-remove" onclick="removeCharacterTrait(${character.id}, ${i})">×</span></span>
+                                <span class="selected-trait">${t}<span class="trait-remove" onclick="removeCharacterTrait(${character.id}, ${i})"><i data-lucide="x" style="width:10px;height:10px;"></i></span></span>
                             `).join('') || '<span class="no-traits">Cliquez sur les traits ci-dessous pour les ajouter</span>'}
                         </div>
                     </div>
@@ -618,7 +618,7 @@ function refreshInventoryList(character, listType) {
 function renderInventoryItem(charId, listType, item, index) {
     return `
         <div class="inventory-item">
-            <button class="inventory-item-delete" onclick="removeInventoryItem(${charId}, '${listType}', ${index})">×</button>
+            <button class="inventory-item-delete" onclick="removeInventoryItem(${charId}, '${listType}', ${index})"><i data-lucide="x" style="width:12px;height:12px;"></i></button>
             <div class="character-field-row">
                 <input type="text" value="${item.name || ''}" placeholder="Nom" onchange="updateInventoryItem(${charId}, '${listType}', ${index}, 'name', this.value)">
                 <input type="number" value="${item.quantity || 1}" style="width: 50px;" onchange="updateInventoryItem(${charId}, '${listType}', ${index}, 'quantity', parseInt(this.value))">
@@ -730,7 +730,7 @@ function refreshTraitsDisplay(character) {
 
     if (container) {
         container.innerHTML = traits.length > 0
-            ? traits.map((t, i) => `<span class="selected-trait">${t}<span class="trait-remove" onclick="removeCharacterTrait(${character.id}, '${t.replace(/'/g, "\\'")}')">×</span></span>`).join('')
+            ? traits.map((t, i) => `<span class="selected-trait">${t}<span class="trait-remove" onclick="removeCharacterTrait(${character.id}, '${t.replace(/'/g, "\\'")}')"><i data-lucide="x" style="width:10px;height:10px;"></i></span></span>`).join('')
             : '<span class="no-traits">Cliquez sur les traits ci-dessous pour les ajouter</span>';
     }
 
@@ -740,7 +740,7 @@ function refreshTraitsDisplay(character) {
 }
 
 function changeCharacterAvatar(id, currentEmoji, currentImage) {
-    const defaultValue = currentImage || currentEmoji || '👤';
+    const defaultValue = currentImage || currentEmoji || '';
     const choice = prompt('Emoji ou URL d\'image :', defaultValue);
     if (choice === null) return;
 

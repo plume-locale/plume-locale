@@ -372,7 +372,7 @@ const PlotGridUI = {
 
                 <div id="pgModalOverlay" onclick="PlotGridUI.closeCardModal(event)">
                     <div id="pgModal" onclick="event.stopPropagation()">
-                        <span class="pg-modal-close" onclick="PlotGridUI.closeCardModal()">×</span>
+                        <span class="pg-modal-close" onclick="PlotGridUI.closeCardModal()"><i data-lucide="x" style="width:20px;height:20px;"></i></span>
                         <input type="text" id="pgModalTitleInput" class="pg-modal-title" placeholder="Titre">
                         <textarea id="pgModalContentInput" class="pg-modal-content" placeholder="Zone d'écriture..."></textarea>
                         <div class="pg-modal-footer">
@@ -397,7 +397,7 @@ const PlotGridUI = {
         const modalHTML = `
             <div id="pgModalOverlay" onclick="PlotGridUI.closeCardModal(event)">
                 <div id="pgModal" onclick="event.stopPropagation()">
-                    <span class="pg-modal-close" onclick="PlotGridUI.closeCardModal()">×</span>
+                    <span class="pg-modal-close" onclick="PlotGridUI.closeCardModal()"><i data-lucide="x" style="width:20px;height:20px;"></i></span>
                     <input type="text" id="pgModalTitleInput" class="pg-modal-title" placeholder="Titre">
                     <textarea id="pgModalContentInput" class="pg-modal-content" placeholder="Zone d'écriture..."></textarea>
                     <div class="pg-modal-footer">
@@ -541,7 +541,7 @@ const PlotGridUI = {
                         html += `
                             <div class="pg-cell">
                                 <div class="pg-card structure-card pg-scene-ghost" onclick="PlotGridUI.createSceneFromRow('${row.id}')">
-                                    <span class="pg-card-delete" onclick="event.stopPropagation(); PlotGridUI.deleteCustomRow('${row.id}')" title="Supprimer la ligne">×</span>
+                                    <span class="pg-card-delete" onclick="event.stopPropagation(); PlotGridUI.deleteCustomRow('${row.id}')" title="Supprimer la ligne"><i data-lucide="x" style="width:12px;height:12px;"></i></span>
                                     <div style="font-size: 18px; margin-bottom: 5px;">+</div>
                                     <div style="font-size: 0.8rem;">Scène sans titre</div>
                                 </div>
@@ -561,7 +561,7 @@ const PlotGridUI = {
                                     draggable="true" 
                                     ondragstart="PlotGridUI.handleDragStart(event, '${card.id}')"
                                     onclick="PlotGridUI.openCardModal('${card.id}', this)">
-                                    <span class="pg-card-delete" onclick="event.stopPropagation(); PlotGridUI.deleteCardQuickly('${card.id}')" title="Supprimer la carte">×</span>
+                                    <span class="pg-card-delete" onclick="event.stopPropagation(); PlotGridUI.deleteCardQuickly('${card.id}')" title="Supprimer la carte"><i data-lucide="x" style="width:12px;height:12px;"></i></span>
                                     <div class="pg-card-title">${card.title}</div>
                                     <div class="pg-card-content">${card.content || ""}</div>
                                 </div>

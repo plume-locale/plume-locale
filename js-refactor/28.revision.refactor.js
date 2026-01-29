@@ -29,7 +29,7 @@ function toggleRevisionMode() {
         // Activer le mode révision
         toolbar.className = 'revision-toolbar';
         toolbar.innerHTML = `
-                    <span class="revision-badge">✏️ MODE RÉVISION</span>
+                    <span class="revision-badge"><i data-lucide="pencil" style="width:14px;height:14px;vertical-align:middle;margin-right:6px;"></i>MODE RÉVISION</span>
                     <button class="highlight-btn yellow ${selectedHighlightColor === 'yellow' ? 'active' : ''}" 
                             onclick="selectHighlightColor('yellow')">Jaune</button>
                     <button class="highlight-btn green ${selectedHighlightColor === 'green' ? 'active' : ''}" 
@@ -40,11 +40,11 @@ function toggleRevisionMode() {
                             onclick="selectHighlightColor('red')">Rouge</button>
                     <button class="highlight-btn purple ${selectedHighlightColor === 'purple' ? 'active' : ''}" 
                             onclick="selectHighlightColor('purple')">Violet</button>
-                    <button class="btn" onclick="applyHighlight()">🖍️ Surligner</button>
-                    <button class="btn" onclick="removeHighlight()">🗑️ Retirer</button>
-                    <button class="btn" onclick="openAnnotationPopup()">💬 Annoter</button>
+                    <button class="btn" onclick="applyHighlight()"><i data-lucide="highlighter" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Surligner</button>
+                    <button class="btn" onclick="removeHighlight()"><i data-lucide="trash-2" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Retirer</button>
+                    <button class="btn" onclick="openAnnotationPopup()"><i data-lucide="message-square" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Annoter</button>
                     <div style="flex: 1;"></div>
-                    <button class="btn btn-primary" onclick="toggleRevisionMode()">✓ Quitter</button>
+                    <button class="btn btn-primary" onclick="toggleRevisionMode()"><i data-lucide="check" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Quitter</button>
                 `;
         if (editor) editor.contentEditable = 'false';
         // Ne pas afficher automatiquement le panneau
@@ -249,7 +249,7 @@ function renderAnnotationsPanel() {
         panel.innerHTML = `
                     <div class="annotations-panel-header">
                         <h3 style="margin: 0;">Annotations</h3>
-                        <span class="annotations-panel-close" onclick="closeAnnotationsPanel()" title="Fermer">×</span>
+                        <span class="annotations-panel-close" onclick="closeAnnotationsPanel()" title="Fermer"><i data-lucide="x" style="width:16px;height:16px;"></i></span>
                     </div>
                     <p style="text-align: center; color: var(--text-muted); padding: 2rem;">Sélectionnez une scène pour voir ses annotations</p>
                 `;
@@ -265,7 +265,7 @@ function renderAnnotationsPanel() {
         panel.innerHTML = `
                     <div class="annotations-panel-header">
                         <h3 style="margin: 0;">Annotations</h3>
-                        <span class="annotations-panel-close" onclick="closeAnnotationsPanel()" title="Fermer">×</span>
+                        <span class="annotations-panel-close" onclick="closeAnnotationsPanel()" title="Fermer"><i data-lucide="x" style="width:16px;height:16px;"></i></span>
                     </div>
                     <p style="text-align: center; color: var(--text-muted); padding: 2rem;">Scène introuvable</p>
                 `;
@@ -285,18 +285,18 @@ function renderAnnotationsPanel() {
         panel.innerHTML = `
                     <div class="annotations-panel-header">
                         <h3 style="margin: 0;">Annotations (0)</h3>
-                        <span class="annotations-panel-close" onclick="closeAnnotationsPanel()" title="Fermer">×</span>
+                        <span class="annotations-panel-close" onclick="closeAnnotationsPanel()" title="Fermer"><i data-lucide="x" style="width:16px;height:16px;"></i></span>
                     </div>
-                    ${versionLabel ? `<div style="font-size: 0.75rem; color: var(--text-muted); padding: 0.5rem 1rem; background: var(--bg-tertiary); border-bottom: 1px solid var(--border-color);">📌 ${versionLabel}</div>` : ''}
+                    ${versionLabel ? `<div style="font-size: 0.75rem; color: var(--text-muted); padding: 0.5rem 1rem; background: var(--bg-tertiary); border-bottom: 1px solid var(--border-color);"><i data-lucide="pin" style="width:12px;height:12px;vertical-align:middle;margin-right:6px;"></i> ${versionLabel}</div>` : ''}
                     <p style="text-align: center; color: var(--text-muted); padding: 2rem;">Aucune annotation pour cette version</p>
                 `;
     } else {
         panel.innerHTML = `
                     <div class="annotations-panel-header">
                         <h3 style="margin: 0;">Annotations (${annotations.length})</h3>
-                        <span class="annotations-panel-close" onclick="closeAnnotationsPanel()" title="Fermer">×</span>
+                        <span class="annotations-panel-close" onclick="closeAnnotationsPanel()" title="Fermer"><i data-lucide="x" style="width:16px;height:16px;"></i></span>
                     </div>
-                    ${versionLabel ? `<div style="font-size: 0.75rem; color: var(--text-muted); padding: 0.5rem 1rem; background: var(--bg-tertiary); border-bottom: 1px solid var(--border-color);">📌 ${versionLabel}</div>` : ''}
+                    ${versionLabel ? `<div style="font-size: 0.75rem; color: var(--text-muted); padding: 0.5rem 1rem; background: var(--bg-tertiary); border-bottom: 1px solid var(--border-color);"><i data-lucide="pin" style="width:12px;height:12px;vertical-align:middle;margin-right:6px;"></i> ${versionLabel}</div>` : ''}
                     ${annotations.map(a => `
                         <div class="annotation-card ${a.type}" onclick="scrollToAnnotation(${a.id})">
                             <div class="annotation-type ${a.type}">${getAnnotationTypeLabel(a.type)}</div>
@@ -306,11 +306,11 @@ function renderAnnotationsPanel() {
                                 <button class="btn btn-small ${a.completed ? 'btn-primary' : ''}" 
                                         onclick="event.stopPropagation(); toggleAnnotationComplete(${a.id})" 
                                         style="margin-top: 0.5rem;">
-                                    ${a.completed ? '✓ Terminé' : '○ À faire'}
+                                    ${a.completed ? '<i data-lucide="check" style="width:12px;height:12px;vertical-align:middle;margin-right:4px;"></i>Terminé' : '<i data-lucide="circle" style="width:12px;height:12px;vertical-align:middle;margin-right:4px;"></i>À faire'}
                                 </button>
                             ` : ''}
                             <button class="btn btn-small" onclick="event.stopPropagation(); deleteAnnotation(${a.id})" 
-                                    style="margin-top: 0.5rem;">Supprimer</button>
+                                    style="margin-top: 0.5rem;"><i data-lucide="trash-2" style="width:12px;height:12px;vertical-align:middle;margin-right:4px;"></i>Supprimer</button>
                         </div>
                     `).join('')}
                 `;

@@ -828,7 +828,8 @@
 .viz-tool-btn {
     padding: 0.5rem 1rem;
     background: var(--primary-color);
-    color: white border: 1px solid var(--border-color);
+    color: white;
+    border: 1px solid var(--border-color);
     border-radius: 4px;
     cursor: pointer;
     font-family: 'Crimson Pro', serif;
@@ -1357,8 +1358,11 @@ body.force-mobile-nav .split-mode-toggle span {
     }
 
     .act-icon {
-        font-size: 0.5rem;
-        width: 8px;
+        width: 14px;
+        height: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .act-title {
@@ -1381,8 +1385,11 @@ body.force-mobile-nav .split-mode-toggle span {
     }
 
     .chapter-icon {
-        font-size: 0.45rem;
-        width: 6px;
+        width: 12px;
+        height: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .chapter-title {
@@ -1418,7 +1425,14 @@ body.force-mobile-nav .split-mode-toggle span {
 
     .drag-handle {
         padding: 0 0.1rem;
-        font-size: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .drag-handle i {
+        width: 10px !important;
+        height: 10px !important;
     }
 
     .delete-btn {

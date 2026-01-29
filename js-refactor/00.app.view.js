@@ -281,7 +281,7 @@ function renderViewContent(view, containerId) {
             if (project.acts.length === 0 || (project.acts.length === 1 && project.acts[0].chapters.length === 0)) {
                 container.innerHTML = `
                     <div class="empty-state">
-                        <div class="empty-state-icon">✏️</div>
+                        <div class="empty-state-icon"><i data-lucide="pencil" style="width:48px;height:48px;stroke-width:1;"></i></div>
                         <div class="empty-state-title">Commencez votre histoire</div>
                         <div class="empty-state-text">Créez votre premier chapitre pour commencer à écrire.</div>
                         <button class="btn btn-primary" onclick="openAddChapterModal()">+ Créer un chapitre</button>
@@ -289,7 +289,7 @@ function renderViewContent(view, containerId) {
             } else {
                 container.innerHTML = `
                     <div class="empty-state">
-                        <div class="empty-state-icon">✏️</div>
+                        <div class="empty-state-icon"><i data-lucide="pencil" style="width:48px;height:48px;stroke-width:1;"></i></div>
                         <div class="empty-state-title">Sélectionnez une scène</div>
                         <div class="empty-state-text">Choisissez une scène dans la barre latérale pour commencer à écrire.</div>
                     </div>`;
@@ -819,16 +819,16 @@ function getEditorToolbarHTML(panel = null) {
         <!-- Alignment -->
         <div class="toolbar-group">
             <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'justifyLeft')" title="Aligner à gauche">
-                ⫷
+                <i data-lucide="align-left" style="width:14px;height:14px;"></i>
             </button>
             <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'justifyCenter')" title="Centrer">
-                ⫶
+                <i data-lucide="align-center" style="width:14px;height:14px;"></i>
             </button>
             <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'justifyRight')" title="Aligner à droite">
-                ⫸
+                <i data-lucide="align-right" style="width:14px;height:14px;"></i>
             </button>
             <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'justifyFull')" title="Justifier">
-                ☰
+                <i data-lucide="align-justify" style="width:14px;height:14px;"></i>
             </button>
         </div>
         
@@ -842,15 +842,15 @@ function getEditorToolbarHTML(panel = null) {
         
         <!-- Lists and quotes -->
         <div class="toolbar-group">
-            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'insertUnorderedList')" title="Liste à puces">• Liste</button>
-            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'insertOrderedList')" title="Liste numérotée">1. Liste</button>
-            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'formatBlock', 'blockquote')" title="Citation">❝ Citation</button>
+            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'insertUnorderedList')" title="Liste à puces"><i data-lucide="list" style="width:14px;height:14px;vertical-align:middle;margin-right:2px;"></i> Liste</button>
+            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'insertOrderedList')" title="Liste numérotée"><i data-lucide="list-ordered" style="width:14px;height:14px;vertical-align:middle;margin-right:2px;"></i> Liste</button>
+            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'formatBlock', 'blockquote')" title="Citation"><i data-lucide="quote" style="width:14px;height:14px;vertical-align:middle;margin-right:2px;"></i> Citation</button>
         </div>
         
         <!-- Indentation -->
         <div class="toolbar-group">
-            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'indent')" title="Augmenter l'indentation">→|</button>
-            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'outdent')" title="Diminuer l'indentation">|←</button>
+            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'indent')" title="Augmenter l'indentation"><i data-lucide="indent" style="width:14px;height:14px;"></i></button>
+            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'outdent')" title="Diminuer l'indentation"><i data-lucide="outdent" style="width:14px;height:14px;"></i></button>
         </div>
         
         <!-- Superscript, subscript -->
@@ -861,14 +861,14 @@ function getEditorToolbarHTML(panel = null) {
         
         <!-- Other -->
         <div class="toolbar-group">
-            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'insertHorizontalRule')" title="Ligne horizontale">─</button>
-            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'removeFormat')" title="Supprimer le formatage">✕ Format</button>
+            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'insertHorizontalRule')" title="Ligne horizontale"><i data-lucide="minus" style="width:14px;height:14px;"></i></button>
+            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'removeFormat')" title="Supprimer le formatage"><i data-lucide="eraser" style="width:14px;height:14px;vertical-align:middle;margin-right:2px;"></i> Format</button>
         </div>
 
         
         <!-- Revision mode button -->
         <div class="toolbar-group">
-            <button class="toolbar-btn" onclick="toggleRevisionMode()" title="Mode Révision (Ctrl+R)" style="color: var(--accent-gold); font-weight: 600;">✏️ RÉVISION</button>
+            <button class="toolbar-btn" onclick="toggleRevisionMode()" title="Mode Révision (Ctrl+R)" style="color: var(--accent-gold); font-weight: 600;"><i data-lucide="pencil" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> RÉVISION</button>
         </div>
     `;
 }
@@ -887,7 +887,7 @@ function renderEditor(act, chapter, scene) {
     const hasFinalVersion = scene.versions && scene.versions.some(v => v.isFinal === true);
     const finalVersion = hasFinalVersion ? scene.versions.find(v => v.isFinal === true) : null;
     const finalVersionBadge = hasFinalVersion
-        ? `<span style="display: inline-flex; align-items: center; gap: 0.25rem; background: var(--accent-gold); color: var(--bg-accent); font-size: 0.7rem; font-weight: 600; padding: 0.2rem 0.5rem; border-radius: 10px; margin-left: 0.5rem;" title="Version finale : ${finalVersion.number}">⭐ ${finalVersion.number}</span>`
+        ? `<span style="display: inline-flex; align-items: center; gap: 0.25rem; background: var(--accent-gold); color: var(--bg-accent); font-size: 0.7rem; font-weight: 600; padding: 0.2rem 0.5rem; border-radius: 10px; margin-left: 0.5rem;" title="Version finale : ${finalVersion.number}"><i data-lucide="star" style="width:10px;height:10px;fill:currentColor;"></i> ${finalVersion.number}</span>`
         : '';
 
     editorView.innerHTML = `
@@ -997,7 +997,7 @@ function renderActEditor(act) {
             const hasFinalVersion = scene.versions && scene.versions.some(v => v.isFinal === true);
             const finalVersion = hasFinalVersion ? scene.versions.find(v => v.isFinal === true) : null;
             const finalVersionBadge = hasFinalVersion
-                ? `<span style="display: inline-flex; align-items: center; gap: 0.25rem; background: var(--accent-gold); color: var(--bg-accent); font-size: 0.7rem; font-weight: 600; padding: 0.2rem 0.5rem; border-radius: 10px; margin-left: 0.5rem;" title="Version finale : ${finalVersion.number}">⭐ ${finalVersion.number}</span>`
+                ? `<span style="display: inline-flex; align-items: center; gap: 0.25rem; background: var(--accent-gold); color: var(--bg-accent); font-size: 0.7rem; font-weight: 600; padding: 0.2rem 0.5rem; border-radius: 10px; margin-left: 0.5rem;" title="Version finale : ${finalVersion.number}"><i data-lucide="star" style="width:10px;height:10px;fill:currentColor;"></i> ${finalVersion.number}</span>`
                 : '';
 
             allScenes.push({
@@ -1114,7 +1114,7 @@ function renderChapterEditor(act, chapter) {
         const hasFinalVersion = scene.versions && scene.versions.some(v => v.isFinal === true);
         const finalVersion = hasFinalVersion ? scene.versions.find(v => v.isFinal === true) : null;
         const finalVersionBadge = hasFinalVersion
-            ? `<span style="display: inline-flex; align-items: center; gap: 0.25rem; background: var(--accent-gold); color: var(--bg-accent); font-size: 0.7rem; font-weight: 600; padding: 0.2rem 0.5rem; border-radius: 10px; margin-left: 0.5rem;" title="Version finale : ${finalVersion.number}">⭐ ${finalVersion.number}</span>`
+            ? `<span style="display: inline-flex; align-items: center; gap: 0.25rem; background: var(--accent-gold); color: var(--bg-accent); font-size: 0.7rem; font-weight: 600; padding: 0.2rem 0.5rem; border-radius: 10px; margin-left: 0.5rem;" title="Version finale : ${finalVersion.number}"><i data-lucide="star" style="width:12px;height:12px;vertical-align:middle;"></i> ${finalVersion.number}</span>`
             : '';
 
         scenesHTML += `
@@ -1692,7 +1692,7 @@ function renderWelcomeEditor() {
     if (!container) return;
     container.innerHTML = `
         <div class="empty-state">
-            <div class="empty-state-icon">✍️</div>
+            <div class="empty-state-icon"><i data-lucide="pencil-line" style="width:48px;height:48px;stroke-width:1.5;"></i></div>
             <div class="empty-state-title">Sélectionnez une scène</div>
             <div class="empty-state-text">Choisissez une scène dans la barre latérale pour commencer à écrire.</div>
         </div>`;

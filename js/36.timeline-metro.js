@@ -5,7 +5,7 @@
 // ============================================
 
 // [MVVM : View]
-// Rend la liste latérale (sidebar) des événements de la timeline.
+// Rend la liste latérale (sidebar) des évènements de la timeline.
 function renderTimelineVizList() {
     const container = document.getElementById('timelineVizList');
     if (!container) {
@@ -29,11 +29,11 @@ function renderTimelineVizList() {
         }
     });
 
-    // Compter les événements
+    // Compter les évènements
     const eventCount = project.metroTimeline.length;
     const charCount = project.characters.length;
 
-    // Sidebar avec personnages et liste d'événements
+    // Sidebar avec personnages et liste d'évènements
     container.innerHTML = `
                 <div style="padding: 1rem;">
                     <h3 style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
@@ -41,25 +41,25 @@ function renderTimelineVizList() {
                         Timeline Métro
                     </h3>
                     <div style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6;">
-                        <div style="margin-bottom: 0.5rem;">📅 ${eventCount} événement(s)</div>
-                        <div style="margin-bottom: 0.5rem;">👥 ${charCount} personnage(s)</div>
+                        <div style="margin-bottom: 0.5rem;"><i data-lucide="calendar" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> ${eventCount} évènement(s)</div>
+                        <div style="margin-bottom: 0.5rem;"><i data-lucide="users" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> ${charCount} personnage(s)</div>
                         <div style="margin-top: 1rem;">
                             <button class="btn btn-primary" onclick="openMetroEventModal()" style="width: 100%;">
-                                + Nouvel événement
+                                + Nouvel évènement
                             </button>
                         </div>
                     </div>
                     ${eventCount > 0 ? `
                         <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
                             <div style="font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem;">
-                                <span>Événements:</span>
+                                <span>évènements:</span>
                             </div>
                             <div id="metroEventsList" class="metro-events-sortable">
                                 ${project.metroTimeline.sort((a, b) => (a.order || 0) - (b.order || 0)).map((event, i, arr) => `
                                     <div class="metro-event-item" data-event-id="${event.id}">
                                         <div class="metro-event-reorder-btns">
-                                            <button class="metro-reorder-btn" onclick="moveMetroEvent(${event.id}, -1)" ${i === 0 ? 'disabled' : ''} title="Monter">▲</button>
-                                            <button class="metro-reorder-btn" onclick="moveMetroEvent(${event.id}, 1)" ${i === arr.length - 1 ? 'disabled' : ''} title="Descendre">▼</button>
+                                            <button class="metro-reorder-btn" onclick="moveMetroEvent(${event.id}, -1)" ${i === 0 ? 'disabled' : ''} title="Monter"><i data-lucide="chevron-up" style="width:12px;height:12px;"></i></button>
+                                            <button class="metro-reorder-btn" onclick="moveMetroEvent(${event.id}, 1)" ${i === arr.length - 1 ? 'disabled' : ''} title="Descendre"><i data-lucide="chevron-down" style="width:12px;height:12px;"></i></button>
                                         </div>
                                         <div class="metro-event-item-content" onclick="openMetroEventModal(${event.id})">
                                             <div style="display: flex; align-items: center; gap: 0.5rem;">
@@ -108,7 +108,7 @@ function renderTimelineVizView() {
                     <div class="metro-empty-state">
                         <i data-lucide="users" style="width: 64px; height: 64px; opacity: 0.3;"></i>
                         <h3 style="margin: 1rem 0 0.5rem;">Aucun personnage</h3>
-                        <p style="margin-bottom: 1.5rem;">Créez d'abord des personnages dans l'onglet "Personnages" pour pouvoir les lier aux événements de votre timeline.</p>
+                        <p style="margin-bottom: 1.5rem;">Créez d'abord des personnages dans l'onglet "Personnages" pour pouvoir les lier aux évènements de votre timeline.</p>
                         <button class="btn btn-primary" onclick="switchView('characters')">Créer des personnages</button>
                     </div>
                 `;
@@ -121,7 +121,7 @@ function renderTimelineVizView() {
                     <div class="metro-toolbar">
                         <button class="btn btn-primary" onclick="openMetroEventModal()">
                             <i data-lucide="plus" style="width: 16px; height: 16px;"></i>
-                            Nouvel événement
+                            Nouvel évènement
                         </button>
                         <button class="btn" onclick="sortMetroByDate()">
                             <i data-lucide="calendar" style="width: 16px; height: 16px;"></i>
@@ -152,7 +152,7 @@ function renderTimelineVizView() {
                     
                     <div style="margin-top: 1rem; padding: 1rem; background: var(--bg-secondary); border-radius: 4px;">
                         <p style="font-size: 0.9rem; color: var(--text-secondary);">
-                            💡 <strong>Utilisation:</strong> Cliquez sur les cercles pour éditer les événements. Les petites icônes bleues 📄 permettent d'ouvrir directement la scène liée. Cliquez sur les couleurs dans la légende pour les personnaliser. Les lignes se rejoignent quand des personnages partagent un événement.
+                            💡 <strong>Utilisation:</strong> Cliquez sur les cercles pour éditer les évènements. Les petites icônes bleues 📄 permettent d'ouvrir directement la scène liée. Cliquez sur les couleurs dans la légende pour les personnaliser. Les lignes se rejoignent quand des personnages partagent un évènement.
                         </p>
                     </div>
                 </div>
@@ -171,9 +171,9 @@ function renderMetroSVG() {
         return `
                     <div class="metro-empty-state">
                         <i data-lucide="train-track" style="width: 64px; height: 64px; opacity: 0.3;"></i>
-                        <h3 style="margin: 1rem 0 0.5rem;">Aucun événement</h3>
-                        <p style="margin-bottom: 1.5rem;">Créez votre premier événement pour commencer à visualiser les interactions entre personnages.</p>
-                        <button class="btn btn-primary" onclick="openMetroEventModal()">+ Créer un événement</button>
+                        <h3 style="margin: 1rem 0 0.5rem;">Aucun évènement</h3>
+                        <p style="margin-bottom: 1.5rem;">Créez votre premier évènement pour commencer à visualiser les interactions entre personnages.</p>
+                        <button class="btn btn-primary" onclick="openMetroEventModal()">+ Créer un évènement</button>
                     </div>
                 `;
     }
@@ -208,14 +208,14 @@ function renderMetroSVG() {
                     </g>
                 `;
 
-        // Trouver les événements où ce personnage participe
+        // Trouver les évènements où ce personnage participe
         const charEvents = events.filter(e => (e.characters || []).includes(char.id));
 
         if (charEvents.length === 0) {
-            // Ligne en pointillés si pas d'événements
+            // Ligne en pointillés si pas d'évènements
             pathsHTML += `<line x1="${leftMargin}" y1="${y}" x2="${svgWidth - 50}" y2="${y}" stroke="${color}" stroke-width="3" stroke-dasharray="5,5" opacity="0.3"/>`;
         } else {
-            // Dessiner le chemin entre les événements
+            // Dessiner le chemin entre les évènements
             let pathD = '';
             let lastX = leftMargin;
 
@@ -223,12 +223,12 @@ function renderMetroSVG() {
                 const eventGlobalIdx = events.indexOf(event);
                 const eventX = leftMargin + (eventGlobalIdx * eventWidth) + (eventWidth / 2);
 
-                // Calculer Y pour cet événement (converger vers le centre si plusieurs personnages)
+                // Calculer Y pour cet évènement (converger vers le centre si plusieurs personnages)
                 const eventChars = event.characters || [];
                 const charPosInEvent = eventChars.indexOf(char.id);
                 const totalCharsInEvent = eventChars.length;
 
-                // Y central de l'événement (moyenne des Y de tous les personnages présents)
+                // Y central de l'évènement (moyenne des Y de tous les personnages présents)
                 const avgY = eventChars.reduce((sum, cId) => {
                     const cIdx = characters.findIndex(c => c.id === cId);
                     return sum + (cIdx >= 0 ? topMargin + (cIdx * rowHeight) + (rowHeight / 2) : 0);
@@ -237,7 +237,7 @@ function renderMetroSVG() {
                 const eventY = avgY;
 
                 if (eventIdx === 0) {
-                    // Premier segment: de la ligne de base vers le premier événement
+                    // Premier segment: de la ligne de base vers le premier évènement
                     pathD = `M ${lastX} ${y}`;
 
                     // Courbe vers le point de convergence
@@ -249,7 +249,7 @@ function renderMetroSVG() {
                     const prevEventIdx = events.indexOf(prevEvent);
                     const prevX = leftMargin + (prevEventIdx * eventWidth) + (eventWidth / 2);
 
-                    // Y du précédent événement
+                    // Y du précédent évènement
                     const prevEventChars = prevEvent.characters || [];
                     const prevAvgY = prevEventChars.reduce((sum, cId) => {
                         const cIdx = characters.findIndex(c => c.id === cId);
@@ -264,7 +264,7 @@ function renderMetroSVG() {
                 lastX = eventX;
             });
 
-            // Prolonger la ligne après le dernier événement
+            // Prolonger la ligne après le dernier évènement
             const lastEvent = charEvents[charEvents.length - 1];
             const lastEventIdx = events.indexOf(lastEvent);
             const lastEventX = leftMargin + (lastEventIdx * eventWidth) + (eventWidth / 2);
@@ -282,7 +282,7 @@ function renderMetroSVG() {
         }
     });
 
-    // Dessiner les nœuds d'événements (par-dessus les lignes)
+    // Dessiner les nœuds d'évènements (par-dessus les lignes)
     events.forEach((event, eventIdx) => {
         const eventX = leftMargin + (eventIdx * eventWidth) + (eventWidth / 2);
         const eventChars = event.characters || [];
@@ -303,12 +303,16 @@ function renderMetroSVG() {
                         ${event.sceneId ? `
                             <g onclick="event.stopPropagation(); openMetroLinkedScene(${event.sceneId})" style="cursor: pointer;" title="Ouvrir la scène">
                                 <circle cx="${eventX + nodeRadius + 8}" cy="${avgY - nodeRadius - 8}" r="8" fill="var(--accent-blue)" stroke="white" stroke-width="1.5"/>
-                                <text x="${eventX + nodeRadius + 8}" y="${avgY - nodeRadius - 4}" text-anchor="middle" font-size="9" fill="white" font-weight="bold">📄</text>
+                                <foreignObject x="${eventX + nodeRadius + 1}" y="${avgY - nodeRadius - 15}" width="14" height="14">
+                                    <div xmlns="http://www.w3.org/1999/xhtml" style="color:white; display:flex; align-items:center; justify-content:center;">
+                                        <i data-lucide="file-text" style="width:10px;height:10px;"></i>
+                                    </div>
+                                </foreignObject>
                             </g>
                         ` : ''}
                     `;
 
-            // Label de l'événement
+            // Label de l'évènement
             const labelY = avgY < svgHeight / 2 ? avgY - 25 : avgY + 30;
             labelsHTML += `
                         <g class="metro-event-label-group" onclick="openMetroEventModal(${event.id})" style="cursor: pointer;">
@@ -317,7 +321,7 @@ function renderMetroSVG() {
                         </g>
                     `;
         } else {
-            // Événement sans personnages - afficher en haut
+            // évènement sans personnages - afficher en haut
             const floatingY = topMargin - 10;
             nodesHTML += `
                         <g class="metro-event-node" onclick="openMetroEventModal(${event.id})">
@@ -349,17 +353,17 @@ function renderMetroSVG() {
                     <!-- Chemins des lignes de métro -->
                     ${pathsHTML}
                     
-                    <!-- Nœuds des événements -->
+                    <!-- Nœuds des évènements -->
                     ${nodesHTML}
                     
-                    <!-- Labels des événements -->
+                    <!-- Labels des évènements -->
                     ${labelsHTML}
                 </svg>
             `;
 }
 
 // [MVVM : ViewModel]
-// Ouvre la modale de création ou d'édition d'un événement métro.
+// Ouvre la modale de création ou d'édition d'un évènement métro.
 function openMetroEventModal(eventId = null) {
     const modal = document.getElementById('metroEventModal');
     const titleEl = document.getElementById('metroEventModalTitle');
@@ -413,7 +417,7 @@ function openMetroEventModal(eventId = null) {
         const event = project.metroTimeline.find(e => e.id === eventId);
         if (!event) return;
 
-        titleEl.textContent = 'Modifier l\'événement';
+        titleEl.textContent = 'Modifier l\'évènement';
         deleteBtn.style.display = '';
 
         document.getElementById('metroEventId').value = event.id;
@@ -442,7 +446,7 @@ function openMetroEventModal(eventId = null) {
         });
     } else {
         // Create mode
-        titleEl.textContent = 'Nouvel événement';
+        titleEl.textContent = 'Nouvel évènement';
         deleteBtn.style.display = 'none';
 
         // Default position = at the end
@@ -461,7 +465,7 @@ function openMetroEventModal(eventId = null) {
 }
 
 // [MVVM : ViewModel]
-// Met à jour l'affichage des personnages liés dans la modale d'événement.
+// Met à jour l'affichage des personnages liés dans la modale d'évènement.
 function updateMetroLinkedChars() {
     const selectorDiv = document.getElementById('metroCharactersSelector');
     const linkedDiv = document.getElementById('metroLinkedChars');
@@ -483,14 +487,14 @@ function updateMetroLinkedChars() {
         return `
                     <span class="metro-linked-char-tag" style="background: ${color};">
                         ${char.name}
-                        <span class="remove-char" onclick="removeMetroCharFromEvent(${charId})">×</span>
+                        <span class="remove-char" onclick="removeMetroCharFromEvent(${charId})"><i data-lucide="x" style="width:10px;height:10px;vertical-align:middle;"></i></span>
                     </span>
                 `;
     }).join('');
 }
 
 // [MVVM : ViewModel]
-// Retire un personnage de la sélection dans la modale d'événement.
+// Retire un personnage de la sélection dans la modale d'évènement.
 function removeMetroCharFromEvent(charId) {
     const selectorDiv = document.getElementById('metroCharactersSelector');
     const checkbox = selectorDiv.querySelector(`input[value="${charId}"]`);
@@ -501,7 +505,7 @@ function removeMetroCharFromEvent(charId) {
 }
 
 // [MVVM : ViewModel]
-// Enregistre les modifications d'un événement métro.
+// Enregistre les modifications d'un évènement métro.
 function saveMetroEvent() {
     const eventId = document.getElementById('metroEventId').value;
     const title = document.getElementById('metroEventTitle').value.trim();
@@ -545,7 +549,7 @@ function saveMetroEvent() {
             event.characters = characters;
             event.sceneId = sceneId;
         }
-        showNotification('✓ Événement mis à jour');
+        showNotification('✓ évènement mis à jour');
     } else {
         // Create new
         project.metroTimeline.push({
@@ -557,7 +561,7 @@ function saveMetroEvent() {
             characters,
             sceneId: sceneId
         });
-        showNotification('✓ Événement créé');
+        showNotification('✓ évènement créé');
     }
 
     // Reorder all events to have clean sequential numbers
@@ -597,7 +601,7 @@ function saveMetroEvent() {
 }
 
 // [MVVM : Model]
-// Réorganise les ordres des événements pour qu'ils soient séquentiels.
+// Réorganise les ordres des évènements pour qu'ils soient séquentiels.
 function normalizeMetroEventOrder() {
     // Sort by current order
     project.metroTimeline.sort((a, b) => (a.order || 0) - (b.order || 0));
@@ -609,7 +613,7 @@ function normalizeMetroEventOrder() {
 }
 
 // [MVVM : ViewModel]
-// Déplace un événement vers le haut ou le bas dans l'ordre.
+// Déplace un évènement vers le haut ou le bas dans l'ordre.
 function moveMetroEvent(eventId, direction) {
     // direction: -1 = monter, 1 = descendre
     const sortedEvents = project.metroTimeline.sort((a, b) => (a.order || 0) - (b.order || 0));
@@ -639,12 +643,12 @@ function moveMetroEvent(eventId, direction) {
 }
 
 // [MVVM : ViewModel]
-// Supprime un événement de la timeline métro.
+// Supprime un évènement de la timeline métro.
 function deleteMetroEvent() {
     const eventId = document.getElementById('metroEventId').value;
     if (!eventId) return;
 
-    if (!confirm('Supprimer cet événement ?')) return;
+    if (!confirm('Supprimer cet évènement ?')) return;
 
     project.metroTimeline = project.metroTimeline.filter(e => e.id !== parseInt(eventId));
     saveProject();
@@ -664,11 +668,11 @@ function deleteMetroEvent() {
         renderTimelineVizView();
     }
 
-    showNotification('✓ Événement supprimé');
+    showNotification('✓ évènement supprimé');
 }
 
 // [MVVM : ViewModel]
-// Ouvre la scène liée à un événement dans l'éditeur.
+// Ouvre la scène liée à un évènement dans l'éditeur.
 function openMetroLinkedScene(sceneId) {
     // Find the scene
     let foundScene = null;
@@ -704,7 +708,7 @@ function openMetroLinkedScene(sceneId) {
 }
 
 // [MVVM : ViewModel]
-// Affiche la modale de choix de vue lors de l'ouverture d'un événement depuis l'éditeur.
+// Affiche la modale de choix de vue lors de l'ouverture d'un évènement depuis l'éditeur.
 function openMetroEventFromScene(eventId) {
     // Store the event ID and show the choice modal
     document.getElementById('metroViewChoiceEventId').value = eventId;
@@ -719,7 +723,7 @@ function openMetroEventFromScene(eventId) {
 }
 
 // [MVVM : ViewModel]
-// Bascule vers la vue complète de la timeline pour un événement donné.
+// Bascule vers la vue complète de la timeline pour un évènement donné.
 function openMetroEventFullView() {
     const eventId = parseInt(document.getElementById('metroViewChoiceEventId').value);
     closeModal('metroViewChoiceModal');
@@ -871,7 +875,7 @@ function refreshTimelineView() {
 // Trie la timeline métro par date.
 function sortMetroByDate() {
     if (!project.metroTimeline || project.metroTimeline.length === 0) {
-        showNotification('Aucun événement à trier');
+        showNotification('Aucun évènement à trier');
         return;
     }
 
@@ -982,14 +986,14 @@ function sortMetroByDate() {
 }
 
 // [MVVM : ViewModel]
-// Efface tous les événements de la timeline métro.
+// Efface tous les évènements de la timeline métro.
 function clearMetroTimeline() {
     if (!project.metroTimeline || project.metroTimeline.length === 0) {
         showNotification('La timeline est déjà vide');
         return;
     }
 
-    if (confirm(`Effacer les ${project.metroTimeline.length} événement(s) de la timeline ?`)) {
+    if (confirm(`Effacer les ${project.metroTimeline.length} évènement(s) de la timeline ?`)) {
         project.metroTimeline = [];
         saveProject();
         refreshTimelineView();
@@ -1001,7 +1005,7 @@ function clearMetroTimeline() {
 // Exporte la timeline métro au format CSV.
 function exportMetroTimelineCSV() {
     if (!project.metroTimeline || project.metroTimeline.length === 0) {
-        alert('Aucun événement à exporter');
+        alert('Aucun évènement à exporter');
         return;
     }
 
@@ -1024,18 +1028,18 @@ function exportMetroTimelineCSV() {
     a.click();
     URL.revokeObjectURL(url);
 
-    showNotification(`✓ ${project.metroTimeline.length} événement(s) exporté(s)`);
+    showNotification(`✓ ${project.metroTimeline.length} évènement(s) exporté(s)`);
 }
 
 // Legacy functions for old timeline (keeping for backward compatibility)
 // [MVVM : ViewModel]
-// Ajoute un événement (legacy).
+// Ajoute un évènement (legacy).
 function addTimelineVizEvent() {
     openMetroEventModal();
 }
 
 // [MVVM : ViewModel]
-// Modifie un événement (legacy).
+// Modifie un évènement (legacy).
 function editTimelineVizEvent(id) {
     // Try to find in new metro timeline first
     if (project.metroTimeline && project.metroTimeline.find(e => e.id === id)) {
@@ -1064,7 +1068,7 @@ function editTimelineVizEvent(id) {
 
         saveProject();
         refreshTimelineView();
-        showNotification('✓ Événement mis à jour');
+        showNotification('✓ évènement mis à jour');
     }
 }
 
@@ -1091,7 +1095,7 @@ function exportTimelineViz() {
 // ============================================
 
 // [MVVM : ViewModel]
-// Importe des événements depuis un fichier CSV.
+// Importe des évènements depuis un fichier CSV.
 function importTimelineCSV() {
     const input = document.createElement('input');
     input.type = 'file';
@@ -1132,11 +1136,11 @@ function parseMetroTimelineCSV(csvContent) {
     }
 
     if (lines.length === 0) {
-        alert('Le fichier CSV ne contient aucun événement');
+        alert('Le fichier CSV ne contient aucun évènement');
         return;
     }
 
-    if (!confirm(`Importer ${lines.length} événement(s) ? Les événements existants seront conservés.`)) {
+    if (!confirm(`Importer ${lines.length} évènement(s) ? Les évènements existants seront conservés.`)) {
         return;
     }
 
@@ -1166,7 +1170,7 @@ function parseMetroTimelineCSV(csvContent) {
 
     saveProject();
     refreshTimelineView();
-    showNotification(`✓ ${imported} événement(s) importé(s)`);
+    showNotification(`✓ ${imported} évènement(s) importé(s)`);
 }
 
 // [MVVM : Other]

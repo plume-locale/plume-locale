@@ -252,7 +252,7 @@ function completedPomodoro() {
     playNotificationSound();
 
     // Alert user
-    alert('🔔 Pomodoro terminé ! Temps de faire une pause de 5 minutes.');
+    alert('Pomodoro terminé ! Temps de faire une pause de 5 minutes.');
 
     // Reset for next session
     pomodoroTime = 25 * 60;

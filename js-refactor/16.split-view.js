@@ -154,7 +154,9 @@ function renderSplitView() {
                                 <i data-lucide="chevron-down" style="width:12px;height:12px;opacity:0.5;margin-left:4px;"></i>
                             </div>
                             <div class="split-panel-actions" onclick="event.stopPropagation();">
-                                <span class="split-panel-indicator ${splitActivePanel === 'left' ? 'active' : ''}" title="Panneau actif">●</span>
+                                <span class="split-panel-indicator ${splitActivePanel === 'left' ? 'active' : ''}" title="Panneau actif">
+                                    <i data-lucide="circle" style="width:8px;height:8px;fill:currentColor;"></i>
+                                </span>
                             </div>
                         </div>
                         <div class="split-panel-content" id="splitLeftContent">
@@ -177,7 +179,9 @@ function renderSplitView() {
                                 <i data-lucide="chevron-down" style="width:12px;height:12px;opacity:0.5;margin-left:4px;"></i>
                             </div>
                             <div class="split-panel-actions" onclick="event.stopPropagation();">
-                                <span class="split-panel-indicator ${splitActivePanel === 'right' ? 'active' : ''}" title="Panneau actif">●</span>
+                                <span class="split-panel-indicator ${splitActivePanel === 'right' ? 'active' : ''}" title="Panneau actif">
+                                    <i data-lucide="circle" style="width:8px;height:8px;fill:currentColor;"></i>
+                                </span>
                                 <button class="split-panel-btn" onclick="closeSplitView(); event.stopPropagation();" title="Fermer le split">
                                     <i data-lucide="x" style="width:12px;height:12px;"></i>
                                 </button>
@@ -493,7 +497,7 @@ function renderViewInSplitPanel(view, container, state, panel) {
             } else {
                 tempContainer.innerHTML = `
                             <div class="empty-state">
-                                <div class="empty-state-icon">✍️</div>
+                                <div class="empty-state-icon"><i data-lucide="pencil" style="width:48px;height:48px;stroke-width:1;"></i></div>
                                 <div class="empty-state-title">Sélectionnez une scène</div>
                                 <div class="empty-state-text">Choisissez une scène dans la barre latérale</div>
                             </div>
@@ -856,7 +860,7 @@ function renderEditorInContainer(act, chapter, scene, container, panel) {
     const hasFinalVersion = scene.versions && scene.versions.some(v => v.isFinal === true);
     const finalVersion = hasFinalVersion ? scene.versions.find(v => v.isFinal === true) : null;
     const finalVersionBadge = hasFinalVersion
-        ? `<span style="display: inline-flex; align-items: center; gap: 0.25rem; background: var(--accent-gold); color: var(--bg-accent); font-size: 0.7rem; font-weight: 600; padding: 0.2rem 0.5rem; border-radius: 10px; margin-left: 0.5rem;" title="Version finale : ${finalVersion.number}">⭐ ${finalVersion.number}</span>`
+        ? `<span style="display: inline-flex; align-items: center; gap: 0.25rem; background: var(--accent-gold); color: var(--bg-accent); font-size: 0.7rem; font-weight: 600; padding: 0.2rem 0.5rem; border-radius: 10px; margin-left: 0.5rem;" title="Version finale : ${finalVersion.number}"><i data-lucide="star" style="width:10px;height:10px;fill:currentColor;"></i> ${finalVersion.number}</span>`
         : '';
 
     container.innerHTML = `

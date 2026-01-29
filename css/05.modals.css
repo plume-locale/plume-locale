@@ -771,9 +771,9 @@
     color: white;
 }
 
-.act-icon.expanded {
+/* .act-icon.expanded {
     transform: rotate(90deg);
-}
+} */
 
 .act-title {
     flex: 1;
@@ -837,9 +837,9 @@
     color: white;
 }
 
-.chapter-icon.expanded {
+/* .chapter-icon.expanded {
     transform: rotate(90deg);
-}
+} */
 
 .chapter-title {
     flex: 1;

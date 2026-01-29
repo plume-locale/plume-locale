@@ -147,7 +147,7 @@ function createSceneVersion() {
     }
     updateAnnotationsButton(false);
 
-    showNotification(`✓ Version ${versionNumber} créée`);
+    showNotification(`Version ${versionNumber} créée`);
 }
 
 // [MVVM : Other]
@@ -302,7 +302,7 @@ function renderSceneVersionsList() {
         btnNewVersion.disabled = true;
         listContainer.innerHTML = `
                     <div class="versions-no-scene">
-                        <div class="versions-no-scene-icon">📄</div>
+                        <div class="versions-no-scene-icon"><i data-lucide="file-text" style="width:48px;height:48px;opacity:0.3;"></i></div>
                         <div class="versions-no-scene-text">
                             Sélectionnez une scène<br>dans la structure<br>pour voir ses versions
                         </div>
@@ -359,10 +359,10 @@ function renderSceneVersionsList() {
                                 ${isFinal ? '<span class="version-card-final-badge">Finale</span>' : ''}
                             </span>
                             <div class="version-card-actions">
-                                <button class="version-card-btn final ${isFinal ? 'is-final' : ''}" onclick="event.stopPropagation(); toggleFinalVersion(${version.id})" title="${isFinal ? 'Retirer comme version finale' : 'Marquer comme version finale'}">⭐</button>
-                                ${canCompare ? `<button class="version-card-btn compare" onclick="event.stopPropagation(); openDiffModal(${version.id})" title="Comparer">🔀</button>` : ''}
-                                <button class="version-card-btn" onclick="event.stopPropagation(); renameSceneVersion(${version.id})" title="Renommer">✏️</button>
-                                <button class="version-card-btn delete" onclick="event.stopPropagation(); deleteSceneVersion(${version.id})" title="Supprimer">🗑️</button>
+                                <button class="version-card-btn final ${isFinal ? 'is-final' : ''}" onclick="event.stopPropagation(); toggleFinalVersion(${version.id})" title="${isFinal ? 'Retirer comme version finale' : 'Marquer comme version finale'}"><i data-lucide="star" style="width:14px;height:14px;"></i></button>
+                                ${canCompare ? `<button class="version-card-btn compare" onclick="event.stopPropagation(); openDiffModal(${version.id})" title="Comparer"><i data-lucide="git-compare" style="width:14px;height:14px;"></i></button>` : ''}
+                                <button class="version-card-btn" onclick="event.stopPropagation(); renameSceneVersion(${version.id})" title="Renommer"><i data-lucide="pencil" style="width:14px;height:14px;"></i></button>
+                                <button class="version-card-btn delete" onclick="event.stopPropagation(); deleteSceneVersion(${version.id})" title="Supprimer"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
                             </div>
                         </div>
                         <div class="version-card-date">${dateStr} ${timeStr}</div>
@@ -373,6 +373,7 @@ function renderSceneVersionsList() {
     });
 
     listContainer.innerHTML = html;
+    if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
 // Marquer/démarquer une version comme finale
@@ -397,7 +398,7 @@ function toggleFinalVersion(versionId) {
         scene.versions.forEach(v => v.isFinal = false);
         // Marquer cette version comme finale
         version.isFinal = true;
-        showNotification(`⭐ Version "${version.number}" marquée comme finale`);
+        showNotification(`Version "${version.number}" marquée comme finale`);
     }
 
     saveProject();

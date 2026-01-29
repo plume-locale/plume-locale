@@ -79,14 +79,10 @@ function createSceneNavToolbar() {
     sceneNavToolbar.innerHTML = `
         <div class="scene-nav-buttons">
             <button class="scene-nav-btn scene-nav-prev" title="Déplacer vers la scène précédente (tout le texte avant le curseur)">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="15 18 9 12 15 6"></polyline>
-                </svg>
+                <i data-lucide="chevron-left" style="width:16px;height:16px;"></i>
             </button>
             <button class="scene-nav-btn scene-nav-next" title="Déplacer vers la scène suivante (tout le texte après le curseur)">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="9 18 15 12 9 6"></polyline>
-                </svg>
+                <i data-lucide="chevron-right" style="width:16px;height:16px;"></i>
             </button>
         </div>
         <div class="scene-nav-line"></div>
@@ -412,8 +408,8 @@ function getAdjacentScenes() {
     // Trouver l'index de la scène actuelle
     const currentIndex = allScenes.findIndex(
         s => s.actId === ctx.actId &&
-             s.chapterId === ctx.chapterId &&
-             s.scene.id === ctx.sceneId
+            s.chapterId === ctx.chapterId &&
+            s.scene.id === ctx.sceneId
     );
 
     if (currentIndex === -1) return result;

@@ -112,7 +112,7 @@ function renderWorldList() {
                             <div class="treeview-item" onclick="openWorldDetail(${elem.id})">
                                 <span class="treeview-item-icon"><i data-lucide="${iconName}" style="width:14px;height:14px;vertical-align:middle;"></i></span>
                                 <span class="treeview-item-label">${elem.name}</span>
-                                <button class="treeview-item-delete" onclick="event.stopPropagation(); handleDeleteWorldElement(${elem.id})" title="Supprimer">×</button>
+                                <button class="treeview-item-delete" onclick="event.stopPropagation(); handleDeleteWorldElement(${elem.id})" title="Supprimer"><i data-lucide="x" style="width:12px;height:12px;"></i></button>
                             </div>
                         `;
         }).join('')}
@@ -159,7 +159,7 @@ function openWorldDetail(id) {
                 </div>
                 <div style="display: flex; gap: 0.5rem;">
                     <button class="btn btn-small" onclick="showReferencesForElement(${id})"><i data-lucide="link" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Voir les références</button>
-                    <button class="btn" onclick="switchView('editor')">? Retour à l'éditeur</button>
+                    <button class="btn" onclick="switchView('editor')"><i data-lucide="arrow-left" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> Retour à l'éditeur</button>
                 </div>
             </div>
             

@@ -191,7 +191,7 @@ function toggleToolbarFromFloating() {
 
     if (floatingMenu && floatingMenu.classList.contains('active')) {
         floatingMenu.classList.remove('active');
-        if (floatingToggle) floatingToggle.textContent = '✏️';
+        if (floatingToggle) floatingToggle.innerHTML = '<i data-lucide="pencil" style="width:16px;height:16px;"></i>';
     }
 
     // Ouvrir le toolbar complet

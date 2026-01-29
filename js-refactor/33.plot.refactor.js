@@ -162,22 +162,22 @@ Clic pour ouvrir la scène</title>
                         <div>
                             <h3 style="margin: 0;"><i data-lucide="trending-up" style="width:18px;height:18px;vertical-align:middle;margin-right:6px;"></i>Graphique d'Intrigue</h3>
                             <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem;">
-                                📊 ${plotPoints.length} point(s) d'intrigue • 🎯 Tension moyenne: ${plotPoints.length > 0 ? Math.round(plotPoints.reduce((sum, p) => sum + p.intensity, 0) / plotPoints.length) : 0}%
+                                <i data-lucide="bar-chart-3" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> ${plotPoints.length} point(s) d'intrigue • <i data-lucide="target" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> Tension moyenne: ${plotPoints.length > 0 ? Math.round(plotPoints.reduce((sum, p) => sum + p.intensity, 0) / plotPoints.length) : 0}%
                             </div>
                         </div>
                         <button onclick="openTensionWordsEditor()" 
                                 style="padding: 10px 18px; background: #3a7bc8; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.9rem; font-weight: 500; transition: all 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"
                                 onmouseover="this.style.background='#2d6bb3'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.15)'"
                                 onmouseout="this.style.background='#3a7bc8'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'">
-                            ✏️ Personnaliser les mots de tension
+                            <i data-lucide="pencil" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> Personnaliser les mots de tension
                         </button>
                     </div>
                     <div class="visualization-toolbar">
                         <button class="viz-tool-btn active">Vue d'ensemble</button>
-                        <button class="viz-tool-btn" onclick="analyzePlotCurve()">🔍 Analyser la courbe</button>
+                        <button class="viz-tool-btn" onclick="analyzePlotCurve()"><i data-lucide="scan-search" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> Analyser la courbe</button>
                         <button class="viz-tool-btn" onclick="showPlotSuggestions()"><i data-lucide="lightbulb" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Suggestions</button>
-                        <button class="viz-tool-btn" onclick="resetPlotPoints()">🔄 Recalculer</button>
-                        <button class="viz-tool-btn" onclick="exportPlot()">📤 Exporter</button>
+                        <button class="viz-tool-btn" onclick="resetPlotPoints()"><i data-lucide="refresh-cw" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> Recalculer</button>
+                        <button class="viz-tool-btn" onclick="exportPlot()"><i data-lucide="upload" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> Exporter</button>
                     </div>
                     <div class="visualization-canvas">
                         <div class="plot-graph">
@@ -202,11 +202,11 @@ Clic pour ouvrir la scène</title>
                                 
                                 <!-- Labels -->
                                 <text x="${svgWidth / 2}" y="${svgHeight - 10}" text-anchor="middle" fill="var(--text-muted)" font-size="11" opacity="0.4">
-                                    Progression du récit →
+                                    Progression du récit
                                 </text>
                                 <text x="20" y="${axisY / 2}" text-anchor="middle" fill="var(--text-muted)" font-size="13" 
                                       transform="rotate(-90 20 ${axisY / 2})">
-                                    ← Tension dramatique
+                                    Tension dramatique
                                 </text>
                             </svg>
                         </div>
@@ -215,7 +215,7 @@ Clic pour ouvrir la scène</title>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                             <div>
                                 <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6; margin: 0;">
-                                    💡 <strong>Utilisation:</strong><br>
+                                    <i data-lucide="lightbulb" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;color:var(--accent-gold);"></i> <strong>Utilisation:</strong><br>
                                     • <strong>Clic</strong> sur un point → Ouvrir la scène pour l'éditer<br>
                                 • <strong>Affichage</strong> → Survoler un point pour voir : Acte > Chapitre > Scène<br>
                                 • <strong>Intégration</strong> → La tension est calculée automatiquement selon votre texte<br>

@@ -20,14 +20,14 @@ function renderRelationsView() {
 
     // Types de relations avec couleurs
     const relationTypes = {
-        'amour': { color: '#e91e63', label: '❤️ Amour', icon: '❤️' },
-        'amitie': { color: '#4caf50', label: '🤝 Amitié', icon: '🤝' },
-        'rivalite': { color: '#f44336', label: '⚔️ Rivalité', icon: '⚔️' },
-        'famille': { color: '#2196f3', label: '👨‍👩‍👧 Famille', icon: '👨‍👩‍👧' },
-        'mentor': { color: '#ff9800', label: '📚 Mentor', icon: '📚' },
-        'ennemi': { color: '#9c27b0', label: '💀 Ennemi', icon: '💀' },
-        'alliance': { color: '#00bcd4', label: '🤜🤛 Alliance', icon: '🤜🤛' },
-        'neutre': { color: '#757575', label: '😐 Neutre', icon: '😐' }
+        'amour': { color: '#e91e63', label: 'Amour', icon: 'heart' },
+        'amitie': { color: '#4caf50', label: 'Amitié', icon: 'handshake' },
+        'rivalite': { color: '#f44336', label: 'Rivalité', icon: 'swords' },
+        'famille': { color: '#2196f3', label: 'Famille', icon: 'house' },
+        'mentor': { color: '#ff9800', label: 'Mentor', icon: 'graduation-cap' },
+        'ennemi': { color: '#9c27b0', label: 'Ennemi', icon: 'skull' },
+        'alliance': { color: '#00bcd4', label: 'Alliance', icon: 'shield' },
+        'neutre': { color: '#757575', label: 'Neutre', icon: 'meh' }
     };
 
     let graphHTML = '';
@@ -75,11 +75,11 @@ function renderRelationsView() {
                                   opacity="0.7"
                                   style="cursor: pointer;"
                                   onclick="editRelation('${rel.id}')"/>
-                            <text x="${(x1 + x2) / 2}" y="${(y1 + y2) / 2 - 10}" 
-                                  fill="${relType.color}" 
-                                  font-size="20" 
-                                  text-anchor="middle"
-                                  style="pointer-events: none;">${relType.icon}</text>
+                            <foreignObject x="${(x1 + x2) / 2 - 10}" y="${(y1 + y2) / 2 - 25}" width="20" height="20" style="pointer-events: none;">
+                                <div xmlns="http://www.w3.org/1999/xhtml" style="color:${relType.color}; display:flex; align-items:center; justify-content:center;">
+                                    <i data-lucide="${relType.icon}" style="width:16px;height:16px;"></i>
+                                </div>
+                            </foreignObject>
                         `;
             }
         });
@@ -102,7 +102,7 @@ function renderRelationsView() {
                                         border: 3px solid white; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
                                         ${selectedCharsForRelation.includes(char.id) ? 'border-color: var(--accent-red); border-width: 5px;' : ''}
                                         transition: transform 0.2s;">
-                                ${char.avatar || '👤'}
+                                ${char.avatar ? char.avatar : '<i data-lucide="user" style="width:40px;height:40px;color:white;"></i>'}
                             </div>
                             <div style="margin-top: 0.5rem; font-weight: 600; font-size: 0.9rem; background: var(--bg-accent); color: white;
                                         padding: 0.25rem 0.5rem; border-radius: 4px; white-space: nowrap; pointer-events: none;">${char.name}</div>
@@ -137,7 +137,7 @@ function renderRelationsView() {
                                 </div>
                             </div>
                             <div style="flex: 1; min-width: 300px; padding: 1.5rem; background: var(--bg-secondary); border-radius: 8px; border-left: 4px solid var(--accent-red);">
-                                <div style="font-weight: 600; margin-bottom: 0.5rem;">🖱️ Déplacer les personnages:</div>
+                                <div style="font-weight: 600; margin-bottom: 0.5rem;"><i data-lucide="move" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> Déplacer les personnages:</div>
                                 <div style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6;">
                                     Faites glisser les personnages pour réorganiser le graphe<br>
                                     Les liens suivent automatiquement
@@ -145,7 +145,7 @@ function renderRelationsView() {
                             </div>
                         </div>
                         <div style="margin-bottom: 1rem; display: flex; gap: 0.5rem;">
-                            <button class="btn btn-small" onclick="resetCharacterPositions()">🔄 Réinitialiser positions</button>
+                            <button class="btn btn-small" onclick="resetCharacterPositions()"><i data-lucide="refresh-cw" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> Réinitialiser positions</button>
                             <button class="btn btn-small" onclick="autoArrangeCharacters()"><i data-lucide="sparkles" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Arranger automatiquement</button>
                         </div>
                     ` : ''}
@@ -158,9 +158,9 @@ function renderRelationsView() {
                         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
                             ${Object.entries(relationTypes).map(([key, rel]) => `
                                 <div style="display: flex; align-items: center; gap: 0.75rem; padding: 1rem; background: var(--bg-secondary); border-radius: 8px; border-left: 4px solid ${rel.color};">
-                                    <div style="font-size: 1.5rem;">${rel.icon}</div>
+                                    <div style="font-size: 1.5rem; color: ${rel.color};"><i data-lucide="${rel.icon}" style="width:24px;height:24px;"></i></div>
                                     <div style="flex: 1;">
-                                        <div style="font-weight: 600; font-size: 0.95rem;">${rel.label.split(' ')[1]}</div>
+                                        <div style="font-weight: 600; font-size: 0.95rem;">${rel.label}</div>
                                         <div style="font-size: 0.75rem; color: var(--text-muted);">${getRelationCount(key)} relation(s)</div>
                                     </div>
                                 </div>
@@ -179,15 +179,15 @@ function renderRelationsView() {
         return char1 && char2 ? `
                                         <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: var(--bg-primary); border-radius: 4px; border-left: 4px solid ${relType.color};">
                                             <div style="display: flex; align-items: center; gap: 1rem;">
-                                                <span style="font-size: 1.5rem;">${relType.icon}</span>
+                                                <span style="font-size: 1.5rem; color: ${relType.color};"><i data-lucide="${relType.icon}" style="width:20px;height:20px;"></i></span>
                                                 <span style="font-weight: 600;">${char1.name}</span>
-                                                <span style="color: var(--text-muted);">↔</span>
+                                                <span style="color: var(--text-muted);"><i data-lucide="split" style="width:14px;height:14px;transform: rotate(90deg);"></i></span>
                                                 <span style="font-weight: 600;">${char2.name}</span>
                                                 ${rel.description ? `<span style="color: var(--text-muted); font-size: 0.85rem;">· ${rel.description}</span>` : ''}
                                             </div>
                                             <div style="display: flex; gap: 0.5rem;">
-                                                <button class="btn btn-small" onclick="editRelation('${rel.id}')">✏️</button>
-                                                <button class="btn btn-small" onclick="deleteRelation('${rel.id}')">🗑️</button>
+                                                <button class="btn btn-small" onclick="editRelation('${rel.id}')"><i data-lucide="pencil" style="width:14px;height:14px;"></i></button>
+                                                <button class="btn btn-small" onclick="deleteRelation('${rel.id}')"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
                                             </div>
                                         </div>
                                     ` : '';
@@ -356,11 +356,11 @@ function updateRelationLines() {
                                   opacity="0.7"
                                   style="cursor: pointer;"
                                   onclick="editRelation('${rel.id}')"/>
-                            <text x="${(x1 + x2) / 2}" y="${(y1 + y2) / 2 - 10}" 
-                                  fill="${relType.color}" 
-                                  font-size="20" 
-                                  text-anchor="middle"
-                                  style="pointer-events: none;">${relType.icon}</text>
+                            <foreignObject x="${(x1 + x2) / 2 - 10}" y="${(y1 + y2) / 2 - 25}" width="20" height="20" style="pointer-events: none;">
+                                <div xmlns="http://www.w3.org/1999/xhtml" style="color:${relType.color}; display:flex; align-items:center; justify-content:center;">
+                                    <i data-lucide="${relType.icon}" style="width:16px;height:16px;"></i>
+                                </div>
+                            </foreignObject>
                         `;
             }
         }
@@ -430,14 +430,14 @@ function createRelationModal() {
     const char2 = project.characters.find(c => c.id === selectedCharsForRelation[1]);
 
     const relationTypes = {
-        'amour': { color: '#e91e63', label: '❤️ Amour' },
-        'amitie': { color: '#4caf50', label: '🤝 Amitié' },
-        'rivalite': { color: '#f44336', label: '⚔️ Rivalité' },
-        'famille': { color: '#2196f3', label: '👨‍👩‍👧 Famille' },
-        'mentor': { color: '#ff9800', label: '📚 Mentor' },
-        'ennemi': { color: '#9c27b0', label: '💀 Ennemi' },
-        'alliance': { color: '#00bcd4', label: '🤜🤛 Alliance' },
-        'neutre': { color: '#757575', label: '😐 Neutre' }
+        'amour': { color: '#e91e63', label: 'Amour', icon: 'heart' },
+        'amitie': { color: '#4caf50', label: 'Amitié', icon: 'handshake' },
+        'rivalite': { color: '#f44336', label: 'Rivalité', icon: 'swords' },
+        'famille': { color: '#2196f3', label: 'Famille', icon: 'house' },
+        'mentor': { color: '#ff9800', label: 'Mentor', icon: 'graduation-cap' },
+        'ennemi': { color: '#9c27b0', label: 'Ennemi', icon: 'skull' },
+        'alliance': { color: '#00bcd4', label: 'Alliance', icon: 'shield' },
+        'neutre': { color: '#757575', label: 'Neutre', icon: 'meh' }
     };
 
     const modalHTML = `
@@ -457,8 +457,9 @@ function createRelationModal() {
                                 ${Object.entries(relationTypes).map(([key, rel]) => `
                                     <button class="btn" onclick="selectRelationType('${key}')" 
                                             id="relType-${key}"
-                                            style="justify-content: flex-start; text-align: left; padding: 0.75rem;">
+                                            style="justify-content: flex-start; text-align: left; padding: 0.75rem; display: flex; align-items: center; gap: 0.5rem;">
                                         <div style="width: 4px; height: 100%; background: ${rel.color}; position: absolute; left: 0; top: 0; bottom: 0;"></div>
+                                        <i data-lucide="${rel.icon}" style="width:16px;height:16px;color:${rel.color};"></i>
                                         ${rel.label}
                                     </button>
                                 `).join('')}
@@ -562,7 +563,7 @@ function deleteRelation(relId) {
         project.relations = project.relations.filter(r => r.id !== relId);
         saveProject();
         renderRelationsView();
-        showNotification('🗑️ Relation supprimée');
+        showNotification('Relation supprimée');
     }
 }
 

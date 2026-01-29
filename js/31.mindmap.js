@@ -43,9 +43,9 @@ function renderMindmapView() {
 
     container.innerHTML = `
                 <div class="mindmap-sidebar-header">
-                    <h3 style="margin-bottom: 0.5rem; font-size: 1.1rem;">🗺️ Mindmaps</h3>
+                    <h3 style="margin-bottom: 0.5rem; font-size: 1.1rem;"><i data-lucide="map" style="width:18px;height:18px;vertical-align:middle;margin-right:6px;"></i> Mindmaps</h3>
                     <button class="btn btn-small" onclick="createNewMindmap()" style="width: 100%;">
-                        ➕ Nouvelle Mindmap
+                        <i data-lucide="plus" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> Nouvelle Mindmap
                     </button>
                 </div>
                 <div class="mindmap-list">
@@ -61,13 +61,14 @@ function renderMindmapView() {
                             </span>
                             <span onclick="event.stopPropagation(); deleteMindmap(${mm.id})" 
                                   style="cursor: pointer; color: var(--accent-red); opacity: 0.7; padding: 0 0.5rem;"
-                                  title="Supprimer">×</span>
+                                  title="Supprimer"><i data-lucide="x" style="width:14px;height:14px;"></i></span>
                         </div>
                     `).join('')}
                 </div>
             `;
 
     renderMindmapCanvas();
+    if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
 // [MVVM : ViewModel]
@@ -143,10 +144,10 @@ function renderMindmapCanvas() {
         // Afficher un message d'accueil
         editorView.innerHTML = `
                     <div class="mindmap-empty">
-                        <div class="mindmap-empty-icon">🗺️</div>
+                        <div class="mindmap-empty-icon"><i data-lucide="map" style="width:48px;height:48px;"></i></div>
                         <h3 style="margin-bottom: 0.5rem;">Aucune mindmap sélectionnée</h3>
                         <p style="margin-bottom: 1rem;">Créez une mindmap pour commencer à organiser vos idées visuellement.</p>
-                        <button class="btn" onclick="createNewMindmap()">➕ Créer une mindmap</button>
+                        <button class="btn" onclick="createNewMindmap()"><i data-lucide="plus" style="width:14px;height:14px;"></i> Créer une mindmap</button>
                     </div>
                 `;
         return;
@@ -156,7 +157,7 @@ function renderMindmapCanvas() {
                 <div class="mindmap-wrapper">
                     <div class="mindmap-main">
                         <div class="mindmap-toolbar">
-                            <button class="btn btn-small" onclick="renameMindmap()" title="Renommer">✏️</button>
+                            <button class="btn btn-small" onclick="renameMindmap()" title="Renommer"><i data-lucide="pencil" style="width:14px;height:14px;"></i></button>
                             <button class="btn btn-small" onclick="addNoteNode()" title="Ajouter une note"><i data-lucide="sticky-note" style="width:14px;height:14px;"></i></button>
                             <button class="btn btn-small" onclick="resetMindmapView()" title="Réinitialiser la vue"><i data-lucide="target" style="width:14px;height:14px;"></i></button>
                             ${mindmapState.linkStart ? `
@@ -189,7 +190,7 @@ function renderMindmapCanvas() {
                     </div>
                     <div class="mindmap-library ${mindmapState.libraryCollapsed ? 'collapsed' : ''}">
                         <div class="mindmap-library-toggle" onclick="toggleLibrary()">
-                            ${mindmapState.libraryCollapsed ? '◀' : '▶'}
+                            ${mindmapState.libraryCollapsed ? '<i data-lucide="chevron-left" style="width:12px;height:12px;"></i>' : '<i data-lucide="chevron-right" style="width:12px;height:12px;"></i>'}
                         </div>
                         <div class="mindmap-library-tabs">
                             <div class="mindmap-library-tab ${mindmapState.activeLibraryTab === 'characters' ? 'active' : ''}"
@@ -206,7 +207,7 @@ function renderMindmapCanvas() {
                         </div>
                     </div>
                 </div>
-            `;
+        `;
 
     // Initialiser les événements
     initMindmapEvents();
@@ -224,7 +225,7 @@ function renderMindmapNodes(mindmap) {
         return `
                     <div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); 
                                 text-align: center; color: var(--text-muted); pointer-events: none;">
-                        <div style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.3;">🗺️</div>
+                        <div style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.3;"><i data-lucide="map" style="width:64px;height:64px;"></i></div>
                         <p style="font-size: 0.9rem;">Glissez des éléments depuis la bibliothèque →</p>
                     </div>
                 `;
@@ -244,7 +245,7 @@ function renderMindmapNodes(mindmap) {
                             <span class="mindmap-node-icon">${icon}</span>
                             <span class="mindmap-node-title">${node.title || 'Sans titre'}</span>
                             <span class="mindmap-node-link-btn" onclick="event.stopPropagation(); startLinkFrom(${node.id})" title="Créer un lien"><i data-lucide="link" style="width:12px;height:12px;"></i></span>
-                            <span class="mindmap-node-delete" onclick="event.stopPropagation(); deleteNode(${node.id})">×</span>
+                            <span class="mindmap-node-delete" onclick="event.stopPropagation(); deleteNode(${node.id})"><i data-lucide="x" style="width:12px;height:12px;"></i></span>
                         </div>
                         ${content ? `<div class="mindmap-node-content">${content}</div>` : ''}
                     </div>
@@ -379,7 +380,7 @@ function renderLibraryContent() {
             structureHTML += `
                         <div class="mindmap-library-item" draggable="true" 
                              data-type="act" 
-                             data-id="${act.id}"
+                             data-id="${act.id}" 
                              data-title="Acte ${actNum}: ${act.title || 'Sans titre'}">
                             <span class="mindmap-library-item-icon"><i data-lucide="folder" style="width:16px;height:16px;"></i></span>
                             <span class="mindmap-library-item-text" style="font-weight: 600;">Acte ${actNum}</span>
@@ -392,9 +393,9 @@ function renderLibraryContent() {
                 structureHTML += `
                             <div class="mindmap-library-item" draggable="true" 
                                  data-type="chapter" 
-                                 data-id="${chapter.id}"
-                                 data-act="${act.id}"
-                                 data-title="A${actNum} › Ch.${chapNum}: ${chapter.title || 'Sans titre'}"
+                                 data-id="${chapter.id}" 
+                                 data-act="${act.id}" 
+                                 data-title="A${actNum} › Ch.${chapNum}: ${chapter.title || 'Sans titre'}" 
                                  style="margin-left: 0.5rem;">
                                 <span class="mindmap-library-item-icon"><i data-lucide="file-text" style="width:16px;height:16px;"></i></span>
                                 <span class="mindmap-library-item-text" style="font-size: 0.8rem;">Ch.${chapNum}: ${chapter.title || 'Sans titre'}</span>
@@ -406,10 +407,10 @@ function renderLibraryContent() {
                     structureHTML += `
                                 <div class="mindmap-library-item" draggable="true" 
                                      data-type="scene" 
-                                     data-id="${scene.id}"
-                                     data-act="${act.id}"
-                                     data-chapter="${chapter.id}"
-                                     data-title="A${actNum} › C${chapNum} › ${sceneLabel}"
+                                     data-id="${scene.id}" 
+                                     data-act="${act.id}" 
+                                     data-chapter="${chapter.id}" 
+                                     data-title="A${actNum} › C${chapNum} › ${sceneLabel}" 
                                      style="margin-left: 1rem;">
                                     <span class="mindmap-library-item-icon"><i data-lucide="pen-line" style="width:16px;height:16px;"></i></span>
                                     <span class="mindmap-library-item-text" style="font-size: 0.75rem;">${sceneLabel}</span>
@@ -592,13 +593,13 @@ function editLink(linkId) {
     overlay.className = 'link-editor-overlay';
     overlay.innerHTML = `
                 <div class="link-editor-modal">
-                    <div class="link-editor-header">✏️ Éditer le lien</div>
+                    <div class="link-editor-header"><i data-lucide="pencil" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;"></i> Éditer le lien</div>
                     
                     <div class="link-editor-field">
                         <label class="link-editor-label">Étiquette</label>
                         <input type="text" class="link-editor-input" id="linkLabelInput" 
-                               value="${(link.label || '').replace(/"/g, '&quot;')}" 
-                               placeholder="Ex: ennemi de, père de, aime...">
+                                value="${(link.label || '').replace(/"/g, '&quot;')}" 
+                                placeholder="Ex: ennemi de, père de, aime...">
                     </div>
                     
                     <div class="link-editor-field">
@@ -614,9 +615,9 @@ function editLink(linkId) {
                     </div>
                     
                     <div class="link-editor-buttons">
-                        <button class="btn" id="saveLinkBtn" style="flex: 1;">💾 Enregistrer</button>
-                        <button class="btn" id="deleteLinkBtn" style="background: var(--accent-red); color: white;">🗑️ Supprimer</button>
-                        <button class="btn" id="cancelLinkBtn" style="background: var(--bg-secondary);">✕ Annuler</button>
+                        <button class="btn" id="saveLinkBtn" style="flex: 1;"><i data-lucide="save" style="width:14px;height:14px;margin-right:4px;"></i> Enregistrer</button>
+                        <button class="btn" id="deleteLinkBtn" style="background: var(--accent-red); color: white;"><i data-lucide="trash-2" style="width:14px;height:14px;margin-right:4px;"></i> Supprimer</button>
+                        <button class="btn" id="cancelLinkBtn" style="background: var(--bg-secondary);"><i data-lucide="x" style="width:14px;height:14px;margin-right:4px;"></i> Annuler</button>
                     </div>
                 </div>
             `;
@@ -1058,7 +1059,7 @@ function handleMouseMove(e) {
             node.y = (e.clientY - rect.top) / mindmapState.zoom - mindmapState.dragOffsetY;
 
             // Mise à jour en temps réel
-            const nodeElem = document.querySelector(`[data-node-id="${node.id}"]`);
+            const nodeElem = document.querySelector(`[data - node - id="${node.id}"]`);
             if (nodeElem) {
                 nodeElem.style.left = node.x + 'px';
                 nodeElem.style.top = node.y + 'px';

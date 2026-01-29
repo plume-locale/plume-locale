@@ -73,13 +73,13 @@ function renderActsList() {
         // Toujours afficher le header de l'acte
         const actExpanded = expandedActs.has(act.id);
         html += '<div class="act-header" data-act-id="' + act.id + '">';
-        html += '<span class="drag-handle" draggable="true" onclick="event.stopPropagation()">⋮⋮</span>';
-        html += '<span class="act-icon' + (actExpanded ? ' expanded' : '') + '" onclick="toggleAct(' + act.id + '); event.stopPropagation();" style="cursor: pointer;">▶</span>';
+        html += '<span class="drag-handle" draggable="true" onclick="event.stopPropagation()"><i data-lucide="grip-vertical" style="width:12px;height:12px;vertical-align:middle;"></i></span>';
+        html += '<span class="act-icon' + (actExpanded ? ' expanded' : '') + '" onclick="toggleAct(' + act.id + '); event.stopPropagation();" style="cursor: pointer;"><i data-lucide="' + (actExpanded ? 'chevron-down' : 'chevron-right') + '" style="width:14px;height:14px;vertical-align:middle;"></i></span>';
         html += '<span class="auto-number">' + (actIndex + 1) + '.</span>';
         html += '<span class="act-title" ondblclick="event.stopPropagation(); startEditingAct(' + act.id + ', this)" onclick="toggleAct(' + act.id + ')">' + act.title + '</span>';
-        html += '<span class="edit-hint">✏️</span>';
+        html += '<span class="edit-hint"><i data-lucide="pencil" style="width:10px;height:10px;"></i></span>';
         html += '<span class="word-count-badge" title="' + actStats.totalWords.toLocaleString() + ' mots">' + formatWordCount(actStats.totalWords) + '</span>';
-        html += '<button class="btn btn-icon btn-small delete-btn" onclick="event.stopPropagation(); deleteAct(' + act.id + ')">×</button>';
+        html += '<button class="btn btn-icon btn-small delete-btn" onclick="event.stopPropagation(); deleteAct(' + act.id + ')"><i data-lucide="x" style="width:12px;height:12px;"></i></button>';
         html += '</div>';
 
         // Visible si dans expandedActs
@@ -95,18 +95,18 @@ function renderActsList() {
 
             html += '<div class="chapter-group" id="chapter-' + chapter.id + '" data-chapter-id="' + chapter.id + '" data-act-id="' + act.id + '">';
             html += '<div class="chapter-header" data-chapter-id="' + chapter.id + '" data-act-id="' + act.id + '">';
-            html += '<span class="drag-handle" draggable="true" onclick="event.stopPropagation()">⋮⋮</span>';
+            html += '<span class="drag-handle" draggable="true" onclick="event.stopPropagation()"><i data-lucide="grip-vertical" style="width:12px;height:12px;vertical-align:middle;"></i></span>';
 
             // Icône avec classe expanded si le chapitre est déplié
             const chapterExpanded = expandedChapters.has(chapter.id);
-            html += '<span class="chapter-icon' + (chapterExpanded ? ' expanded' : '') + '" onclick="toggleChapter(' + act.id + ', ' + chapter.id + '); event.stopPropagation();" style="cursor: pointer;">▶</span>';
+            html += '<span class="chapter-icon' + (chapterExpanded ? ' expanded' : '') + '" onclick="toggleChapter(' + act.id + ', ' + chapter.id + '); event.stopPropagation();" style="cursor: pointer;"><i data-lucide="' + (chapterExpanded ? 'chevron-down' : 'chevron-right') + '" style="width:14px;height:14px;vertical-align:middle;"></i></span>';
             html += '<span class="auto-number">' + chapterNumber + '</span>';
             html += '<span class="chapter-title" ondblclick="event.stopPropagation(); startEditingChapter(' + act.id + ', ' + chapter.id + ', this)" onclick="toggleChapter(' + act.id + ', ' + chapter.id + ')">' + chapter.title + '</span>';
-            html += '<span class="edit-hint">✏️</span>';
+            html += '<span class="edit-hint"><i data-lucide="pencil" style="width:10px;height:10px;"></i></span>';
             html += '<span class="word-count-badge" title="' + chapterStats.totalWords.toLocaleString() + ' mots">' + formatWordCount(chapterStats.totalWords) + '</span>';
             html += '<span class="status-badge status-' + chapterStatus + '" title="' + chapterStats.progressPercent + '%"></span>';
             html += '<span class="chapter-count">' + chapter.scenes.length + '</span>';
-            html += '<button class="btn btn-icon btn-small delete-btn" onclick="event.stopPropagation(); deleteChapter(' + act.id + ', ' + chapter.id + ')">×</button>';
+            html += '<button class="btn btn-icon btn-small delete-btn" onclick="event.stopPropagation(); deleteChapter(' + act.id + ', ' + chapter.id + ')"><i data-lucide="x" style="width:12px;height:12px;"></i></button>';
             html += '</div>';
 
             // Visible si dans expandedChapters
@@ -124,7 +124,7 @@ function renderActsList() {
 
                 html += '<div class="scene-item draggable" draggable="true" data-scene-id="' + scene.id + '" data-chapter-id="' + chapter.id + '" data-act-id="' + act.id + '" onclick="openScene(' + act.id + ', ' + chapter.id + ', ' + scene.id + ')"' + (tooltipText ? ' title="' + tooltipText + '"' : '') + '>';
                 html += '<div style="display: flex; align-items: center; gap: 0.4rem; flex: 1; min-width: 0;">';
-                html += '<span class="drag-handle">⋮⋮</span>';
+                html += '<span class="drag-handle"><i data-lucide="grip-vertical" style="width:12px;height:12px;vertical-align:middle;"></i></span>';
                 html += '<span class="auto-number">' + sceneNumber + '</span>';
                 html += '<div style="flex: 1; min-width: 0; overflow: hidden;">';
                 html += '<span ondblclick="event.stopPropagation(); startEditingScene(' + act.id + ', ' + chapter.id + ', ' + scene.id + ', this)" style="display: block;">' + scene.title + '</span>';
@@ -136,7 +136,7 @@ function renderActsList() {
                 html += '</div>';
                 html += '<span class="word-count-badge" title="' + sceneWords.toLocaleString() + ' mots">' + formatWordCount(sceneWords) + '</span>';
                 html += '<span class="status-badge status-' + sceneStatus + '" onclick="event.stopPropagation(); toggleSceneStatus(' + act.id + ', ' + chapter.id + ', ' + scene.id + ', event)" style="cursor: pointer;" title="Cliquez pour changer le statut"></span>';
-                html += '<button class="btn btn-icon btn-small delete-btn" onclick="event.stopPropagation(); deleteScene(' + act.id + ', ' + chapter.id + ', ' + scene.id + ')">×</button>';
+                html += '<button class="btn btn-icon btn-small delete-btn" onclick="event.stopPropagation(); deleteScene(' + act.id + ', ' + chapter.id + ', ' + scene.id + ')"><i data-lucide="x" style="width:12px;height:12px;"></i></button>';
                 html += '</div>';
             });
 
@@ -163,6 +163,7 @@ function renderActsList() {
     setupSceneDragAndDrop();
     updateStats();
     updateProgressBar();
+    if (typeof lucide !== 'undefined') lucide.createIcons();
     applyStatusFilters();
     setTimeout(() => restoreTreeState(), 50);
 }

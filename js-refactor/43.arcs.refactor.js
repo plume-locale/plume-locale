@@ -516,7 +516,7 @@ function renderArcScenePanel() {
                                 <div class="arc-in-scene-title">
                                     <span style="color: ${arc.color}"><i data-lucide="${typeData.icon}"></i></span> ${arc.title}
                                 </div>
-                                <button class="arc-in-scene-remove" onclick="removeArcFromScene('${arc.id}')" title="Retirer">×</button>
+                                <button class="arc-in-scene-remove" onclick="removeArcFromScene('${arc.id}')" title="Retirer"><i data-lucide="x" style="width:12px;height:12px;"></i></button>
                             </div>
 
                             <div class="arc-in-scene-control">
@@ -542,8 +542,8 @@ function renderArcScenePanel() {
                                 <select class="arc-column-select" onchange="updateArcColumn('${arc.id}', this.value)">
                                     <option value="">Arc général (aucune colonne)</option>
                                     ${(arc.board && arc.board.items ? arc.board.items.filter(item => item.type === 'column').map(column =>
-                                        `<option value="${column.id}" ${presence.columnId === column.id ? 'selected' : ''}>${column.title || 'Colonne sans titre'}</option>`
-                                    ).join('') : '')}
+                `<option value="${column.id}" ${presence.columnId === column.id ? 'selected' : ''}>${column.title || 'Colonne sans titre'}</option>`
+            ).join('') : '')}
                                 </select>
                             </div>
 

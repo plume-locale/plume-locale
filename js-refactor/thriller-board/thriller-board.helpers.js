@@ -339,7 +339,7 @@ function renderCharacterPillsHTML(selectedCharacters, fieldName) {
         return `
             <span class="character-pill" data-char-id="${charId}">
                 ${char.name}
-                <button type="button" onclick="removeCharacterPill('${fieldName}', '${charId}')" class="pill-remove">×</button>
+                <button type="button" onclick="removeCharacterPill('${fieldName}', '${charId}')" class="pill-remove"><i data-lucide="x" style="width:10px;height:10px;"></i></button>
             </span>
         `;
     }).join('');
@@ -370,7 +370,7 @@ function renderScenePillsHTML(selectedScenes, fieldName) {
         return `
             <span class="scene-pill" data-scene-id="${sceneId}">
                 ${breadcrumb}
-                <button type="button" onclick="removeScenePill('${fieldName}', '${sceneId}')" class="pill-remove">×</button>
+                <button type="button" onclick="removeScenePill('${fieldName}', '${sceneId}')" class="pill-remove"><i data-lucide="x" style="width:10px;height:10px;"></i></button>
             </span>
         `;
     }).join('');

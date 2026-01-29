@@ -1538,7 +1538,9 @@
     color: var(--text-muted);
     opacity: 0;
     transition: opacity 0.2s ease;
-    font-size: 0.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .chapter-header:hover .drag-handle,
