@@ -20,6 +20,7 @@ const CharacterModel = {
             pronouns: data.pronouns || '',
             sex: data.sex || '',
             race: data.race || 'Humain',
+            group: data.group || '',
             age: data.age || '',
             birthDate: data.birthDate || '',
             deathDate: data.deathDate || '',

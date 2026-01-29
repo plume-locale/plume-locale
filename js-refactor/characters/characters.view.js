@@ -64,52 +64,72 @@ function renderCharactersList() {
     const container = document.getElementById('charactersList');
     if (!container) return;
 
-    const grouped = getGroupedCharactersViewModel();
-    const hasAny = Object.values(grouped).some(group => group.length > 0);
+    const { byRace, byGroup } = getGroupedCharactersViewModel();
+    const hasAnyByRace = Object.values(byRace).some(group => group.length > 0);
+    const hasAnyByGroup = Object.values(byGroup).some(group => group.length > 0);
 
-    if (!hasAny) {
+    if (!hasAnyByRace && !hasAnyByGroup) {
         container.innerHTML = '<div style="padding: 1rem; text-align: center; color: var(--text-muted); font-size: 0.85rem;">Aucun personnage</div>';
         return;
     }
 
     let html = '<div class="treeview-children" style="margin-left: 0; border-left: none; padding-left: 0;">';
 
-    Object.entries(grouped).forEach(([raceName, chars]) => {
-        if (chars.length === 0) return;
-
-        html += `
-            <div class="treeview-race-header" style="
-                padding: 6px 12px;
-                background: var(--bg-secondary, rgba(255,255,255,0.05));
-                color: var(--text-muted);
-                font-size: 0.75rem;
-                font-weight: bold;
-                text-transform: uppercase;
-                border-top: 1px solid var(--border-color);
-                border-bottom: 1px solid var(--border-color);
-                margin-top: 8px;
-                margin-bottom: 4px;
-                display: flex; 
-                justify-content: space-between;
-            ">
-                <span>${raceName}</span>
-                <span style="opacity: 0.6;">${chars.length}</span>
+    // Helper pour générer une section (Race ou Groupe)
+    const renderSection = (title, groupedData) => {
+        let sectionHtml = `
+            <div style="padding: 12px 12px 6px 12px; color: var(--primary-color); font-size: 0.8rem; font-weight: bold; border-top: 2px solid var(--primary-color); margin-top: 15px;">
+                ${title}
             </div>
         `;
 
-        chars.forEach(char => {
-            const displayName = char.name || char.firstName || 'Sans nom';
-            html += `
-                <div class="treeview-item" onclick="openCharacterDetail(${char.id})">
-                    <span class="treeview-item-icon">
-                        <i data-lucide="user" style="width:14px;height:14px;vertical-align:middle;"></i>
-                    </span>
-                    <span class="treeview-item-label">${displayName}</span>
-                    <button class="treeview-item-delete" onclick="event.stopPropagation(); deleteCharacter(${char.id})" title="Supprimer"><i data-lucide="x" style="width:12px;height:12px;"></i></button>
+        Object.entries(groupedData).forEach(([headerName, chars]) => {
+            if (chars.length === 0) return;
+
+            sectionHtml += `
+                <div class="treeview-race-header" style="
+                    padding: 6px 12px;
+                    background: var(--bg-secondary, rgba(255,255,255,0.05));
+                    color: var(--text-muted);
+                    font-size: 0.75rem;
+                    font-weight: bold;
+                    text-transform: uppercase;
+                    border-top: 1px solid var(--border-color);
+                    border-bottom: 1px solid var(--border-color);
+                    margin-top: 8px;
+                    margin-bottom: 4px;
+                    display: flex; 
+                    justify-content: space-between;
+                ">
+                    <span>${headerName}</span>
+                    <span style="opacity: 0.6;">${chars.length}</span>
                 </div>
             `;
+
+            chars.forEach(char => {
+                const displayName = char.name || char.firstName || 'Sans nom';
+                sectionHtml += `
+                    <div class="treeview-item" onclick="openCharacterDetail(${char.id})">
+                        <span class="treeview-item-icon">
+                            <i data-lucide="user" style="width:14px;height:14px;vertical-align:middle;"></i>
+                        </span>
+                        <span class="treeview-item-label">${displayName}</span>
+                        <button class="treeview-item-delete" onclick="event.stopPropagation(); deleteCharacter(${char.id})" title="Supprimer"><i data-lucide="x" style="width:12px;height:12px;"></i></button>
+                    </div>
+                `;
+            });
         });
-    });
+        return sectionHtml;
+    };
+
+    // Toujours afficher le groupement par race
+    html += renderSection('PAR RACE', byRace);
+
+    // N'afficher le groupement par groupe que s'il y a des groupes personnalisés (ou si au moins un perso a un groupe)
+    const hasRealGroups = Object.keys(byGroup).length > 1 || (byGroup['Sans groupe'] && byGroup['Sans groupe'].length < Object.values(byRace).flat().length);
+    if (hasRealGroups) {
+        html += renderSection('PAR REGROUPEMENT', byGroup);
+    }
 
     html += '</div>';
     container.innerHTML = html;
@@ -125,7 +145,7 @@ function openCharacterDetail(id) {
     const data = getCharacterDetailViewModel(id);
     if (!data) return;
 
-    const { character, races, linkedScenes } = data;
+    const { character, races, groups, linkedScenes } = data;
 
     // Orchestration globale si on est en split view
     if (typeof splitViewActive !== 'undefined' && splitViewActive) {
@@ -142,7 +162,7 @@ function openCharacterDetail(id) {
 
     const editorView = document.getElementById('editorView');
     if (editorView) {
-        editorView.innerHTML = renderCharacterSheet(character, races, linkedScenes);
+        editorView.innerHTML = renderCharacterSheet(character, races, groups, linkedScenes);
 
         // Post-rendu
         setTimeout(() => {
@@ -156,13 +176,17 @@ function openCharacterDetail(id) {
  * [MVVM : View]
  * Template de la fiche personnage complet (Fidèle à l'original).
  */
-function renderCharacterSheet(character, racesList, linkedScenes) {
+function renderCharacterSheet(character, racesList, groupsList, linkedScenes) {
     const metaInfo = [];
     if (character.age) metaInfo.push(`${character.age}${character.birthPlace ? ', né à ' + character.birthPlace : ''}`);
     if (character.residence) metaInfo.push(character.residence);
 
     const raceOptions = (racesList || []).map(r =>
         `<option value="${r}" ${character.race === r ? 'selected' : ''}>${r}</option>`
+    ).join('');
+
+    const groupOptions = (groupsList || []).map(g =>
+        `<option value="${g}" ${character.group === g ? 'selected' : ''}>${g}</option>`
     ).join('');
 
     return `
@@ -240,6 +264,19 @@ function renderCharacterSheet(character, racesList, linkedScenes) {
                                     ${raceOptions}
                                 </select>
                                 <button onclick="addNewRace(${character.id})" class="btn-icon" title="Créer une nouvelle race">
+                                    <i data-lucide="plus" style="width:14px;height:14px;"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="character-field">
+                            <label class="character-field-label">Regroupement (Famille, Clan, etc.)</label>
+                            <div style="display: flex; gap: 5px; align-items: center;">
+                                <select class="detail-input" style="flex-grow: 1;"
+                                    onchange="updateCharacterField(${character.id}, 'group', this.value)">
+                                    <option value="">Aucun</option>
+                                    ${groupOptions}
+                                </select>
+                                <button onclick="addNewGroup(${character.id})" class="btn-icon" title="Créer un nouveau regroupement">
                                     <i data-lucide="plus" style="width:14px;height:14px;"></i>
                                 </button>
                             </div>
@@ -599,6 +636,18 @@ function addNewRace(charId) {
         const result = addRaceViewModel(newRace, charId);
         if (result.success) {
             if (result.alreadyExists) alert("Cette race existe déjà !");
+            processCharacterSideEffects(result);
+            if (result.sideEffects.shouldRefreshAll) openCharacterDetail(charId);
+        }
+    }
+}
+
+function addNewGroup(charId) {
+    const newGroup = prompt("Nom du nouveau regroupement (Famille, Clan, Groupe...) :");
+    if (newGroup && newGroup.trim()) {
+        const result = addGroupViewModel(newGroup, charId);
+        if (result.success) {
+            if (result.alreadyExists) alert("Ce regroupement existe déjà !");
             processCharacterSideEffects(result);
             if (result.sideEffects.shouldRefreshAll) openCharacterDetail(charId);
         }

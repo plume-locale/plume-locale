@@ -48,35 +48,48 @@ function deleteCharacterViewModel(id) {
 }
 
 /**
- * Groupement des personnages par race pour l'affichage dans la liste.
+ * Groupement des personnages pour l'affichage dans la liste.
+ * Retourne un objet contenant les groupements par race et par groupe personnalisé.
  */
 function getGroupedCharactersViewModel() {
     const characters = CharacterRepository.getAll();
     const races = CharacterRepository.getRaces();
+    const customGroups = CharacterRepository.getGroups();
 
-    const groups = {};
-    races.forEach(race => groups[race] = []);
-    groups['Non classé'] = [];
+    const byRace = {};
+    races.forEach(race => byRace[race] = []);
+    byRace['Race non classée'] = [];
+
+    const byGroup = {};
+    customGroups.forEach(g => byGroup[g] = []);
+    byGroup['Sans groupe'] = [];
 
     characters.forEach(char => {
-        // Migration au vol si besoin pour l'affichage
         const migrated = CharacterModel.migrate(char);
-        const raceKey = (migrated.race && races.includes(migrated.race)) ? migrated.race : 'Non classé';
 
-        if (!groups[raceKey]) groups[raceKey] = [];
-        groups[raceKey].push(migrated);
+        // Groupement par race
+        const raceKey = (migrated.race && races.includes(migrated.race)) ? migrated.race : 'Race non classée';
+        if (!byRace[raceKey]) byRace[raceKey] = [];
+        byRace[raceKey].push(migrated);
+
+        // Groupement par groupe perso
+        const groupKey = (migrated.group && customGroups.includes(migrated.group)) ? migrated.group : 'Sans groupe';
+        if (!byGroup[groupKey]) byGroup[groupKey] = [];
+        byGroup[groupKey].push(migrated);
     });
 
     // Tri alphabétique dans chaque groupe
-    Object.keys(groups).forEach(key => {
-        groups[key].sort((a, b) => {
-            const nameA = (a.name || '').toLowerCase();
-            const nameB = (b.name || '').toLowerCase();
-            return nameA.localeCompare(nameB, 'fr');
-        });
+    const sortFn = (a, b) => {
+        const nameA = (a.name || '').toLowerCase();
+        const nameB = (b.name || '').toLowerCase();
+        return nameA.localeCompare(nameB, 'fr');
+    };
+
+    [byRace, byGroup].forEach(container => {
+        Object.keys(container).forEach(key => container[key].sort(sortFn));
     });
 
-    return groups;
+    return { byRace, byGroup };
 }
 
 /**
@@ -88,11 +101,13 @@ function getCharacterDetailViewModel(id) {
 
     const character = CharacterModel.migrate(rawChar);
     const races = CharacterRepository.getRaces();
+    const groups = CharacterRepository.getGroups();
     const linkedScenes = getLinkedScenesViewModel(id);
 
     return {
         character,
         races,
+        groups,
         linkedScenes
     };
 }
@@ -150,7 +165,30 @@ function updateCharacterFieldViewModel(id, field, value) {
         success: !!nextValue,
         sideEffects: {
             shouldSave: true,
-            shouldRefreshList: (field === 'firstName' || field === 'lastName' || field === 'race' || field === 'name')
+            shouldRefreshList: (field === 'firstName' || field === 'lastName' || field === 'race' || field === 'group' || field === 'name')
+        }
+    };
+}
+
+/**
+ * Ajout d'un nouveau regroupement personnalisé.
+ */
+function addGroupViewModel(groupName, charIdToAssign) {
+    if (!groupName || !groupName.trim()) return { success: false };
+
+    const formatted = groupName.trim();
+    const added = CharacterRepository.addGroup(formatted);
+
+    if (added && charIdToAssign) {
+        CharacterRepository.update(charIdToAssign, { group: formatted });
+    }
+
+    return {
+        success: true,
+        alreadyExists: !added,
+        sideEffects: {
+            shouldSave: true,
+            shouldRefreshAll: true
         }
     };
 }
