@@ -732,7 +732,7 @@ function setActiveScene(actId, chapterId, sceneId) {
     // Mettre à jour l'indicateur de tension si disponible
     const editor = document.querySelector(`.editor-textarea[data-scene-id="${sceneId}"]`);
     if (editor && typeof updateLiveTensionMeter === 'function') {
-        updateLiveTensionMeter(editor.innerHTML);
+        updateLiveTensionMeter(editor.innerHTML, { actId, chapterId, sceneId });
     }
 }
 
@@ -939,7 +939,7 @@ function renderEditor(act, chapter, scene) {
     // Initialize scene navigation toolbar
     setTimeout(() => {
         if (typeof initSceneNavigation === 'function') initSceneNavigation();
-        if (typeof updateLiveTensionMeter === 'function') updateLiveTensionMeter(scene.content || '');
+        if (typeof updateLiveTensionMeter === 'function') updateLiveTensionMeter(scene.content || '', { actId: act.id, chapterId: chapter.id, sceneId: scene.id });
     }, 200);
 }
 
@@ -1085,7 +1085,7 @@ function renderActEditor(act) {
     setTimeout(() => {
         if (typeof initSceneNavigation === 'function') initSceneNavigation();
         if (typeof updateLiveTensionMeter === 'function' && allScenes.length > 0) {
-            updateLiveTensionMeter(allScenes[0].scene.content || '');
+            updateLiveTensionMeter(allScenes[0].scene.content || '', { actId: act.id, chapterId: allScenes[0].chapterId, sceneId: allScenes[0].scene.id });
         }
     }, 200);
 }
@@ -1192,7 +1192,7 @@ function renderChapterEditor(act, chapter) {
     setTimeout(() => {
         if (typeof initSceneNavigation === 'function') initSceneNavigation();
         if (typeof updateLiveTensionMeter === 'function' && chapter.scenes.length > 0) {
-            updateLiveTensionMeter(chapter.scenes[0].content || '');
+            updateLiveTensionMeter(chapter.scenes[0].content || '', { actId: act.id, chapterId: chapter.id, sceneId: chapter.scenes[0].id });
         }
     }, 200);
 }
@@ -1230,7 +1230,7 @@ function updateSceneContent() {
     }
 
     if (typeof autoDetectLinksDebounced === 'function') autoDetectLinksDebounced();
-    if (typeof updateLiveTensionMeter === 'function') updateLiveTensionMeter(editor.innerHTML);
+    if (typeof updateLiveTensionMeter === 'function') updateLiveTensionMeter(editor.innerHTML, { actId: currentActId, chapterId: currentChapterId, sceneId: currentSceneId });
 }
 
 /**
@@ -1266,7 +1266,7 @@ function updateChapterSceneContent(actId, chapterId, sceneId) {
     updateChapterProgressIndicator(chapter);
 
     if (typeof updateLiveTensionMeter === 'function') {
-        updateLiveTensionMeter(editor.innerHTML);
+        updateLiveTensionMeter(editor.innerHTML, { actId, chapterId, sceneId });
     }
 }
 
@@ -1346,7 +1346,7 @@ function initChapterScrollTracking(actId, chapterId) {
             if (typeof updateLiveTensionMeter === 'function' && scene) {
                 const sceneEditor = document.querySelector(`.editor-textarea[data-scene-id="${scene.id}"]`);
                 const textToAnalyze = sceneEditor ? sceneEditor.innerHTML : (scene.content || '');
-                updateLiveTensionMeter(textToAnalyze);
+                updateLiveTensionMeter(textToAnalyze, { actId, chapterId, sceneId: scene.id });
             }
         }
 

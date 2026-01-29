@@ -6,87 +6,29 @@
 // Calcule le score de tension d'une scène en fonction de son contenu, de sa longueur, 
 // de sa ponctuation et de sa position dans la structure narrative.
 function calculateSceneTension(scene, actIndex, totalActs, chapterIndex, totalChapters, sceneIndex, totalScenes) {
-    let tension = 0;
+    if (typeof calculateLiveTension === 'function') {
+        // Obtenir les IDs pour le contexte
+        const act = project.acts[actIndex];
+        const chapter = act ? act.chapters[chapterIndex] : null;
+
+        if (act && chapter && scene) {
+            const context = {
+                actId: act.id,
+                chapterId: chapter.id,
+                sceneId: scene.id
+            };
+            const result = calculateLiveTension(scene.content || '', context);
+            return result.score;
+        }
+    }
+
+    // Fallback si calculateLiveTension n'est pas disponible (ou données manquantes)
+    let tension = 25;
     const content = (scene.content || '').toLowerCase();
-    const title = (scene.title || '').toLowerCase();
-
-    // 1. ANALYSE LEXICALE (0-40 points)
-    // Charger les mots personnalisés ou utiliser les valeurs par défaut
-    const tensionWords = getTensionWords();
-    const highTensionWords = tensionWords.high;
-    const mediumTensionWords = tensionWords.medium;
-    const lowTensionWords = tensionWords.low;
-
-    let lexicalScore = 0;
-    highTensionWords.forEach(word => {
-        if (content.includes(word) || title.includes(word)) lexicalScore += 3;
-    });
-    mediumTensionWords.forEach(word => {
-        if (content.includes(word) || title.includes(word)) lexicalScore += 1.5;
-    });
-    lowTensionWords.forEach(word => {
-        if (content.includes(word) || title.includes(word)) lexicalScore -= 2;
-    });
-
-    tension += Math.max(0, Math.min(40, lexicalScore));
-
-    // 2. ANALYSE DE LA LONGUEUR (0-10 points)
-    // Les scènes courtes intenses vs longues descriptives
     const wordCount = content.split(/\s+/).filter(w => w.length > 0).length;
-    if (wordCount < 200) tension += 8; // Scène courte = souvent intense
-    else if (wordCount < 500) tension += 5;
-    else if (wordCount < 1000) tension += 3;
-    else tension += 2; // Scène longue = souvent descriptive
 
-    // 3. PONCTUATION EXPRESSIVE (0-10 points)
-    const exclamations = (content.match(/!/g) || []).length;
-    const questions = (content.match(/\?/g) || []).length;
-    const suspensions = (content.match(/\.\.\./g) || []).length;
-
-    tension += Math.min(10, (exclamations * 0.5 + questions * 0.3 + suspensions * 0.8));
-
-    // 4. STRUCTURE NARRATIVE (0-40 points)
-    // Position dans l'acte (courbe en 3 actes)
-    const actProgress = actIndex / Math.max(totalActs - 1, 1);
-    const chapterProgress = chapterIndex / Math.max(totalChapters - 1, 1);
-    const sceneProgress = sceneIndex / Math.max(totalScenes - 1, 1);
-
-    // Structure classique en 3 actes
-    if (totalActs >= 3) {
-        if (actIndex === 0) {
-            // Acte 1 : Montée progressive
-            tension += 10 + (chapterProgress * 15);
-        } else if (actIndex === totalActs - 1) {
-            // Dernier acte : Haute tension jusqu'au climax, puis résolution
-            if (sceneProgress < 0.7) {
-                tension += 35 + (sceneProgress * 5);
-            } else {
-                // Résolution
-                tension += 40 - ((sceneProgress - 0.7) * 50);
-            }
-        } else {
-            // Actes intermédiaires : Montée progressive
-            tension += 20 + (actProgress * 15);
-        }
-    } else if (totalActs === 2) {
-        // Structure en 2 actes
-        if (actIndex === 0) {
-            tension += 15 + (chapterProgress * 15);
-        } else {
-            tension += 30 + (sceneProgress * 10);
-        }
-    } else {
-        // Un seul acte : courbe progressive
-        tension += 20 + (sceneProgress * 20);
-    }
-
-    // Bonus pour les scènes de fin de chapitre (cliffhangers)
-    if (sceneIndex === totalScenes - 1) {
-        tension += 5;
-    }
-
-    // 5. NORMALISATION (0-100)
-    tension = Math.max(15, Math.min(95, tension)); // Entre 15 et 95
+    // Simplification extrême pour le fallback
+    if (wordCount < 500) tension += 10;
 
     return tension;
 }
@@ -128,7 +70,7 @@ function renderPlotView() {
                         actId: act.id,
                         chapterId: chapter.id,
                         sceneId: scene.id,
-                        description: `${act.title} > ${chapter.title}`,
+                        description: `${act.title} > ${chapter.title} > ${scene.title}`,
                         wordCount: scene.content ? scene.content.split(/\s+/).filter(w => w.length > 0).length : 0
                     });
                 });
@@ -137,11 +79,15 @@ function renderPlotView() {
     }
 
     // Générer le graphique SVG
-    const svgWidth = 800;
-    const svgHeight = 500;
-    const padding = 60;
-    const plotWidth = svgWidth - padding * 2;
-    const plotHeight = svgHeight - padding * 2;
+    const svgWidth = 1000; // Plus large pour la précision
+    const svgHeight = 700;
+    const paddingX = 60;   // Padding horizontal réduit
+    const paddingYTop = 40; // Haut réduit
+    const paddingYBottom = 180; // Beaucoup plus de place en bas pour les noms
+
+    const plotWidth = svgWidth - paddingX * 2;
+    const plotHeight = svgHeight - paddingYTop - paddingYBottom;
+    const axisY = svgHeight - paddingYBottom;
 
     let pathData = '';
     let pointsHTML = '';
@@ -149,16 +95,20 @@ function renderPlotView() {
 
     // Lignes de grille
     for (let i = 0; i <= 4; i++) {
-        const y = padding + (plotHeight / 4) * i;
-        gridLines += `<line x1="${padding}" y1="${y}" x2="${svgWidth - padding}" y2="${y}" stroke="var(--border-color)" stroke-width="1" opacity="0.3" stroke-dasharray="5,5"/>`;
-        gridLines += `<text x="${padding - 10}" y="${y + 5}" text-anchor="end" font-size="12" fill="var(--text-muted)">${100 - i * 25}%</text>`;
+        const y = paddingYTop + (plotHeight / 4) * i;
+        gridLines += `<line x1="${paddingX}" y1="${y}" x2="${svgWidth - paddingX}" y2="${y}" stroke="var(--border-color)" stroke-width="1" opacity="0.3" stroke-dasharray="5,5"/>`;
+        gridLines += `<text x="${paddingX - 10}" y="${y + 5}" text-anchor="end" font-size="12" fill="var(--text-muted)">${100 - i * 25}%</text>`;
     }
 
-    // Générer la courbe
+    // Générer la courbe et les étiquettes d'axes
+    let structuralLabels = '';
+    let currentActRef = null;
+    let currentChapterRef = null;
+
     if (plotPoints.length > 0) {
         plotPoints.forEach((point, index) => {
-            const x = padding + (plotWidth / Math.max(plotPoints.length - 1, 1)) * index;
-            const y = padding + plotHeight - (point.intensity / 100) * plotHeight;
+            const x = paddingX + (plotWidth / Math.max(plotPoints.length - 1, 1)) * index;
+            const y = paddingYTop + plotHeight - (point.intensity / 100) * plotHeight;
 
             if (index === 0) {
                 pathData = `M ${x} ${y}`;
@@ -166,15 +116,42 @@ function renderPlotView() {
                 pathData += ` L ${x} ${y}`;
             }
 
-            // Points cliquables avec menu contextuel
+            // --- ÉTIQUETTES AXE X (Breadcrumbs) ---
+            // On ne l'affiche que si ça change (ou pour le premier point)
+            const structuralInfo = point.description.split(' > ');
+            const actTitle = structuralInfo[0];
+            const chapterTitle = structuralInfo[1];
+            const sceneTitle = structuralInfo[2];
+
+            if (actTitle !== currentActRef) {
+                // Changement d'acte : Marqueur fort
+                structuralLabels += `
+                    <line x1="${x}" y1="${axisY}" x2="${x}" y2="${axisY + 40}" stroke="var(--accent-gold)" stroke-width="2" />
+                    <text x="${x + 5}" y="${axisY + 15}" fill="var(--accent-gold)" font-weight="bold" font-size="12" transform="rotate(45 ${x + 5} ${axisY + 15})">${actTitle}</text>
+                `;
+                currentActRef = actTitle;
+            }
+
+            if (chapterTitle !== currentChapterRef) {
+                // Chapitre : on affiche le titre avec une rotation plus forte si nécessaire
+                structuralLabels += `
+                    <line x1="${x}" y1="${axisY}" x2="${x}" y2="${axisY + 10}" stroke="var(--border-color)" stroke-width="1" />
+                    <text x="${x}" y="${axisY + 50}" fill="var(--text-muted)" font-size="10" transform="rotate(60 ${x} ${axisY + 50})">${chapterTitle}</text>
+                `;
+                currentChapterRef = chapterTitle;
+            }
+
+            // Points cliquables avec zone de clic élargie pour ouverture facile
             pointsHTML += `
-                        <circle cx="${x}" cy="${y}" r="6" fill="var(--accent-gold)" stroke="white" stroke-width="2" 
-                                style="cursor: pointer;" 
-                                onclick="editPlotPointIntensity(${index})"
-                                oncontextmenu="event.preventDefault(); openPlotPoint(${point.actId}, ${point.chapterId}, ${point.sceneId})">
-                            <title>Clic gauche: Éditer tension (${Math.round(point.intensity)}%)
-Clic droit: Ouvrir scène "${point.title}"</title>
-                        </circle>
+                        <g style="cursor: pointer;" onclick="openPlotPoint(${point.actId}, ${point.chapterId}, ${point.sceneId})" oncontextmenu="event.preventDefault(); openPlotPoint(${point.actId}, ${point.chapterId}, ${point.sceneId})">
+                            <circle cx="${x}" cy="${y}" r="12" fill="transparent" />
+                            <circle cx="${x}" cy="${y}" r="6" fill="var(--accent-gold)" stroke="white" stroke-width="2" class="plot-point-dot" />
+                            <title>${point.description}
+--------------------------------
+Tension: ${Math.round(point.intensity)}%
+--------------------------------
+Clic pour ouvrir la scène</title>
+                        </g>
                     `;
         });
     }
@@ -205,29 +182,32 @@ Clic droit: Ouvrir scène "${point.title}"</title>
                     <div class="visualization-canvas">
                         <div class="plot-graph">
                             <svg width="100%" height="${svgHeight}" viewBox="0 0 ${svgWidth} ${svgHeight}" id="plotSvg">
-                                <!-- Axes -->
-                                <line x1="${padding}" y1="${svgHeight - padding}" x2="${svgWidth - padding}" y2="${svgHeight - padding}" 
-                                      stroke="var(--text-primary)" stroke-width="2"/>
-                                <line x1="${padding}" y1="${padding}" x2="${padding}" y2="${svgHeight - padding}" 
-                                      stroke="var(--text-primary)" stroke-width="2"/>
-                                
-                                <!-- Labels -->
-                                <text x="${svgWidth / 2}" y="${svgHeight - 20}" text-anchor="middle" fill="var(--text-muted)" font-size="14">
-                                    Progression du récit →
-                                </text>
-                                <text x="20" y="${svgHeight / 2}" text-anchor="middle" fill="var(--text-muted)" font-size="14" 
-                                      transform="rotate(-90 20 ${svgHeight / 2})">
-                                    ← Tension dramatique
-                                </text>
-                                
                                 <!-- Grille -->
                                 ${gridLines}
                                 
-                                <!-- Courbe d'intrigue -->
-                                ${pathData ? `<path d="${pathData}" fill="none" stroke="var(--accent-gold)" stroke-width="3"/>` : ''}
+                                <!-- Courbe -->
+                                <path d="${pathData}" fill="none" stroke="var(--accent-gold)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
                                 
                                 <!-- Points -->
                                 ${pointsHTML}
+                                
+                                <!-- Axes -->
+                                <line x1="${paddingX}" y1="${axisY}" x2="${svgWidth - paddingX}" y2="${axisY}" 
+                                      stroke="var(--text-primary)" stroke-width="2"/>
+                                <line x1="${paddingX}" y1="${paddingYTop}" x2="${paddingX}" y2="${axisY}" 
+                                      stroke="var(--text-primary)" stroke-width="2"/>
+                                
+                                <!-- Structural Labels -->
+                                ${structuralLabels}
+                                
+                                <!-- Labels -->
+                                <text x="${svgWidth / 2}" y="${svgHeight - 10}" text-anchor="middle" fill="var(--text-muted)" font-size="11" opacity="0.4">
+                                    Progression du récit →
+                                </text>
+                                <text x="20" y="${axisY / 2}" text-anchor="middle" fill="var(--text-muted)" font-size="13" 
+                                      transform="rotate(-90 20 ${axisY / 2})">
+                                    ← Tension dramatique
+                                </text>
                             </svg>
                         </div>
                     </div>
@@ -236,10 +216,11 @@ Clic droit: Ouvrir scène "${point.title}"</title>
                             <div>
                                 <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6; margin: 0;">
                                     💡 <strong>Utilisation:</strong><br>
-                                    • <strong>Clic gauche</strong> sur un point → Modifier manuellement la tension<br>
-                                    • <strong>Clic droit</strong> sur un point → Ouvrir la scène pour l'éditer<br>
-                                    • <strong>Analyser</strong> → Obtenez un rapport complet sur votre courbe<br>
-                                    • <strong>Suggestions</strong> → Conseils personnalisés pour améliorer l'intrigue
+                                    • <strong>Clic</strong> sur un point → Ouvrir la scène pour l'éditer<br>
+                                • <strong>Affichage</strong> → Survoler un point pour voir : Acte > Chapitre > Scène<br>
+                                • <strong>Intégration</strong> → La tension est calculée automatiquement selon votre texte<br>
+                                • <strong>Analyser</strong> → Obtenez un rapport complet sur votre courbe<br>
+                                • <strong>Suggestions</strong> → Conseils personnalisés pour améliorer l'intrigue
                                 </p>
                             </div>
                             <div style="padding: 0.75rem; background: var(--bg-primary); border-radius: 4px; border: 1px solid var(--border-color);">
@@ -262,34 +243,6 @@ Clic droit: Ouvrir scène "${point.title}"</title>
 function openPlotPoint(actId, chapterId, sceneId) {
     switchView('editor');
     openScene(actId, chapterId, sceneId);
-}
-
-// [MVVM : ViewModel]
-// Permet à l'utilisateur de modifier manuellement la valeur de tension d'un point spécifique.
-function editPlotPointIntensity(index) {
-    if (index < 0 || index >= plotPoints.length) return;
-
-    const point = plotPoints[index];
-    const currentIntensity = Math.round(point.intensity);
-
-    const newIntensity = prompt(
-        `Modifier la tension de "${point.title}"\n\n` +
-        `Tension actuelle: ${currentIntensity}%\n` +
-        `Entrez une nouvelle valeur (0-100):`,
-        currentIntensity
-    );
-
-    if (newIntensity === null) return;
-
-    const intensity = parseInt(newIntensity);
-    if (isNaN(intensity) || intensity < 0 || intensity > 100) {
-        alert('Veuillez entrer un nombre entre 0 et 100');
-        return;
-    }
-
-    point.intensity = intensity;
-    renderPlotView();
-    showNotification(`✓ Tension mise à jour: ${intensity}%`);
 }
 
 // [MVVM : ViewModel]
@@ -470,7 +423,7 @@ function showPlotSuggestions() {
 // [MVVM : ViewModel]
 // Réinitialise et recalcule tous les points de tension à partir des données brutes des scènes.
 function resetPlotPoints() {
-    if (confirm('Recalculer tous les points d\'intrigue ?\n\nLa tension sera recalculée automatiquement pour toutes les scènes.\n\nLes ajustements manuels seront perdus.')) {
+    if (confirm('Recalculer tous les points d\'intrigue ?\n\nLa tension sera recalculée automatiquement pour toutes les scènes.')) {
         plotPoints = [];
         renderPlotView();
         showNotification('✓ Points recalculés automatiquement');

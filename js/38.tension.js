@@ -377,16 +377,13 @@ document.addEventListener('DOMContentLoaded', function () {
  * [MVVM : Model]
  * Calcule la tension en temps réel pour un bloc de texte donné.
  * @param {string} text - Le contenu HTML ou brut à analyser.
+ * @param {Object} [context] - Contexte narratif optionnel {actId, chapterId, sceneId}
  * @returns {Object} Un objet contenant le score (0-100) et le détail des mots trouvés.
  */
-/**
- * [MVVM : Model]
- * Calcule la tension en temps réel pour un bloc de texte donné.
- * @param {string} text - Le contenu HTML ou brut à analyser.
- * @returns {Object} Un objet contenant le score (0-100) et le détail des mots trouvés.
- */
-function calculateLiveTension(text) {
-    if (!text || text.trim() === '') return { score: 15, details: { high: 0, medium: 0, low: 0 }, foundWords: { high: [], medium: [], low: [] } };
+function calculateLiveTension(text, context = null) {
+    if (!text || text.trim() === '' || text === '<p><br></p>') {
+        return { score: 0, details: { high: 0, medium: 0, low: 0 }, foundWords: { high: [], medium: [], low: [] } };
+    }
 
     // Nettoyer le HTML de manière consistante
     const tempDiv = document.createElement('div');
@@ -441,14 +438,28 @@ function calculateLiveTension(text) {
     lexicalScore += (exclamations * 1.5 + questions * 0.5 + suspensions * 2);
 
     // 3. FACTEUR DE DENSITÉ
-    // Utiliser la même logique que getWordCount pour la consistance
     const wordCount = typeof getWordCount === 'function' ? getWordCount(text) : (cleanText.split(/\s+/).filter(w => w.length > 0).length || 1);
 
-    // Formule ajustée pour être plus stable
-    let finalScore = 25 + (lexicalScore / Math.sqrt(Math.max(50, wordCount))) * 5.2;
+    // Formule de base pour l'intensité textuelle (0-60 points environ)
+    let textIntensity = (lexicalScore / Math.sqrt(Math.max(50, wordCount))) * 5.2;
 
-    // Normalisation 15-95
-    finalScore = Math.max(15, Math.min(95, finalScore));
+    // 4. BASELINE NARRATIVE
+    let narrativeBaseline = 25; // Défaut si pas de contexte
+    let structureBonus = 0;
+
+    if (context && typeof project !== 'undefined') {
+        const structuralData = getNarrativeContextData(context);
+        if (structuralData) {
+            narrativeBaseline = structuralData.baseline;
+            if (structuralData.isCliffhanger) structureBonus = 5;
+        }
+    }
+
+    // Calcul final : Baseline + Intensité textuelle + Bonus
+    let finalScore = narrativeBaseline + textIntensity + structureBonus;
+
+    // Normalisation 5-95
+    finalScore = Math.max(5, Math.min(95, finalScore));
 
     return {
         score: Math.round(finalScore),
@@ -462,17 +473,77 @@ function calculateLiveTension(text) {
 }
 
 /**
+ * [MVVM : Model]
+ * Calcule la baseline narrative basée sur la position dans le récit.
+ * Réutilise la même logique que le graphique d'intrigue.
+ */
+function getNarrativeContextData(context) {
+    const { actId, chapterId, sceneId } = context;
+    if (!project || !project.acts) return null;
+
+    const actIndex = project.acts.findIndex(a => a.id === actId);
+    if (actIndex === -1) return null;
+    const act = project.acts[actIndex];
+    const totalActs = project.acts.length;
+
+    const chapterIndex = act.chapters.findIndex(c => c.id === chapterId);
+    if (chapterIndex === -1) return null;
+    const chapter = act.chapters[chapterIndex];
+    const totalChapters = act.chapters.length;
+
+    const sceneIndex = chapter.scenes.findIndex(s => s.id === sceneId);
+    if (sceneIndex === -1) return null;
+    const totalScenes = chapter.scenes.length;
+
+    const chapterProgress = chapterIndex / Math.max(totalChapters - 1, 1);
+    const sceneProgress = sceneIndex / Math.max(totalScenes - 1, 1);
+    const actProgress = actIndex / Math.max(totalActs - 1, 1);
+
+    let baseline = 0;
+
+    // Structure classique en 3 actes (reprise de 33.plot.refactor.js)
+    if (totalActs >= 3) {
+        if (actIndex === 0) {
+            baseline = 10 + (chapterProgress * 15);
+        } else if (actIndex === totalActs - 1) {
+            if (sceneProgress < 0.7) {
+                baseline = 35 + (sceneProgress * 5);
+            } else {
+                baseline = 40 - ((sceneProgress - 0.7) * 50);
+            }
+        } else {
+            baseline = 20 + (actProgress * 15);
+        }
+    } else if (totalActs === 2) {
+        if (actIndex === 0) {
+            baseline = 15 + (chapterProgress * 15);
+        } else {
+            baseline = 30 + (sceneProgress * 10);
+        }
+    } else {
+        baseline = 20 + (sceneProgress * 20);
+    }
+
+    return {
+        baseline: baseline,
+        isCliffhanger: sceneIndex === totalScenes - 1
+    };
+}
+
+/**
  * [MVVM : View]
  * Met à jour le "Tension Meter" dans l'UI.
+ * @param {string} text - Contenu de la scène.
+ * @param {Object} [context] - Contexte {actId, chapterId, sceneId}.
  */
-function updateLiveTensionMeter(text) {
+function updateLiveTensionMeter(text, context = null) {
     const meter = document.getElementById('liveTensionMeter');
     if (!meter) {
         injectTensionMeter();
-        return;
+        // On ne retourne pas, injectTensionMeter crée l'élément
     }
 
-    const result = calculateLiveTension(text);
+    const result = calculateLiveTension(text, context);
     const score = result.score;
 
     const circle = document.getElementById('tensionMeterFill');
