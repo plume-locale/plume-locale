@@ -192,15 +192,25 @@ function renderCorkBoardFullView() {
     // Compter le total de chapitres
     const totalChapters = project.acts.reduce((sum, act) => sum + act.chapters.length, 0);
 
+    // Vue Kanban par statut
+    if (corkBoardFilter.mode === 'kanban') {
+        return renderKanbanView(scenes);
+    }
+
     // Vue organisée par actes et chapitres
     let html = `
                 <div class="cork-board-container" style="min-height: 100vh; padding: 2rem;">
                     <div class="cork-board-header" style="margin-bottom: 2rem;">
-                        <div class="cork-board-title">
-                            <i data-lucide="list" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Vue Structure Organisée
+                        <div class="cork-board-title" style="width: 250px; flex-shrink: 0;">
+                            <i data-lucide="list" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Vue Structure
+                        </div>
+
+                        <div style="display: flex; background: var(--bg-secondary); padding: 4px; border-radius: 8px;">
+                            <button class="btn ${corkBoardFilter.mode === 'structured' ? 'btn-primary' : 'btn-small'}" onclick="switchCorkMode('structured')">Structure</button>
+                            <button class="btn ${corkBoardFilter.mode === 'kanban' ? 'btn-primary' : 'btn-small'}" onclick="switchCorkMode('kanban')">Kanban</button>
                         </div>
                         
-                        <div style="display: flex; align-items: center; gap: 1rem; margin-left: auto; margin-right: 1rem;">
+                        <div style="display: flex; align-items: center; gap: 1rem; margin-left: auto;">
                             <label style="font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.5rem;">
                                 <i data-lucide="zoom-in" style="width:16px;height:16px;"></i>
                                 <input type="range" 
@@ -212,9 +222,6 @@ function renderCorkBoardFullView() {
                                        oninput="updateCorkGridSize(this.value)"
                                        title="Ajuster la largeur des colonnes">
                             </label>
-                        </div>
-                        <div style="display: flex; gap: 0.5rem;">
-                            <button class="btn btn-primary" onclick="closeCorkBoardView()">← Retour</button>
                         </div>
                     </div>
                     
@@ -263,7 +270,7 @@ function renderCorkBoardFullView() {
                 const color = scene.corkColor || 'default';
 
                 html += `
-                            <div class="structured-scene-card structured-color-${color}" 
+                            <div class="structured-scene-card structured-color-${color} scene-status-${scene.status || 'draft'}" 
                                  data-scene-id="${scene.id}"
                                  data-act-id="${scene.actId}"
                                  data-chapter-id="${scene.chapterId}"
@@ -325,6 +332,94 @@ function renderCorkBoardFullView() {
 }
 
 // [MVVM : View]
+// Génère le HTML pour la vue Kanban
+function renderKanbanView(scenes) {
+    const statuses = [
+        { id: 'draft', label: 'Brouillon', color: 'var(--accent-red)' },
+        { id: 'progress', label: 'En cours', color: 'var(--accent-gold)' },
+        { id: 'complete', label: 'Terminé', color: 'var(--accent-green)' },
+        { id: 'review', label: 'À réviser', color: 'var(--accent-blue)' }
+    ];
+
+    let html = `
+        <div class="cork-board-container" style="min-height: 100vh; padding: 2rem;">
+            <div class="cork-board-header" style="margin-bottom: 2rem;">
+                <div class="cork-board-title" style="width: 250px; flex-shrink: 0;">
+                    <i data-lucide="columns" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Vue Kanban
+                </div>
+
+                <div style="display: flex; background: var(--bg-secondary); padding: 4px; border-radius: 8px;">
+                    <button class="btn ${corkBoardFilter.mode === 'structured' ? 'btn-primary' : 'btn-small'}" onclick="switchCorkMode('structured')">Structure</button>
+                    <button class="btn ${corkBoardFilter.mode === 'kanban' ? 'btn-primary' : 'btn-small'}" onclick="switchCorkMode('kanban')">Kanban</button>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 1rem; margin-left: auto; visibility: hidden;">
+                    <label style="font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.5rem;">
+                        <i data-lucide="zoom-in" style="width:16px;height:16px;"></i>
+                        <input type="range" style="width: 120px;">
+                    </label>
+                </div>
+            </div>
+
+            <div class="kanban-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; align-items: start;">
+    `;
+
+    statuses.forEach(status => {
+        const statusScenes = scenes.filter(s => (s.status || 'draft') === status.id);
+
+        html += `
+            <div class="kanban-column" style="background: var(--bg-secondary); border-radius: 8px; border: 1px solid var(--border-color); display: flex; flex-direction: column; min-height: 500px;">
+                <div class="kanban-column-header" style="padding: 1rem; border-bottom: 2px solid ${status.color}; display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-weight: 700; color: var(--text-primary);">${status.label}</span>
+                    <span style="background: ${status.color}; color: white; font-size: 0.75rem; padding: 2px 8px; border-radius: 10px;">${statusScenes.length}</span>
+                </div>
+                <div class="kanban-scenes-list" style="padding: 1rem; display: flex; flex-direction: column; gap: 1rem; flex: 1;">
+        `;
+
+        statusScenes.forEach(scene => {
+            const wordCount = scene.content ? scene.content.split(/\s+/).filter(w => w.length > 0).length : 0;
+            const synopsis = scene.synopsis || '';
+
+            html += `
+                <div class="structured-scene-card scene-status-${status.id}" 
+                     data-scene-id="${scene.id}"
+                     data-act-id="${scene.actId}"
+                     data-chapter-id="${scene.chapterId}"
+                     onclick="openSceneFromCork(${scene.actId}, ${scene.chapterId}, ${scene.id})"
+                     style="background: var(--bg-primary); border-radius: 6px; box-shadow: 0 2px 4px var(--shadow);">
+                    <div style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.25rem;">${scene.actTitle} > ${scene.chapterTitle}</div>
+                    <div style="font-weight: 600; font-size: 0.9rem; margin-bottom: 0.5rem;">${scene.title}</div>
+                    ${synopsis ? `<div style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">${synopsis}</div>` : ''}
+                    <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.5rem; display: flex; justify-content: space-between;">
+                        <span>${wordCount} mots</span>
+                    </div>
+                </div>
+            `;
+        });
+
+        if (statusScenes.length === 0) {
+            html += `
+                <div style="padding: 2rem; text-align: center; color: var(--text-muted); font-size: 0.8rem; font-style: italic;">
+                    Aucune scène
+                </div>
+            `;
+        }
+
+        html += `
+                </div>
+            </div>
+        `;
+    });
+
+    html += `
+            </div>
+        </div>
+    `;
+
+    return html;
+}
+
+// [MVVM : View]
 // Rend le HTML d'une carte individuelle (scène) pour le Cork Board
 function renderCorkCard(scene, index) {
     const wordCount = scene.content ? getWordCount(scene.content) : 0;
@@ -332,30 +427,13 @@ function renderCorkCard(scene, index) {
     const color = scene.corkColor || 'default';
 
     return `
-                <div class="cork-card cork-color-${color}" 
+                <div class="cork-card cork-color-${color} scene-status-${scene.status || 'draft'}" 
                      data-scene-id="${scene.id}"
                      data-act-id="${scene.actId}"
                      data-chapter-id="${scene.chapterId}"
                      draggable="true">
                     <div class="cork-card-header">
                         <div class="cork-card-number">#${index + 1}</div>
-                        <div style="position: relative;">
-                            <div class="cork-card-color-tag cork-color-${color}" 
-                                 onclick="toggleColorPalette(${scene.id})"></div>
-                            <div class="cork-color-palette" id="palette-${scene.id}">
-                                <div class="cork-color-option cork-color-yellow" onclick="setCorkColor(${scene.actId}, ${scene.chapterId}, ${scene.id}, 'yellow')"></div>
-                                <div class="cork-color-option cork-color-pink" onclick="setCorkColor(${scene.actId}, ${scene.chapterId}, ${scene.id}, 'pink')"></div>
-                                <div class="cork-color-option cork-color-blue" onclick="setCorkColor(${scene.actId}, ${scene.chapterId}, ${scene.id}, 'blue')"></div>
-                                <div class="cork-color-option cork-color-green" onclick="setCorkColor(${scene.actId}, ${scene.chapterId}, ${scene.id}, 'green')"></div>
-                                <div class="cork-color-option cork-color-purple" onclick="setCorkColor(${scene.actId}, ${scene.chapterId}, ${scene.id}, 'purple')"></div>
-                                <div class="cork-color-option cork-color-orange" onclick="setCorkColor(${scene.actId}, ${scene.chapterId}, ${scene.id}, 'orange')"></div>
-                                <div class="cork-color-option cork-color-red" onclick="setCorkColor(${scene.actId}, ${scene.chapterId}, ${scene.id}, 'red')"></div>
-                                <div class="cork-color-option cork-color-teal" onclick="setCorkColor(${scene.actId}, ${scene.chapterId}, ${scene.id}, 'teal')"></div>
-                                <div class="cork-color-option cork-color-default" onclick="setCorkColor(${scene.actId}, ${scene.chapterId}, ${scene.id}, 'default')">
-                                    <i data-lucide="x" style="width:14px;height:14px;vertical-align:middle;"></i>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                     
                     <div class="cork-card-title">${scene.title}</div>
@@ -512,6 +590,7 @@ function openAddSceneModalFromCork(actId, chapterId) {
         title: sceneTitle.trim(),
         content: '',
         synopsis: '',
+        status: 'draft',
         characters: [],
         locations: [],
         notes: ''
@@ -715,6 +794,13 @@ function updateCorkGridSize(value) {
     // Optionnel : Mettre à jour un label si vous en ajoutez un pour afficher la taille
     const label = document.getElementById('gridSizeLabel');
     if (label) label.textContent = value + 'px';
+}
+// Met à jour le mode d'affichage du Cork Board (structuré ou kanban)
+function switchCorkMode(mode) {
+    if (typeof corkBoardFilter !== 'undefined') {
+        corkBoardFilter.mode = mode;
+        openCorkBoardView();
+    }
 }
 // ============================================
 // FIN CORK BOARD
