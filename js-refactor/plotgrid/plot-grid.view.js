@@ -100,6 +100,17 @@ const PlotGridUI = {
                         border-bottom-color: var(--primary-color);
                         outline: none;
                     }
+                    .pg-ghost-header::placeholder {
+                        font-style: italic;
+                        color: var(--text-muted);
+                        opacity: 0.7;
+                    }
+                    .pg-ghost-header {
+                        opacity: 0.6;
+                    }
+                    .pg-ghost-header:hover, .pg-ghost-header:focus, .pg-ghost-header.editing {
+                        opacity: 1;
+                    }
                     .pg-col-delete-btn {
                         opacity: 0;
                         cursor: pointer;
@@ -533,9 +544,14 @@ const PlotGridUI = {
                     </div>
                 `;
             } else {
+                // Ghost column - editable to create a new column with custom title
                 content = `
                     <div class="pg-col-header-container">
-                        <span style="color: var(--text-muted); font-style: italic;">Ligne sans titre</span>
+                        <input class="pg-header-input pg-ghost-header"
+                               value=""
+                               placeholder="Ligne sans titre"
+                               onfocus="this.classList.add('editing')"
+                               onblur="PlotGridUI.createColumnFromGhost(${i}, this.value); this.classList.remove('editing')">
                     </div>
                 `;
             }
@@ -613,6 +629,31 @@ const PlotGridUI = {
         if (PlotGridViewModel.updateColumnTitle(colId, newTitle)) {
             this.conditionalRender();
         }
+    },
+
+    /**
+     * Creates a new column from a ghost header when user types a custom title.
+     * @param {number} colIndex - The visual column index
+     * @param {string} title - The title entered by the user
+     */
+    createColumnFromGhost: function (colIndex, title) {
+        // Only create if user entered a non-empty title
+        if (!title || !title.trim()) return;
+
+        // Get current columns to check if we need to fill gaps
+        const columns = PlotGridViewModel.getGridData().columns;
+
+        // Ensure all columns up to colIndex exist
+        PlotGridRepository.ensureColumnsUntil(colIndex + 1);
+
+        // Get the newly created column and update its title
+        const updatedColumns = PlotGridViewModel.getGridData().columns;
+        const targetCol = updatedColumns[colIndex];
+        if (targetCol) {
+            PlotGridViewModel.updateColumnTitle(targetCol.id, title.trim());
+        }
+
+        this.conditionalRender();
     },
 
     addCardAt: function (rowId, colIndex) {
