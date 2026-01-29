@@ -101,7 +101,12 @@ JS_ORDER = [
     'js-refactor/corkboard/corkboard.main.js',
     '31.mindmap.js',
     '32.touch-events.js',
-    'js-refactor/33.plot.refactor.js',
+    # Plot module refactored files
+    'js-refactor/plot/plot.model.js',
+    'js-refactor/plot/plot.repository.js',
+    'js-refactor/plot/plot.viewmodel.js',
+    'js-refactor/plot/plot.view.js',
+    'js-refactor/plot/plot.init.js',
     '34.relations-graph.js',
     '35.renderMap.js',
     '36.timeline-metro.js',
