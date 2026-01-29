@@ -111,7 +111,7 @@ class PlotView {
                         <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">Tension Moyenne</div>
                         <div style="font-size: 2rem; font-weight: bold; color: var(--accent-gold);">${Math.round(stats.avg)}%</div>
                         <div style="font-size: 0.8rem; margin-top: 0.5rem;">
-                            ${narrative.avgLow ? '<span style="color: #e67e22;">⚠️ Un peu basse</span>' : narrative.avgHigh ? '<span style="color: #e74c3c;">⚠️ Trop élevée</span>' : '<span style="color: #2ecc71;">✅ Équilibrée</span>'}
+                            ${narrative.avgLow ? '<span style="color: #e67e22;"><i data-lucide="alert-triangle" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Un peu basse</span>' : narrative.avgHigh ? '<span style="color: #e74c3c;"><i data-lucide="alert-triangle" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Trop élevée</span>' : '<span style="color: #2ecc71;"><i data-lucide="check-circle" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Équilibrée</span>'}
                         </div>
                     </div>
                     <div class="stat-card" style="background: var(--bg-secondary); padding: 1.5rem; border-radius: 8px;">
@@ -170,21 +170,21 @@ class PlotView {
                         <h3 style="color: var(--accent-gold); margin-bottom: 1rem;">Diagnostic</h3>
                         ${data.flatZonesCount > 0 ? `
                             <div class="suggestion-card" style="background: rgba(230, 126, 34, 0.1); border-left: 4px solid #e67e22; padding: 1rem; margin-bottom: 1rem;">
-                                <strong>📉 Zones Plates Détectées</strong>
+                                <strong><i data-lucide="trending-down" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"></i>Zones Plates Détectées</strong>
                                 <p>${data.flatZonesCount} séquences manquent de variation. Pensez à ajouter des rebondissements ou à alterner le rythme.</p>
                             </div>
                         ` : ''}
                         
                         ${data.avgLow ? `
                             <div class="suggestion-card" style="background: rgba(231, 76, 60, 0.1); border-left: 4px solid #e74c3c; padding: 1rem; margin-bottom: 1rem;">
-                                <strong>🔥 Tension Globale Basse</strong>
+                                <strong><i data-lucide="flame" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"></i>Tension Globale Basse</strong>
                                 <p>Votre histoire pourrait bénéficier de plus de conflits. Augmentez les enjeux pour vos personnages.</p>
                             </div>
                         ` : ''}
 
                          ${data.avgHigh ? `
                             <div class="suggestion-card" style="background: rgba(52, 152, 219, 0.1); border-left: 4px solid #3498db; padding: 1rem; margin-bottom: 1rem;">
-                                <strong>😌 Tension Très Élevée</strong>
+                                <strong><i data-lucide="coffee" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"></i>Tension Très Élevée</strong>
                                 <p>Le rythme est très soutenu. N'oubliez pas d'offrir des moments de répit au lecteur (scènes de suite).</p>
                             </div>
                         ` : ''}
