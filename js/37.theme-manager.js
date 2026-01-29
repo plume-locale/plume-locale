@@ -480,15 +480,15 @@ function openThemeManager() {
     modal.innerHTML = `
                 <div class="modal-content" style="max-width: 1000px; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column;">
                     <div class="modal-header">
-                        <h2>🎨 Gestionnaire de Thèmes</h2>
-                        <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">✕</button>
+                        <h2><i data-lucide="palette" style="width:24px;height:24px;vertical-align:middle;margin-right:8px;"></i>Gestionnaire de Thèmes</h2>
+                        <button class="modal-close" onclick="this.closest('.modal-overlay').remove()"><i data-lucide="x" style="width:18px;height:18px;"></i></button>
                     </div>
                     
                     <div style="flex: 1; overflow-y: auto; padding: 1.5rem;">
                         <!-- Thèmes prédéfinis -->
                         <div style="margin-bottom: 2rem;">
                             <h3 style="margin-bottom: 1rem; font-size: 1.2rem; color: var(--accent-gold);">
-                                📚 Thèmes Prédéfinis
+                                <i data-lucide="book-copy" style="width:18px;height:18px;vertical-align:middle;margin-right:6px;"></i>Thèmes Prédéfinis
                             </h3>
                             <div id="presetThemesList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem;">
                             </div>
@@ -497,7 +497,7 @@ function openThemeManager() {
                         <!-- Thèmes personnalisés -->
                         <div style="margin-bottom: 2rem;">
                             <h3 style="margin-bottom: 1rem; font-size: 1.2rem; color: var(--accent-gold);">
-                                ✨ Mes Thèmes Personnalisés
+                                <i data-lucide="sparkles" style="width:18px;height:18px;vertical-align:middle;margin-right:6px;"></i>Mes Thèmes Personnalisés
                             </h3>
                             <div id="customThemesList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem;">
                             </div>
@@ -506,7 +506,7 @@ function openThemeManager() {
                         <!-- Éditeur de couleurs -->
                         <div style="border-top: 2px solid var(--border-color); padding-top: 1.5rem;">
                             <h3 style="margin-bottom: 1rem; font-size: 1.2rem; color: var(--accent-gold);">
-                                🎨 Éditeur de Thème
+                                <i data-lucide="sliders-horizontal" style="width:18px;height:18px;vertical-align:middle;margin-right:6px;"></i>Éditeur de Thème
                             </h3>
                             
                             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
@@ -546,19 +546,19 @@ function openThemeManager() {
                             <!-- Actions de l'éditeur -->
                             <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; padding-top: 1rem; border-top: 1px solid var(--border-color);">
                                 <button onclick="applyCurrentEditorColors()" class="btn-primary">
-                                    ✓ Appliquer les Couleurs
+                                    <i data-lucide="check" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"></i>Appliquer les Couleurs
                                 </button>
                                 <button onclick="saveThemeAsCustom()" class="btn-primary" style="background: var(--accent-gold);">
-                                    💾 Sauvegarder comme Thème
+                                    <i data-lucide="save" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"></i>Sauvegarder comme Thème
                                 </button>
                                 <button onclick="exportCurrentTheme()" class="btn-secondary">
-                                    📤 Exporter en JSON
+                                    <i data-lucide="upload" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"></i>Exporter en JSON
                                 </button>
                                 <button onclick="importThemeFile()" class="btn-secondary">
-                                    📥 Importer depuis JSON
+                                    <i data-lucide="download" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"></i>Importer depuis JSON
                                 </button>
                                 <button onclick="resetToDefault()" class="btn-secondary" style="margin-left: auto;">
-                                    🔄 Réinitialiser
+                                    <i data-lucide="refresh-cw" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"></i>Réinitialiser
                                 </button>
                             </div>
                         </div>
@@ -571,6 +571,11 @@ function openThemeManager() {
     // Remplir les thèmes prédéfinis
     renderPresetThemes();
     renderCustomThemes();
+
+    // Activer les icônes Lucide dans la modale
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
 
     // Lier les changements de couleur en temps réel
     modal.querySelectorAll('input[type="color"]').forEach(input => {
