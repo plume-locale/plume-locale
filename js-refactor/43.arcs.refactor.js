@@ -521,9 +521,9 @@ function renderArcScenePanel() {
 
                             <div class="arc-in-scene-control">
                                 <label class="arc-in-scene-label">Intensité</label>
-                                <input type="range" min="1" max="5" value="${presence.intensity}" 
-                                    class="arc-intensity-slider" 
-                                    oninput="updateArcIntensity('${arc.id}', this.value)">
+                                <input type="range" min="1" max="5" value="${presence.intensity}"
+                                    class="arc-intensity-slider"
+                                    oninput="updateArcIntensity('${arc.id}', this.value, this)">
                                 <div class="arc-intensity-value">${presence.intensity}/5</div>
                             </div>
 
@@ -653,7 +653,7 @@ function removeArcFromScene(arcId) {
 // [MVVM : Other]
 // Group: Use Case | Naming: UpdateArcIntensityUseCase
 // Met à jour l'intensité d'un arc dans une scène (Model) et rafraîchit l'affichage (View).
-function updateArcIntensity(arcId, intensity) {
+function updateArcIntensity(arcId, intensity, sliderElement) {
     if (!currentSceneId) return;
 
     const arc = project.narrativeArcs.find(a => a.id === arcId);
@@ -663,11 +663,17 @@ function updateArcIntensity(arcId, intensity) {
     if (presence) {
         presence.intensity = parseInt(intensity);
 
-        // Update display
-        const arcDiv = document.querySelector(`[data-arc-id="${arcId}"]`);
-        if (arcDiv) {
-            const valueDiv = arcDiv.querySelector('.arc-intensity-value');
+        // Update display - utilise la navigation relative depuis le slider pour plus de fiabilité
+        if (sliderElement) {
+            const valueDiv = sliderElement.parentElement.querySelector('.arc-intensity-value');
             if (valueDiv) valueDiv.textContent = `${intensity}/5`;
+        } else {
+            // Fallback: chercher via data-arc-id
+            const arcDiv = document.querySelector(`[data-arc-id="${arcId}"]`);
+            if (arcDiv) {
+                const valueDiv = arcDiv.querySelector('.arc-intensity-value');
+                if (valueDiv) valueDiv.textContent = `${intensity}/5`;
+            }
         }
 
         // Synchroniser avec la carte scene dans le arc-board (colonne ou flottant)
