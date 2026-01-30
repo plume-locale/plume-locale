@@ -1649,6 +1649,141 @@
     transform: rotate(3deg);
 }
 
+/* ============================================
+   MENU DE SÉLECTION DE TYPE DE CARTE
+   ============================================ */
+
+.arc-card-type-menu {
+    position: fixed;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 8px 32px var(--shadow), 0 0 0 1px rgba(0, 0, 0, 0.05);
+    padding: 8px;
+    z-index: 10000;
+    min-width: 200px;
+    animation: arcMenuAppear 0.15s ease-out;
+}
+
+@keyframes arcMenuAppear {
+    from {
+        opacity: 0;
+        transform: translateY(-8px) scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.arc-card-type-menu-header {
+    padding: 8px 12px 12px;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 8px;
+}
+
+.arc-card-type-menu-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 4px;
+}
+
+.arc-card-type-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    background: transparent;
+    border: 1px solid transparent;
+}
+
+.arc-card-type-option:hover {
+    background: var(--bg-secondary);
+    border-color: var(--primary-color);
+}
+
+.arc-card-type-option svg,
+.arc-card-type-option i {
+    width: 20px;
+    height: 20px;
+    color: var(--text-secondary);
+    transition: color 0.15s ease;
+}
+
+.arc-card-type-option:hover svg,
+.arc-card-type-option:hover i {
+    color: var(--primary-color);
+}
+
+.arc-card-type-option span {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    color: var(--text-secondary);
+    transition: color 0.15s ease;
+}
+
+.arc-card-type-option:hover span {
+    color: var(--text-primary);
+}
+
+/* ============================================
+   TOOLBAR DRAG & DROP
+   ============================================ */
+
+.arc-toolbar-btn.arc-toolbar-draggable {
+    cursor: grab;
+}
+
+.arc-toolbar-btn.arc-toolbar-draggable:active {
+    cursor: grabbing;
+}
+
+.arc-toolbar-btn.arc-toolbar-draggable.dragging {
+    opacity: 0.4;
+    cursor: grabbing;
+}
+
+/* Ghost de drag depuis la toolbar */
+.arc-toolbar-drag-ghost {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background: var(--bg-primary);
+    border: 2px solid var(--primary-color);
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-primary);
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+.arc-toolbar-drag-ghost svg,
+.arc-toolbar-drag-ghost i {
+    width: 16px;
+    height: 16px;
+    color: var(--primary-color);
+}
+
+/* Indication visuelle lors du drag depuis la toolbar */
+.arc-board-canvas.drop-zone-active {
+    outline: 2px dashed var(--primary-color);
+    outline-offset: -10px;
+}
+
 
 
 /* ============================================

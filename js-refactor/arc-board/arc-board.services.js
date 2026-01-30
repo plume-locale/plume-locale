@@ -142,6 +142,57 @@ const DragDropService = {
     },
 
     /**
+     * Démarre le drag depuis la toolbar pour créer un nouvel item
+     */
+    startToolbarDrag(event, itemType) {
+        event.stopPropagation();
+
+        this._state = {
+            active: true,
+            type: DragTypes.TOOLBAR,
+            itemType: itemType,
+            sourceColumnId: null,
+            element: event.target.closest('.arc-toolbar-btn'),
+            startX: event.clientX,
+            startY: event.clientY
+        };
+
+        event.dataTransfer.effectAllowed = 'copy';
+        event.dataTransfer.setData('application/json', JSON.stringify({
+            type: 'toolbar',
+            itemType: itemType
+        }));
+
+        // Créer un ghost personnalisé
+        const ghost = document.createElement('div');
+        ghost.className = 'arc-toolbar-drag-ghost';
+        ghost.innerHTML = `<i data-lucide="${CreatableItemTypes[itemType]?.icon || 'plus'}"></i><span>${CreatableItemTypes[itemType]?.label || itemType}</span>`;
+        ghost.style.position = 'absolute';
+        ghost.style.top = '-1000px';
+        document.body.appendChild(ghost);
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+        event.dataTransfer.setDragImage(ghost, 24, 24);
+        setTimeout(() => ghost.remove(), 0);
+
+        if (this._state.element) {
+            this._state.element.classList.add('dragging');
+        }
+
+        // Activer les zones de drop (canvas + colonnes si le type peut être une carte)
+        requestAnimationFrame(() => {
+            document.getElementById('arcBoardCanvas')?.classList.add('drop-zone-active');
+
+            // Activer les colonnes seulement pour les types qui peuvent être des cartes
+            const canBeCard = CreatableItemTypes[itemType]?.canBeCard;
+            if (canBeCard) {
+                document.querySelectorAll('.arc-column-body').forEach(el => {
+                    el.classList.add('drop-target');
+                });
+            }
+        });
+    },
+
+    /**
      * Fin du drag
      */
     endDrag(event) {
@@ -164,8 +215,16 @@ const DragDropService = {
     handleColumnDragOver(event) {
         if (!this._state.active) return;
 
+        // Pour le toolbar, vérifier si le type peut être une carte
+        if (this._state.type === DragTypes.TOOLBAR) {
+            const canBeCard = CreatableItemTypes[this._state.itemType]?.canBeCard;
+            if (!canBeCard) return;
+            event.dataTransfer.dropEffect = 'copy';
+        } else {
+            event.dataTransfer.dropEffect = 'move';
+        }
+
         event.preventDefault();
-        event.dataTransfer.dropEffect = 'move';
         event.currentTarget.classList.add('drop-hover');
     },
 
@@ -190,7 +249,15 @@ const DragDropService = {
         if (!arc) return;
 
         try {
-            if (this._state.type === DragTypes.CARD) {
+            if (this._state.type === DragTypes.TOOLBAR) {
+                // Créer une nouvelle carte depuis la toolbar
+                const itemType = this._state.itemType;
+                const canBeCard = CreatableItemTypes[itemType]?.canBeCard;
+
+                if (canBeCard) {
+                    ArcBoardViewModel.addCard(targetColumnId, itemType);
+                }
+            } else if (this._state.type === DragTypes.CARD) {
                 // Déplacer une carte entre colonnes
                 if (this._state.sourceColumnId !== targetColumnId) {
                     CardRepository.move(
@@ -339,14 +406,18 @@ const DragDropService = {
      * Gère le dragover sur le canvas
      */
     handleCanvasDragOver(event) {
-        // Permettre le drop seulement pour les cartes (conversion en item flottant)
+        // Ne pas accepter si on est sur une colonne
+        if (event.target.closest('.arc-column')) return;
+
+        // Permettre le drop pour les cartes (conversion en item flottant) et la toolbar
         if (this._state.type === DragTypes.CARD) {
-            // Ne pas accepter si on est sur une colonne
-            if (!event.target.closest('.arc-column')) {
-                event.preventDefault();
-                event.dataTransfer.dropEffect = 'move';
-                document.getElementById('arcBoardCanvas')?.classList.add('drop-hover');
-            }
+            event.preventDefault();
+            event.dataTransfer.dropEffect = 'move';
+            document.getElementById('arcBoardCanvas')?.classList.add('drop-hover');
+        } else if (this._state.type === DragTypes.TOOLBAR) {
+            event.preventDefault();
+            event.dataTransfer.dropEffect = 'copy';
+            document.getElementById('arcBoardCanvas')?.classList.add('drop-hover');
         }
     },
 
@@ -360,7 +431,7 @@ const DragDropService = {
     },
 
     /**
-     * Gère le drop sur le canvas (convertit carte en item flottant)
+     * Gère le drop sur le canvas (convertit carte en item flottant ou crée depuis toolbar)
      */
     handleCanvasDrop(event) {
         // Ignorer si on drop sur une colonne
@@ -369,25 +440,32 @@ const DragDropService = {
         event.preventDefault();
         document.getElementById('arcBoardCanvas')?.classList.remove('drop-hover');
 
-        if (this._state.type !== DragTypes.CARD) return;
-
         const arc = ArcBoardViewModel.getCurrentArc();
         if (!arc) return;
 
         try {
             const position = ArcBoardViewModel._clientToCanvasPosition(event.clientX, event.clientY);
-            CardRepository.convertToItem(
-                arc.id,
-                this._state.sourceColumnId,
-                this._state.itemId,
-                position
-            );
-            ArcBoardViewModel.renderItems();
 
-            // Rafraîchir le panneau arcScenePanel s'il est visible
-            const arcPanel = document.getElementById('arcScenePanel');
-            if (arcPanel && !arcPanel.classList.contains('hidden') && typeof renderArcScenePanel === 'function') {
-                renderArcScenePanel();
+            if (this._state.type === DragTypes.TOOLBAR) {
+                // Créer un nouvel item depuis la toolbar à la position du drop
+                const item = BoardItemRepository.create(arc.id, this._state.itemType, position);
+                ArcBoardViewModel.renderItems();
+                ArcBoardViewModel.selectItem(item.id);
+            } else if (this._state.type === DragTypes.CARD) {
+                // Convertir une carte en item flottant
+                CardRepository.convertToItem(
+                    arc.id,
+                    this._state.sourceColumnId,
+                    this._state.itemId,
+                    position
+                );
+                ArcBoardViewModel.renderItems();
+
+                // Rafraîchir le panneau arcScenePanel s'il est visible
+                const arcPanel = document.getElementById('arcScenePanel');
+                if (arcPanel && !arcPanel.classList.contains('hidden') && typeof renderArcScenePanel === 'function') {
+                    renderArcScenePanel();
+                }
             }
         } finally {
             this.reset();

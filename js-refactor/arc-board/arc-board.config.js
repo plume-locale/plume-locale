@@ -85,5 +85,17 @@ const DragTypes = Object.freeze({
     CARD: 'card',
     FLOATING: 'floating',
     COLUMN: 'column',
-    UNASSIGNED: 'unassigned'
+    UNASSIGNED: 'unassigned',
+    TOOLBAR: 'toolbar'
+});
+
+// Types d'items disponibles pour création (toolbar et menu)
+const CreatableItemTypes = Object.freeze({
+    note: { label: 'Note', icon: 'file-text', canBeCard: true },
+    column: { label: 'Colonne', icon: 'columns-3', canBeCard: false },
+    link: { label: 'Lien', icon: 'link', canBeCard: true },
+    todo: { label: 'Tâches', icon: 'check-square', canBeCard: true },
+    comment: { label: 'Commentaire', icon: 'message-square', canBeCard: true },
+    table: { label: 'Tableau', icon: 'table', canBeCard: true },
+    image: { label: 'Image', icon: 'image', canBeCard: true }
 });

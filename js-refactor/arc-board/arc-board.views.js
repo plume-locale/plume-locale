@@ -301,6 +301,19 @@ const ArcBoardView = {
     },
 
     _renderToolbar() {
+        // Génère un bouton draggable pour les items de création
+        const draggableBtn = (type, tooltip, icon) => `
+            <button class="arc-toolbar-btn arc-toolbar-draggable"
+                    data-tooltip="${tooltip}"
+                    data-item-type="${type}"
+                    draggable="true"
+                    onclick="ArcBoardViewModel.addItem('${type}')"
+                    ondragstart="DragDropService.startToolbarDrag(event, '${type}')"
+                    ondragend="DragDropService.endDrag(event)">
+                <i data-lucide="${icon}"></i>
+            </button>
+        `;
+
         return `
             <div class="arc-board-toolbar">
                 <button class="arc-toolbar-btn ${ArcBoardState.activeTool === 'select' ? 'active' : ''}"
@@ -314,30 +327,16 @@ const ArcBoardView = {
 
                 <div class="arc-toolbar-separator"></div>
 
-                <button class="arc-toolbar-btn" data-tooltip="Note" onclick="ArcBoardViewModel.addItem('note')">
-                    <i data-lucide="file-text"></i>
-                </button>
-                <button class="arc-toolbar-btn" data-tooltip="Colonne" onclick="ArcBoardViewModel.addItem('column')">
-                    <i data-lucide="columns-3"></i>
-                </button>
-                <button class="arc-toolbar-btn" data-tooltip="Lien" onclick="ArcBoardViewModel.addItem('link')">
-                    <i data-lucide="link"></i>
-                </button>
-                <button class="arc-toolbar-btn" data-tooltip="Tâches" onclick="ArcBoardViewModel.addItem('todo')">
-                    <i data-lucide="check-square"></i>
-                </button>
-                <button class="arc-toolbar-btn" data-tooltip="Commentaire" onclick="ArcBoardViewModel.addItem('comment')">
-                    <i data-lucide="message-square"></i>
-                </button>
-                <button class="arc-toolbar-btn" data-tooltip="Tableau" onclick="ArcBoardViewModel.addItem('table')">
-                    <i data-lucide="table"></i>
-                </button>
+                ${draggableBtn('note', 'Note (glisser-déposer)', 'file-text')}
+                ${draggableBtn('column', 'Colonne (glisser-déposer)', 'columns-3')}
+                ${draggableBtn('link', 'Lien (glisser-déposer)', 'link')}
+                ${draggableBtn('todo', 'Tâches (glisser-déposer)', 'check-square')}
+                ${draggableBtn('comment', 'Commentaire (glisser-déposer)', 'message-square')}
+                ${draggableBtn('table', 'Tableau (glisser-déposer)', 'table')}
 
                 <div class="arc-toolbar-separator"></div>
 
-                <button class="arc-toolbar-btn" data-tooltip="Image" onclick="ArcBoardViewModel.addItem('image')">
-                    <i data-lucide="image"></i>
-                </button>
+                ${draggableBtn('image', 'Image (glisser-déposer)', 'image')}
                 <button class="arc-toolbar-btn" data-tooltip="Upload" onclick="document.getElementById('arcFileInput').click()">
                     <i data-lucide="upload"></i>
                 </button>
@@ -724,7 +723,7 @@ const ArcBoardView = {
                      ondragover="DragDropService.handleColumnDragOver(event)"
                      ondragleave="DragDropService.handleColumnDragLeave(event)">
                     ${cardsHtml}
-                    <div class="arc-card-add" onclick="event.stopPropagation(); ArcBoardViewModel.addCard('${item.id}')">
+                    <div class="arc-card-add" onclick="event.stopPropagation(); ArcBoardView.showCardTypeMenu(event, '${item.id}')">
                         <i data-lucide="plus"></i> Ajouter une carte
                     </div>
                 </div>
@@ -1332,5 +1331,64 @@ const ArcBoardView = {
     _removeContextMenu() {
         const menu = document.getElementById('arcContextMenu');
         if (menu) menu.remove();
+        const cardMenu = document.getElementById('arcCardTypeMenu');
+        if (cardMenu) cardMenu.remove();
+    },
+
+    /**
+     * Affiche le menu de sélection de type de carte
+     * @param {Event} event - L'événement click
+     * @param {string} columnId - L'ID de la colonne cible
+     */
+    showCardTypeMenu(event, columnId) {
+        this._removeContextMenu();
+
+        const menu = document.createElement('div');
+        menu.className = 'arc-card-type-menu';
+        menu.id = 'arcCardTypeMenu';
+
+        // Positionner près du bouton
+        const rect = event.target.closest('.arc-card-add').getBoundingClientRect();
+        menu.style.left = `${rect.left}px`;
+        menu.style.top = `${rect.bottom + 4}px`;
+
+        // Générer les options de types de cartes
+        const cardTypes = Object.entries(CreatableItemTypes)
+            .filter(([_, config]) => config.canBeCard);
+
+        menu.innerHTML = `
+            <div class="arc-card-type-menu-header">
+                <span>Type de carte</span>
+            </div>
+            <div class="arc-card-type-menu-grid">
+                ${cardTypes.map(([type, config]) => `
+                    <div class="arc-card-type-option" onclick="ArcBoardViewModel.addCard('${columnId}', '${type}'); ArcBoardView._removeContextMenu();">
+                        <i data-lucide="${config.icon}"></i>
+                        <span>${config.label}</span>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+
+        document.body.appendChild(menu);
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+
+        // Ajuster la position si le menu dépasse de l'écran
+        const menuRect = menu.getBoundingClientRect();
+        if (menuRect.right > window.innerWidth) {
+            menu.style.left = `${window.innerWidth - menuRect.width - 10}px`;
+        }
+        if (menuRect.bottom > window.innerHeight) {
+            menu.style.top = `${rect.top - menuRect.height - 4}px`;
+        }
+
+        // Fermer le menu au clic extérieur
+        setTimeout(() => {
+            document.addEventListener('click', (e) => {
+                if (!menu.contains(e.target)) {
+                    this._removeContextMenu();
+                }
+            }, { once: true });
+        }, 10);
     }
 };
