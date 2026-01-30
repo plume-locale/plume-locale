@@ -243,10 +243,18 @@ const ArcBoardView = {
         const view = document.getElementById('editorView');
         if (!view) return;
 
+        // En mode Split, rendu différent
+        if (ArcBoardState.multiArcMode === MultiArcModes.SPLIT) {
+            view.innerHTML = this._renderSplitMode();
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+            return;
+        }
+
         view.innerHTML = `
             <div class="arc-board-container">
                 ${this._renderToolbar()}
-                
+                ${this._renderMultiArcBar(arc)}
+
                 <!-- Zone Non attribué en sidebar -->
                 <div id="arcUnassignedSidebar"></div>
 
@@ -260,6 +268,9 @@ const ArcBoardView = {
                          ondrop="DragDropService.handleCanvasDrop(event)"
                          ondragover="DragDropService.handleCanvasDragOver(event)"
                          ondragleave="DragDropService.handleCanvasDragLeave(event)">
+
+                        <!-- Ghost layers pour mode Compare -->
+                        ${ArcBoardState.multiArcMode === MultiArcModes.COMPARE ? this._renderGhostLayers() : ''}
 
                         <div class="arc-board-content" id="arcBoardContent"
                              style="transform: scale(${ArcBoardState.zoom}) translate(${ArcBoardState.panX}px, ${ArcBoardState.panY}px)">
@@ -385,6 +396,489 @@ const ArcBoardView = {
                 </div>
             </div>
         `;
+    },
+
+    // ==========================================
+    // MULTI-ARCS
+    // ==========================================
+
+    /**
+     * Rendu de la barre multi-arcs
+     */
+    _renderMultiArcBar(arc) {
+        const isExpanded = ArcBoardState.multiArcBarExpanded;
+        const mode = ArcBoardState.multiArcMode;
+        const allArcs = ArcRepository.getAll();
+        const availableArcs = ArcBoardViewModel.getAvailableArcsForAdd();
+
+        // Mode compact : juste le bouton
+        if (!isExpanded) {
+            return `
+                <div class="arc-multi-bar arc-multi-bar-compact">
+                    <div class="arc-multi-bar-left">
+                        <span class="arc-multi-current">
+                            <span class="arc-multi-dot" style="background:${arc.color}"></span>
+                            ${arc.title}
+                        </span>
+                    </div>
+                    <button class="arc-multi-toggle" onclick="ArcBoardViewModel.toggleMultiArcBar()" data-tooltip="Multi-arcs">
+                        <i data-lucide="layers"></i>
+                        <span>Multi-arcs</span>
+                        <i data-lucide="chevron-down"></i>
+                    </button>
+                </div>
+            `;
+        }
+
+        // Mode étendu
+        const ghostArcsHtml = ArcBoardState.ghostArcs.map(ghostId => {
+            const ghostArc = ArcRepository.getById(ghostId);
+            if (!ghostArc) return '';
+            return `
+                <span class="arc-multi-ghost-tag" style="--ghost-color: ${ghostArc.color}">
+                    <span class="arc-multi-dot" style="background:${ghostArc.color}"></span>
+                    ${ghostArc.title}
+                    <button class="arc-multi-ghost-remove" onclick="ArcBoardViewModel.removeGhostArc('${ghostId}')" title="Retirer">
+                        <i data-lucide="x"></i>
+                    </button>
+                </span>
+            `;
+        }).join('');
+
+        const addArcOptions = availableArcs.map(a =>
+            `<option value="${a.id}">${a.title}</option>`
+        ).join('');
+
+        return `
+            <div class="arc-multi-bar arc-multi-bar-expanded">
+                <div class="arc-multi-bar-row">
+                    <div class="arc-multi-bar-left">
+                        <label class="arc-multi-label">Arc principal :</label>
+                        <select class="arc-multi-select" onchange="ArcBoardViewModel.openArc(this.value)">
+                            ${allArcs.map(a => `
+                                <option value="${a.id}" ${a.id === arc.id ? 'selected' : ''}>${a.title}</option>
+                            `).join('')}
+                        </select>
+                    </div>
+
+                    <div class="arc-multi-bar-center">
+                        <div class="arc-multi-modes">
+                            <label class="arc-multi-mode ${mode === MultiArcModes.SOLO ? 'active' : ''}">
+                                <input type="radio" name="multiArcMode" value="solo"
+                                       ${mode === MultiArcModes.SOLO ? 'checked' : ''}
+                                       onchange="ArcBoardViewModel.setMultiArcMode('solo')">
+                                <span>Solo</span>
+                            </label>
+                            <label class="arc-multi-mode ${mode === MultiArcModes.COMPARE ? 'active' : ''}">
+                                <input type="radio" name="multiArcMode" value="compare"
+                                       ${mode === MultiArcModes.COMPARE ? 'checked' : ''}
+                                       onchange="ArcBoardViewModel.setMultiArcMode('compare')">
+                                <span>Comparer</span>
+                            </label>
+                            <label class="arc-multi-mode ${mode === MultiArcModes.SPLIT ? 'active' : ''}">
+                                <input type="radio" name="multiArcMode" value="split"
+                                       ${mode === MultiArcModes.SPLIT ? 'checked' : ''}
+                                       onchange="ArcBoardViewModel.setMultiArcMode('split')">
+                                <span>Split</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button class="arc-multi-toggle" onclick="ArcBoardViewModel.toggleMultiArcBar()">
+                        <i data-lucide="chevron-up"></i>
+                    </button>
+                </div>
+
+                ${mode === MultiArcModes.COMPARE ? `
+                    <div class="arc-multi-bar-row arc-multi-bar-ghosts">
+                        <div class="arc-multi-ghosts-list">
+                            <span class="arc-multi-label">Arcs fantômes :</span>
+                            ${ghostArcsHtml || '<span class="arc-multi-empty">Aucun</span>'}
+                        </div>
+
+                        ${availableArcs.length > 0 ? `
+                            <div class="arc-multi-add-ghost">
+                                <select id="addGhostSelect" class="arc-multi-select-small">
+                                    <option value="">+ Ajouter un arc...</option>
+                                    ${addArcOptions}
+                                </select>
+                                <button class="arc-multi-btn-add" onclick="const sel = document.getElementById('addGhostSelect'); if(sel.value) { ArcBoardViewModel.addGhostArc(sel.value); sel.value=''; }">
+                                    <i data-lucide="plus"></i>
+                                </button>
+                            </div>
+                        ` : ''}
+
+                        <div class="arc-multi-opacity">
+                            <label>Opacité :</label>
+                            <input type="range" min="10" max="100" value="${Math.round(ArcBoardState.ghostOpacity * 100)}"
+                                   onchange="ArcBoardViewModel.setGhostOpacity(this.value / 100)"
+                                   oninput="ArcBoardViewModel.setGhostOpacity(this.value / 100)">
+                            <span>${Math.round(ArcBoardState.ghostOpacity * 100)}%</span>
+                        </div>
+                    </div>
+                ` : ''}
+            </div>
+        `;
+    },
+
+    /**
+     * Rendu des layers fantômes (mode Compare)
+     */
+    _renderGhostLayers() {
+        if (ArcBoardState.ghostArcs.length === 0) return '';
+
+        return ArcBoardState.ghostArcs.map(ghostId => {
+            const ghostArc = ArcRepository.getById(ghostId);
+            if (!ghostArc || !ghostArc.board) return '';
+
+            return `
+                <div class="arc-ghost-layer"
+                     data-arc-id="${ghostId}"
+                     style="opacity: ${ArcBoardState.ghostOpacity}; --ghost-color: ${ghostArc.color}">
+                    <div class="arc-ghost-content"
+                         style="transform: scale(${ArcBoardState.zoom}) translate(${ArcBoardState.panX}px, ${ArcBoardState.panY}px)">
+                        ${this._renderGhostItems(ghostArc)}
+                        ${this._renderGhostConnections(ghostArc)}
+                    </div>
+                    <div class="arc-ghost-badge" onclick="ArcBoardViewModel.setMainArc('${ghostId}')">
+                        <span class="arc-ghost-badge-dot" style="background:${ghostArc.color}"></span>
+                        ${ghostArc.title}
+                        <i data-lucide="arrow-up-right"></i>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    },
+
+    /**
+     * Rendu des items d'un arc fantôme
+     */
+    _renderGhostItems(arc) {
+        return arc.board.items.map(item => {
+            if (item.type === 'column') {
+                return `
+                    <div class="arc-ghost-column"
+                         style="left:${item.x}px; top:${item.y}px; width:${item.width || 280}px"
+                         data-item-id="${item.id}"
+                         data-arc-id="${arc.id}">
+                        <div class="arc-ghost-column-header">
+                            <span>${item.title || 'Colonne'}</span>
+                            <span class="arc-ghost-card-count">${item.cards?.length || 0}</span>
+                        </div>
+                        <div class="arc-ghost-column-body">
+                            ${(item.cards || []).slice(0, 3).map(card => `
+                                <div class="arc-ghost-card">${this._getGhostCardPreview(card)}</div>
+                            `).join('')}
+                            ${(item.cards?.length || 0) > 3 ? `<div class="arc-ghost-more">+${item.cards.length - 3} autres</div>` : ''}
+                        </div>
+                    </div>
+                `;
+            } else {
+                return `
+                    <div class="arc-ghost-item arc-ghost-${item.type}"
+                         style="left:${item.x}px; top:${item.y}px; ${item.width ? `width:${item.width}px` : ''}"
+                         data-item-id="${item.id}"
+                         data-arc-id="${arc.id}">
+                        ${this._getGhostItemPreview(item)}
+                    </div>
+                `;
+            }
+        }).join('');
+    },
+
+    _getGhostCardPreview(card) {
+        switch (card.type) {
+            case 'scene': return `<i data-lucide="film"></i> ${card.sceneTitle || 'Scène'}`;
+            case 'note': return `<i data-lucide="file-text"></i> ${(card.content || '').substring(0, 30)}...`;
+            case 'todo': return `<i data-lucide="check-square"></i> ${card.title || 'Tâches'}`;
+            default: return `<i data-lucide="file"></i> ${card.type}`;
+        }
+    },
+
+    _getGhostItemPreview(item) {
+        switch (item.type) {
+            case 'note': return `<i data-lucide="file-text"></i>`;
+            case 'image': return `<i data-lucide="image"></i>`;
+            case 'todo': return `<i data-lucide="check-square"></i>`;
+            case 'link': return `<i data-lucide="link"></i>`;
+            default: return `<i data-lucide="file"></i>`;
+        }
+    },
+
+    /**
+     * Rendu des connexions d'un arc fantôme
+     */
+    _renderGhostConnections(arc) {
+        if (!arc.board.connections || arc.board.connections.length === 0) return '';
+
+        return `
+            <svg class="arc-ghost-connections">
+                ${arc.board.connections.map(conn => {
+                    const fromItem = arc.board.items.find(i => i.id === conn.from);
+                    const toItem = arc.board.items.find(i => i.id === conn.to);
+                    if (!fromItem || !toItem) return '';
+
+                    const fromPos = this._getConnectionPoint(fromItem, conn.fromSide);
+                    const toPos = this._getConnectionPoint(toItem, conn.toSide);
+                    const path = this._createConnectionPath(fromPos, toPos);
+
+                    return `<path d="${path}" class="arc-ghost-connection-line" />`;
+                }).join('')}
+            </svg>
+        `;
+    },
+
+    /**
+     * Rendu du mode Split (panneaux côte à côte)
+     */
+    _renderSplitMode() {
+        const splitArcs = ArcBoardState.splitArcs;
+        const layout = ArcBoardState.splitLayout;
+        const availableArcs = ArcBoardViewModel.getAvailableArcsForAdd();
+
+        const panelsHtml = splitArcs.map((panel, index) => {
+            const arc = ArcRepository.getById(panel.id);
+            if (!arc) return '';
+
+            return `
+                <div class="arc-split-panel" data-arc-id="${panel.id}" data-panel-index="${index}">
+                    <div class="arc-split-panel-header">
+                        <div class="arc-split-panel-title">
+                            <span class="arc-multi-dot" style="background:${arc.color}"></span>
+                            <select class="arc-split-select" onchange="ArcBoardViewModel.changeSplitPanelArc(${index}, this.value)">
+                                ${ArcRepository.getAll().map(a => `
+                                    <option value="${a.id}" ${a.id === panel.id ? 'selected' : ''}>${a.title}</option>
+                                `).join('')}
+                            </select>
+                        </div>
+                        ${splitArcs.length > 1 ? `
+                            <button class="arc-split-close" onclick="ArcBoardViewModel.removeSplitPanel('${panel.id}')" title="Fermer">
+                                <i data-lucide="x"></i>
+                            </button>
+                        ` : ''}
+                    </div>
+                    <div class="arc-split-canvas"
+                         id="splitCanvas-${panel.id}"
+                         data-arc-id="${panel.id}"
+                         onmousedown="ArcBoardEventHandlers.onSplitCanvasMouseDown(event, '${panel.id}')"
+                         onmousemove="ArcBoardEventHandlers.onSplitCanvasMouseMove(event, '${panel.id}')"
+                         onmouseup="ArcBoardEventHandlers.onSplitCanvasMouseUp(event, '${panel.id}')"
+                         onwheel="ArcBoardEventHandlers.onSplitCanvasWheel(event, '${panel.id}')">
+                        <div class="arc-split-content"
+                             id="splitContent-${panel.id}"
+                             style="transform: scale(${panel.zoom}) translate(${panel.panX}px, ${panel.panY}px)">
+                            ${this._renderSplitPanelItems(arc)}
+                            ${this._renderSplitPanelConnections(arc)}
+                        </div>
+                    </div>
+                    <div class="arc-split-zoom">
+                        <button onclick="ArcBoardViewModel.zoomSplitPanel('${panel.id}', -1)"><i data-lucide="zoom-out"></i></button>
+                        <span>${Math.round(panel.zoom * 100)}%</span>
+                        <button onclick="ArcBoardViewModel.zoomSplitPanel('${panel.id}', 1)"><i data-lucide="zoom-in"></i></button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        const addPanelOptions = availableArcs.map(a =>
+            `<option value="${a.id}">${a.title}</option>`
+        ).join('');
+
+        return `
+            <div class="arc-board-container arc-split-container">
+                ${this._renderToolbar()}
+
+                <div class="arc-split-bar">
+                    <div class="arc-split-bar-left">
+                        <span class="arc-multi-label">Mode Split</span>
+                        <span class="arc-split-count">${splitArcs.length} panneau${splitArcs.length > 1 ? 'x' : ''}</span>
+                    </div>
+
+                    <div class="arc-split-bar-center">
+                        <div class="arc-split-layout-toggle">
+                            <button class="${layout === 'vertical' ? 'active' : ''}"
+                                    onclick="ArcBoardViewModel.setSplitLayout('vertical')"
+                                    title="Côte à côte">
+                                <i data-lucide="columns-2"></i>
+                            </button>
+                            <button class="${layout === 'horizontal' ? 'active' : ''}"
+                                    onclick="ArcBoardViewModel.setSplitLayout('horizontal')"
+                                    title="Empilé">
+                                <i data-lucide="rows-2"></i>
+                            </button>
+                        </div>
+
+                        ${availableArcs.length > 0 ? `
+                            <div class="arc-split-add">
+                                <select id="addSplitSelect" class="arc-multi-select-small">
+                                    <option value="">+ Ajouter panneau...</option>
+                                    ${addPanelOptions}
+                                </select>
+                                <button onclick="const sel = document.getElementById('addSplitSelect'); if(sel.value) { ArcBoardViewModel.addSplitPanel(sel.value); sel.value=''; }">
+                                    <i data-lucide="plus"></i>
+                                </button>
+                            </div>
+                        ` : ''}
+                    </div>
+
+                    <button class="arc-multi-btn-exit" onclick="ArcBoardViewModel.setMultiArcMode('solo')">
+                        <i data-lucide="x"></i>
+                        Quitter Split
+                    </button>
+                </div>
+
+                <div class="arc-split-panels ${layout === 'horizontal' ? 'arc-split-horizontal' : 'arc-split-vertical'}">
+                    ${panelsHtml}
+                </div>
+
+                ${this._renderInterArcConnectionsPanel()}
+            </div>
+        `;
+    },
+
+    _renderSplitPanelItems(arc) {
+        return arc.board.items.map(item => {
+            if (item.type === 'column') {
+                return `
+                    <div class="arc-column arc-split-column"
+                         style="left:${item.x}px; top:${item.y}px; width:${item.width || 280}px"
+                         data-item-id="${item.id}">
+                        <div class="arc-column-header">
+                            <span class="arc-column-title">${item.title || 'Colonne'}</span>
+                            <span class="arc-column-count">${item.cards?.length || 0}</span>
+                        </div>
+                        <div class="arc-column-body">
+                            ${(item.cards || []).map(card => `
+                                <div class="arc-card arc-card-${card.type}" data-card-id="${card.id}">
+                                    ${this._getGhostCardPreview(card)}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            return '';
+        }).join('');
+    },
+
+    _renderSplitPanelConnections(arc) {
+        if (!arc.board.connections || arc.board.connections.length === 0) return '';
+
+        return `
+            <svg class="arc-split-connections">
+                ${arc.board.connections.map(conn => {
+                    const fromItem = arc.board.items.find(i => i.id === conn.from);
+                    const toItem = arc.board.items.find(i => i.id === conn.to);
+                    if (!fromItem || !toItem) return '';
+
+                    const fromPos = this._getConnectionPoint(fromItem, conn.fromSide);
+                    const toPos = this._getConnectionPoint(toItem, conn.toSide);
+                    const path = this._createConnectionPath(fromPos, toPos);
+
+                    return `<path d="${path}" class="arc-connection-line" marker-end="url(#arrowhead)" />`;
+                }).join('')}
+            </svg>
+        `;
+    },
+
+    /**
+     * Rendu du panneau de connexions inter-arcs (mode Split)
+     */
+    _renderInterArcConnectionsPanel() {
+        const connections = InterArcConnectionRepository.getAll();
+
+        return `
+            <div class="arc-interarc-panel">
+                <div class="arc-interarc-header">
+                    <i data-lucide="git-branch"></i>
+                    <span>Connexions inter-arcs</span>
+                    <span class="arc-interarc-count">${connections.length}</span>
+                </div>
+                <div class="arc-interarc-body">
+                    ${connections.length === 0 ? `
+                        <div class="arc-interarc-empty">
+                            Aucune connexion inter-arc.<br>
+                            <small>Utilisez l'outil Connexion pour lier des éléments entre les arcs.</small>
+                        </div>
+                    ` : connections.map(conn => this._renderInterArcConnection(conn)).join('')}
+                </div>
+                <div class="arc-interarc-footer">
+                    <button class="arc-interarc-add" onclick="InterArcConnectionService.startConnection()">
+                        <i data-lucide="plus"></i>
+                        Nouvelle connexion
+                    </button>
+                </div>
+            </div>
+        `;
+    },
+
+    _renderInterArcConnection(conn) {
+        const fromArc = ArcRepository.getById(conn.fromArcId);
+        const toArc = ArcRepository.getById(conn.toArcId);
+        const fromItem = fromArc ? BoardItemRepository.getById(conn.fromArcId, conn.fromItemId) : null;
+        const toItem = toArc ? BoardItemRepository.getById(conn.toArcId, conn.toItemId) : null;
+
+        const typeLabels = {
+            parallel: 'Parallèle',
+            cause: 'Cause',
+            consequence: 'Conséquence',
+            echo: 'Écho',
+            contrast: 'Contraste'
+        };
+
+        return `
+            <div class="arc-interarc-connection" data-connection-id="${conn.id}">
+                <div class="arc-interarc-from">
+                    <span class="arc-multi-dot" style="background:${fromArc?.color || '#999'}"></span>
+                    <span>${fromArc?.title || '?'}</span>
+                    <i data-lucide="chevron-right"></i>
+                    <span>${fromItem?.title || '?'}</span>
+                </div>
+                <div class="arc-interarc-type">
+                    <select onchange="InterArcConnectionRepository.update('${conn.id}', { type: this.value })">
+                        ${Object.entries(typeLabels).map(([key, label]) => `
+                            <option value="${key}" ${conn.type === key ? 'selected' : ''}>${label}</option>
+                        `).join('')}
+                    </select>
+                </div>
+                <div class="arc-interarc-to">
+                    <span class="arc-multi-dot" style="background:${toArc?.color || '#999'}"></span>
+                    <span>${toArc?.title || '?'}</span>
+                    <i data-lucide="chevron-right"></i>
+                    <span>${toItem?.title || '?'}</span>
+                </div>
+                <button class="arc-interarc-delete" onclick="InterArcConnectionRepository.delete('${conn.id}'); ArcBoardViewModel.render()">
+                    <i data-lucide="trash-2"></i>
+                </button>
+            </div>
+        `;
+    },
+
+    /**
+     * Helper pour calculer le point de connexion
+     */
+    _getConnectionPoint(item, side) {
+        const width = item.width || 280;
+        const height = 200; // Estimation
+
+        switch (side) {
+            case 'top': return { x: item.x + width / 2, y: item.y };
+            case 'bottom': return { x: item.x + width / 2, y: item.y + height };
+            case 'left': return { x: item.x, y: item.y + height / 2 };
+            case 'right': return { x: item.x + width, y: item.y + height / 2 };
+            default: return { x: item.x + width, y: item.y + height / 2 };
+        }
+    },
+
+    /**
+     * Helper pour créer le path SVG d'une connexion
+     */
+    _createConnectionPath(from, to) {
+        const dx = to.x - from.x;
+        const dy = to.y - from.y;
+        const cx = Math.abs(dx) / 2;
+
+        return `M ${from.x} ${from.y} C ${from.x + cx} ${from.y}, ${to.x - cx} ${to.y}, ${to.x} ${to.y}`;
     },
 
     _renderContextPanel(arc) {

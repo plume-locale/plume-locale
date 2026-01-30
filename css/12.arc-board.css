@@ -2187,3 +2187,866 @@
         background: white !important;
     }
 }
+
+/* ============================================
+   MULTI-ARCS - Barre de contrôle
+   ============================================ */
+
+.arc-multi-bar {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-light);
+    padding: 8px 16px;
+    gap: 8px;
+}
+
+.arc-multi-bar-compact {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 16px;
+}
+
+.arc-multi-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.arc-multi-bar-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.arc-multi-bar-center {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.arc-multi-current {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.arc-multi-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.arc-multi-label {
+    font-size: 13px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+.arc-multi-select {
+    padding: 4px 8px;
+    border: 1px solid var(--border-light);
+    border-radius: 6px;
+    background: var(--bg-primary);
+    font-size: 13px;
+    color: var(--text-primary);
+    cursor: pointer;
+    min-width: 140px;
+}
+
+.arc-multi-select:hover {
+    border-color: var(--border-medium);
+}
+
+.arc-multi-select-small {
+    padding: 4px 8px;
+    border: 1px solid var(--border-light);
+    border-radius: 6px;
+    background: var(--bg-primary);
+    font-size: 12px;
+    color: var(--text-primary);
+    cursor: pointer;
+    min-width: 120px;
+}
+
+.arc-multi-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-light);
+    border-radius: 6px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.arc-multi-toggle:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.arc-multi-toggle i {
+    width: 16px;
+    height: 16px;
+}
+
+/* Modes Radio Buttons */
+.arc-multi-modes {
+    display: flex;
+    background: var(--bg-tertiary);
+    border-radius: 8px;
+    padding: 3px;
+    gap: 2px;
+}
+
+.arc-multi-mode {
+    display: flex;
+    align-items: center;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.arc-multi-mode input {
+    display: none;
+}
+
+.arc-multi-mode:hover {
+    color: var(--text-primary);
+}
+
+.arc-multi-mode.active {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Ghost arcs row */
+.arc-multi-bar-ghosts {
+    background: var(--bg-tertiary);
+    margin: 0 -16px -8px;
+    padding: 8px 16px;
+    border-top: 1px solid var(--border-light);
+}
+
+.arc-multi-ghosts-list {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    flex: 1;
+}
+
+.arc-multi-empty {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.arc-multi-ghost-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px 4px 10px;
+    background: var(--bg-primary);
+    border: 1px solid var(--ghost-color, var(--border-light));
+    border-radius: 20px;
+    font-size: 12px;
+    color: var(--text-primary);
+}
+
+.arc-multi-ghost-remove {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    padding: 0;
+    background: none;
+    border: none;
+    border-radius: 50%;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.arc-multi-ghost-remove:hover {
+    background: var(--bg-danger-light);
+    color: var(--text-danger);
+}
+
+.arc-multi-ghost-remove i {
+    width: 12px;
+    height: 12px;
+}
+
+.arc-multi-add-ghost {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.arc-multi-btn-add {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    background: var(--accent-color);
+    border: none;
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.arc-multi-btn-add:hover {
+    background: var(--accent-hover);
+}
+
+.arc-multi-btn-add i {
+    width: 16px;
+    height: 16px;
+}
+
+.arc-multi-opacity {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.arc-multi-opacity input[type="range"] {
+    width: 80px;
+    height: 4px;
+    -webkit-appearance: none;
+    background: var(--border-medium);
+    border-radius: 2px;
+    cursor: pointer;
+}
+
+.arc-multi-opacity input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    background: var(--accent-color);
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.arc-multi-btn-exit {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: var(--bg-danger-light);
+    border: 1px solid var(--border-danger);
+    border-radius: 6px;
+    font-size: 13px;
+    color: var(--text-danger);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.arc-multi-btn-exit:hover {
+    background: var(--bg-danger);
+    color: white;
+}
+
+.arc-multi-btn-exit i {
+    width: 14px;
+    height: 14px;
+}
+
+/* ============================================
+   MULTI-ARCS - Ghost Layers (Mode Compare)
+   ============================================ */
+
+.arc-ghost-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 3;
+    transition: opacity 0.2s ease;
+}
+
+.arc-ghost-content {
+    position: relative;
+    min-width: 3000px;
+    min-height: 2000px;
+    transform-origin: 0 0;
+}
+
+.arc-ghost-badge {
+    position: fixed;
+    bottom: 80px;
+    left: 300px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: var(--bg-primary);
+    border: 2px solid var(--ghost-color, var(--border-light));
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    cursor: pointer;
+    pointer-events: auto;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    z-index: 100;
+    transition: all 0.15s ease;
+}
+
+.arc-ghost-badge:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.arc-ghost-badge i {
+    width: 14px;
+    height: 14px;
+    opacity: 0.6;
+}
+
+.arc-ghost-badge-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+/* Ghost columns */
+.arc-ghost-column {
+    position: absolute;
+    background: var(--bg-secondary);
+    border: 2px dashed var(--ghost-color, var(--border-medium));
+    border-radius: 12px;
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+.arc-ghost-column-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    border-bottom: 1px dashed var(--border-light);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.arc-ghost-card-count {
+    font-size: 11px;
+    padding: 2px 6px;
+    background: var(--bg-tertiary);
+    border-radius: 10px;
+    color: var(--text-muted);
+}
+
+.arc-ghost-column-body {
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.arc-ghost-card {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    background: var(--bg-primary);
+    border-radius: 6px;
+    font-size: 11px;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.arc-ghost-card i {
+    width: 12px;
+    height: 12px;
+    opacity: 0.6;
+    flex-shrink: 0;
+}
+
+.arc-ghost-more {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-align: center;
+    padding: 4px;
+}
+
+/* Ghost floating items */
+.arc-ghost-item {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    background: var(--bg-secondary);
+    border: 2px dashed var(--ghost-color, var(--border-medium));
+    border-radius: 8px;
+    color: var(--text-muted);
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+.arc-ghost-item i {
+    width: 20px;
+    height: 20px;
+}
+
+/* Ghost connections */
+.arc-ghost-connections {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: visible;
+}
+
+.arc-ghost-connection-line {
+    fill: none;
+    stroke: var(--ghost-color, var(--border-medium));
+    stroke-width: 2;
+    stroke-dasharray: 8 4;
+    opacity: 0.6;
+}
+
+/* ============================================
+   MULTI-ARCS - Split Mode
+   ============================================ */
+
+.arc-split-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.arc-split-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 16px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-light);
+}
+
+.arc-split-bar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.arc-split-bar-center {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.arc-split-count {
+    font-size: 12px;
+    padding: 3px 8px;
+    background: var(--bg-tertiary);
+    border-radius: 10px;
+    color: var(--text-muted);
+}
+
+.arc-split-layout-toggle {
+    display: flex;
+    background: var(--bg-tertiary);
+    border-radius: 6px;
+    padding: 2px;
+}
+
+.arc-split-layout-toggle button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 28px;
+    padding: 0;
+    background: none;
+    border: none;
+    border-radius: 4px;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.arc-split-layout-toggle button:hover {
+    color: var(--text-primary);
+}
+
+.arc-split-layout-toggle button.active {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.arc-split-layout-toggle button i {
+    width: 16px;
+    height: 16px;
+}
+
+.arc-split-add {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.arc-split-add button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    background: var(--accent-color);
+    border: none;
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+}
+
+.arc-split-add button:hover {
+    background: var(--accent-hover);
+}
+
+.arc-split-add button i {
+    width: 16px;
+    height: 16px;
+}
+
+/* Split Panels Container */
+.arc-split-panels {
+    flex: 1;
+    display: flex;
+    gap: 1px;
+    background: var(--border-light);
+    min-height: 0;
+}
+
+.arc-split-vertical {
+    flex-direction: row;
+}
+
+.arc-split-horizontal {
+    flex-direction: column;
+}
+
+/* Individual Split Panel */
+.arc-split-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-primary);
+    min-width: 300px;
+    min-height: 200px;
+}
+
+.arc-split-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-light);
+}
+
+.arc-split-panel-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.arc-split-select {
+    padding: 4px 8px;
+    border: 1px solid var(--border-light);
+    border-radius: 6px;
+    background: var(--bg-primary);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    cursor: pointer;
+}
+
+.arc-split-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    background: none;
+    border: none;
+    border-radius: 4px;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.arc-split-close:hover {
+    background: var(--bg-danger-light);
+    color: var(--text-danger);
+}
+
+.arc-split-close i {
+    width: 16px;
+    height: 16px;
+}
+
+/* Split Canvas */
+.arc-split-canvas {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    background-color: var(--bg-tertiary);
+    background-image:
+        linear-gradient(var(--border-light) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border-light) 1px, transparent 1px);
+    background-size: 24px 24px;
+}
+
+.arc-split-content {
+    position: relative;
+    min-width: 2000px;
+    min-height: 1500px;
+    transform-origin: 0 0;
+}
+
+.arc-split-column {
+    pointer-events: none;
+}
+
+.arc-split-connections {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: visible;
+}
+
+.arc-split-zoom {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border-light);
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.arc-split-zoom button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-light);
+    border-radius: 4px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.arc-split-zoom button:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.arc-split-zoom button i {
+    width: 14px;
+    height: 14px;
+}
+
+/* ============================================
+   MULTI-ARCS - Inter-Arc Connections Panel
+   ============================================ */
+
+.arc-interarc-panel {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border-light);
+    max-height: 200px;
+}
+
+.arc-interarc-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border-light);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.arc-interarc-header i {
+    width: 16px;
+    height: 16px;
+    color: var(--accent-color);
+}
+
+.arc-interarc-count {
+    font-size: 11px;
+    padding: 2px 8px;
+    background: var(--bg-tertiary);
+    border-radius: 10px;
+    color: var(--text-muted);
+    font-weight: normal;
+}
+
+.arc-interarc-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px;
+}
+
+.arc-interarc-empty {
+    text-align: center;
+    padding: 20px;
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.arc-interarc-empty small {
+    display: block;
+    margin-top: 4px;
+    font-size: 11px;
+    opacity: 0.8;
+}
+
+.arc-interarc-connection {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    margin-bottom: 6px;
+}
+
+.arc-interarc-from,
+.arc-interarc-to {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.arc-interarc-from i,
+.arc-interarc-to i {
+    width: 12px;
+    height: 12px;
+    opacity: 0.5;
+}
+
+.arc-interarc-type {
+    flex-shrink: 0;
+}
+
+.arc-interarc-type select {
+    padding: 4px 8px;
+    border: 1px solid var(--accent-color);
+    border-radius: 12px;
+    background: var(--bg-accent-light);
+    font-size: 11px;
+    color: var(--accent-color);
+    cursor: pointer;
+}
+
+.arc-interarc-delete {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    background: none;
+    border: none;
+    border-radius: 4px;
+    color: var(--text-muted);
+    cursor: pointer;
+    margin-left: auto;
+    transition: all 0.15s ease;
+}
+
+.arc-interarc-delete:hover {
+    background: var(--bg-danger-light);
+    color: var(--text-danger);
+}
+
+.arc-interarc-delete i {
+    width: 14px;
+    height: 14px;
+}
+
+.arc-interarc-footer {
+    padding: 8px 12px;
+    border-top: 1px solid var(--border-light);
+}
+
+.arc-interarc-add {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    padding: 8px;
+    background: var(--bg-tertiary);
+    border: 1px dashed var(--border-medium);
+    border-radius: 6px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.arc-interarc-add:hover {
+    background: var(--bg-hover);
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+}
+
+.arc-interarc-add i {
+    width: 14px;
+    height: 14px;
+}
+
+/* Connection source highlight */
+.connection-source {
+    outline: 3px solid var(--accent-color) !important;
+    outline-offset: 2px;
+}

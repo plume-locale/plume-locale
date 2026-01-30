@@ -492,3 +492,209 @@ const ConnectionRepository = {
         }
     }
 };
+
+/**
+ * Repository pour les connexions inter-arcs
+ */
+const InterArcConnectionRepository = {
+    /**
+     * Initialise la structure de données
+     */
+    init() {
+        if (!project.interArcConnections) {
+            project.interArcConnections = [];
+        }
+    },
+
+    /**
+     * Récupère toutes les connexions inter-arcs
+     */
+    getAll() {
+        this.init();
+        return project.interArcConnections || [];
+    },
+
+    /**
+     * Récupère une connexion par son ID
+     */
+    getById(connectionId) {
+        return this.getAll().find(c => c.id === connectionId) || null;
+    },
+
+    /**
+     * Récupère les connexions impliquant un arc spécifique
+     */
+    getByArcId(arcId) {
+        return this.getAll().filter(c =>
+            c.fromArcId === arcId || c.toArcId === arcId
+        );
+    },
+
+    /**
+     * Récupère les connexions impliquant un item spécifique
+     */
+    getByItemId(arcId, itemId) {
+        return this.getAll().filter(c =>
+            (c.fromArcId === arcId && c.fromItemId === itemId) ||
+            (c.toArcId === arcId && c.toItemId === itemId)
+        );
+    },
+
+    /**
+     * Crée une nouvelle connexion inter-arc
+     */
+    create(data) {
+        this.init();
+
+        // Vérifier que les deux arcs sont différents
+        if (data.fromArcId === data.toArcId) {
+            console.warn('InterArcConnection: les deux arcs doivent être différents');
+            return null;
+        }
+
+        // Vérifier si la connexion existe déjà
+        const existing = this.getAll().find(c =>
+            c.fromArcId === data.fromArcId &&
+            c.fromItemId === data.fromItemId &&
+            c.toArcId === data.toArcId &&
+            c.toItemId === data.toItemId
+        );
+        if (existing) return existing;
+
+        const connection = createInterArcConnectionModel(data);
+        project.interArcConnections.push(connection);
+        this._save();
+        return connection;
+    },
+
+    /**
+     * Met à jour une connexion
+     */
+    update(connectionId, data) {
+        const connection = this.getById(connectionId);
+        if (!connection) return null;
+
+        Object.assign(connection, data);
+        this._save();
+        return connection;
+    },
+
+    /**
+     * Supprime une connexion
+     */
+    delete(connectionId) {
+        this.init();
+        const index = project.interArcConnections.findIndex(c => c.id === connectionId);
+        if (index === -1) return false;
+
+        project.interArcConnections.splice(index, 1);
+        this._save();
+        return true;
+    },
+
+    /**
+     * Supprime toutes les connexions liées à un arc
+     */
+    deleteByArcId(arcId) {
+        this.init();
+        project.interArcConnections = project.interArcConnections.filter(c =>
+            c.fromArcId !== arcId && c.toArcId !== arcId
+        );
+        this._save();
+    },
+
+    /**
+     * Supprime toutes les connexions liées à un item
+     */
+    deleteByItemId(arcId, itemId) {
+        this.init();
+        project.interArcConnections = project.interArcConnections.filter(c =>
+            !(c.fromArcId === arcId && c.fromItemId === itemId) &&
+            !(c.toArcId === arcId && c.toItemId === itemId)
+        );
+        this._save();
+    },
+
+    _save() {
+        if (typeof saveProject === 'function') {
+            saveProject();
+        }
+    }
+};
+
+/**
+ * Service pour gérer les connexions inter-arcs
+ */
+const InterArcConnectionService = {
+    connecting: false,
+    source: null,
+
+    /**
+     * Démarre le mode connexion inter-arc
+     */
+    startConnection() {
+        this.connecting = true;
+        this.source = null;
+
+        // Afficher une indication visuelle
+        const hint = document.getElementById('connectionModeHint');
+        if (hint) {
+            hint.style.display = 'flex';
+            const text = document.getElementById('connectionHintText');
+            if (text) text.textContent = 'Cliquez sur un élément source (dans un des arcs)';
+        }
+    },
+
+    /**
+     * Gère le clic sur un élément pendant le mode connexion
+     */
+    handleClick(arcId, itemId) {
+        if (!this.connecting) return false;
+
+        if (!this.source) {
+            // Premier clic : définir la source
+            this.source = { arcId, itemId };
+            const text = document.getElementById('connectionHintText');
+            if (text) text.textContent = 'Cliquez sur l\'élément cible (dans un autre arc)';
+
+            // Highlight la source
+            const sourceEl = document.querySelector(`[data-arc-id="${arcId}"] [data-item-id="${itemId}"]`);
+            if (sourceEl) sourceEl.classList.add('connection-source');
+
+            return true;
+        } else {
+            // Second clic : créer la connexion
+            if (arcId === this.source.arcId) {
+                // Même arc, annuler
+                console.warn('La connexion doit être entre deux arcs différents');
+                return false;
+            }
+
+            const connection = InterArcConnectionRepository.create({
+                fromArcId: this.source.arcId,
+                fromItemId: this.source.itemId,
+                toArcId: arcId,
+                toItemId: itemId
+            });
+
+            this.cancel();
+            ArcBoardViewModel.render();
+            return !!connection;
+        }
+    },
+
+    /**
+     * Annule le mode connexion
+     */
+    cancel() {
+        this.connecting = false;
+        this.source = null;
+
+        const hint = document.getElementById('connectionModeHint');
+        if (hint) hint.style.display = 'none';
+
+        document.querySelectorAll('.connection-source').forEach(el => {
+            el.classList.remove('connection-source');
+        });
+    }
+};

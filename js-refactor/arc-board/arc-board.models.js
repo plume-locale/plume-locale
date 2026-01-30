@@ -180,6 +180,35 @@ function createConnectionModel(fromId, toId, sides = {}) {
 }
 
 /**
+ * Types de connexions inter-arcs
+ */
+const InterArcConnectionTypes = {
+    PARALLEL: 'parallel',     // Événements simultanés
+    CAUSE: 'cause',           // Arc A cause Arc B
+    CONSEQUENCE: 'consequence', // Arc A est conséquence de Arc B
+    ECHO: 'echo',             // Écho thématique
+    CONTRAST: 'contrast'      // Contraste/opposition
+};
+
+/**
+ * Factory pour créer une connexion inter-arcs
+ */
+function createInterArcConnectionModel(data = {}) {
+    return {
+        id: data.id || generateUniqueId('interarc'),
+        fromArcId: data.fromArcId,
+        fromItemId: data.fromItemId,
+        fromSide: data.fromSide || 'right',
+        toArcId: data.toArcId,
+        toItemId: data.toItemId,
+        toSide: data.toSide || 'left',
+        type: data.type || InterArcConnectionTypes.PARALLEL,
+        label: data.label || '',
+        color: data.color || null // Si null, utilise les couleurs des arcs
+    };
+}
+
+/**
  * Factory pour créer une tâche Todo
  */
 function createTodoItemModel(text = '') {
