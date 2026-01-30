@@ -1,6 +1,7 @@
 /**
  * [MVVM : View]
- * Import Chapter View - Interface utilisateur pour l'import de fichiers .docx
+ * Import Chapter View - Interface utilisateur pour l'import de fichiers
+ * Supporte : .docx, .txt, .md, .epub, .pages
  */
 
 const ImportChapterView = {
@@ -13,12 +14,6 @@ const ImportChapterView = {
      * Ouvre le modal d'import
      */
     open() {
-        // Vérifier que mammoth.js est disponible
-        if (!ImportChapterViewModel.isMammothAvailable()) {
-            alert('Erreur : La bibliothèque d\'import n\'est pas chargée. Veuillez rafraîchir la page.');
-            return;
-        }
-
         // Reset l'état
         ImportChapterViewModel.reset();
 
@@ -48,17 +43,23 @@ const ImportChapterView = {
         const content = document.getElementById('importChapterContent');
         if (!content) return;
 
+        const formats = ImportChapterViewModel.getSupportedFormats();
+        const acceptString = ImportChapterViewModel.getAcceptString();
+
         content.innerHTML = `
             <div class="import-chapter-upload">
                 <div class="import-chapter-dropzone" id="importDropzone">
                     <i data-lucide="file-up" style="width: 48px; height: 48px; color: var(--accent-gold); margin-bottom: 1rem;"></i>
                     <p style="font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem;">
-                        Glissez votre fichier .docx ici
+                        Glissez votre fichier ici
                     </p>
                     <p style="color: var(--text-muted); margin-bottom: 1rem;">
-                        ou cliquez pour sélectionner
+                        ou cliquez pour selectionner
                     </p>
-                    <input type="file" id="importChapterFileInput" accept=".docx" style="display: none;">
+                    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; margin-bottom: 1rem;">
+                        ${formats.map(f => `<span style="padding: 0.25rem 0.5rem; background: var(--bg-tertiary); border-radius: 4px; font-size: 0.8rem; font-weight: 600;">${f}</span>`).join('')}
+                    </div>
+                    <input type="file" id="importChapterFileInput" accept="${acceptString}" style="display: none;">
                     <button class="btn btn-primary" onclick="document.getElementById('importChapterFileInput').click()">
                         <i data-lucide="folder-open" style="width: 16px; height: 16px; margin-right: 8px;"></i>
                         Parcourir
@@ -71,11 +72,16 @@ const ImportChapterView = {
                         Formats de chapitres reconnus :
                     </div>
                     <ul style="margin: 0; padding-left: 1.5rem; color: var(--text-muted); line-height: 1.6;">
-                        <li>Titres avec style "Titre 1" ou "Heading 1"</li>
-                        <li>"Chapitre 1", "Chapitre I", "Chapter One"</li>
-                        <li>"1. Titre du chapitre", "1 - Titre"</li>
-                        <li>"Partie 1", "Part I"</li>
+                        <li><strong>.docx / .pages</strong> : Titres avec style "Titre 1" ou "Heading 1"</li>
+                        <li><strong>.md</strong> : Titres Markdown (# Titre)</li>
+                        <li><strong>.txt / .epub</strong> : "Chapitre 1", "Chapter I", "Partie 1"</li>
+                        <li>Formats numerotes : "1. Titre", "1 - Titre"</li>
                     </ul>
+                </div>
+
+                <div style="margin-top: 1rem; padding: 0.75rem 1rem; background: rgba(212, 175, 55, 0.1); border-radius: 8px; font-size: 0.8rem; color: var(--text-secondary);">
+                    <i data-lucide="lightbulb" style="width: 14px; height: 14px; vertical-align: middle; margin-right: 6px; color: var(--accent-gold);"></i>
+                    <strong>Astuce :</strong> Pour les fichiers .pages, exportez en .docx depuis Pages pour un meilleur resultat.
                 </div>
             </div>
         `;
@@ -168,7 +174,7 @@ const ImportChapterView = {
                     Analyse de <strong>${fileName}</strong>...
                 </p>
                 <p style="color: var(--text-muted); margin-top: 0.5rem;">
-                    Détection des chapitres en cours
+                    Detection des chapitres en cours
                 </p>
             </div>
         `;
@@ -182,10 +188,23 @@ const ImportChapterView = {
         const content = document.getElementById('importChapterContent');
         if (!content) return;
 
-        const { fileName, chapters, stats } = data;
+        const { fileName, fileFormat, chapters, stats, warnings } = data;
+
+        // Générer le titre par défaut (sans extension)
+        const defaultTitle = fileName.replace(/\.(docx|txt|md|epub|pages)$/i, '').replace(/[-_]/g, ' ');
+
+        // Afficher les warnings s'il y en a
+        const warningsHtml = warnings && warnings.length > 0 ? `
+            <div style="background: rgba(255, 193, 7, 0.1); border: 1px solid #ffc107; padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.85rem;">
+                <i data-lucide="alert-triangle" style="width: 14px; height: 14px; vertical-align: middle; margin-right: 6px; color: #ffc107;"></i>
+                ${warnings.map(w => w.message || w).join('<br>')}
+            </div>
+        ` : '';
 
         content.innerHTML = `
             <div class="import-chapter-preview">
+                ${warningsHtml}
+
                 <!-- En-tête avec statistiques -->
                 <div style="background: var(--bg-secondary); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
                     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
@@ -193,6 +212,7 @@ const ImportChapterView = {
                             <div style="font-weight: 600; font-size: 1rem;">
                                 <i data-lucide="file-text" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 6px; color: var(--accent-gold);"></i>
                                 ${fileName}
+                                <span style="font-size: 0.75rem; background: var(--bg-tertiary); padding: 0.15rem 0.4rem; border-radius: 3px; margin-left: 0.5rem;">${fileFormat}</span>
                             </div>
                         </div>
                         <div style="display: flex; gap: 1.5rem; font-size: 0.9rem;">
@@ -220,7 +240,7 @@ const ImportChapterView = {
                     <input type="text"
                            id="importActTitle"
                            class="form-input"
-                           value="${fileName.replace('.docx', '').replace(/[-_]/g, ' ')}"
+                           value="${defaultTitle}"
                            placeholder="Nom de l'acte"
                            style="width: 100%;">
                 </div>
@@ -229,7 +249,7 @@ const ImportChapterView = {
                 <div style="margin-bottom: 1.5rem;">
                     <div style="font-weight: 600; margin-bottom: 0.75rem;">
                         <i data-lucide="list" style="width: 14px; height: 14px; vertical-align: middle; margin-right: 6px;"></i>
-                        Chapitres détectés :
+                        Chapitres detectes :
                     </div>
                     <div class="import-chapter-list" style="max-height: 300px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 8px;">
                         ${chapters.map((ch, i) => `
@@ -280,12 +300,12 @@ const ImportChapterView = {
                 <p style="font-size: 1.1rem; font-weight: 600; color: var(--accent-red); margin-bottom: 0.5rem;">
                     Erreur lors de l'import
                 </p>
-                <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
+                <p style="color: var(--text-muted); margin-bottom: 1.5rem; max-width: 400px; margin-left: auto; margin-right: auto;">
                     ${message}
                 </p>
                 <button class="btn btn-primary" onclick="ImportChapterView.renderInitialState()">
                     <i data-lucide="refresh-cw" style="width: 14px; height: 14px; margin-right: 6px;"></i>
-                    Réessayer
+                    Reessayer
                 </button>
             </div>
         `;
@@ -324,16 +344,16 @@ const ImportChapterView = {
             <div style="text-align: center; padding: 2rem;">
                 <i data-lucide="check-circle" style="width: 64px; height: 64px; color: #4CAF50; margin-bottom: 1rem;"></i>
                 <p style="font-size: 1.3rem; font-weight: 600; margin-bottom: 0.5rem;">
-                    Import réussi !
+                    Import reussi !
                 </p>
                 <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
-                    <strong>${data.chaptersImported}</strong> chapitres importés dans l'acte "<strong>${data.actTitle}</strong>"
+                    <strong>${data.chaptersImported}</strong> chapitres importes dans l'acte "<strong>${data.actTitle}</strong>"
                     <br>
                     <span style="font-size: 0.9rem;">${data.totalWords.toLocaleString('fr-FR')} mots au total</span>
                 </p>
                 <button class="btn btn-primary" onclick="ImportChapterView.close()">
                     <i data-lucide="edit-3" style="width: 14px; height: 14px; margin-right: 6px;"></i>
-                    Commencer à éditer
+                    Commencer a editer
                 </button>
             </div>
         `;

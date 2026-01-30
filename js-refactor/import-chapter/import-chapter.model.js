@@ -1,10 +1,15 @@
 /**
  * [MVVM : Model]
  * Import Chapter Model - Gestion du parsing et de la détection des chapitres
- * depuis un fichier .docx
+ * depuis différents formats : .docx, .txt, .md, .epub, .pages
  */
 
 const ImportChapterModel = {
+    /**
+     * Formats supportés
+     */
+    supportedFormats: ['.docx', '.txt', '.md', '.epub', '.pages'],
+
     /**
      * Patterns de détection des chapitres (ordre de priorité)
      */
@@ -23,6 +28,43 @@ const ImportChapterModel = {
         /^partie\s+(\d+|[ivxlcdm]+)[\s:.\-–—]*(.*)$/i,
         /^part\s+(\d+|[ivxlcdm]+)[\s:.\-–—]*(.*)$/i
     ],
+
+    /**
+     * Détecte le format du fichier
+     * @param {File} file
+     * @returns {string} - Extension du fichier
+     */
+    getFileFormat(file) {
+        const name = file.name.toLowerCase();
+        for (const format of this.supportedFormats) {
+            if (name.endsWith(format)) return format;
+        }
+        return null;
+    },
+
+    /**
+     * Point d'entrée principal - convertit n'importe quel format supporté
+     * @param {File} file
+     * @returns {Promise<{html: string, messages: Array}>}
+     */
+    async convertToHtml(file) {
+        const format = this.getFileFormat(file);
+
+        switch (format) {
+            case '.docx':
+                return this.convertDocxToHtml(file);
+            case '.txt':
+                return this.convertTxtToHtml(file);
+            case '.md':
+                return this.convertMarkdownToHtml(file);
+            case '.epub':
+                return this.convertEpubToHtml(file);
+            case '.pages':
+                return this.convertPagesToHtml(file);
+            default:
+                throw new Error(`Format non supporté: ${file.name}`);
+        }
+    },
 
     /**
      * Convertit un fichier DOCX en HTML via Mammoth.js
@@ -59,8 +101,354 @@ const ImportChapterModel = {
     },
 
     /**
+     * Convertit un fichier TXT en HTML
+     * @param {File} file - Fichier .txt
+     * @returns {Promise<{html: string, messages: Array}>}
+     */
+    async convertTxtToHtml(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const text = e.target.result;
+                    const html = this.textToHtml(text);
+                    resolve({ html, messages: [] });
+                } catch (error) {
+                    reject(error);
+                }
+            };
+            reader.onerror = () => reject(new Error('Erreur de lecture du fichier'));
+            reader.readAsText(file, 'UTF-8');
+        });
+    },
+
+    /**
+     * Convertit du texte brut en HTML avec détection des chapitres
+     * @param {string} text - Texte brut
+     * @returns {string} - HTML
+     */
+    textToHtml(text) {
+        const lines = text.split(/\r?\n/);
+        let html = '';
+        let inParagraph = false;
+        let paragraphContent = '';
+
+        const flushParagraph = () => {
+            if (paragraphContent.trim()) {
+                html += `<p>${this.escapeHtml(paragraphContent.trim())}</p>\n`;
+            }
+            paragraphContent = '';
+            inParagraph = false;
+        };
+
+        lines.forEach(line => {
+            const trimmed = line.trim();
+
+            // Ligne vide = fin de paragraphe
+            if (!trimmed) {
+                flushParagraph();
+                return;
+            }
+
+            // Détection de titre de chapitre
+            const isChapterTitle = this.matchChapterPattern(trimmed);
+            if (isChapterTitle) {
+                flushParagraph();
+                html += `<h1>${this.escapeHtml(trimmed)}</h1>\n`;
+                return;
+            }
+
+            // Ligne de séparation (---, ***, ===)
+            if (/^[-*=]{3,}$/.test(trimmed)) {
+                flushParagraph();
+                html += '<hr>\n';
+                return;
+            }
+
+            // Ajouter au paragraphe courant
+            if (paragraphContent) {
+                paragraphContent += ' ' + trimmed;
+            } else {
+                paragraphContent = trimmed;
+            }
+        });
+
+        flushParagraph();
+        return html;
+    },
+
+    /**
+     * Convertit un fichier Markdown en HTML
+     * @param {File} file - Fichier .md
+     * @returns {Promise<{html: string, messages: Array}>}
+     */
+    async convertMarkdownToHtml(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const markdown = e.target.result;
+                    const html = this.markdownToHtml(markdown);
+                    resolve({ html, messages: [] });
+                } catch (error) {
+                    reject(error);
+                }
+            };
+            reader.onerror = () => reject(new Error('Erreur de lecture du fichier'));
+            reader.readAsText(file, 'UTF-8');
+        });
+    },
+
+    /**
+     * Convertit du Markdown en HTML (parser simple)
+     * @param {string} markdown - Contenu Markdown
+     * @returns {string} - HTML
+     */
+    markdownToHtml(markdown) {
+        let html = markdown;
+
+        // Titres (# à ######)
+        html = html.replace(/^######\s+(.+)$/gm, '<h6>$1</h6>');
+        html = html.replace(/^#####\s+(.+)$/gm, '<h5>$1</h5>');
+        html = html.replace(/^####\s+(.+)$/gm, '<h4>$1</h4>');
+        html = html.replace(/^###\s+(.+)$/gm, '<h3>$1</h3>');
+        html = html.replace(/^##\s+(.+)$/gm, '<h2>$1</h2>');
+        html = html.replace(/^#\s+(.+)$/gm, '<h1>$1</h1>');
+
+        // Gras et italique
+        html = html.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');
+        html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+        html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+        html = html.replace(/___(.+?)___/g, '<strong><em>$1</em></strong>');
+        html = html.replace(/__(.+?)__/g, '<strong>$1</strong>');
+        html = html.replace(/_(.+?)_/g, '<em>$1</em>');
+
+        // Séparateurs
+        html = html.replace(/^[-*_]{3,}$/gm, '<hr>');
+
+        // Paragraphes (lignes non vides qui ne sont pas déjà des balises)
+        const lines = html.split(/\n/);
+        let result = '';
+        let inParagraph = false;
+        let paragraphContent = '';
+
+        const flushParagraph = () => {
+            if (paragraphContent.trim()) {
+                result += `<p>${paragraphContent.trim()}</p>\n`;
+            }
+            paragraphContent = '';
+        };
+
+        lines.forEach(line => {
+            const trimmed = line.trim();
+
+            // Ligne vide ou balise block
+            if (!trimmed || /^<(h[1-6]|hr|p|div|blockquote)/.test(trimmed)) {
+                flushParagraph();
+                if (trimmed) result += trimmed + '\n';
+                return;
+            }
+
+            // Ajouter au paragraphe
+            if (paragraphContent) {
+                paragraphContent += ' ' + trimmed;
+            } else {
+                paragraphContent = trimmed;
+            }
+        });
+
+        flushParagraph();
+        return result;
+    },
+
+    /**
+     * Convertit un fichier EPUB en HTML
+     * @param {File} file - Fichier .epub
+     * @returns {Promise<{html: string, messages: Array}>}
+     */
+    async convertEpubToHtml(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const arrayBuffer = e.target.result;
+                    const zip = await JSZip.loadAsync(arrayBuffer);
+
+                    // Trouver et parser le fichier content.opf pour l'ordre des chapitres
+                    let contentOpf = null;
+                    let opfPath = '';
+
+                    // Chercher le fichier container.xml pour trouver le chemin du OPF
+                    const containerXml = await zip.file('META-INF/container.xml')?.async('string');
+                    if (containerXml) {
+                        const match = containerXml.match(/full-path="([^"]+\.opf)"/);
+                        if (match) {
+                            opfPath = match[1];
+                            const opfDir = opfPath.substring(0, opfPath.lastIndexOf('/') + 1);
+                            contentOpf = await zip.file(opfPath)?.async('string');
+                        }
+                    }
+
+                    // Collecter tous les fichiers HTML/XHTML
+                    const htmlFiles = [];
+                    const promises = [];
+
+                    zip.forEach((relativePath, zipEntry) => {
+                        if (/\.(x?html?)$/i.test(relativePath) && !relativePath.includes('nav')) {
+                            promises.push(
+                                zipEntry.async('string').then(content => {
+                                    htmlFiles.push({
+                                        path: relativePath,
+                                        content: content
+                                    });
+                                })
+                            );
+                        }
+                    });
+
+                    await Promise.all(promises);
+
+                    // Trier par ordre si possible (basé sur l'OPF ou alphabétique)
+                    htmlFiles.sort((a, b) => a.path.localeCompare(b.path));
+
+                    // Extraire le contenu de chaque fichier HTML
+                    let combinedHtml = '';
+                    const messages = [];
+
+                    htmlFiles.forEach(file => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(file.content, 'text/html');
+                        const body = doc.body;
+
+                        if (body) {
+                            // Chercher un titre dans ce fichier
+                            const title = doc.querySelector('h1, h2, title');
+                            if (title && title.textContent.trim()) {
+                                combinedHtml += `<h1>${title.textContent.trim()}</h1>\n`;
+                            }
+
+                            // Ajouter le contenu du body
+                            combinedHtml += body.innerHTML + '\n';
+                        }
+                    });
+
+                    if (!combinedHtml.trim()) {
+                        throw new Error('Aucun contenu trouvé dans l\'EPUB');
+                    }
+
+                    resolve({ html: combinedHtml, messages });
+                } catch (error) {
+                    reject(new Error('Erreur lors de la lecture de l\'EPUB: ' + error.message));
+                }
+            };
+            reader.onerror = () => reject(new Error('Erreur de lecture du fichier'));
+            reader.readAsArrayBuffer(file);
+        });
+    },
+
+    /**
+     * Convertit un fichier Apple Pages en HTML
+     * @param {File} file - Fichier .pages
+     * @returns {Promise<{html: string, messages: Array}>}
+     */
+    async convertPagesToHtml(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const arrayBuffer = e.target.result;
+                    const zip = await JSZip.loadAsync(arrayBuffer);
+
+                    let textContent = '';
+                    const messages = [{ type: 'warning', message: 'Le format .pages peut perdre une partie du formatage' }];
+
+                    // Pages utilise un format protobuf dans index.zip ou Document.iwa
+                    // On va essayer d'extraire le texte du preview ou des fichiers texte
+
+                    // Méthode 1: Chercher preview.pdf ou QuickLook/Preview.pdf (pas de texte)
+                    // Méthode 2: Chercher des fichiers texte dans le package
+
+                    // Essayer de lire le fichier Index/Document.iwa (format binaire protobuf)
+                    // C'est complexe, on va plutôt chercher des alternatives
+
+                    // Chercher buildVersionHistory.plist pour des infos
+                    const plistContent = await zip.file('buildVersionHistory.plist')?.async('string');
+
+                    // Chercher tout fichier texte lisible
+                    const textPromises = [];
+                    zip.forEach((relativePath, zipEntry) => {
+                        // Chercher des fichiers qui pourraient contenir du texte
+                        if (/\.(txt|xml|html?)$/i.test(relativePath)) {
+                            textPromises.push(
+                                zipEntry.async('string').then(content => ({
+                                    path: relativePath,
+                                    content
+                                })).catch(() => null)
+                            );
+                        }
+                    });
+
+                    const textFiles = (await Promise.all(textPromises)).filter(f => f);
+
+                    // Si on trouve des fichiers XML, essayer d'en extraire du texte
+                    for (const file of textFiles) {
+                        if (file.content && file.content.length > 100) {
+                            // Essayer d'extraire le texte des balises XML
+                            const textOnly = file.content.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+                            if (textOnly.length > textContent.length) {
+                                textContent = textOnly;
+                            }
+                        }
+                    }
+
+                    // Si toujours rien, chercher dans les données brutes (peu probable de fonctionner)
+                    if (!textContent) {
+                        // Essayer de lire le contenu comme s'il était un ancien format Pages (pre-2013)
+                        const indexXml = await zip.file('index.xml')?.async('string');
+                        if (indexXml) {
+                            const parser = new DOMParser();
+                            const doc = parser.parseFromString(indexXml, 'text/xml');
+                            const textNodes = doc.evaluate('//text()', doc, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+                            for (let i = 0; i < textNodes.snapshotLength; i++) {
+                                const node = textNodes.snapshotItem(i);
+                                if (node.textContent.trim()) {
+                                    textContent += node.textContent + ' ';
+                                }
+                            }
+                        }
+                    }
+
+                    if (!textContent.trim()) {
+                        throw new Error('Impossible d\'extraire le texte du fichier .pages. Essayez d\'exporter en .docx depuis Pages.');
+                    }
+
+                    // Convertir le texte extrait en HTML
+                    const html = this.textToHtml(textContent);
+                    resolve({ html, messages });
+
+                } catch (error) {
+                    reject(new Error('Erreur lors de la lecture du fichier .pages: ' + error.message + '. Essayez d\'exporter en .docx depuis Pages.'));
+                }
+            };
+            reader.onerror = () => reject(new Error('Erreur de lecture du fichier'));
+            reader.readAsArrayBuffer(file);
+        });
+    },
+
+    /**
+     * Échappe les caractères HTML
+     * @param {string} text
+     * @returns {string}
+     */
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    },
+
+    /**
      * Parse le HTML et détecte les chapitres automatiquement
-     * @param {string} html - HTML converti depuis le DOCX
+     * @param {string} html - HTML converti depuis le fichier source
      * @returns {Array<{title: string, content: string}>}
      */
     parseChaptersFromHtml(html) {

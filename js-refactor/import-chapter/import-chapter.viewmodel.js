@@ -1,7 +1,7 @@
 /**
  * [MVVM : ViewModel]
  * Import Chapter ViewModel - Coordination entre Model et View
- * Gère la logique métier de l'import de fichiers .docx
+ * Gère la logique métier de l'import de fichiers (.docx, .txt, .md, .epub, .pages)
  */
 
 const ImportChapterViewModel = {
@@ -28,8 +28,8 @@ const ImportChapterViewModel = {
     },
 
     /**
-     * Traite un fichier .docx et génère un aperçu
-     * @param {File} file - Fichier .docx sélectionné
+     * Traite un fichier et génère un aperçu
+     * @param {File} file - Fichier sélectionné
      * @returns {Promise<Object>} - Résultat avec aperçu des chapitres
      */
     async processFile(file) {
@@ -38,17 +38,30 @@ const ImportChapterViewModel = {
         this.state.selectedFile = file;
 
         try {
-            // Validation du fichier
-            if (!file.name.toLowerCase().endsWith('.docx')) {
-                throw new Error('Le fichier doit être au format .docx');
+            // Validation du format
+            const format = ImportChapterModel.getFileFormat(file);
+            if (!format) {
+                const supported = ImportChapterModel.supportedFormats.join(', ');
+                throw new Error(`Format non supporté. Formats acceptés : ${supported}`);
             }
 
+            // Validation de la taille
             if (file.size > 50 * 1024 * 1024) { // 50MB max
                 throw new Error('Le fichier est trop volumineux (max 50MB)');
             }
 
-            // Conversion DOCX -> HTML
-            const result = await ImportChapterModel.convertDocxToHtml(file);
+            // Vérification des dépendances pour DOCX
+            if (format === '.docx' && !this.isMammothAvailable()) {
+                throw new Error('La bibliothèque de lecture DOCX n\'est pas chargée. Rafraîchissez la page.');
+            }
+
+            // Vérification des dépendances pour EPUB et PAGES
+            if ((format === '.epub' || format === '.pages') && typeof JSZip === 'undefined') {
+                throw new Error('La bibliothèque de lecture des archives n\'est pas chargée. Rafraîchissez la page.');
+            }
+
+            // Conversion vers HTML (méthode unifiée)
+            const result = await ImportChapterModel.convertToHtml(file);
 
             if (!result.html || result.html.trim().length === 0) {
                 throw new Error('Le document semble vide');
@@ -66,6 +79,7 @@ const ImportChapterViewModel = {
 
             this.state.previewData = {
                 fileName: file.name,
+                fileFormat: format,
                 chapters: chapters,
                 stats: stats,
                 warnings: result.messages || []
@@ -130,10 +144,14 @@ const ImportChapterViewModel = {
         try {
             const chapters = this.state.previewData.chapters;
 
-            // Déterminer le titre de l'acte
-            const finalActTitle = actTitle ||
-                this.state.selectedFile?.name.replace('.docx', '').replace(/[-_]/g, ' ') ||
-                'Import';
+            // Déterminer le titre de l'acte (supprimer l'extension du fichier)
+            let finalActTitle = actTitle;
+            if (!finalActTitle && this.state.selectedFile) {
+                finalActTitle = this.state.selectedFile.name
+                    .replace(/\.(docx|txt|md|epub|pages)$/i, '')
+                    .replace(/[-_]/g, ' ');
+            }
+            finalActTitle = finalActTitle || 'Import';
 
             // Créer la structure Plume
             const newAct = ImportChapterModel.createPlumeStructure(chapters, finalActTitle);
@@ -199,5 +217,21 @@ const ImportChapterViewModel = {
      */
     isMammothAvailable() {
         return typeof mammoth !== 'undefined' && typeof mammoth.convertToHtml === 'function';
+    },
+
+    /**
+     * Retourne les formats supportés pour l'affichage
+     * @returns {Array<string>}
+     */
+    getSupportedFormats() {
+        return ImportChapterModel.supportedFormats;
+    },
+
+    /**
+     * Retourne la chaîne accept pour l'input file
+     * @returns {string}
+     */
+    getAcceptString() {
+        return ImportChapterModel.supportedFormats.join(',');
     }
 };
