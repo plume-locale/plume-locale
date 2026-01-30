@@ -149,7 +149,11 @@ JS_ORDER = [
     'js-refactor/synonyms/synonyms.service.js',
     'js-refactor/synonyms/synonyms.repository.js',
     'js-refactor/synonyms/synonyms.viewmodel.js',
-    'js-refactor/synonyms/synonyms.view.js'
+    'js-refactor/synonyms/synonyms.view.js',
+    # Import Chapter Module (import .docx, .txt, .md, .epub, .pages)
+    'js-refactor/import-chapter/import-chapter.model.js',
+    'js-refactor/import-chapter/import-chapter.viewmodel.js',
+    'js-refactor/import-chapter/import-chapter.view.js'
 ]
 
 def read_file(path):
