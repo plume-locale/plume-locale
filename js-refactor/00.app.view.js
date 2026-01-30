@@ -933,6 +933,13 @@ function getEditorToolbarHTML(panel = null) {
             <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'subscript')" title="Indice"><i data-lucide="subscript" style="width:14px;height:14px;"></i></button>
         </div>
         
+        <!-- Synonyms -->
+        <div class="toolbar-group">
+            <button class="toolbar-btn" onclick="if(typeof SynonymsView !== 'undefined') SynonymsView.toggle()" title="Dictionnaire des synonymes (Ctrl+Shift+S)">
+                <i data-lucide="book-a" style="width:14px;height:14px;"></i>
+            </button>
+        </div>
+
         <!-- Other -->
         <div class="toolbar-group">
             <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'insertHorizontalRule')" title="Ligne horizontale"><i data-lucide="minus" style="width:14px;height:14px;"></i></button>
