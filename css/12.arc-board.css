@@ -2189,259 +2189,139 @@
 }
 
 /* ============================================
-   MULTI-ARCS - Barre de contrôle
+   MULTI-ARCS - Barre compacte sur une ligne
    ============================================ */
 
 .arc-multi-bar {
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 12px;
     background: var(--bg-secondary);
     border-bottom: 1px solid var(--border-light);
-    padding: 8px 16px;
-    gap: 8px;
+    flex-wrap: wrap;
 }
 
-.arc-multi-bar-compact {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    padding: 6px 16px;
-}
-
-.arc-multi-bar-row {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-}
-
-.arc-multi-bar-left {
+.arc-multi-left {
     display: flex;
     align-items: center;
     gap: 8px;
-}
-
-.arc-multi-bar-center {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-}
-
-.arc-multi-current {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: 500;
-    color: var(--text-primary);
 }
 
 .arc-multi-dot {
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
     flex-shrink: 0;
-}
-
-.arc-multi-label {
-    font-size: 13px;
-    color: var(--text-secondary);
-    white-space: nowrap;
 }
 
 .arc-multi-select {
     padding: 4px 8px;
     border: 1px solid var(--border-light);
-    border-radius: 6px;
-    background: var(--bg-primary);
-    font-size: 13px;
-    color: var(--text-primary);
-    cursor: pointer;
-    min-width: 140px;
-}
-
-.arc-multi-select:hover {
-    border-color: var(--border-medium);
-}
-
-.arc-multi-select-small {
-    padding: 4px 8px;
-    border: 1px solid var(--border-light);
-    border-radius: 6px;
+    border-radius: 4px;
     background: var(--bg-primary);
     font-size: 12px;
     color: var(--text-primary);
     cursor: pointer;
-    min-width: 120px;
 }
 
-.arc-multi-toggle {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    background: var(--bg-tertiary);
-    border: 1px solid var(--border-light);
-    border-radius: 6px;
-    font-size: 13px;
-    color: var(--text-secondary);
-    cursor: pointer;
-    transition: all 0.15s ease;
-}
-
-.arc-multi-toggle:hover {
-    background: var(--bg-hover);
-    color: var(--text-primary);
-}
-
-.arc-multi-toggle i {
-    width: 16px;
-    height: 16px;
-}
-
-/* Modes Radio Buttons */
+/* Mode buttons */
 .arc-multi-modes {
     display: flex;
     background: var(--bg-tertiary);
-    border-radius: 8px;
-    padding: 3px;
-    gap: 2px;
+    border-radius: 4px;
+    padding: 2px;
 }
 
-.arc-multi-mode {
-    display: flex;
-    align-items: center;
-    padding: 6px 14px;
-    border-radius: 6px;
-    font-size: 13px;
+.arc-multi-modes button {
+    padding: 4px 10px;
+    border: none;
+    background: none;
+    border-radius: 3px;
+    font-size: 11px;
     color: var(--text-secondary);
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: all 0.15s;
 }
 
-.arc-multi-mode input {
-    display: none;
-}
-
-.arc-multi-mode:hover {
+.arc-multi-modes button:hover {
     color: var(--text-primary);
 }
 
-.arc-multi-mode.active {
+.arc-multi-modes button.active {
     background: var(--bg-primary);
     color: var(--text-primary);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
-/* Ghost arcs row */
-.arc-multi-bar-ghosts {
-    background: var(--bg-tertiary);
-    margin: 0 -16px -8px;
-    padding: 8px 16px;
-    border-top: 1px solid var(--border-light);
-}
-
-.arc-multi-ghosts-list {
+/* Ghost arcs section */
+.arc-multi-ghosts {
     display: flex;
     align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
+    gap: 6px;
     flex: 1;
 }
 
-.arc-multi-empty {
-    font-size: 12px;
-    color: var(--text-muted);
-    font-style: italic;
-}
-
-.arc-multi-ghost-tag {
+/* Ghost arc tags */
+.arc-multi-tag {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 4px 8px 4px 10px;
+    gap: 4px;
+    padding: 2px 4px 2px 8px;
     background: var(--bg-primary);
-    border: 1px solid var(--ghost-color, var(--border-light));
-    border-radius: 20px;
-    font-size: 12px;
+    border: 1px solid var(--tag-color, var(--border-light));
+    border-radius: 12px;
+    font-size: 11px;
     color: var(--text-primary);
 }
 
-.arc-multi-ghost-remove {
+.arc-multi-tag button {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 18px;
-    height: 18px;
+    width: 14px;
+    height: 14px;
     padding: 0;
     background: none;
     border: none;
     border-radius: 50%;
     color: var(--text-muted);
     cursor: pointer;
-    transition: all 0.15s ease;
 }
 
-.arc-multi-ghost-remove:hover {
+.arc-multi-tag button:hover {
     background: var(--bg-danger-light);
     color: var(--text-danger);
 }
 
-.arc-multi-ghost-remove i {
-    width: 12px;
-    height: 12px;
+.arc-multi-tag button i {
+    width: 10px;
+    height: 10px;
 }
 
-.arc-multi-add-ghost {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-
-.arc-multi-btn-add {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    padding: 0;
-    background: var(--accent-color);
-    border: none;
-    border-radius: 6px;
-    color: white;
+.arc-multi-add {
+    padding: 2px 6px;
+    border: 1px solid var(--border-light);
+    border-radius: 4px;
+    background: var(--bg-primary);
+    font-size: 11px;
+    color: var(--text-secondary);
     cursor: pointer;
-    transition: all 0.15s ease;
-}
-
-.arc-multi-btn-add:hover {
-    background: var(--accent-hover);
-}
-
-.arc-multi-btn-add i {
-    width: 16px;
-    height: 16px;
 }
 
 .arc-multi-opacity {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-left: auto;
-    font-size: 12px;
-    color: var(--text-secondary);
-}
-
-.arc-multi-opacity input[type="range"] {
-    width: 80px;
-    height: 4px;
+    width: 60px;
+    height: 3px;
     -webkit-appearance: none;
     background: var(--border-medium);
     border-radius: 2px;
     cursor: pointer;
 }
 
-.arc-multi-opacity input[type="range"]::-webkit-slider-thumb {
+.arc-multi-opacity::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 14px;
-    height: 14px;
+    width: 10px;
+    height: 10px;
     background: var(--accent-color);
     border-radius: 50%;
     cursor: pointer;
@@ -2450,25 +2330,25 @@
 .arc-multi-btn-exit {
     display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    background: var(--bg-danger-light);
-    border: 1px solid var(--border-danger);
-    border-radius: 6px;
-    font-size: 13px;
-    color: var(--text-danger);
+    gap: 4px;
+    padding: 4px 8px;
+    background: none;
+    border: 1px solid var(--border-light);
+    border-radius: 4px;
+    font-size: 11px;
+    color: var(--text-secondary);
     cursor: pointer;
-    transition: all 0.15s ease;
 }
 
 .arc-multi-btn-exit:hover {
-    background: var(--bg-danger);
-    color: white;
+    background: var(--bg-danger-light);
+    color: var(--text-danger);
+    border-color: var(--border-danger);
 }
 
 .arc-multi-btn-exit i {
-    width: 14px;
-    height: 14px;
+    width: 12px;
+    height: 12px;
 }
 
 /* ============================================
@@ -2479,56 +2359,8 @@
     position: absolute;
     top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
     pointer-events: none;
-    z-index: 3;
-    transition: opacity 0.2s ease;
-}
-
-.arc-ghost-content {
-    position: relative;
-    min-width: 3000px;
-    min-height: 2000px;
-    transform-origin: 0 0;
-}
-
-.arc-ghost-badge {
-    position: fixed;
-    bottom: 80px;
-    left: 300px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 14px;
-    background: var(--bg-primary);
-    border: 2px solid var(--ghost-color, var(--border-light));
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text-primary);
-    cursor: pointer;
-    pointer-events: auto;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    z-index: 100;
-    transition: all 0.15s ease;
-}
-
-.arc-ghost-badge:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-.arc-ghost-badge i {
-    width: 14px;
-    height: 14px;
-    opacity: 0.6;
-}
-
-.arc-ghost-badge-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
+    z-index: 2;
 }
 
 /* Ghost columns */
@@ -2643,41 +2475,65 @@
     display: flex;
     flex-direction: column;
     height: 100%;
+    overflow: hidden;
 }
 
 .arc-split-bar {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 8px 16px;
+    gap: 8px;
+    padding: 4px 8px;
     background: var(--bg-secondary);
     border-bottom: 1px solid var(--border-light);
+    flex-shrink: 0;
 }
 
 .arc-split-bar-left {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
 }
 
-.arc-split-bar-center {
+.arc-split-add-select {
+    padding: 4px 8px;
+    font-size: 12px;
+    border: 1px solid var(--border-light);
+    border-radius: 4px;
+    background: var(--bg-primary);
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+.arc-split-exit {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 4px;
+    padding: 4px 10px;
+    font-size: 12px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-light);
+    border-radius: 4px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.15s;
 }
 
-.arc-split-count {
-    font-size: 12px;
-    padding: 3px 8px;
-    background: var(--bg-tertiary);
-    border-radius: 10px;
-    color: var(--text-muted);
+.arc-split-exit:hover {
+    background: var(--bg-danger-light);
+    color: var(--text-danger);
+    border-color: var(--bg-danger-light);
+}
+
+.arc-split-exit i {
+    width: 14px;
+    height: 14px;
 }
 
 .arc-split-layout-toggle {
     display: flex;
     background: var(--bg-tertiary);
-    border-radius: 6px;
+    border-radius: 4px;
     padding: 2px;
 }
 
@@ -2685,15 +2541,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 28px;
+    width: 24px;
+    height: 22px;
     padding: 0;
     background: none;
     border: none;
-    border-radius: 4px;
+    border-radius: 3px;
     color: var(--text-muted);
     cursor: pointer;
-    transition: all 0.15s ease;
 }
 
 .arc-split-layout-toggle button:hover {
@@ -2703,41 +2558,11 @@
 .arc-split-layout-toggle button.active {
     background: var(--bg-primary);
     color: var(--text-primary);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .arc-split-layout-toggle button i {
-    width: 16px;
-    height: 16px;
-}
-
-.arc-split-add {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-
-.arc-split-add button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    padding: 0;
-    background: var(--accent-color);
-    border: none;
-    border-radius: 6px;
-    color: white;
-    cursor: pointer;
-}
-
-.arc-split-add button:hover {
-    background: var(--accent-hover);
-}
-
-.arc-split-add button i {
-    width: 16px;
-    height: 16px;
+    width: 14px;
+    height: 14px;
 }
 
 /* Split Panels Container */
@@ -2763,17 +2588,19 @@
     display: flex;
     flex-direction: column;
     background: var(--bg-primary);
-    min-width: 300px;
-    min-height: 200px;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
 }
 
 .arc-split-panel-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 8px 12px;
+    padding: 4px 8px;
     background: var(--bg-secondary);
     border-bottom: 1px solid var(--border-light);
+    flex-shrink: 0;
 }
 
 .arc-split-panel-title {
@@ -2855,24 +2682,25 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    padding: 6px 12px;
+    gap: 6px;
+    padding: 3px 8px;
     background: var(--bg-secondary);
     border-top: 1px solid var(--border-light);
-    font-size: 12px;
-    color: var(--text-secondary);
+    font-size: 11px;
+    color: var(--text-muted);
+    flex-shrink: 0;
 }
 
 .arc-split-zoom button {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
     padding: 0;
     background: var(--bg-tertiary);
     border: 1px solid var(--border-light);
-    border-radius: 4px;
+    border-radius: 3px;
     color: var(--text-secondary);
     cursor: pointer;
     transition: all 0.15s ease;
@@ -2884,8 +2712,8 @@
 }
 
 .arc-split-zoom button i {
-    width: 14px;
-    height: 14px;
+    width: 12px;
+    height: 12px;
 }
 
 /* ============================================

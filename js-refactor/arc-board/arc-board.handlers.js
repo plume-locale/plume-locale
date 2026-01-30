@@ -70,6 +70,63 @@ const ArcBoardEventHandlers = {
     },
 
     // ==========================================
+    // SPLIT CANVAS EVENTS (Mode Split)
+    // ==========================================
+
+    // [MVVM : Handler] État du pan pour chaque panneau split
+    _splitPanState: {},
+
+    onSplitCanvasMouseDown(event, arcId) {
+        event.preventDefault();
+        const content = document.getElementById(`splitContent-${arcId}`);
+        if (!content) return;
+
+        this._splitPanState[arcId] = {
+            isPanning: true,
+            startX: event.clientX,
+            startY: event.clientY,
+            panel: ArcBoardState.splitArcs.find(p => p.id === arcId)
+        };
+    },
+
+    onSplitCanvasMouseMove(event, arcId) {
+        const state = this._splitPanState[arcId];
+        if (!state || !state.isPanning) return;
+
+        const dx = event.clientX - state.startX;
+        const dy = event.clientY - state.startY;
+
+        const panel = state.panel;
+        if (!panel) return;
+
+        const content = document.getElementById(`splitContent-${arcId}`);
+        if (!content) return;
+
+        const newPanX = panel.panX + dx / panel.zoom;
+        const newPanY = panel.panY + dy / panel.zoom;
+
+        content.style.transform = `scale(${panel.zoom}) translate(${newPanX}px, ${newPanY}px)`;
+
+        state.startX = event.clientX;
+        state.startY = event.clientY;
+        panel.panX = newPanX;
+        panel.panY = newPanY;
+    },
+
+    onSplitCanvasMouseUp(event, arcId) {
+        if (this._splitPanState[arcId]) {
+            this._splitPanState[arcId].isPanning = false;
+        }
+    },
+
+    onSplitCanvasWheel(event, arcId) {
+        if (event.ctrlKey || event.metaKey) {
+            event.preventDefault();
+            ArcBoardViewModel.zoomSplitPanel(arcId, event.deltaY > 0 ? -1 : 1);
+        }
+    },
+
+    // ==========================================
     // FORMULAIRES
     // ==========================================
 

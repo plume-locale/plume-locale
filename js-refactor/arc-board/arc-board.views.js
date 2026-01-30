@@ -269,11 +269,11 @@ const ArcBoardView = {
                          ondragover="DragDropService.handleCanvasDragOver(event)"
                          ondragleave="DragDropService.handleCanvasDragLeave(event)">
 
-                        <!-- Ghost layers pour mode Compare -->
-                        ${ArcBoardState.multiArcMode === MultiArcModes.COMPARE ? this._renderGhostLayers() : ''}
-
                         <div class="arc-board-content" id="arcBoardContent"
                              style="transform: scale(${ArcBoardState.zoom}) translate(${ArcBoardState.panX}px, ${ArcBoardState.panY}px)">
+
+                            <!-- Ghost layers pour mode Compare (DANS le content pour suivre le zoom) -->
+                            ${ArcBoardState.multiArcMode === MultiArcModes.COMPARE ? this._renderGhostLayers() : ''}
 
                             <div class="arc-connections-layer" id="arcConnectionsLayer">
                                 <svg id="arcConnectionsSvg">
@@ -403,118 +403,51 @@ const ArcBoardView = {
     // ==========================================
 
     /**
-     * Rendu de la barre multi-arcs
+     * Rendu de la barre multi-arcs (version compacte sur une ligne)
      */
     _renderMultiArcBar(arc) {
-        const isExpanded = ArcBoardState.multiArcBarExpanded;
         const mode = ArcBoardState.multiArcMode;
         const allArcs = ArcRepository.getAll();
         const availableArcs = ArcBoardViewModel.getAvailableArcsForAdd();
 
-        // Mode compact : juste le bouton
-        if (!isExpanded) {
-            return `
-                <div class="arc-multi-bar arc-multi-bar-compact">
-                    <div class="arc-multi-bar-left">
-                        <span class="arc-multi-current">
-                            <span class="arc-multi-dot" style="background:${arc.color}"></span>
-                            ${arc.title}
-                        </span>
-                    </div>
-                    <button class="arc-multi-toggle" onclick="ArcBoardViewModel.toggleMultiArcBar()" data-tooltip="Multi-arcs">
-                        <i data-lucide="layers"></i>
-                        <span>Multi-arcs</span>
-                        <i data-lucide="chevron-down"></i>
-                    </button>
-                </div>
-            `;
-        }
-
-        // Mode étendu
-        const ghostArcsHtml = ArcBoardState.ghostArcs.map(ghostId => {
+        // Tags des arcs fantômes
+        const ghostTagsHtml = ArcBoardState.ghostArcs.map(ghostId => {
             const ghostArc = ArcRepository.getById(ghostId);
             if (!ghostArc) return '';
-            return `
-                <span class="arc-multi-ghost-tag" style="--ghost-color: ${ghostArc.color}">
-                    <span class="arc-multi-dot" style="background:${ghostArc.color}"></span>
-                    ${ghostArc.title}
-                    <button class="arc-multi-ghost-remove" onclick="ArcBoardViewModel.removeGhostArc('${ghostId}')" title="Retirer">
-                        <i data-lucide="x"></i>
-                    </button>
-                </span>
-            `;
+            return `<span class="arc-multi-tag" style="--tag-color: ${ghostArc.color}">
+                <span class="arc-multi-dot" style="background:${ghostArc.color}"></span>
+                ${ghostArc.title}
+                <button onclick="ArcBoardViewModel.removeGhostArc('${ghostId}')"><i data-lucide="x"></i></button>
+            </span>`;
         }).join('');
 
-        const addArcOptions = availableArcs.map(a =>
-            `<option value="${a.id}">${a.title}</option>`
-        ).join('');
-
         return `
-            <div class="arc-multi-bar arc-multi-bar-expanded">
-                <div class="arc-multi-bar-row">
-                    <div class="arc-multi-bar-left">
-                        <label class="arc-multi-label">Arc principal :</label>
-                        <select class="arc-multi-select" onchange="ArcBoardViewModel.openArc(this.value)">
-                            ${allArcs.map(a => `
-                                <option value="${a.id}" ${a.id === arc.id ? 'selected' : ''}>${a.title}</option>
-                            `).join('')}
-                        </select>
-                    </div>
+            <div class="arc-multi-bar">
+                <div class="arc-multi-left">
+                    <select class="arc-multi-select" onchange="ArcBoardViewModel.openArc(this.value)">
+                        ${allArcs.map(a => `<option value="${a.id}" ${a.id === arc.id ? 'selected' : ''}>${a.title}</option>`).join('')}
+                    </select>
+                </div>
 
-                    <div class="arc-multi-bar-center">
-                        <div class="arc-multi-modes">
-                            <label class="arc-multi-mode ${mode === MultiArcModes.SOLO ? 'active' : ''}">
-                                <input type="radio" name="multiArcMode" value="solo"
-                                       ${mode === MultiArcModes.SOLO ? 'checked' : ''}
-                                       onchange="ArcBoardViewModel.setMultiArcMode('solo')">
-                                <span>Solo</span>
-                            </label>
-                            <label class="arc-multi-mode ${mode === MultiArcModes.COMPARE ? 'active' : ''}">
-                                <input type="radio" name="multiArcMode" value="compare"
-                                       ${mode === MultiArcModes.COMPARE ? 'checked' : ''}
-                                       onchange="ArcBoardViewModel.setMultiArcMode('compare')">
-                                <span>Comparer</span>
-                            </label>
-                            <label class="arc-multi-mode ${mode === MultiArcModes.SPLIT ? 'active' : ''}">
-                                <input type="radio" name="multiArcMode" value="split"
-                                       ${mode === MultiArcModes.SPLIT ? 'checked' : ''}
-                                       onchange="ArcBoardViewModel.setMultiArcMode('split')">
-                                <span>Split</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <button class="arc-multi-toggle" onclick="ArcBoardViewModel.toggleMultiArcBar()">
-                        <i data-lucide="chevron-up"></i>
-                    </button>
+                <div class="arc-multi-modes">
+                    <button class="${mode === MultiArcModes.SOLO ? 'active' : ''}" onclick="ArcBoardViewModel.setMultiArcMode('solo')">Solo</button>
+                    <button class="${mode === MultiArcModes.COMPARE ? 'active' : ''}" onclick="ArcBoardViewModel.setMultiArcMode('compare')">Comparer</button>
+                    <button class="${mode === MultiArcModes.SPLIT ? 'active' : ''}" onclick="ArcBoardViewModel.setMultiArcMode('split')">Split</button>
                 </div>
 
                 ${mode === MultiArcModes.COMPARE ? `
-                    <div class="arc-multi-bar-row arc-multi-bar-ghosts">
-                        <div class="arc-multi-ghosts-list">
-                            <span class="arc-multi-label">Arcs fantômes :</span>
-                            ${ghostArcsHtml || '<span class="arc-multi-empty">Aucun</span>'}
-                        </div>
-
+                    <div class="arc-multi-ghosts">
+                        ${ghostTagsHtml}
                         ${availableArcs.length > 0 ? `
-                            <div class="arc-multi-add-ghost">
-                                <select id="addGhostSelect" class="arc-multi-select-small">
-                                    <option value="">+ Ajouter un arc...</option>
-                                    ${addArcOptions}
-                                </select>
-                                <button class="arc-multi-btn-add" onclick="const sel = document.getElementById('addGhostSelect'); if(sel.value) { ArcBoardViewModel.addGhostArc(sel.value); sel.value=''; }">
-                                    <i data-lucide="plus"></i>
-                                </button>
-                            </div>
+                            <select class="arc-multi-add" onchange="if(this.value) { ArcBoardViewModel.addGhostArc(this.value); this.value=''; }">
+                                <option value="">+ Arc...</option>
+                                ${availableArcs.map(a => `<option value="${a.id}">${a.title}</option>`).join('')}
+                            </select>
                         ` : ''}
-
-                        <div class="arc-multi-opacity">
-                            <label>Opacité :</label>
-                            <input type="range" min="10" max="100" value="${Math.round(ArcBoardState.ghostOpacity * 100)}"
-                                   onchange="ArcBoardViewModel.setGhostOpacity(this.value / 100)"
-                                   oninput="ArcBoardViewModel.setGhostOpacity(this.value / 100)">
-                            <span>${Math.round(ArcBoardState.ghostOpacity * 100)}%</span>
-                        </div>
+                        <input type="range" class="arc-multi-opacity" min="10" max="100" value="${Math.round(ArcBoardState.ghostOpacity * 100)}"
+                               onchange="ArcBoardViewModel.setGhostOpacity(this.value / 100)"
+                               oninput="ArcBoardViewModel.setGhostOpacity(this.value / 100)"
+                               title="Opacité: ${Math.round(ArcBoardState.ghostOpacity * 100)}%">
                     </div>
                 ` : ''}
             </div>
@@ -523,6 +456,7 @@ const ArcBoardView = {
 
     /**
      * Rendu des layers fantômes (mode Compare)
+     * Note: Le layer est DANS arc-board-content donc il suit automatiquement le zoom/pan
      */
     _renderGhostLayers() {
         if (ArcBoardState.ghostArcs.length === 0) return '';
@@ -535,16 +469,8 @@ const ArcBoardView = {
                 <div class="arc-ghost-layer"
                      data-arc-id="${ghostId}"
                      style="opacity: ${ArcBoardState.ghostOpacity}; --ghost-color: ${ghostArc.color}">
-                    <div class="arc-ghost-content"
-                         style="transform: scale(${ArcBoardState.zoom}) translate(${ArcBoardState.panX}px, ${ArcBoardState.panY}px)">
-                        ${this._renderGhostItems(ghostArc)}
-                        ${this._renderGhostConnections(ghostArc)}
-                    </div>
-                    <div class="arc-ghost-badge" onclick="ArcBoardViewModel.setMainArc('${ghostId}')">
-                        <span class="arc-ghost-badge-dot" style="background:${ghostArc.color}"></span>
-                        ${ghostArc.title}
-                        <i data-lucide="arrow-up-right"></i>
-                    </div>
+                    ${this._renderGhostItems(ghostArc)}
+                    ${this._renderGhostConnections(ghostArc)}
                 </div>
             `;
         }).join('');
@@ -685,16 +611,9 @@ const ArcBoardView = {
         ).join('');
 
         return `
-            <div class="arc-board-container arc-split-container">
-                ${this._renderToolbar()}
-
+            <div class="arc-split-container">
                 <div class="arc-split-bar">
                     <div class="arc-split-bar-left">
-                        <span class="arc-multi-label">Mode Split</span>
-                        <span class="arc-split-count">${splitArcs.length} panneau${splitArcs.length > 1 ? 'x' : ''}</span>
-                    </div>
-
-                    <div class="arc-split-bar-center">
                         <div class="arc-split-layout-toggle">
                             <button class="${layout === 'vertical' ? 'active' : ''}"
                                     onclick="ArcBoardViewModel.setSplitLayout('vertical')"
@@ -707,31 +626,22 @@ const ArcBoardView = {
                                 <i data-lucide="rows-2"></i>
                             </button>
                         </div>
-
                         ${availableArcs.length > 0 ? `
-                            <div class="arc-split-add">
-                                <select id="addSplitSelect" class="arc-multi-select-small">
-                                    <option value="">+ Ajouter panneau...</option>
-                                    ${addPanelOptions}
-                                </select>
-                                <button onclick="const sel = document.getElementById('addSplitSelect'); if(sel.value) { ArcBoardViewModel.addSplitPanel(sel.value); sel.value=''; }">
-                                    <i data-lucide="plus"></i>
-                                </button>
-                            </div>
+                            <select class="arc-split-add-select" onchange="if(this.value) { ArcBoardViewModel.addSplitPanel(this.value); this.value=''; }">
+                                <option value="">+ Panneau</option>
+                                ${addPanelOptions}
+                            </select>
                         ` : ''}
                     </div>
-
-                    <button class="arc-multi-btn-exit" onclick="ArcBoardViewModel.setMultiArcMode('solo')">
+                    <button class="arc-split-exit" onclick="ArcBoardViewModel.setMultiArcMode('solo')">
                         <i data-lucide="x"></i>
-                        Quitter Split
+                        Quitter
                     </button>
                 </div>
 
                 <div class="arc-split-panels ${layout === 'horizontal' ? 'arc-split-horizontal' : 'arc-split-vertical'}">
                     ${panelsHtml}
                 </div>
-
-                ${this._renderInterArcConnectionsPanel()}
             </div>
         `;
     },
