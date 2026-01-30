@@ -142,9 +142,10 @@ JS_ORDER = [
     'js-refactor/plotgrid/plot-grid.view.js',
     # Scene Navigation (floating toolbar for moving text between scenes)
     'js-refactor/28.sceneNavigation.js',
-    # Synonyms Module (French synonyms dictionary with Datamuse API)
+    # Synonyms Module (French synonyms dictionary - local)
     'js-refactor/synonyms/synonyms.config.js',
     'js-refactor/synonyms/synonyms.model.js',
+    'js-refactor/synonyms/synonyms.dictionary.js',
     'js-refactor/synonyms/synonyms.service.js',
     'js-refactor/synonyms/synonyms.repository.js',
     'js-refactor/synonyms/synonyms.viewmodel.js',

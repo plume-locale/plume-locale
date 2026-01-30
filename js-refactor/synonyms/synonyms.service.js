@@ -1,41 +1,80 @@
 // ============================================================
-// synonyms.service.js - Service API pour les synonymes
+// synonyms.service.js - Service pour les synonymes français
 // ============================================================
-// [MVVM : Service] - Appels API externes (Datamuse, etc.)
+// [MVVM : Service] - Utilise le dictionnaire local français
 
 /**
- * Service de synonymes - Gère les appels API
+ * Service de synonymes - Utilise le dictionnaire local français
  * [MVVM : Service]
  */
 const SynonymsService = {
     /**
-     * Recherche des synonymes pour un mot
+     * Recherche des synonymes pour un mot (dictionnaire local)
      * @param {string} word - Mot à rechercher
      * @returns {Promise<Array>} Liste de synonymes
      * [MVVM : Service]
      */
     async fetchSynonyms(word) {
-        return this._fetchFromDatamuse(word, 'synonymsEndpoint');
+        const cleanWord = word.toLowerCase().trim();
+        if (!cleanWord) {
+            return [];
+        }
+
+        // Utiliser le dictionnaire local français
+        const results = searchLocalSynonyms(cleanWord);
+
+        // Si pas de résultats, chercher dans les synonymes existants
+        if (results.length === 0) {
+            return this._searchInAllSynonyms(cleanWord);
+        }
+
+        return results;
     },
 
     /**
-     * Recherche des mots similaires (son/orthographe)
+     * Recherche des mots similaires
      * @param {string} word - Mot à rechercher
      * @returns {Promise<Array>} Liste de mots similaires
      * [MVVM : Service]
      */
     async fetchSimilar(word) {
-        return this._fetchFromDatamuse(word, 'similarEndpoint');
+        const cleanWord = word.toLowerCase().trim();
+        if (!cleanWord) {
+            return [];
+        }
+
+        return searchLocalSimilar(cleanWord);
     },
 
     /**
-     * Recherche des rimes
+     * Recherche des rimes (basé sur la terminaison)
      * @param {string} word - Mot à rechercher
      * @returns {Promise<Array>} Liste de rimes
      * [MVVM : Service]
      */
     async fetchRhymes(word) {
-        return this._fetchFromDatamuse(word, 'rhymesEndpoint');
+        const cleanWord = word.toLowerCase().trim();
+        if (!cleanWord || cleanWord.length < 2) {
+            return [];
+        }
+
+        // Trouver les mots qui riment (même terminaison)
+        const ending = cleanWord.slice(-3);
+        const ending2 = cleanWord.slice(-2);
+        const rhymes = [];
+
+        for (const key of Object.keys(FrenchSynonymsDictionary)) {
+            if (key !== cleanWord) {
+                if (key.endsWith(ending)) {
+                    rhymes.push({ word: key, score: 100, tags: [], category: 'rime riche' });
+                } else if (key.endsWith(ending2)) {
+                    rhymes.push({ word: key, score: 70, tags: [], category: 'rime suffisante' });
+                }
+            }
+        }
+
+        // Trier par score et limiter
+        return rhymes.sort((a, b) => b.score - a.score).slice(0, 15);
     },
 
     /**
@@ -45,7 +84,12 @@ const SynonymsService = {
      * [MVVM : Service]
      */
     async fetchAntonyms(word) {
-        return this._fetchFromDatamuse(word, 'antonymsEndpoint');
+        const cleanWord = word.toLowerCase().trim();
+        if (!cleanWord) {
+            return [];
+        }
+
+        return searchLocalAntonyms(cleanWord);
     },
 
     /**
@@ -71,79 +115,76 @@ const SynonymsService = {
     },
 
     /**
-     * Appel interne à l'API Datamuse
+     * Recherche un mot dans tous les synonymes du dictionnaire
      * @param {string} word - Mot à rechercher
-     * @param {string} endpointKey - Clé de l'endpoint dans la config
-     * @returns {Promise<Array>} Résultats formatés
+     * @returns {Array} Mots dont le mot recherché est un synonyme
      * [MVVM : Service]
      */
-    async _fetchFromDatamuse(word, endpointKey) {
-        const config = SynonymsConfig.apis.datamuse;
+    _searchInAllSynonyms(word) {
+        const results = [];
 
-        if (!config.enabled) {
-            throw new Error('API Datamuse désactivée');
-        }
-
-        const cleanWord = word.toLowerCase().trim();
-        if (!cleanWord) {
-            return [];
-        }
-
-        const url = config.baseUrl + config[endpointKey](cleanWord);
-
-        try {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), config.timeout);
-
-            const response = await fetch(url, {
-                method: 'GET',
-                signal: controller.signal,
-                headers: {
-                    'Accept': 'application/json'
-                }
-            });
-
-            clearTimeout(timeoutId);
-
-            if (!response.ok) {
-                throw new Error(`Erreur HTTP: ${response.status}`);
+        for (const [key, entry] of Object.entries(FrenchSynonymsDictionary)) {
+            if (entry.synonymes && entry.synonymes.includes(word)) {
+                // Le mot recherché est un synonyme de 'key'
+                // Donc on retourne les autres synonymes de 'key'
+                results.push({ word: key, score: 100, tags: [], category: 'autre' });
+                entry.synonymes.forEach((syn, index) => {
+                    if (syn !== word && !results.find(r => r.word === syn)) {
+                        results.push({ word: syn, score: 90 - index, tags: [], category: 'autre' });
+                    }
+                });
             }
-
-            const data = await response.json();
-
-            // Transformer les résultats bruts en objets SynonymResult
-            return data.map(item => SynonymResult.create(item));
-
-        } catch (error) {
-            if (error.name === 'AbortError') {
-                throw new Error('Délai d\'attente dépassé');
-            }
-            throw error;
         }
+
+        return results.slice(0, 15);
     },
 
     /**
-     * Vérifie si le service est disponible (connexion internet)
+     * Vérifie si le service est disponible
      * @returns {boolean}
      * [MVVM : Service]
      */
     isOnline() {
-        return navigator.onLine;
+        // Le dictionnaire local est toujours disponible
+        return true;
     },
 
     /**
-     * Teste la connexion à l'API
+     * Teste le service
      * @returns {Promise<boolean>}
      * [MVVM : Service]
      */
     async testConnection() {
         try {
-            const results = await this.fetchSynonyms('test');
-            return true;
+            const results = await this.fetchSynonyms('bonheur');
+            return results.length > 0;
         } catch (error) {
-            console.warn('[SynonymsService] Test de connexion échoué:', error.message);
+            console.warn('[SynonymsService] Test échoué:', error.message);
             return false;
         }
+    },
+
+    /**
+     * Retourne des statistiques sur le dictionnaire
+     * @returns {Object}
+     * [MVVM : Service]
+     */
+    getStats() {
+        const entries = Object.keys(FrenchSynonymsDictionary).length;
+        let totalSynonyms = 0;
+        let totalAntonyms = 0;
+
+        for (const entry of Object.values(FrenchSynonymsDictionary)) {
+            totalSynonyms += (entry.synonymes || []).length;
+            totalAntonyms += (entry.antonymes || []).length;
+        }
+
+        return {
+            entries,
+            totalSynonyms,
+            totalAntonyms,
+            avgSynonymsPerWord: Math.round(totalSynonyms / entries * 10) / 10
+        };
     }
 };
 
