@@ -11,17 +11,28 @@ const ImportChapterView = {
     modalId: 'importChapterModal',
 
     /**
+     * Formats supportés (hardcoded pour éviter les dépendances)
+     */
+    supportedFormats: ['.docx', '.txt', '.md', '.epub', '.pages'],
+
+    /**
      * Ouvre le modal d'import
      */
     open() {
-        // Reset l'état
-        ImportChapterViewModel.reset();
+        try {
+            // Reset l'état si possible
+            if (typeof ImportChapterViewModel !== 'undefined') {
+                ImportChapterViewModel.reset();
+            }
 
-        // Afficher le modal
-        const modal = document.getElementById(this.modalId);
-        if (modal) {
-            modal.classList.add('active');
-            this.renderInitialState();
+            // Afficher le modal
+            const modal = document.getElementById(this.modalId);
+            if (modal) {
+                modal.classList.add('active');
+                this.renderInitialState();
+            }
+        } catch (e) {
+            console.error('Erreur ouverture modal import:', e);
         }
     },
 
@@ -33,7 +44,9 @@ const ImportChapterView = {
         if (modal) {
             modal.classList.remove('active');
         }
-        ImportChapterViewModel.cancelImport();
+        if (typeof ImportChapterViewModel !== 'undefined') {
+            ImportChapterViewModel.cancelImport();
+        }
     },
 
     /**
@@ -41,10 +54,13 @@ const ImportChapterView = {
      */
     renderInitialState() {
         const content = document.getElementById('importChapterContent');
-        if (!content) return;
+        if (!content) {
+            console.error('Element importChapterContent non trouve');
+            return;
+        }
 
-        const formats = ImportChapterViewModel.getSupportedFormats();
-        const acceptString = ImportChapterViewModel.getAcceptString();
+        const formats = this.supportedFormats;
+        const acceptString = formats.join(',');
 
         content.innerHTML = `
             <div class="import-chapter-upload">
@@ -90,8 +106,8 @@ const ImportChapterView = {
         this.initDropzone();
         this.initFileInput();
 
-        // Rafraîchir les icônes
-        if (typeof lucide !== 'undefined') {
+        // Rafraîchir les icônes Lucide
+        if (typeof lucide !== 'undefined' && lucide.createIcons) {
             lucide.createIcons();
         }
     },
@@ -150,12 +166,17 @@ const ImportChapterView = {
     async handleFileSelect(file) {
         this.renderProcessing(file.name);
 
-        const result = await ImportChapterViewModel.processFile(file);
+        try {
+            const result = await ImportChapterViewModel.processFile(file);
 
-        if (result.success) {
-            this.renderPreview(result.data);
-        } else {
-            this.renderError(result.error);
+            if (result.success) {
+                this.renderPreview(result.data);
+            } else {
+                this.renderError(result.error);
+            }
+        } catch (e) {
+            console.error('Erreur traitement fichier:', e);
+            this.renderError(e.message || 'Erreur lors du traitement du fichier');
         }
     },
 
@@ -212,7 +233,7 @@ const ImportChapterView = {
                             <div style="font-weight: 600; font-size: 1rem;">
                                 <i data-lucide="file-text" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 6px; color: var(--accent-gold);"></i>
                                 ${fileName}
-                                <span style="font-size: 0.75rem; background: var(--bg-tertiary); padding: 0.15rem 0.4rem; border-radius: 3px; margin-left: 0.5rem;">${fileFormat}</span>
+                                <span style="font-size: 0.75rem; background: var(--bg-tertiary); padding: 0.15rem 0.4rem; border-radius: 3px; margin-left: 0.5rem;">${fileFormat || ''}</span>
                             </div>
                         </div>
                         <div style="display: flex; gap: 1.5rem; font-size: 0.9rem;">
@@ -281,7 +302,7 @@ const ImportChapterView = {
         `;
 
         // Rafraîchir les icônes
-        if (typeof lucide !== 'undefined') {
+        if (typeof lucide !== 'undefined' && lucide.createIcons) {
             lucide.createIcons();
         }
     },
@@ -311,7 +332,7 @@ const ImportChapterView = {
         `;
 
         // Rafraîchir les icônes
-        if (typeof lucide !== 'undefined') {
+        if (typeof lucide !== 'undefined' && lucide.createIcons) {
             lucide.createIcons();
         }
     },
@@ -323,12 +344,17 @@ const ImportChapterView = {
         const actTitleInput = document.getElementById('importActTitle');
         const actTitle = actTitleInput ? actTitleInput.value.trim() : null;
 
-        const result = ImportChapterViewModel.confirmImport(actTitle);
+        try {
+            const result = ImportChapterViewModel.confirmImport(actTitle);
 
-        if (result.success) {
-            this.renderSuccess(result.data);
-        } else {
-            this.renderError(result.error);
+            if (result.success) {
+                this.renderSuccess(result.data);
+            } else {
+                this.renderError(result.error);
+            }
+        } catch (e) {
+            console.error('Erreur confirmation import:', e);
+            this.renderError(e.message || 'Erreur lors de l\'import');
         }
     },
 
@@ -359,7 +385,7 @@ const ImportChapterView = {
         `;
 
         // Rafraîchir les icônes
-        if (typeof lucide !== 'undefined') {
+        if (typeof lucide !== 'undefined' && lucide.createIcons) {
             lucide.createIcons();
         }
     }
