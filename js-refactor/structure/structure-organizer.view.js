@@ -557,7 +557,35 @@ function setupOrganizerEvents() {
         if (!organizerDragItems || organizerDragItems.length === 0) return;
 
         const targetInfo = getDropTarget(e.target);
-        if (!targetInfo) return;  // Or check compatibility again
+        if (!targetInfo) return;
+
+        const sampleItem = organizerDragItems[0];
+
+        // [MVVM : View] Validation du drop - vérifier la compatibilité
+        if (!isCompatibleDrop(sampleItem.type, targetInfo.type)) {
+            // Cas spécial : scène droppée sur un acte (zone chapter-drop)
+            // -> Créer automatiquement un chapitre pour accueillir la scène
+            if (sampleItem.type === 'scene' && targetInfo.type === 'chapter-drop') {
+                const targetAct = project.acts.find(a => a.id === targetInfo.parentId);
+                if (targetAct) {
+                    // Créer un nouveau chapitre
+                    const newChapter = createAutoChapterForScene(targetAct);
+                    if (newChapter) {
+                        // Modifier targetInfo pour pointer vers ce nouveau chapitre
+                        targetInfo.type = 'scene-drop';
+                        targetInfo.parentId = newChapter.id;
+                        targetInfo.index = 0;
+                    } else {
+                        return; // Échec de création du chapitre
+                    }
+                } else {
+                    return; // Acte non trouvé
+                }
+            } else {
+                // Drop incompatible non géré
+                return;
+            }
+        }
 
         // EXECUTE MOVE
         await executeOrganizerMoveMulti(organizerDragItems, targetInfo);
@@ -607,6 +635,25 @@ function isCompatibleDrop(sourceType, targetDropType) {
     if (sourceType === 'chapter' && targetDropType === 'chapter-drop') return true;
     if (sourceType === 'scene' && targetDropType === 'scene-drop') return true;
     return false;
+}
+
+// [MVVM : View Helper] Crée automatiquement un chapitre quand une scène est droppée sur un acte sans chapitre
+function createAutoChapterForScene(targetAct) {
+    if (!targetAct) return null;
+
+    // Générer un titre automatique pour le chapitre
+    const chapterNumber = (targetAct.chapters?.length || 0) + 1;
+    const newChapter = {
+        id: Date.now(),
+        title: `Chapitre ${chapterNumber}`,
+        scenes: []
+    };
+
+    // Ajouter le chapitre à l'acte
+    if (!targetAct.chapters) targetAct.chapters = [];
+    targetAct.chapters.push(newChapter);
+
+    return newChapter;
 }
 
 async function executeOrganizerMoveMulti(items, target) {
