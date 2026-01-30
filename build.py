@@ -197,6 +197,17 @@ def collect_js():
                 js_content.append('')
                 refactor_files.append(f'arc-board/{filename}')
 
+        # Collecter les fichiers du sous-dossier import-chapter/
+        import_chapter_dir = os.path.join(js_refactor_dir, 'import-chapter')
+        if os.path.exists(import_chapter_dir):
+            for filepath in sorted(glob.glob(os.path.join(import_chapter_dir, '*.js'))):
+                filename = os.path.basename(filepath)
+                content = read_file(f'js-refactor/import-chapter/{filename}')
+                js_content.append(f'// ========== js-refactor/import-chapter/{filename} ==========')
+                js_content.append(content)
+                js_content.append('')
+                refactor_files.append(f'import-chapter/{filename}')
+
     log(f"   [OK] {found_count} fichiers JS trouves")
     if missing:
         log(f"   [!] {len(missing)} fichiers JS manquants:")

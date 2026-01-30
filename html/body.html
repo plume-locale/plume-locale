@@ -1090,6 +1090,11 @@
                         style="width:16px;height:16px;vertical-align:middle;margin-right:6px;"></i>Importer des données
                 </div>
                 <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    <button class="btn btn-primary" onclick="openImportChapterModal(); closeModal('backupModal');" style="font-weight: 600;">
+                        <i data-lucide="file-text"
+                            style="width:16px;height:16px;vertical-align:middle;margin-right:6px;"></i>Importer depuis
+                        un fichier Word (.docx)
+                    </button>
                     <button class="btn" onclick="importFromFile()">
                         <i data-lucide="folder-open"
                             style="width:16px;height:16px;vertical-align:middle;margin-right:6px;"></i>Importer depuis
@@ -1152,6 +1157,23 @@
             </div>
             <div class="modal-actions" style="margin-top: 1.5rem;">
                 <button class="btn" onclick="closeModal('backupModal')">Fermer</button>
+            </div>
+        </div>
+    </div>
+    <!-- Import Chapter from DOCX Modal -->
+    <div class="modal" id="importChapterModal">
+        <div class="modal-content" style="max-width: 650px; max-height: 85vh; overflow-y: auto;">
+            <div class="modal-title">
+                <i data-lucide="file-plus"></i> Importer depuis Word (.docx)
+            </div>
+            <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.5;">
+                Importez un document Word et Plume detectera automatiquement vos chapitres pour creer la structure.
+            </p>
+            <div id="importChapterContent">
+                <!-- Content will be populated by JavaScript -->
+            </div>
+            <div class="modal-actions" style="margin-top: 1.5rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
+                <button class="btn" onclick="closeImportChapterModal()">Annuler</button>
             </div>
         </div>
     </div>
