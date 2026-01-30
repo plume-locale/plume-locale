@@ -14,19 +14,31 @@ const ImportChapterModel = {
      * Patterns de détection des chapitres (ordre de priorité)
      */
     chapterPatterns: [
-        // Titres avec numéros
-        /^chapitre\s+(\d+|[ivxlcdm]+)[\s:.\-–—]*(.*)$/i,
-        /^chapter\s+(\d+|[ivxlcdm]+)[\s:.\-–—]*(.*)$/i,
-        /^chap\.?\s*(\d+|[ivxlcdm]+)[\s:.\-–—]*(.*)$/i,
+        // Titres avec numéros (ajout de \b pour éviter de couper "Chapitre" en "Chap" + "i")
+        /^chapitre[\s:.\-–—]*(\d+|[ivxlcdm]+)\b[\s:.\-–—]*(.*)$/i,
+        /^chapter[\s:.\-–—]*(\d+|[ivxlcdm]+)\b[\s:.\-–—]*(.*)$/i,
+        /^chap\.?[\s:.\-–—]*(\d+|[ivxlcdm]+)\b[\s:.\-–—]*(.*)$/i,
         // Titres avec mots (Chapitre Un, Chapitre Premier)
-        /^chapitre\s+(un|deux|trois|quatre|cinq|six|sept|huit|neuf|dix|onze|douze|treize|quatorze|quinze|seize|premier|deuxième|troisième|second)[\s:.\-–—]*(.*)$/i,
+        /^chapitre\s+(un|deux|trois|quatre|cinq|six|sept|huit|neuf|dix|onze|douze|treize|quatorze|quinze|seize|premier|deuxième|troisième|second)\b[\s:.\-–—]*(.*)$/i,
         // Format numéroté simple
         /^(\d+)[\s:.\-–—]+(.+)$/,
         // Format avec tiret ou point
         /^(\d+)\.\s*(.+)$/,
         // Partie/Part
-        /^partie\s+(\d+|[ivxlcdm]+)[\s:.\-–—]*(.*)$/i,
-        /^part\s+(\d+|[ivxlcdm]+)[\s:.\-–—]*(.*)$/i
+        /^partie[\s:.\-–—]*(\d+|[ivxlcdm]+)\b[\s:.\-–—]*(.*)$/i,
+        /^part[\s:.\-–—]*(\d+|[ivxlcdm]+)\b[\s:.\-–—]*(.*)$/i
+    ],
+
+    /**
+     * Patterns de détection de dates (pour exclusion)
+     */
+    datePatterns: [
+        // JJ/MM/AAAA ou JJ-MM-AAAA ou JJ.MM.AAAA (ex: 12/05/2024)
+        /^\d{1,2}[./-]\d{1,2}[./-]\d{2,4}/,
+        // Dates complètes: 12 janvier 2024 ou 1er janvier
+        /^\d{1,2}(er)?\s+(janvier|février|fevrier|mars|avril|mai|juin|juillet|aout|août|septembre|octobre|novembre|décembre|decembre|janv|fév|déc|oct|nov|sept)[\s\d]*$/i,
+        // AAAA-MM-JJ
+        /^\d{4}[./-]\d{1,2}[./-]\d{1,2}/
     ],
 
     /**
@@ -591,6 +603,10 @@ const ImportChapterModel = {
      */
     matchChapterPattern(text) {
         if (!text || text.length > 100) return null; // Trop long pour être un titre
+
+        // Vérifier si c'est une date (pour éviter les faux positifs type journal)
+        const isDate = this.datePatterns.some(pattern => pattern.test(text));
+        if (isDate) return null;
 
         for (const pattern of this.chapterPatterns) {
             const match = text.match(pattern);
