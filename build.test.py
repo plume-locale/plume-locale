@@ -141,7 +141,14 @@ JS_ORDER = [
     'js-refactor/plotgrid/plot-grid.import-export.js',
     'js-refactor/plotgrid/plot-grid.view.js',
     # Scene Navigation (floating toolbar for moving text between scenes)
-    'js-refactor/28.sceneNavigation.js'
+    'js-refactor/28.sceneNavigation.js',
+    # Synonyms Module (French synonyms dictionary with Datamuse API)
+    'js-refactor/synonyms/synonyms.config.js',
+    'js-refactor/synonyms/synonyms.model.js',
+    'js-refactor/synonyms/synonyms.service.js',
+    'js-refactor/synonyms/synonyms.repository.js',
+    'js-refactor/synonyms/synonyms.viewmodel.js',
+    'js-refactor/synonyms/synonyms.view.js'
 ]
 
 def read_file(path):
@@ -195,6 +202,19 @@ def collect_css():
             css_content.append('')
             found_count += 1
     
+    # Ajouter les CSS des modules dans js-refactor/
+    module_css_files = [
+        'js-refactor/synonyms/synonyms.css'
+    ]
+    for css_path in module_css_files:
+        filepath = os.path.join(BUILD_DIR, css_path)
+        if os.path.exists(filepath):
+            content = read_file(css_path)
+            css_content.append(f'/* ========== {css_path} ========== */')
+            css_content.append(content)
+            css_content.append('')
+            found_count += 1
+
     log(f"   [OK] {found_count} fichiers CSS trouves")
     return '\n'.join(css_content)
 
