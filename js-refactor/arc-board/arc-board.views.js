@@ -253,12 +253,15 @@ const ArcBoardView = {
         view.innerHTML = `
             <div class="arc-board-container">
                 ${this._renderToolbar()}
-                ${this._renderMultiArcBar(arc)}
 
-                <!-- Zone Non attribué en sidebar -->
-                <div id="arcUnassignedSidebar"></div>
+                <div class="arc-board-main">
+                    ${this._renderMultiArcBar(arc)}
 
-                <div class="arc-board-canvas-wrapper">
+                    <div class="arc-board-body">
+                        <!-- Zone Non attribué en sidebar -->
+                        <div id="arcUnassignedSidebar"></div>
+
+                        <div class="arc-board-canvas-wrapper">
                     <div class="arc-board-canvas" id="arcBoardCanvas"
                          onmousedown="ArcBoardEventHandlers.onCanvasMouseDown(event)"
                          onmousemove="ArcBoardEventHandlers.onCanvasMouseMove(event)"
@@ -299,9 +302,11 @@ const ArcBoardView = {
                     </div>
 
                     ${this._renderZoomControls()}
-                </div>
+                        </div>
 
-                ${this._renderContextPanel(arc)}
+                        ${this._renderContextPanel(arc)}
+                    </div>
+                </div>
             </div>
 
             <input type="file" id="arcFileInput" style="display:none" accept="image/*"
