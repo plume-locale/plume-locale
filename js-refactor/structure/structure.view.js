@@ -220,6 +220,15 @@ function renderActsList() {
 
     let html = '<div style="padding: 0 0.5rem;">';
 
+    // Ajout bouton Organiser Structure
+    html += `
+        <div style="margin-bottom: 1rem; display: flex; justify-content: flex-end; padding-top: 0.5rem;">
+            <button class="btn btn-secondary btn-small" onclick="openStructureOrganizer()" title="Réorganiser la structure (vue globale)">
+                <i data-lucide="layout-list" style="width:14px;height:14px;margin-right:4px;"></i> Organiser
+            </button>
+        </div>
+    `;
+
     vm.acts.forEach((act, actIndex) => {
         const actStats = typeof getActStats === 'function' ? getActStats(act) : { totalWords: 0 };
         const actExpanded = typeof expandedActs !== 'undefined' && expandedActs.has(act.id);

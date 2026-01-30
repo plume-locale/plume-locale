@@ -57,6 +57,7 @@ JS_ORDER = [
     'js-refactor/00.app.view.js',
     # Structure refactored files 2/2
     'js-refactor/structure/structure.view.js',
+    'js-refactor/structure/structure-organizer.view.js',
     'js-refactor/structure/structure.helpers.js',
     'js-refactor/07.stats.refactor.js',
     'js-refactor/08.auto-detect.refactor.js',

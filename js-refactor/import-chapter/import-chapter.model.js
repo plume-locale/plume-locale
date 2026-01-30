@@ -102,7 +102,10 @@ const ImportChapterModel = {
                             ]
                         }
                     );
-                    resolve(result);
+                    resolve({
+                        html: result.value,
+                        messages: result.messages
+                    });
                 } catch (error) {
                     reject(error);
                 }
