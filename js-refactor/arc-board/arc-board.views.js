@@ -670,8 +670,8 @@ const ArcBoardView = {
      * Rendu mode Compare (plusieurs arcs empilés)
      */
     _renderCompareItems(itemsContainer, sidebarContainer) {
-        const ARC_PADDING = 30; // Padding entre les arcs
-        const HEADER_HEIGHT = 50; // Hauteur de l'en-tête d'arc
+        const HEADER_HEIGHT = 40; // Hauteur de l'en-tête d'arc
+        const MIN_ARC_HEIGHT = 100; // Hauteur minimale d'un arc
         let html = '';
         let currentY = 0;
 
@@ -683,27 +683,47 @@ const ArcBoardView = {
             const compareArc = ArcRepository.getById(arcId);
             if (!compareArc) return;
 
+            // Utiliser la hauteur personnalisée ou calculer automatiquement
+            const contentHeight = this._getArcContentHeight(compareArc);
+            const storedHeight = ArcBoardState.compareArcHeights[arcId];
+            const sectionHeight = storedHeight !== undefined
+                ? Math.max(MIN_ARC_HEIGHT, storedHeight)
+                : Math.max(MIN_ARC_HEIGHT, contentHeight + HEADER_HEIGHT);
+
             // Stocker l'offset pour cet arc
             this._compareArcOffsets[arcId] = { x: 0, y: currentY + HEADER_HEIGHT };
 
-            // En-tête de l'arc (bande colorée)
+            // Section complète de l'arc (conteneur redimensionnable)
             html += `
-                <div class="arc-compare-header" style="top:${currentY}px; --arc-color:${compareArc.color}" data-arc-id="${arcId}">
-                    <span class="arc-compare-header-dot" style="background:${compareArc.color}"></span>
-                    <span class="arc-compare-header-title">${compareArc.title}</span>
-                    <span class="arc-compare-header-count">${compareArc.board.items.filter(i => i.type === 'column').length} colonnes</span>
+                <div class="arc-compare-section" data-arc-id="${arcId}"
+                     style="top:${currentY}px; height:${sectionHeight}px; --arc-color:${compareArc.color}">
+                    <div class="arc-compare-header" style="--arc-color:${compareArc.color}">
+                        <span class="arc-compare-header-dot" style="background:${compareArc.color}"></span>
+                        <span class="arc-compare-header-title">${compareArc.title}</span>
+                        <span class="arc-compare-header-count">${compareArc.board.items.filter(i => i.type === 'column').length} colonnes</span>
+                    </div>
+                    <div class="arc-compare-content" style="position:relative; top:${HEADER_HEIGHT}px; height:calc(100% - ${HEADER_HEIGHT}px);">
+            `;
+
+            // Items de cet arc - offset Y est juste pour le header, pas pour la position globale
+            // car les items sont maintenant à l'intérieur de arc-compare-content
+            compareArc.board.items.filter(item => item.type !== 'scene').forEach(item => {
+                html += this._renderItem(item, arcId, 0, 0);
+            });
+
+            html += `
+                    </div>
+            `;
+
+            // Poignée de redimensionnement en bas de la section
+            html += `
+                    <div class="arc-compare-resize-handle"
+                         onmousedown="CompareResizeService.start(event, '${arcId}')"
+                         title="Glisser pour redimensionner"></div>
                 </div>
             `;
 
-            // Items de cet arc avec offset Y
-            const offsetY = currentY + HEADER_HEIGHT;
-            compareArc.board.items.filter(item => item.type !== 'scene').forEach(item => {
-                html += this._renderItem(item, arcId, 0, offsetY);
-            });
-
-            // Calculer la hauteur réelle de cet arc (basée sur le contenu)
-            const arcHeight = this._getArcContentHeight(compareArc);
-            currentY += HEADER_HEIGHT + arcHeight + ARC_PADDING;
+            currentY += sectionHeight;
         });
 
         itemsContainer.innerHTML = html;
@@ -772,18 +792,36 @@ const ArcBoardView = {
      */
     _renderCompareConnections() {
         const svg = document.getElementById('arcConnectionsSvg');
-        if (!svg) return;
+        const content = document.getElementById('arcBoardContent');
+        if (!svg || !content) return;
 
         const defs = svg.querySelector('defs');
         svg.innerHTML = '';
         if (defs) svg.appendChild(defs);
 
+        const contentRect = content.getBoundingClientRect();
+
+        // Helper pour obtenir la position relative au canvas
+        const getRelativePosition = (element, side) => {
+            const rect = element.getBoundingClientRect();
+            const x = (rect.left - contentRect.left) / ArcBoardState.zoom;
+            const y = (rect.top - contentRect.top) / ArcBoardState.zoom;
+            const w = rect.width / ArcBoardState.zoom;
+            const h = rect.height / ArcBoardState.zoom;
+
+            switch (side) {
+                case 'top': return { x: x + w / 2, y: y };
+                case 'bottom': return { x: x + w / 2, y: y + h };
+                case 'left': return { x: x, y: y + h / 2 };
+                case 'right': return { x: x + w, y: y + h / 2 };
+                default: return { x: x + w / 2, y: y + h / 2 };
+            }
+        };
+
         // 1. Connexions internes de chaque arc
         ArcBoardState.compareArcs.forEach(arcId => {
             const arc = ArcRepository.getById(arcId);
             if (!arc?.board?.connections) return;
-
-            const offset = this._compareArcOffsets?.[arcId] || { x: 0, y: 0 };
 
             arc.board.connections.forEach(conn => {
                 const fromEl = document.getElementById(`item-${conn.from}`);
@@ -791,8 +829,8 @@ const ArcBoardView = {
 
                 if (!fromEl || !toEl) return;
 
-                const fromPos = this._getElementPosition(fromEl, conn.fromSide);
-                const toPos = this._getElementPosition(toEl, conn.toSide);
+                const fromPos = getRelativePosition(fromEl, conn.fromSide);
+                const toPos = getRelativePosition(toEl, conn.toSide);
 
                 const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
                 const d = this._createBezierPath(fromPos, toPos, conn.fromSide, conn.toSide);
@@ -810,7 +848,7 @@ const ArcBoardView = {
         });
 
         // 2. Connexions inter-arcs
-        const interArcConnections = InterArcConnectionRepository.getAll();
+        const interArcConnections = InterArcConnectionRepository?.getAll?.() || [];
         interArcConnections.forEach(conn => {
             // Trouver les éléments dans les arcs comparés
             if (!ArcBoardState.compareArcs.includes(conn.fromArcId) ||
@@ -821,8 +859,8 @@ const ArcBoardView = {
 
             if (!fromEl || !toEl) return;
 
-            const fromPos = this._getElementPosition(fromEl, 'right');
-            const toPos = this._getElementPosition(toEl, 'left');
+            const fromPos = getRelativePosition(fromEl, 'right');
+            const toPos = getRelativePosition(toEl, 'left');
 
             const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
             const d = this._createBezierPath(fromPos, toPos, 'right', 'left');

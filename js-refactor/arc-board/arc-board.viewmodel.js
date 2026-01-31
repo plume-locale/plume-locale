@@ -48,6 +48,7 @@ const ArcBoardState = {
     compareArcs: [],         // IDs des arcs à comparer (incluant l'arc principal)
     compareLayout: 'horizontal', // 'horizontal' ou 'vertical'
     interArcConnectionSource: null, // Pour créer des connexions inter-arcs
+    compareArcHeights: {},   // Hauteurs personnalisées par arc en mode Compare { arcId: height }
 
     // Reset l'état
     reset() {
@@ -68,6 +69,7 @@ const ArcBoardState = {
         this.compareArcs = [];
         this.compareLayout = 'horizontal';
         this.interArcConnectionSource = null;
+        this.compareArcHeights = {};
     }
 };
 

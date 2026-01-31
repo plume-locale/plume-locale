@@ -720,6 +720,135 @@ const ResizeService = {
 };
 
 /**
+ * Service de redimensionnement vertical des arcs en mode Compare
+ */
+const CompareResizeService = {
+    _state: {
+        active: false,
+        arcId: null,
+        startY: 0,
+        startHeight: 0,
+        minHeight: 100  // Hauteur minimale d'un arc
+    },
+
+    /**
+     * Démarre le redimensionnement d'un arc
+     */
+    start(event, arcId) {
+        event.stopPropagation();
+        event.preventDefault();
+
+        const section = document.querySelector(`.arc-compare-section[data-arc-id="${arcId}"]`);
+        if (!section) return;
+
+        this._state = {
+            active: true,
+            arcId: arcId,
+            startY: event.clientY,
+            startHeight: section.offsetHeight,
+            minHeight: 100
+        };
+
+        // Ajouter les listeners globaux
+        document.addEventListener('mousemove', this._onMouseMove);
+        document.addEventListener('mouseup', this._onMouseUp);
+        document.body.style.cursor = 'ns-resize';
+        document.body.style.userSelect = 'none';
+    },
+
+    /**
+     * Handler de mouvement (bound)
+     */
+    _onMouseMove: function(event) {
+        CompareResizeService.move(event);
+    },
+
+    /**
+     * Handler de fin (bound)
+     */
+    _onMouseUp: function(event) {
+        CompareResizeService.end(event);
+    },
+
+    /**
+     * Déplacement pendant le redimensionnement
+     */
+    move(event) {
+        if (!this._state.active) return;
+
+        const dy = event.clientY - this._state.startY;
+        let newHeight = this._state.startHeight + dy;
+
+        // Appliquer la hauteur minimale
+        newHeight = Math.max(this._state.minHeight, newHeight);
+
+        // Mettre à jour visuellement la section
+        const section = document.querySelector(`.arc-compare-section[data-arc-id="${this._state.arcId}"]`);
+        if (section) {
+            section.style.height = `${newHeight}px`;
+
+            // Marquer si on est à la hauteur minimale
+            if (newHeight <= this._state.minHeight) {
+                section.classList.add('min-height');
+            } else {
+                section.classList.remove('min-height');
+            }
+        }
+
+        // Recalculer les positions des arcs suivants
+        this._updateFollowingArcs();
+    },
+
+    /**
+     * Met à jour les positions des arcs qui suivent l'arc redimensionné
+     */
+    _updateFollowingArcs() {
+        const sections = document.querySelectorAll('.arc-compare-section');
+        let currentY = 0;
+
+        sections.forEach(section => {
+            section.style.top = `${currentY}px`;
+            currentY += section.offsetHeight;
+        });
+    },
+
+    /**
+     * Fin du redimensionnement
+     */
+    end(event) {
+        if (!this._state.active) return;
+
+        // Sauvegarder la hauteur dans l'état
+        const section = document.querySelector(`.arc-compare-section[data-arc-id="${this._state.arcId}"]`);
+        if (section) {
+            const newHeight = section.offsetHeight;
+            ArcBoardState.compareArcHeights[this._state.arcId] = newHeight;
+        }
+
+        // Nettoyer
+        document.removeEventListener('mousemove', this._onMouseMove);
+        document.removeEventListener('mouseup', this._onMouseUp);
+        document.body.style.cursor = '';
+        document.body.style.userSelect = '';
+
+        this._state = {
+            active: false,
+            arcId: null,
+            startY: 0,
+            startHeight: 0,
+            minHeight: 100
+        };
+
+        // Re-render les connexions
+        ArcBoardView._renderCompareConnections();
+    },
+
+    isActive() {
+        return this._state.active;
+    }
+};
+
+/**
  * Service de déplacement des items (mousedown/mousemove)
  */
 const ItemMoveService = {

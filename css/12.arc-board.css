@@ -3056,21 +3056,6 @@
     height: 8px;
 }
 
-/* En-tête d'arc dans le canvas (mode Compare) */
-.arc-compare-header {
-    position: absolute;
-    left: 0;
-    right: 0;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 0 20px;
-    background: linear-gradient(to right, color-mix(in srgb, var(--arc-color, var(--primary-color)) 20%, var(--bg-primary)), var(--bg-primary));
-    border-bottom: 3px solid var(--arc-color, var(--primary-color));
-    z-index: 10;
-}
-
 .arc-compare-header-dot {
     width: 12px;
     height: 12px;
@@ -3120,5 +3105,99 @@
 
 .arc-interarc-connection:hover {
     stroke-width: 4 !important;
+    opacity: 1;
+}
+
+/* ============================================
+   MODE COMPARE - Poignée de redimensionnement vertical
+   ============================================ */
+
+/* Conteneur d'un arc en mode Compare */
+.arc-compare-section {
+    position: absolute;
+    left: 0;
+    right: 0;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+}
+
+/* Zone de contenu des items d'un arc */
+.arc-compare-content {
+    position: relative;
+    overflow: auto;
+}
+
+/* Poignée de redimensionnement en bas de chaque arc */
+.arc-compare-resize-handle {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 8px;
+    cursor: ns-resize;
+    background: transparent;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease;
+}
+
+.arc-compare-resize-handle:hover {
+    background: linear-gradient(to bottom, transparent, rgba(255, 140, 66, 0.15));
+}
+
+.arc-compare-resize-handle:active {
+    background: linear-gradient(to bottom, transparent, rgba(255, 140, 66, 0.25));
+}
+
+/* Indicateur visuel de la poignée */
+.arc-compare-resize-handle::before {
+    content: '';
+    width: 40px;
+    height: 4px;
+    background: var(--border-color);
+    border-radius: 2px;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+
+.arc-compare-resize-handle:hover::before {
+    opacity: 1;
+    background: var(--primary-color);
+}
+
+/* Style de l'en-tête avec poignée de drag vertical */
+.arc-compare-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 20px;
+    background: linear-gradient(to right, color-mix(in srgb, var(--arc-color, var(--primary-color)) 20%, var(--bg-primary)), var(--bg-primary));
+    border-bottom: 3px solid var(--arc-color, var(--primary-color));
+    z-index: 10;
+}
+
+/* Indicateur de hauteur minimale/maximale */
+.arc-compare-section.min-height .arc-compare-resize-handle::after {
+    content: 'Hauteur minimale';
+    position: absolute;
+    bottom: 12px;
+    font-size: 10px;
+    color: var(--text-muted);
+    background: var(--bg-primary);
+    padding: 2px 8px;
+    border-radius: 4px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.arc-compare-section.min-height .arc-compare-resize-handle:hover::after {
     opacity: 1;
 }
