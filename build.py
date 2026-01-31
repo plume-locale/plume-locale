@@ -37,7 +37,8 @@ CSS_ORDER = [
     '10.mobile.css',
     '11.storygrid.css',
     '12.arc-board.css',
-    '13.thriller-board.css'
+    '13.thriller-board.css',
+    '14.word-repetition.css'
 ]
 
 # Ordre des fichiers JS (selon concat.sh)
@@ -207,6 +208,17 @@ def collect_js():
                 js_content.append(content)
                 js_content.append('')
                 refactor_files.append(f'import-chapter/{filename}')
+
+        # Collecter les fichiers du sous-dossier word-repetition/
+        word_repetition_dir = os.path.join(js_refactor_dir, 'word-repetition')
+        if os.path.exists(word_repetition_dir):
+            for filepath in sorted(glob.glob(os.path.join(word_repetition_dir, '*.js'))):
+                filename = os.path.basename(filepath)
+                content = read_file(f'js-refactor/word-repetition/{filename}')
+                js_content.append(f'// ========== js-refactor/word-repetition/{filename} ==========')
+                js_content.append(content)
+                js_content.append('')
+                refactor_files.append(f'word-repetition/{filename}')
 
     log(f"   [OK] {found_count} fichiers JS trouves")
     if missing:

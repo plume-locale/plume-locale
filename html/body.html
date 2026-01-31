@@ -341,6 +341,10 @@
                 <div class="database-list" id="noSidebarMessage" style="display: none;">
                     <!-- Message for views without sidebar -->
                 </div>
+                <!-- Word Repetition Analyzer Panel -->
+                <div id="wordRepetitionContainer" class="word-rep-sidebar-container" style="display: none;">
+                    <!-- Word repetition panel will be dynamically inserted here -->
+                </div>
                 <div class="sidebar-actions" id="sidebarActions">
                     <button class="btn btn-primary" onclick="openAddActModal()">+ Acte</button>
                     <button class="btn btn-primary" onclick="openAddChapterModal()">+ Chapitre</button>
@@ -371,6 +375,10 @@
                 <button class="tool-btn" onclick="toggleLinksPanelVisibility()" id="toolLinksPanelBtn"
                     title="Afficher/Masquer les liens (Personnages, Univers, Timeline)">
                     <i data-lucide="link-2"></i>
+                </button>
+                <button class="tool-btn" onclick="toggleWordRepetitionPanel()" id="toolRepetitionBtn"
+                    title="Analyseur de répétitions de mots">
+                    <i data-lucide="repeat"></i>
                 </button>
             </div>
             <!-- Sidebar Versions (pour les versions de scènes) -->
