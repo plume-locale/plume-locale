@@ -3117,7 +3117,7 @@
     position: absolute;
     left: 0;
     right: 0;
-    overflow: hidden;
+    overflow: visible;
     border-bottom: 1px solid var(--border-color);
     background: var(--bg-secondary);
 }
@@ -3125,7 +3125,7 @@
 /* Zone de contenu des items d'un arc */
 .arc-compare-content {
     position: relative;
-    overflow: auto;
+    overflow: visible;
 }
 
 /* Poignée de redimensionnement en bas de chaque arc */

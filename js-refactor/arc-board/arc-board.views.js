@@ -698,7 +698,7 @@ const ArcBoardView = {
             const savedOpacity = ArcBoardState.compareArcOpacities?.[arcId] ?? 100;
             html += `
                 <div class="arc-compare-section" data-arc-id="${arcId}"
-                     style="top:${currentY}px; height:${sectionHeight}px; --arc-color:${compareArc.color}; --arc-opacity:${savedOpacity / 100}">
+                     style="top:${currentY}px; height:${sectionHeight}px; z-index:${100 - index}; --arc-color:${compareArc.color}; --arc-opacity:${savedOpacity / 100}">
                     <div class="arc-compare-header" style="--arc-color:${compareArc.color}">
                         <span class="arc-compare-header-dot" style="background:${compareArc.color}"></span>
                         <span class="arc-compare-header-title">${compareArc.title}</span>
