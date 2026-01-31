@@ -560,11 +560,19 @@ const ConnectionService = {
     },
 
     /**
+     * Trouve un élément par son ID (item ou carte)
+     */
+    _findElement(id) {
+        return document.getElementById(`item-${id}`)
+            || document.querySelector(`[data-card-id="${id}"]`);
+    },
+
+    /**
      * Calcule les meilleurs côtés pour une connexion
      */
     _calculateBestSides(fromId, toId) {
-        const fromEl = document.getElementById(`item-${fromId}`);
-        const toEl = document.getElementById(`item-${toId}`);
+        const fromEl = this._findElement(fromId);
+        const toEl = this._findElement(toId);
 
         if (!fromEl || !toEl) return { fromSide: 'right', toSide: 'left' };
 
@@ -597,7 +605,8 @@ const ConnectionService = {
             document.getElementById('connectionHintText').textContent = 'Cliquez sur l\'élément source';
         }
 
-        document.querySelectorAll('.arc-column, .arc-floating-item').forEach(el => {
+        // Inclure aussi les cartes comme éléments connectables
+        document.querySelectorAll('.arc-column, .arc-floating-item, .arc-card').forEach(el => {
             el.classList.add('connectable');
             el.classList.remove('connection-source', 'connection-target');
         });
@@ -606,7 +615,7 @@ const ConnectionService = {
     },
 
     _updateSourceUI(sourceId) {
-        const sourceEl = document.getElementById(`item-${sourceId}`);
+        const sourceEl = this._findElement(sourceId);
         if (sourceEl) {
             sourceEl.classList.add('connection-source');
             sourceEl.classList.remove('connectable');
@@ -614,8 +623,10 @@ const ConnectionService = {
 
         document.getElementById('connectionHintText').textContent = 'Cliquez sur l\'élément cible';
 
-        document.querySelectorAll('.arc-column, .arc-floating-item').forEach(el => {
-            if (el.id !== `item-${sourceId}`) {
+        // Inclure aussi les cartes comme cibles potentielles
+        document.querySelectorAll('.arc-column, .arc-floating-item, .arc-card').forEach(el => {
+            const elId = el.id?.replace('item-', '') || el.dataset.cardId;
+            if (elId !== sourceId) {
                 el.classList.add('connection-target');
             }
         });
@@ -625,7 +636,7 @@ const ConnectionService = {
         const hint = document.getElementById('connectionModeHint');
         if (hint) hint.style.display = 'none';
 
-        document.querySelectorAll('.arc-column, .arc-floating-item').forEach(el => {
+        document.querySelectorAll('.arc-column, .arc-floating-item, .arc-card').forEach(el => {
             el.classList.remove('connectable', 'connection-source', 'connection-target');
         });
     }

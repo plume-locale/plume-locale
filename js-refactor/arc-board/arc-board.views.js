@@ -1120,13 +1120,15 @@ const ArcBoardView = {
             </div>
         `;
 
-        // Handler pour les connexions inter-arcs (permet de connecter des cartes)
-        const interArcClick = arcId ? `if(InterArcConnectionService.connecting) { InterArcConnectionService.handleClick('${arcId}', '${card.id}'); event.stopPropagation(); }` : '';
+        // Handler pour les connexions (inter-arcs OU intra-arc)
+        const connectionClick = arcId
+            ? `if(InterArcConnectionService.connecting) { InterArcConnectionService.handleClick('${arcId}', '${card.id}'); event.stopPropagation(); }`
+            : `if(ArcBoardState.activeTool === 'connect') { ConnectionService.handleClick('${card.id}'); event.stopPropagation(); }`;
 
         switch (card.type) {
             case 'note':
                 return `
-                    <div class="arc-card arc-card-note" data-card-id="${card.id}" ${arcId ? `data-arc-id="${arcId}"` : ''} onclick="${interArcClick}">
+                    <div class="arc-card arc-card-note" data-card-id="${card.id}" ${arcId ? `data-arc-id="${arcId}"` : ''} onclick="${connectionClick}">
                         ${dragHandle}${deleteBtn}
                         <div class="arc-card-content" contenteditable="true"
                              onblur="ArcBoardViewModel.updateCard('${columnId}', '${card.id}', { content: this.innerHTML }${arcParam})"
@@ -1136,7 +1138,7 @@ const ArcBoardView = {
 
             case 'image':
                 return `
-                    <div class="arc-card arc-card-image" data-card-id="${card.id}" ${arcId ? `data-arc-id="${arcId}"` : ''} onclick="${interArcClick}">
+                    <div class="arc-card arc-card-image" data-card-id="${card.id}" ${arcId ? `data-arc-id="${arcId}"` : ''} onclick="${connectionClick}">
                         ${dragHandle}${deleteBtn}
                         ${card.src
                         ? `<img src="${card.src}" alt="" draggable="false">`
@@ -1163,7 +1165,7 @@ const ArcBoardView = {
                 `).join('');
 
                 return `
-                    <div class="arc-card arc-card-todo" data-card-id="${card.id}" ${arcId ? `data-arc-id="${arcId}"` : ''} onclick="${interArcClick}">
+                    <div class="arc-card arc-card-todo" data-card-id="${card.id}" ${arcId ? `data-arc-id="${arcId}"` : ''} onclick="${connectionClick}">
                         ${dragHandle}${deleteBtn}
                         <input type="text" class="arc-card-title" value="${card.title || ''}"
                                placeholder="Titre"
@@ -1179,7 +1181,7 @@ const ArcBoardView = {
             case 'scene':
                 const statusLabels = { 'setup': 'Introduction', 'development': 'Développement', 'climax': 'Point culminant', 'resolution': 'Résolution' };
                 return `
-                    <div class="arc-card arc-card-scene" data-card-id="${card.id}" data-scene-id="${card.sceneId || ''}" ${arcId ? `data-arc-id="${arcId}"` : ''} onclick="${interArcClick}">
+                    <div class="arc-card arc-card-scene" data-card-id="${card.id}" data-scene-id="${card.sceneId || ''}" ${arcId ? `data-arc-id="${arcId}"` : ''} onclick="${connectionClick}">
                         ${dragHandle}${deleteBtn}
                         <div class="arc-card-scene-header">
                             <i data-lucide="book-open"></i>
@@ -1202,7 +1204,7 @@ const ArcBoardView = {
 
             case 'link':
                 return `
-                    <div class="arc-card arc-card-link" data-card-id="${card.id}" ${arcId ? `data-arc-id="${arcId}"` : ''} onclick="${interArcClick}">
+                    <div class="arc-card arc-card-link" data-card-id="${card.id}" ${arcId ? `data-arc-id="${arcId}"` : ''} onclick="${connectionClick}">
                         ${dragHandle}${deleteBtn}
                         ${card.url ? `
                             <div class="arc-link-preview">
@@ -1225,7 +1227,7 @@ const ArcBoardView = {
 
             case 'comment':
                 return `
-                    <div class="arc-card arc-card-comment" data-card-id="${card.id}" ${arcId ? `data-arc-id="${arcId}"` : ''} onclick="${interArcClick}">
+                    <div class="arc-card arc-card-comment" data-card-id="${card.id}" ${arcId ? `data-arc-id="${arcId}"` : ''} onclick="${connectionClick}">
                         ${dragHandle}${deleteBtn}
                         <div class="arc-card-content" contenteditable="true"
                              onblur="ArcBoardViewModel.updateCard('${columnId}', '${card.id}', { content: this.innerHTML }${arcParam})"
@@ -1574,8 +1576,11 @@ const ArcBoardView = {
         if (!arc.board.connections?.length) return;
 
         arc.board.connections.forEach(conn => {
-            const fromEl = document.getElementById(`item-${conn.from}`);
-            const toEl = document.getElementById(`item-${conn.to}`);
+            // Chercher par item-id OU data-card-id pour supporter les cartes
+            const fromEl = document.getElementById(`item-${conn.from}`)
+                        || document.querySelector(`[data-card-id="${conn.from}"]`);
+            const toEl = document.getElementById(`item-${conn.to}`)
+                      || document.querySelector(`[data-card-id="${conn.to}"]`);
 
             if (!fromEl || !toEl) return;
 
@@ -1601,10 +1606,27 @@ const ArcBoardView = {
     },
 
     _getElementPosition(element, side) {
-        const x = parseInt(element.style.left) || 0;
-        const y = parseInt(element.style.top) || 0;
-        const w = element.offsetWidth;
-        const h = element.offsetHeight;
+        let x, y, w, h;
+
+        // Pour les éléments avec position absolue (colonnes, notes flottantes)
+        if (element.style.left && element.style.top) {
+            x = parseInt(element.style.left) || 0;
+            y = parseInt(element.style.top) || 0;
+            w = element.offsetWidth;
+            h = element.offsetHeight;
+        } else {
+            // Pour les cartes (dans le flux du DOM), utiliser getBoundingClientRect
+            const content = document.getElementById('arcBoardContent');
+            if (!content) return { x: 0, y: 0 };
+
+            const contentRect = content.getBoundingClientRect();
+            const rect = element.getBoundingClientRect();
+
+            x = (rect.left - contentRect.left) / ArcBoardState.zoom;
+            y = (rect.top - contentRect.top) / ArcBoardState.zoom;
+            w = rect.width / ArcBoardState.zoom;
+            h = rect.height / ArcBoardState.zoom;
+        }
 
         switch (side) {
             case 'top': return { x: x + w / 2, y: y };
