@@ -866,8 +866,11 @@ const ArcBoardView = {
             if (!ArcBoardState.compareArcs.includes(conn.fromArcId) ||
                 !ArcBoardState.compareArcs.includes(conn.toArcId)) return;
 
-            const fromEl = document.querySelector(`[data-arc-id="${conn.fromArcId}"][data-item-id="${conn.fromItemId}"]`);
-            const toEl = document.querySelector(`[data-arc-id="${conn.toArcId}"][data-item-id="${conn.toItemId}"]`);
+            // Chercher par data-item-id (colonnes, notes, etc.) OU data-card-id (cartes)
+            const fromEl = document.querySelector(`[data-arc-id="${conn.fromArcId}"][data-item-id="${conn.fromItemId}"]`)
+                        || document.querySelector(`[data-arc-id="${conn.fromArcId}"][data-card-id="${conn.fromItemId}"]`);
+            const toEl = document.querySelector(`[data-arc-id="${conn.toArcId}"][data-item-id="${conn.toItemId}"]`)
+                      || document.querySelector(`[data-arc-id="${conn.toArcId}"][data-card-id="${conn.toItemId}"]`);
 
             if (!fromEl || !toEl) return;
 
@@ -1117,10 +1120,13 @@ const ArcBoardView = {
             </div>
         `;
 
+        // Handler pour les connexions inter-arcs (permet de connecter des cartes)
+        const interArcClick = arcId ? `if(InterArcConnectionService.connecting) { InterArcConnectionService.handleClick('${arcId}', '${card.id}'); event.stopPropagation(); }` : '';
+
         switch (card.type) {
             case 'note':
                 return `
-                    <div class="arc-card arc-card-note" data-card-id="${card.id}" ${arcId ? `data-arc-id="${arcId}"` : ''}>
+                    <div class="arc-card arc-card-note" data-card-id="${card.id}" ${arcId ? `data-arc-id="${arcId}"` : ''} onclick="${interArcClick}">
                         ${dragHandle}${deleteBtn}
                         <div class="arc-card-content" contenteditable="true"
                              onblur="ArcBoardViewModel.updateCard('${columnId}', '${card.id}', { content: this.innerHTML }${arcParam})"
@@ -1130,7 +1136,7 @@ const ArcBoardView = {
 
             case 'image':
                 return `
-                    <div class="arc-card arc-card-image" data-card-id="${card.id}" ${arcId ? `data-arc-id="${arcId}"` : ''}>
+                    <div class="arc-card arc-card-image" data-card-id="${card.id}" ${arcId ? `data-arc-id="${arcId}"` : ''} onclick="${interArcClick}">
                         ${dragHandle}${deleteBtn}
                         ${card.src
                         ? `<img src="${card.src}" alt="" draggable="false">`
@@ -1157,7 +1163,7 @@ const ArcBoardView = {
                 `).join('');
 
                 return `
-                    <div class="arc-card arc-card-todo" data-card-id="${card.id}" ${arcId ? `data-arc-id="${arcId}"` : ''}>
+                    <div class="arc-card arc-card-todo" data-card-id="${card.id}" ${arcId ? `data-arc-id="${arcId}"` : ''} onclick="${interArcClick}">
                         ${dragHandle}${deleteBtn}
                         <input type="text" class="arc-card-title" value="${card.title || ''}"
                                placeholder="Titre"
@@ -1173,7 +1179,7 @@ const ArcBoardView = {
             case 'scene':
                 const statusLabels = { 'setup': 'Introduction', 'development': 'Développement', 'climax': 'Point culminant', 'resolution': 'Résolution' };
                 return `
-                    <div class="arc-card arc-card-scene" data-card-id="${card.id}" data-scene-id="${card.sceneId || ''}" ${arcId ? `data-arc-id="${arcId}"` : ''}>
+                    <div class="arc-card arc-card-scene" data-card-id="${card.id}" data-scene-id="${card.sceneId || ''}" ${arcId ? `data-arc-id="${arcId}"` : ''} onclick="${interArcClick}">
                         ${dragHandle}${deleteBtn}
                         <div class="arc-card-scene-header">
                             <i data-lucide="book-open"></i>
@@ -1196,7 +1202,7 @@ const ArcBoardView = {
 
             case 'link':
                 return `
-                    <div class="arc-card arc-card-link" data-card-id="${card.id}" ${arcId ? `data-arc-id="${arcId}"` : ''}>
+                    <div class="arc-card arc-card-link" data-card-id="${card.id}" ${arcId ? `data-arc-id="${arcId}"` : ''} onclick="${interArcClick}">
                         ${dragHandle}${deleteBtn}
                         ${card.url ? `
                             <div class="arc-link-preview">
@@ -1219,7 +1225,7 @@ const ArcBoardView = {
 
             case 'comment':
                 return `
-                    <div class="arc-card arc-card-comment" data-card-id="${card.id}" ${arcId ? `data-arc-id="${arcId}"` : ''}>
+                    <div class="arc-card arc-card-comment" data-card-id="${card.id}" ${arcId ? `data-arc-id="${arcId}"` : ''} onclick="${interArcClick}">
                         ${dragHandle}${deleteBtn}
                         <div class="arc-card-content" contenteditable="true"
                              onblur="ArcBoardViewModel.updateCard('${columnId}', '${card.id}', { content: this.innerHTML }${arcParam})"
