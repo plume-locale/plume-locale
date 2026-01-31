@@ -3282,8 +3282,17 @@
     background: transparent;
 }
 
-/* Contenu avec opacité réelle (permet de voir les arcs en dessous) */
+/* Contenu avec transparence via color-mix (évite de créer un stacking context) */
 .arc-compare-content {
-    background: var(--bg-secondary);
-    opacity: var(--arc-opacity, 1);
+    background: color-mix(in srgb, var(--bg-secondary) calc(var(--arc-opacity, 1) * 100%), transparent);
+}
+
+/* Colonnes en mode Compare - transparence appliquée au fond sans créer de stacking context */
+.arc-compare-content .arc-column {
+    background: color-mix(in srgb, var(--bg-primary) calc(var(--arc-opacity, 1) * 100%), transparent);
+}
+
+/* Cartes en mode Compare - transparence héritée */
+.arc-compare-content .arc-card {
+    background: color-mix(in srgb, var(--bg-secondary) calc(var(--arc-opacity, 1) * 100%), transparent);
 }
