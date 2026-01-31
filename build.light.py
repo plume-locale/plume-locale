@@ -38,7 +38,7 @@ CSS_ORDER = [
     '10.mobile.css',
     # '11.storygrid.css',  # RETIRÉ pour version Light
     '12.arc-board.css',
-    #'undo-redo.css'
+    '14.word-repetition.css'
 ]
 
 # Ordre des fichiers JS
@@ -154,7 +154,14 @@ JS_ORDER = [
     # Import Chapter Module (import .docx, .txt, .md, .epub, .pages)
     'js-refactor/import-chapter/import-chapter.model.js',
     'js-refactor/import-chapter/import-chapter.viewmodel.js',
-    'js-refactor/import-chapter/import-chapter.view.js'
+    'js-refactor/import-chapter/import-chapter.view.js',
+    # Word Repetition Analyzer Module
+    'js-refactor/word-repetition/word-repetition.model.js',
+    'js-refactor/word-repetition/word-repetition.repository.js',
+    'js-refactor/word-repetition/word-repetition.viewmodel.js',
+    'js-refactor/word-repetition/word-repetition.view.js',
+    'js-refactor/word-repetition/word-repetition.handlers.js',
+    'js-refactor/word-repetition/word-repetition.main.js'
 ]
 
 def read_file(path):
