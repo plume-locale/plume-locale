@@ -588,3 +588,59 @@
     border-top: 1px solid var(--border-color);
     padding-top: 1rem;
 }
+
+/* ============================================================
+ * Surlignage des répétitions dans l'éditeur
+ * ============================================================ */
+
+/* Style du surlignage dans l'éditeur */
+.word-rep-highlight {
+    background: linear-gradient(135deg, rgba(255, 140, 66, 0.4) 0%, rgba(255, 107, 107, 0.4) 100%);
+    border-radius: 2px;
+    padding: 0 2px;
+    margin: 0 -2px;
+    box-shadow: 0 0 0 1px rgba(255, 140, 66, 0.3);
+    animation: highlightPulse 2s ease-in-out infinite;
+}
+
+@keyframes highlightPulse {
+    0%, 100% {
+        background: linear-gradient(135deg, rgba(255, 140, 66, 0.4) 0%, rgba(255, 107, 107, 0.4) 100%);
+    }
+    50% {
+        background: linear-gradient(135deg, rgba(255, 140, 66, 0.6) 0%, rgba(255, 107, 107, 0.6) 100%);
+    }
+}
+
+/* Item sélectionné dans la liste */
+.word-rep-item.selected {
+    background: rgba(var(--primary-color-rgb), 0.15);
+    border-left-color: var(--primary-color);
+    box-shadow: 0 2px 8px rgba(var(--primary-color-rgb), 0.2);
+}
+
+.word-rep-item.selected .rep-word {
+    color: var(--primary-color);
+}
+
+/* Badge de compteur sur le highlight */
+.word-rep-highlight[data-count]::after {
+    content: attr(data-count);
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: var(--primary-color);
+    color: white;
+    font-size: 0.6rem;
+    padding: 1px 4px;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+/* Mode sombre */
+@media (prefers-color-scheme: dark) {
+    .word-rep-highlight {
+        background: linear-gradient(135deg, rgba(255, 140, 66, 0.3) 0%, rgba(255, 107, 107, 0.3) 100%);
+        box-shadow: 0 0 0 1px rgba(255, 140, 66, 0.4);
+    }
+}

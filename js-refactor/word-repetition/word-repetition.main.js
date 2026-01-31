@@ -18,6 +18,8 @@ function toggleWordRepetitionPanel() {
         container.style.display = 'none';
         if (btn) btn.classList.remove('active');
         WordRepetitionState.panelVisible = false;
+        // Nettoyer les surlignages quand on ferme le panneau
+        clearWordRepetitionHighlights();
     } else {
         container.style.display = 'block';
         if (btn) btn.classList.add('active');
@@ -58,6 +60,18 @@ function hideWordRepetitionPanel() {
     container.style.display = 'none';
     if (btn) btn.classList.remove('active');
     WordRepetitionState.panelVisible = false;
+    // Nettoyer les surlignages
+    clearWordRepetitionHighlights();
+}
+
+/**
+ * [MVVM : Other]
+ * Nettoie tous les surlignages de répétition dans l'éditeur
+ */
+function clearWordRepetitionHighlights() {
+    if (typeof WordRepetitionHandlers !== 'undefined' && WordRepetitionHandlers._clearAllHighlights) {
+        WordRepetitionHandlers._clearAllHighlights();
+    }
 }
 
 /**
@@ -137,6 +151,7 @@ if (typeof module !== 'undefined' && module.exports) {
         toggleWordRepetitionPanel,
         showWordRepetitionPanel,
         hideWordRepetitionPanel,
+        clearWordRepetitionHighlights,
         analyzeCurrentSceneRepetitions,
         onSceneOpenedForRepetition,
         initWordRepetitionModule

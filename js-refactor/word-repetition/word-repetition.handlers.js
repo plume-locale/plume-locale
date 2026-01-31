@@ -67,7 +67,13 @@ const WordRepetitionHandlers = {
     onSelectRepetition(repId) {
         const rep = WordRepetitionViewModel.selectRepetition(repId);
         if (rep) {
-            WordRepetitionView.showDetail(rep);
+            // Surligner toutes les occurrences dans l'éditeur
+            this._highlightAllOccurrences(rep.word);
+
+            // Marquer visuellement l'item sélectionné
+            document.querySelectorAll('.word-rep-item').forEach(el => el.classList.remove('selected'));
+            const selectedItem = document.querySelector(`[data-rep-id="${repId}"]`);
+            if (selectedItem) selectedItem.classList.add('selected');
         }
     },
 
@@ -215,7 +221,130 @@ const WordRepetitionHandlers = {
 
     /**
      * [MVVM : Handlers]
-     * Surligne un mot dans l'éditeur
+     * Surligne toutes les occurrences d'un mot dans les éditeurs selon le scope
+     * @param {string} word - Mot à surligner
+     * @private
+     */
+    _highlightAllOccurrences(word) {
+        // D'abord, nettoyer les surlignages précédents
+        this._clearAllHighlights();
+
+        // Trouver tous les éditeurs visibles
+        const editors = document.querySelectorAll('.editor-textarea[contenteditable="true"]');
+        if (editors.length === 0) return;
+
+        const regex = new RegExp(`\\b(${this._escapeRegex(word)})\\b`, 'gi');
+        let firstHighlight = null;
+        let highlightCount = 0;
+
+        editors.forEach(editor => {
+            // Utiliser TreeWalker pour parcourir les noeuds texte
+            const walker = document.createTreeWalker(
+                editor,
+                NodeFilter.SHOW_TEXT,
+                {
+                    acceptNode: function(node) {
+                        // Ignorer les noeuds déjà dans un mark
+                        if (node.parentElement && node.parentElement.classList.contains('word-rep-highlight')) {
+                            return NodeFilter.FILTER_REJECT;
+                        }
+                        return NodeFilter.FILTER_ACCEPT;
+                    }
+                },
+                false
+            );
+
+            const nodesToProcess = [];
+            let node;
+            while (node = walker.nextNode()) {
+                if (regex.test(node.textContent)) {
+                    nodesToProcess.push(node);
+                }
+                regex.lastIndex = 0; // Reset regex
+            }
+
+            // Traiter les noeuds en ordre inverse pour ne pas invalider les positions
+            nodesToProcess.reverse().forEach(textNode => {
+                const text = textNode.textContent;
+                const fragment = document.createDocumentFragment();
+                let lastIndex = 0;
+                let match;
+
+                regex.lastIndex = 0;
+                while ((match = regex.exec(text)) !== null) {
+                    // Texte avant le match
+                    if (match.index > lastIndex) {
+                        fragment.appendChild(document.createTextNode(text.slice(lastIndex, match.index)));
+                    }
+
+                    // Créer le mark
+                    const mark = document.createElement('mark');
+                    mark.className = 'word-rep-highlight';
+                    mark.textContent = match[0];
+                    fragment.appendChild(mark);
+
+                    if (!firstHighlight) {
+                        firstHighlight = mark;
+                    }
+                    highlightCount++;
+
+                    lastIndex = regex.lastIndex;
+                }
+
+                // Texte restant après le dernier match
+                if (lastIndex < text.length) {
+                    fragment.appendChild(document.createTextNode(text.slice(lastIndex)));
+                }
+
+                // Remplacer le noeud texte original
+                if (fragment.childNodes.length > 0) {
+                    textNode.parentNode.replaceChild(fragment, textNode);
+                }
+            });
+        });
+
+        // Scroll vers la première occurrence
+        if (firstHighlight) {
+            firstHighlight.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        // Afficher le nombre de surlignages
+        if (highlightCount > 0) {
+            WordRepetitionView.notify(`${highlightCount} occurrence(s) surlignée(s)`, 'info');
+        }
+    },
+
+    /**
+     * [MVVM : Handlers]
+     * Nettoie tous les surlignages de répétition
+     * @private
+     */
+    _clearAllHighlights() {
+        const highlights = document.querySelectorAll('.word-rep-highlight');
+        highlights.forEach(mark => {
+            const parent = mark.parentNode;
+            // Remplacer le mark par son contenu texte
+            const textNode = document.createTextNode(mark.textContent);
+            parent.replaceChild(textNode, mark);
+            // Normaliser pour fusionner les noeuds texte adjacents
+            parent.normalize();
+        });
+    },
+
+    /**
+     * [MVVM : Handlers]
+     * Échappe les caractères spéciaux regex
+     * @param {string} str - Chaîne à échapper
+     * @returns {string} Chaîne échappée
+     * @private
+     */
+    _escapeRegex(str) {
+        return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    },
+
+    /**
+     * [MVVM : Handlers]
+     * Surligne un mot dans l'éditeur (navigation vers première occurrence)
      * @param {string} word - Mot à surligner
      * @private
      */
