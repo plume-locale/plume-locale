@@ -13,6 +13,7 @@ const DragDropService = {
         type: null,         // 'card' | 'floating' | 'column'
         itemId: null,
         sourceColumnId: null,
+        arcId: null,        // ID de l'arc source (pour le mode compare)
         element: null,
         startX: 0,
         startY: 0,
@@ -29,6 +30,7 @@ const DragDropService = {
             type: null,
             itemId: null,
             sourceColumnId: null,
+            arcId: null,
             element: null,
             startX: 0,
             startY: 0,
@@ -40,7 +42,7 @@ const DragDropService = {
     /**
      * Démarre le drag d'une carte
      */
-    startCardDrag(event, cardId, columnId) {
+    startCardDrag(event, cardId, columnId, arcId = null) {
         event.stopPropagation();
 
         this._state = {
@@ -48,6 +50,7 @@ const DragDropService = {
             type: DragTypes.CARD,
             itemId: cardId,
             sourceColumnId: columnId,
+            arcId: arcId,
             element: event.target.closest('.arc-card'),
             startX: event.clientX,
             startY: event.clientY
@@ -57,7 +60,8 @@ const DragDropService = {
         event.dataTransfer.setData('application/json', JSON.stringify({
             type: 'card',
             cardId: cardId,
-            columnId: columnId
+            columnId: columnId,
+            arcId: arcId
         }));
 
         if (this._state.element) {
@@ -76,7 +80,7 @@ const DragDropService = {
     /**
      * Démarre le drag d'un item flottant
      */
-    startFloatingDrag(event, itemId) {
+    startFloatingDrag(event, itemId, arcId = null) {
         event.stopPropagation();
 
         this._state = {
@@ -84,6 +88,7 @@ const DragDropService = {
             type: DragTypes.FLOATING,
             itemId: itemId,
             sourceColumnId: null,
+            arcId: arcId,
             element: event.target.closest('.arc-floating-item'),
             startX: event.clientX,
             startY: event.clientY
@@ -92,7 +97,8 @@ const DragDropService = {
         event.dataTransfer.effectAllowed = 'move';
         event.dataTransfer.setData('application/json', JSON.stringify({
             type: 'floating',
-            itemId: itemId
+            itemId: itemId,
+            arcId: arcId
         }));
 
         if (this._state.element) {
@@ -238,14 +244,16 @@ const DragDropService = {
     /**
      * Gère le drop sur une colonne
      */
-    handleColumnDrop(event, targetColumnId) {
+    handleColumnDrop(event, targetColumnId, targetArcId = null) {
         event.preventDefault();
         event.stopPropagation();
         event.currentTarget.classList.remove('drop-hover');
 
         if (!this._state.active) return;
 
-        const arc = ArcBoardViewModel.getCurrentArc();
+        // Utiliser l'arcId de la cible, sinon l'arcId de la source, sinon l'arc courant
+        const arcId = targetArcId || this._state.arcId || ArcBoardState.currentArcId;
+        const arc = ArcRepository.getById(arcId);
         if (!arc) return;
 
         try {
@@ -255,13 +263,15 @@ const DragDropService = {
                 const canBeCard = CreatableItemTypes[itemType]?.canBeCard;
 
                 if (canBeCard) {
-                    ArcBoardViewModel.addCard(targetColumnId, itemType);
+                    // Pour la toolbar, utiliser l'arcId cible ou l'arc courant
+                    const card = CardRepository.create(arcId, targetColumnId, itemType);
+                    ArcBoardViewModel.renderItems();
                 }
             } else if (this._state.type === DragTypes.CARD) {
                 // Déplacer une carte entre colonnes
                 if (this._state.sourceColumnId !== targetColumnId) {
                     CardRepository.move(
-                        arc.id,
+                        arcId,
                         this._state.sourceColumnId,
                         targetColumnId,
                         this._state.itemId
@@ -269,15 +279,15 @@ const DragDropService = {
                 }
             } else if (this._state.type === DragTypes.FLOATING) {
                 // Convertir un item flottant en carte
-                const item = BoardItemRepository.getById(arc.id, this._state.itemId);
+                const item = BoardItemRepository.getById(arcId, this._state.itemId);
                 if (item) {
                     const card = convertItemToCard(item);
                     const isSceneItem = item.type === 'scene' && item.sceneId;
 
                     // Supprimer l'item flottant (cela met columnId à null pour les scenes)
-                    BoardItemRepository.delete(arc.id, this._state.itemId);
+                    BoardItemRepository.delete(arcId, this._state.itemId);
 
-                    const column = BoardItemRepository.getById(arc.id, targetColumnId);
+                    const column = BoardItemRepository.getById(arcId, targetColumnId);
                     if (column) {
                         if (!column.cards) column.cards = [];
                         column.cards.push(card);
@@ -665,11 +675,12 @@ const ResizeService = {
     _state: {
         active: false,
         columnId: null,
+        arcId: null,
         startX: 0,
         startWidth: 0
     },
 
-    start(event, columnId) {
+    start(event, columnId, arcId = null) {
         event.stopPropagation();
         event.preventDefault();
 
@@ -679,6 +690,7 @@ const ResizeService = {
         this._state = {
             active: true,
             columnId: columnId,
+            arcId: arcId,
             startX: event.clientX,
             startWidth: parseInt(el.style.width) || ArcBoardConfig.column.defaultWidth
         };
@@ -703,15 +715,16 @@ const ResizeService = {
 
         const el = document.getElementById(`item-${this._state.columnId}`);
         if (el) {
-            const arc = ArcBoardViewModel.getCurrentArc();
-            if (arc) {
-                BoardItemRepository.update(arc.id, this._state.columnId, {
+            // Utiliser l'arcId stocké ou l'arc courant
+            const targetArcId = this._state.arcId || ArcBoardState.currentArcId;
+            if (targetArcId) {
+                BoardItemRepository.update(targetArcId, this._state.columnId, {
                     width: parseInt(el.style.width) || ArcBoardConfig.column.defaultWidth
                 });
             }
         }
 
-        this._state = { active: false, columnId: null, startX: 0, startWidth: 0 };
+        this._state = { active: false, columnId: null, arcId: null, startX: 0, startWidth: 0 };
     },
 
     isActive() {
@@ -855,19 +868,21 @@ const ItemMoveService = {
     _state: {
         active: false,
         itemId: null,
+        arcId: null,
         startX: 0,
         startY: 0,
         itemStartX: 0,
         itemStartY: 0
     },
 
-    start(event, itemId) {
+    start(event, itemId, arcId = null) {
         const el = document.getElementById(`item-${itemId}`);
         if (!el) return;
 
         this._state = {
             active: true,
             itemId: itemId,
+            arcId: arcId,
             startX: event.clientX,
             startY: event.clientY,
             itemStartX: parseInt(el.style.left) || 0,
@@ -900,9 +915,13 @@ const ItemMoveService = {
         }
 
         // Mettre à jour les connexions en temps réel
-        const arc = ArcBoardViewModel.getCurrentArc();
-        if (arc) {
-            ArcBoardView.renderConnections(arc);
+        if (ArcBoardState.multiArcMode === MultiArcModes.COMPARE) {
+            ArcBoardView._renderCompareConnections();
+        } else {
+            const arc = ArcBoardViewModel.getCurrentArc();
+            if (arc) {
+                ArcBoardView.renderConnections(arc);
+            }
         }
     },
 
@@ -913,10 +932,11 @@ const ItemMoveService = {
         if (el) {
             el.classList.remove('dragging');
 
-            const arc = ArcBoardViewModel.getCurrentArc();
-            if (arc) {
+            // Utiliser l'arcId stocké ou l'arc courant
+            const targetArcId = this._state.arcId || ArcBoardState.currentArcId;
+            if (targetArcId) {
                 BoardItemRepository.updatePosition(
-                    arc.id,
+                    targetArcId,
                     this._state.itemId,
                     parseInt(el.style.left) || 0,
                     parseInt(el.style.top) || 0
@@ -924,7 +944,7 @@ const ItemMoveService = {
             }
         }
 
-        this._state = { active: false, itemId: null, startX: 0, startY: 0, itemStartX: 0, itemStartY: 0 };
+        this._state = { active: false, itemId: null, arcId: null, startX: 0, startY: 0, itemStartX: 0, itemStartY: 0 };
     },
 
     isActive() {

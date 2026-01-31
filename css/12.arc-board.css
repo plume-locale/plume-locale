@@ -3201,3 +3201,88 @@
 .arc-compare-section.min-height .arc-compare-resize-handle:hover::after {
     opacity: 1;
 }
+
+/* ============================================
+   MODE COMPARE - Contrôle d'opacité
+   ============================================ */
+
+/* Conteneur du contrôle d'opacité dans le header */
+.arc-compare-opacity-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+    padding-left: 12px;
+    border-left: 1px solid color-mix(in srgb, var(--arc-color, var(--primary-color)) 30%, transparent);
+}
+
+.arc-compare-opacity-icon {
+    width: 14px;
+    height: 14px;
+    color: var(--text-muted);
+    flex-shrink: 0;
+}
+
+/* Slider de transparence */
+.arc-compare-opacity-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 80px;
+    height: 4px;
+    border-radius: 2px;
+    background: linear-gradient(to right,
+        rgba(255, 255, 255, 0.3),
+        var(--arc-color, var(--primary-color)));
+    cursor: pointer;
+    outline: none;
+}
+
+.arc-compare-opacity-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--bg-primary);
+    border: 2px solid var(--arc-color, var(--primary-color));
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.arc-compare-opacity-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+    box-shadow: 0 0 8px color-mix(in srgb, var(--arc-color, var(--primary-color)) 50%, transparent);
+}
+
+.arc-compare-opacity-slider::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--bg-primary);
+    border: 2px solid var(--arc-color, var(--primary-color));
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.arc-compare-opacity-slider::-moz-range-thumb:hover {
+    transform: scale(1.2);
+}
+
+/* Affichage de la valeur */
+.arc-compare-opacity-value {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    min-width: 36px;
+    text-align: right;
+}
+
+/* Application de l'opacité au fond de la section */
+.arc-compare-section {
+    background: color-mix(in srgb, var(--bg-secondary) calc(var(--arc-opacity, 1) * 100%), transparent);
+}
+
+/* Contenu avec opacité du fond seulement (pas les éléments) */
+.arc-compare-content {
+    background: color-mix(in srgb, var(--bg-secondary) calc(var(--arc-opacity, 1) * 100%), transparent);
+}

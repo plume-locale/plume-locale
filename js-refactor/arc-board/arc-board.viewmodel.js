@@ -49,6 +49,7 @@ const ArcBoardState = {
     compareLayout: 'horizontal', // 'horizontal' ou 'vertical'
     interArcConnectionSource: null, // Pour créer des connexions inter-arcs
     compareArcHeights: {},   // Hauteurs personnalisées par arc en mode Compare { arcId: height }
+    compareArcOpacities: {}, // Opacités personnalisées par arc en mode Compare { arcId: 0-100 }
 
     // Reset l'état
     reset() {
@@ -70,6 +71,7 @@ const ArcBoardState = {
         this.compareLayout = 'horizontal';
         this.interArcConnectionSource = null;
         this.compareArcHeights = {};
+        this.compareArcOpacities = {};
     }
 };
 
@@ -157,8 +159,11 @@ const ArcBoardViewModel = {
 
     /**
      * Sélectionne un item
+     * @param {string} itemId - ID de l'item
+     * @param {boolean} addToSelection - Ajouter à la sélection existante
+     * @param {string|null} arcId - ID de l'arc (optionnel, pour le mode compare)
      */
-    selectItem(itemId, addToSelection = false) {
+    selectItem(itemId, addToSelection = false, arcId = null) {
         if (ArcBoardState.activeTool === ToolTypes.CONNECT) {
             return ConnectionService.handleClick(itemId);
         }
@@ -178,12 +183,16 @@ const ArcBoardViewModel = {
 
         // Mettre à jour le panneau contextuel
         if (ArcBoardState.selectedItems.length === 1) {
-            const arc = this.getCurrentArc();
-            const item = BoardItemRepository.getById(arc.id, itemId);
-            if (item) {
-                ArcBoardView.renderContextPanel(item);
-                if (!ArcBoardState.contextPanelOpen) {
-                    this.toggleContextPanel();
+            // Utiliser l'arcId fourni ou l'arc courant
+            const targetArcId = arcId || ArcBoardState.currentArcId;
+            const arc = ArcRepository.getById(targetArcId);
+            if (arc) {
+                const item = BoardItemRepository.getById(arc.id, itemId);
+                if (item) {
+                    ArcBoardView.renderContextPanel(item);
+                    if (!ArcBoardState.contextPanelOpen) {
+                        this.toggleContextPanel();
+                    }
                 }
             }
         }
@@ -374,9 +383,13 @@ const ArcBoardViewModel = {
 
     /**
      * Met à jour un item
+     * @param {string} itemId - ID de l'item
+     * @param {object} data - Données à mettre à jour
+     * @param {string|null} arcId - ID de l'arc (optionnel, pour le mode compare)
      */
-    updateItem(itemId, data) {
-        const arc = this.getCurrentArc();
+    updateItem(itemId, data, arcId = null) {
+        const targetArcId = arcId || ArcBoardState.currentArcId;
+        const arc = ArcRepository.getById(targetArcId);
         if (!arc) return;
 
         BoardItemRepository.update(arc.id, itemId, data);
@@ -399,9 +412,13 @@ const ArcBoardViewModel = {
 
     /**
      * Ajoute une carte à une colonne
+     * @param {string} columnId - ID de la colonne
+     * @param {string} type - Type de carte
+     * @param {string|null} arcId - ID de l'arc (optionnel, pour le mode compare)
      */
-    addCard(columnId, type = 'note') {
-        const arc = this.getCurrentArc();
+    addCard(columnId, type = 'note', arcId = null) {
+        const targetArcId = arcId || ArcBoardState.currentArcId;
+        const arc = ArcRepository.getById(targetArcId);
         if (!arc) return null;
 
         const card = CardRepository.create(arc.id, columnId, type);
@@ -411,9 +428,13 @@ const ArcBoardViewModel = {
 
     /**
      * Supprime une carte
+     * @param {string} columnId - ID de la colonne
+     * @param {string} cardId - ID de la carte
+     * @param {string|null} arcId - ID de l'arc (optionnel, pour le mode compare)
      */
-    deleteCard(columnId, cardId) {
-        const arc = this.getCurrentArc();
+    deleteCard(columnId, cardId, arcId = null) {
+        const targetArcId = arcId || ArcBoardState.currentArcId;
+        const arc = ArcRepository.getById(targetArcId);
         if (!arc) return;
 
         CardRepository.delete(arc.id, columnId, cardId);
@@ -428,9 +449,14 @@ const ArcBoardViewModel = {
 
     /**
      * Met à jour une carte
+     * @param {string} columnId - ID de la colonne
+     * @param {string} cardId - ID de la carte
+     * @param {object} data - Données à mettre à jour
+     * @param {string|null} arcId - ID de l'arc (optionnel, pour le mode compare)
      */
-    updateCard(columnId, cardId, data) {
-        const arc = this.getCurrentArc();
+    updateCard(columnId, cardId, data, arcId = null) {
+        const targetArcId = arcId || ArcBoardState.currentArcId;
+        const arc = ArcRepository.getById(targetArcId);
         if (!arc) return;
 
         CardRepository.update(arc.id, columnId, cardId, data);
@@ -641,5 +667,26 @@ const ArcBoardViewModel = {
     getAvailableArcsForAdd() {
         const allArcs = ArcRepository.getAll();
         return allArcs.filter(arc => !ArcBoardState.compareArcs.includes(arc.id));
+    },
+
+    /**
+     * Définit l'opacité d'un arc en mode compare
+     * @param {string} arcId - ID de l'arc
+     * @param {number} opacity - Opacité (0-100)
+     */
+    setArcOpacity(arcId, opacity) {
+        const value = Math.max(0, Math.min(100, parseInt(opacity)));
+        ArcBoardState.compareArcOpacities[arcId] = value;
+
+        // Mettre à jour le DOM sans re-render complet
+        const section = document.querySelector(`.arc-compare-section[data-arc-id="${arcId}"]`);
+        if (section) {
+            section.style.setProperty('--arc-opacity', value / 100);
+            // Mettre à jour l'affichage de la valeur
+            const valueDisplay = section.querySelector('.arc-compare-opacity-value');
+            if (valueDisplay) {
+                valueDisplay.textContent = `${value}%`;
+            }
+        }
     }
 };
