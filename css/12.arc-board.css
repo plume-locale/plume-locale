@@ -3290,6 +3290,8 @@
 /* Colonnes en mode Compare - transparence appliquée au fond sans créer de stacking context */
 .arc-compare-content .arc-column {
     background: color-mix(in srgb, var(--bg-primary) calc(var(--arc-opacity, 1) * 100%), transparent);
+    /* Z-index élevé pour que les colonnes du premier arc passent au-dessus des headers des arcs suivants */
+    z-index: 1000;
 }
 
 /* Cartes en mode Compare - transparence héritée */
