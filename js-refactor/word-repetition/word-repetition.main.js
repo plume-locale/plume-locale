@@ -7,26 +7,31 @@
  * Toggle l'affichage du panneau de répétitions de mots
  */
 function toggleWordRepetitionPanel() {
-    const container = document.getElementById('wordRepetitionContainer');
+    const sidebar = document.getElementById('wordRepetitionSidebar');
     const btn = document.getElementById('toolRepetitionBtn');
 
-    if (!container) return;
+    if (!sidebar) return;
 
-    const isVisible = container.style.display !== 'none';
+    const isVisible = !sidebar.classList.contains('hidden');
 
     if (isVisible) {
-        container.style.display = 'none';
+        sidebar.classList.add('hidden');
         if (btn) btn.classList.remove('active');
         WordRepetitionState.panelVisible = false;
         // Nettoyer les surlignages quand on ferme le panneau
         clearWordRepetitionHighlights();
     } else {
-        container.style.display = 'block';
+        sidebar.classList.remove('hidden');
         if (btn) btn.classList.add('active');
         WordRepetitionState.panelVisible = true;
 
         // Initialiser le panneau si nécessaire
         initWordRepetitionPanel();
+
+        // Initialiser les icônes Lucide
+        if (typeof lucide !== 'undefined') {
+            setTimeout(() => lucide.createIcons(), 50);
+        }
     }
 }
 
@@ -35,16 +40,20 @@ function toggleWordRepetitionPanel() {
  * Affiche le panneau de répétitions (utile pour affichage programmatique)
  */
 function showWordRepetitionPanel() {
-    const container = document.getElementById('wordRepetitionContainer');
+    const sidebar = document.getElementById('wordRepetitionSidebar');
     const btn = document.getElementById('toolRepetitionBtn');
 
-    if (!container) return;
+    if (!sidebar) return;
 
-    container.style.display = 'block';
+    sidebar.classList.remove('hidden');
     if (btn) btn.classList.add('active');
     WordRepetitionState.panelVisible = true;
 
     initWordRepetitionPanel();
+
+    if (typeof lucide !== 'undefined') {
+        setTimeout(() => lucide.createIcons(), 50);
+    }
 }
 
 /**
@@ -52,12 +61,12 @@ function showWordRepetitionPanel() {
  * Cache le panneau de répétitions
  */
 function hideWordRepetitionPanel() {
-    const container = document.getElementById('wordRepetitionContainer');
+    const sidebar = document.getElementById('wordRepetitionSidebar');
     const btn = document.getElementById('toolRepetitionBtn');
 
-    if (!container) return;
+    if (!sidebar) return;
 
-    container.style.display = 'none';
+    sidebar.classList.add('hidden');
     if (btn) btn.classList.remove('active');
     WordRepetitionState.panelVisible = false;
     // Nettoyer les surlignages
@@ -122,11 +131,65 @@ function setupWordRepetitionKeyboardShortcuts() {
 
 /**
  * [MVVM : Other]
+ * Configure le redimensionnement de la sidebar
+ */
+function setupWordRepetitionSidebarResize() {
+    const sidebar = document.getElementById('wordRepetitionSidebar');
+    const resizeHandle = document.getElementById('wordRepSidebarResize');
+
+    if (!sidebar || !resizeHandle) return;
+
+    let isResizing = false;
+    let startX = 0;
+    let startWidth = 0;
+
+    resizeHandle.addEventListener('mousedown', (e) => {
+        isResizing = true;
+        startX = e.clientX;
+        startWidth = sidebar.offsetWidth;
+        resizeHandle.classList.add('active');
+        document.body.style.cursor = 'ew-resize';
+        document.body.style.userSelect = 'none';
+        e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (!isResizing) return;
+
+        const diff = startX - e.clientX;
+        const newWidth = Math.max(280, Math.min(600, startWidth + diff));
+        sidebar.style.width = newWidth + 'px';
+
+        // Sauvegarder la largeur
+        WordRepetitionRepository.updatePreference('sidebarWidth', newWidth);
+    });
+
+    document.addEventListener('mouseup', () => {
+        if (isResizing) {
+            isResizing = false;
+            resizeHandle.classList.remove('active');
+            document.body.style.cursor = '';
+            document.body.style.userSelect = '';
+        }
+    });
+
+    // Restaurer la largeur sauvegardée
+    const prefs = WordRepetitionRepository.getPreferences();
+    if (prefs.sidebarWidth) {
+        sidebar.style.width = prefs.sidebarWidth + 'px';
+    }
+}
+
+/**
+ * [MVVM : Other]
  * Initialisation au chargement de l'application
  */
 function initWordRepetitionModule() {
     // Configurer les raccourcis clavier
     setupWordRepetitionKeyboardShortcuts();
+
+    // Configurer le redimensionnement
+    setupWordRepetitionSidebarResize();
 
     // Restaurer l'état du panneau si il était ouvert
     const prefs = WordRepetitionRepository.getPreferences();

@@ -341,10 +341,6 @@
                 <div class="database-list" id="noSidebarMessage" style="display: none;">
                     <!-- Message for views without sidebar -->
                 </div>
-                <!-- Word Repetition Analyzer Panel -->
-                <div id="wordRepetitionContainer" class="word-rep-sidebar-container" style="display: none;">
-                    <!-- Word repetition panel will be dynamically inserted here -->
-                </div>
                 <div class="sidebar-actions" id="sidebarActions">
                     <button class="btn btn-primary" onclick="openAddActModal()">+ Acte</button>
                     <button class="btn btn-primary" onclick="openAddChapterModal()">+ Chapitre</button>
@@ -453,6 +449,29 @@
                 </div>
                 <div id="linksPanelContent" class="links-panel-content">
                     <!-- Contenu dynamique -->
+                </div>
+            </div>
+            <!-- Word Repetition Sidebar (Right Panel) -->
+            <div id="wordRepetitionSidebar" class="word-rep-sidebar hidden">
+                <div class="word-rep-sidebar-resize" id="wordRepSidebarResize"></div>
+                <div class="word-rep-sidebar-header">
+                    <div class="word-rep-sidebar-title">
+                        <h3><i data-lucide="repeat" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;"></i>Répétitions</h3>
+                        <button class="word-rep-sidebar-close" onclick="toggleWordRepetitionPanel()" title="Fermer">
+                            <i data-lucide="x" style="width:14px;height:14px;"></i>
+                        </button>
+                    </div>
+                    <div class="word-rep-sidebar-controls">
+                        <button class="btn btn-small" onclick="WordRepetitionHandlers.onRefresh()" title="Analyser">
+                            <i data-lucide="refresh-cw" style="width:12px;height:12px;"></i> Analyser
+                        </button>
+                        <button class="btn btn-icon btn-small" onclick="WordRepetitionHandlers.onToggleSettings()" title="Paramètres">
+                            <i data-lucide="settings" style="width:14px;height:14px;"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="word-rep-sidebar-content" id="wordRepetitionContainer">
+                    <!-- Word repetition panel will be dynamically inserted here -->
                 </div>
             </div>
             <!-- Main Editor -->

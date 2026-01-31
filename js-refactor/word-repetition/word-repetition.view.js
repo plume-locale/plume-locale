@@ -21,21 +21,6 @@ const WordRepetitionView = {
 
         let html = `
             <div class="word-repetition-panel" id="wordRepetitionPanel">
-                <div class="word-rep-header">
-                    <div class="word-rep-title">
-                        <i data-lucide="repeat" style="width: 16px; height: 16px;"></i>
-                        <span>Répétitions</span>
-                    </div>
-                    <div class="word-rep-actions">
-                        <button class="btn btn-icon btn-small" onclick="WordRepetitionHandlers.onRefresh()" title="Analyser">
-                            <i data-lucide="refresh-cw" style="width: 14px; height: 14px;"></i>
-                        </button>
-                        <button class="btn btn-icon btn-small" onclick="WordRepetitionHandlers.onToggleSettings()" title="Paramètres">
-                            <i data-lucide="settings" style="width: 14px; height: 14px;"></i>
-                        </button>
-                    </div>
-                </div>
-
                 ${this._renderScopeSelector(state.currentScope)}
                 ${this._renderSettingsPanel(prefs)}
                 ${state.isAnalyzing ? this._renderLoading() : ''}
@@ -317,8 +302,10 @@ const WordRepetitionView = {
                 ${rep.suggestions.length > 0 ? this._renderSuggestions(rep) : ''}
 
                 <div class="detail-occurrences">
-                    <h4>Occurrences</h4>
-                    ${rep.occurrences.map((occ, idx) => this._renderOccurrence(occ, idx)).join('')}
+                    <h4>Occurrences <span class="occ-count">(${rep.occurrences.length})</span></h4>
+                    <div class="occurrences-list">
+                        ${rep.occurrences.map((occ, idx) => this._renderOccurrence(occ, idx)).join('')}
+                    </div>
                 </div>
             </div>
         `;
@@ -365,12 +352,20 @@ const WordRepetitionView = {
 
         // Mettre en évidence le mot dans le contexte
         const highlightedContext = occ.context.replace(
-            new RegExp(`(${occ.word})`, 'gi'),
+            new RegExp(`(${this._escapeHtml(occ.word)})`, 'gi'),
             '<mark>$1</mark>'
         );
 
+        // Préparer les données de l'occurrence pour le click
+        const occData = {
+            word: occ.word,
+            position: occ.position,
+            location: occ.location,
+            idx: idx
+        };
+
         return `
-            <div class="occurrence-item" onclick="WordRepetitionHandlers.onNavigateToOccurrence(${JSON.stringify(occ).replace(/"/g, '&quot;')})">
+            <div class="occurrence-item" data-occ-idx="${idx}" onclick="WordRepetitionHandlers.onNavigateToOccurrence(${idx})">
                 <div class="occurrence-location">
                     <i data-lucide="map-pin" style="width: 10px; height: 10px;"></i>
                     <span>${locationText}</span>
@@ -378,6 +373,19 @@ const WordRepetitionView = {
                 <div class="occurrence-context">${highlightedContext}</div>
             </div>
         `;
+    },
+
+    /**
+     * [MVVM : View]
+     * Échappe les caractères HTML
+     * @param {string} str - Chaîne à échapper
+     * @returns {string} Chaîne échappée
+     * @private
+     */
+    _escapeHtml(str) {
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
     },
 
     /**

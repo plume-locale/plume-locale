@@ -171,24 +171,114 @@ const WordRepetitionHandlers = {
     /**
      * [MVVM : Handlers]
      * Gestionnaire de navigation vers une occurrence
-     * @param {Object} occurrence - Occurrence
+     * @param {number} occIdx - Index de l'occurrence
      */
-    onNavigateToOccurrence(occurrence) {
-        const navResult = WordRepetitionViewModel.navigateToOccurrence(occurrence);
-
-        if (navResult.success && navResult.action === 'openScene') {
-            const { actId, chapterId, sceneId, highlightWord } = navResult.params;
-
-            // Ouvrir la scène
-            if (typeof openScene === 'function') {
-                openScene(actId, chapterId, sceneId);
-
-                // Après ouverture, surligner le mot
-                setTimeout(() => {
-                    this._highlightWordInEditor(highlightWord);
-                }, 300);
-            }
+    onNavigateToOccurrence(occIdx) {
+        const rep = WordRepetitionState.selectedRepetition;
+        if (!rep || !rep.occurrences || !rep.occurrences[occIdx]) {
+            console.warn('[WordRepetition] Occurrence non trouvée:', occIdx);
+            return;
         }
+
+        const occurrence = rep.occurrences[occIdx];
+        const loc = occurrence.location;
+
+        // Marquer l'occurrence comme active
+        document.querySelectorAll('.occurrence-item').forEach(el => el.classList.remove('active'));
+        const activeItem = document.querySelector(`[data-occ-idx="${occIdx}"]`);
+        if (activeItem) activeItem.classList.add('active');
+
+        // Vérifier si on doit changer de scène
+        const needSceneChange = loc.sceneId && (
+            loc.actId !== currentActId ||
+            loc.chapterId !== currentChapterId ||
+            loc.sceneId !== currentSceneId
+        );
+
+        if (needSceneChange && typeof openScene === 'function') {
+            // Ouvrir la scène puis naviguer vers l'occurrence
+            openScene(loc.actId, loc.chapterId, loc.sceneId);
+
+            // Attendre que la scène soit chargée puis naviguer
+            setTimeout(() => {
+                this._scrollToWordOccurrence(occurrence.word, occurrence.position);
+            }, 400);
+        } else {
+            // Scène déjà ouverte, naviguer directement
+            this._scrollToWordOccurrence(occurrence.word, occurrence.position);
+        }
+    },
+
+    /**
+     * [MVVM : Handlers]
+     * Scroll vers une occurrence spécifique du mot dans l'éditeur
+     * @param {string} word - Mot à trouver
+     * @param {number} targetPosition - Position approximative dans le texte
+     * @private
+     */
+    _scrollToWordOccurrence(word, targetPosition) {
+        const editors = document.querySelectorAll('.editor-textarea[contenteditable="true"]');
+        if (editors.length === 0) return;
+
+        // Trouver tous les highlights du mot
+        const highlights = document.querySelectorAll('.word-rep-highlight');
+        if (highlights.length === 0) {
+            // Si pas de highlights, les créer d'abord
+            this._highlightAllOccurrences(word);
+            setTimeout(() => this._scrollToWordOccurrence(word, targetPosition), 100);
+            return;
+        }
+
+        // Trouver le highlight le plus proche de la position cible
+        let bestMatch = null;
+        let bestDistance = Infinity;
+
+        highlights.forEach((mark, idx) => {
+            // Calculer la position approximative du highlight
+            const textBefore = this._getTextBeforeElement(mark);
+            const distance = Math.abs(textBefore.length - targetPosition);
+
+            if (distance < bestDistance) {
+                bestDistance = distance;
+                bestMatch = mark;
+            }
+        });
+
+        if (bestMatch) {
+            // Scroll vers le highlight trouvé
+            bestMatch.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            // Ajouter une animation pour attirer l'attention
+            bestMatch.classList.add('word-rep-highlight-focus');
+            setTimeout(() => {
+                bestMatch.classList.remove('word-rep-highlight-focus');
+            }, 2000);
+        }
+    },
+
+    /**
+     * [MVVM : Handlers]
+     * Obtient le texte avant un élément dans l'éditeur
+     * @param {HTMLElement} element - Élément cible
+     * @returns {string} Texte avant l'élément
+     * @private
+     */
+    _getTextBeforeElement(element) {
+        const editor = element.closest('.editor-textarea');
+        if (!editor) return '';
+
+        let text = '';
+        const walker = document.createTreeWalker(editor, NodeFilter.SHOW_TEXT, null, false);
+        let node;
+
+        while (node = walker.nextNode()) {
+            if (element.contains(node) || element === node.parentElement) {
+                break;
+            }
+            text += node.textContent;
+        }
+
+        return text;
     },
 
     /**
