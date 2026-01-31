@@ -347,6 +347,7 @@
     min-width: 3000px;
     min-height: 2000px;
     padding: 40px;
+    transform-origin: 0 0;
 }
 
 /* Layer SVG pour les connexions */
