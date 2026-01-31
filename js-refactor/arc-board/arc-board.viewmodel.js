@@ -7,8 +7,7 @@
  */
 const MultiArcModes = {
     SOLO: 'solo',
-    COMPARE: 'compare',
-    SPLIT: 'split'
+    COMPARE: 'compare'
 };
 
 /**
@@ -46,10 +45,8 @@ const ArcBoardState = {
     // === MULTI-ARCS ===
     multiArcMode: MultiArcModes.SOLO,
     multiArcBarExpanded: false,
-    ghostArcs: [],           // IDs des arcs fantômes en mode Compare
-    ghostOpacity: 0.3,       // Opacité des arcs fantômes (0-1)
-    splitArcs: [],           // IDs des arcs en mode Split [{id, zoom, panX, panY}]
-    splitLayout: 'vertical', // 'vertical' ou 'horizontal'
+    compareArcs: [],         // IDs des arcs à comparer (incluant l'arc principal)
+    compareLayout: 'horizontal', // 'horizontal' ou 'vertical'
     interArcConnectionSource: null, // Pour créer des connexions inter-arcs
 
     // Reset l'état
@@ -68,10 +65,8 @@ const ArcBoardState = {
         // Reset multi-arcs
         this.multiArcMode = MultiArcModes.SOLO;
         this.multiArcBarExpanded = false;
-        this.ghostArcs = [];
-        this.ghostOpacity = 0.3;
-        this.splitArcs = [];
-        this.splitLayout = 'vertical';
+        this.compareArcs = [];
+        this.compareLayout = 'horizontal';
         this.interArcConnectionSource = null;
     }
 };
@@ -583,195 +578,66 @@ const ArcBoardViewModel = {
         const previousMode = ArcBoardState.multiArcMode;
         ArcBoardState.multiArcMode = mode;
 
-        // Expand la barre si on passe en mode Compare ou Split
+        // Expand la barre si on passe en mode Compare
         if (mode !== MultiArcModes.SOLO) {
             ArcBoardState.multiArcBarExpanded = true;
         }
 
-        // Initialiser splitArcs si on passe en mode Split
-        if (mode === MultiArcModes.SPLIT && ArcBoardState.splitArcs.length === 0) {
+        // Initialiser compareArcs si on passe en mode Compare
+        if (mode === MultiArcModes.COMPARE && ArcBoardState.compareArcs.length === 0) {
             if (ArcBoardState.currentArcId) {
-                ArcBoardState.splitArcs = [{
-                    id: ArcBoardState.currentArcId,
-                    zoom: ArcBoardState.zoom,
-                    panX: ArcBoardState.panX,
-                    panY: ArcBoardState.panY
-                }];
+                ArcBoardState.compareArcs = [ArcBoardState.currentArcId];
             }
         }
 
-        // Nettoyer les ghost arcs si on quitte le mode Compare
+        // Nettoyer les arcs comparés si on quitte le mode Compare
         if (previousMode === MultiArcModes.COMPARE && mode !== MultiArcModes.COMPARE) {
-            ArcBoardState.ghostArcs = [];
+            ArcBoardState.compareArcs = [];
         }
 
         this.render();
     },
 
     /**
-     * Ajoute un arc fantôme en mode Compare
+     * Ajoute un arc à comparer
      */
-    addGhostArc(arcId) {
-        if (!arcId || arcId === ArcBoardState.currentArcId) return;
-        if (ArcBoardState.ghostArcs.includes(arcId)) return;
-
-        ArcBoardState.ghostArcs.push(arcId);
-        this.render();
-    },
-
-    /**
-     * Retire un arc fantôme
-     */
-    removeGhostArc(arcId) {
-        const index = ArcBoardState.ghostArcs.indexOf(arcId);
-        if (index > -1) {
-            ArcBoardState.ghostArcs.splice(index, 1);
-            this.render();
-        }
-    },
-
-    /**
-     * Change l'opacité des arcs fantômes
-     */
-    setGhostOpacity(opacity) {
-        ArcBoardState.ghostOpacity = Math.max(0.1, Math.min(1, opacity));
-        this._updateGhostOpacity();
-    },
-
-    _updateGhostOpacity() {
-        document.querySelectorAll('.arc-ghost-layer').forEach(el => {
-            el.style.opacity = ArcBoardState.ghostOpacity;
-        });
-    },
-
-    /**
-     * Bascule un arc comme arc principal (depuis un ghost)
-     */
-    setMainArc(arcId) {
-        const previousMainId = ArcBoardState.currentArcId;
-
-        // L'ancien main devient ghost
-        if (previousMainId && !ArcBoardState.ghostArcs.includes(previousMainId)) {
-            ArcBoardState.ghostArcs.push(previousMainId);
-        }
-
-        // Retirer le nouvel arc principal des ghosts
-        const ghostIndex = ArcBoardState.ghostArcs.indexOf(arcId);
-        if (ghostIndex > -1) {
-            ArcBoardState.ghostArcs.splice(ghostIndex, 1);
-        }
-
-        ArcBoardState.currentArcId = arcId;
-        this.render();
-    },
-
-    /**
-     * Ajoute un panneau en mode Split
-     */
-    addSplitPanel(arcId) {
+    addCompareArc(arcId) {
         if (!arcId) return;
-        if (ArcBoardState.splitArcs.find(s => s.id === arcId)) return;
+        if (ArcBoardState.compareArcs.includes(arcId)) return;
 
-        ArcBoardState.splitArcs.push({
-            id: arcId,
-            zoom: 1,
-            panX: 0,
-            panY: 0
-        });
+        ArcBoardState.compareArcs.push(arcId);
         this.render();
     },
 
     /**
-     * Retire un panneau en mode Split
+     * Retire un arc de la comparaison
      */
-    removeSplitPanel(arcId) {
-        const index = ArcBoardState.splitArcs.findIndex(s => s.id === arcId);
-        if (index > -1 && ArcBoardState.splitArcs.length > 1) {
-            ArcBoardState.splitArcs.splice(index, 1);
+    removeCompareArc(arcId) {
+        // Garder au moins un arc
+        if (ArcBoardState.compareArcs.length <= 1) return;
+
+        const index = ArcBoardState.compareArcs.indexOf(arcId);
+        if (index > -1) {
+            ArcBoardState.compareArcs.splice(index, 1);
             this.render();
         }
     },
 
     /**
-     * Change le layout du mode Split
+     * Change le layout du mode Compare
      */
-    setSplitLayout(layout) {
+    setCompareLayout(layout) {
         if (layout === 'vertical' || layout === 'horizontal') {
-            ArcBoardState.splitLayout = layout;
+            ArcBoardState.compareLayout = layout;
             this.render();
         }
     },
 
     /**
-     * Met à jour le zoom/pan d'un panneau split spécifique
-     */
-    updateSplitPanelView(arcId, zoom, panX, panY) {
-        const panel = ArcBoardState.splitArcs.find(s => s.id === arcId);
-        if (panel) {
-            if (zoom !== undefined) panel.zoom = zoom;
-            if (panX !== undefined) panel.panX = panX;
-            if (panY !== undefined) panel.panY = panY;
-        }
-    },
-
-    /**
-     * Zoom un panneau split
-     */
-    zoomSplitPanel(arcId, delta) {
-        const panel = ArcBoardState.splitArcs.find(s => s.id === arcId);
-        if (!panel) return;
-
-        const newZoom = panel.zoom + (delta * ArcBoardConfig.canvas.zoomStep);
-        panel.zoom = Math.max(
-            ArcBoardConfig.canvas.minZoom,
-            Math.min(ArcBoardConfig.canvas.maxZoom, newZoom)
-        );
-
-        // Mettre à jour l'UI
-        const content = document.getElementById(`splitContent-${arcId}`);
-        if (content) {
-            content.style.transform = `scale(${panel.zoom}) translate(${panel.panX}px, ${panel.panY}px)`;
-        }
-
-        const zoomEl = document.querySelector(`[data-arc-id="${arcId}"] .arc-split-zoom span`);
-        if (zoomEl) {
-            zoomEl.textContent = `${Math.round(panel.zoom * 100)}%`;
-        }
-    },
-
-    /**
-     * Change l'arc d'un panneau split
-     */
-    changeSplitPanelArc(panelIndex, newArcId) {
-        if (panelIndex < 0 || panelIndex >= ArcBoardState.splitArcs.length) return;
-
-        // Vérifier que l'arc n'est pas déjà utilisé
-        if (ArcBoardState.splitArcs.find(s => s.id === newArcId)) {
-            console.warn('Cet arc est déjà affiché dans un autre panneau');
-            return;
-        }
-
-        ArcBoardState.splitArcs[panelIndex] = {
-            id: newArcId,
-            zoom: 1,
-            panX: 0,
-            panY: 0
-        };
-
-        this.render();
-    },
-
-    /**
-     * Récupère les arcs disponibles pour ajouter (ni current, ni ghost, ni split)
+     * Récupère les arcs disponibles pour ajouter à la comparaison
      */
     getAvailableArcsForAdd() {
         const allArcs = ArcRepository.getAll();
-        const usedIds = [ArcBoardState.currentArcId, ...ArcBoardState.ghostArcs];
-
-        if (ArcBoardState.multiArcMode === MultiArcModes.SPLIT) {
-            ArcBoardState.splitArcs.forEach(s => usedIds.push(s.id));
-        }
-
-        return allArcs.filter(arc => !usedIds.includes(arc.id));
+        return allArcs.filter(arc => !ArcBoardState.compareArcs.includes(arc.id));
     }
 };
