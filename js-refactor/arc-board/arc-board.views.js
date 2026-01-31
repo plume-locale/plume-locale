@@ -428,10 +428,12 @@ const ArcBoardView = {
                 ${interArcConnections.map(conn => {
                     const fromArc = ArcRepository.getById(conn.fromArcId);
                     const toArc = ArcRepository.getById(conn.toArcId);
-                    return `<span class="arc-interarc-tag">
+                    return `<span class="arc-interarc-tag" title="Lien inter-arc: ${fromArc?.title || '?'} vers ${toArc?.title || '?'}">
                         <span class="arc-interarc-tag-dot" style="background:${fromArc?.color || '#999'}"></span>
+                        <span class="arc-interarc-tag-name">${fromArc?.title || '?'}</span>
                         <i data-lucide="arrow-right"></i>
                         <span class="arc-interarc-tag-dot" style="background:${toArc?.color || '#999'}"></span>
+                        <span class="arc-interarc-tag-name">${toArc?.title || '?'}</span>
                         <button onclick="InterArcConnectionRepository.delete('${conn.id}'); ArcBoardViewModel.render()"><i data-lucide="x"></i></button>
                     </span>`;
                 }).join('')}

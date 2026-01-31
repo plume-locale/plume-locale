@@ -3028,6 +3028,15 @@
     width: 6px;
     height: 6px;
     border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.arc-interarc-tag-name {
+    color: var(--text-secondary);
+    max-width: 80px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .arc-interarc-tag i {
