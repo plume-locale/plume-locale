@@ -243,13 +243,6 @@ const ArcBoardView = {
         const view = document.getElementById('editorView');
         if (!view) return;
 
-        // En mode Compare, rendu avec panneaux côte à côte
-        if (ArcBoardState.multiArcMode === MultiArcModes.COMPARE) {
-            view.innerHTML = this._renderCompareMode();
-            if (typeof lucide !== 'undefined') lucide.createIcons();
-            return;
-        }
-
         view.innerHTML = `
             <div class="arc-board-container">
                 ${this._renderToolbar()}
@@ -281,6 +274,10 @@ const ArcBoardView = {
                                         <marker id="arrowhead" markerWidth="10" markerHeight="7"
                                                 refX="9" refY="3.5" orient="auto">
                                             <polygon points="0 0, 10 3.5, 0 7" class="arc-connection-arrow"/>
+                                        </marker>
+                                        <marker id="arrowhead-interarc" markerWidth="10" markerHeight="7"
+                                                refX="9" refY="3.5" orient="auto">
+                                            <polygon points="0 0, 10 3.5, 0 7" fill="var(--primary-color)"/>
                                         </marker>
                                     </defs>
                                 </svg>
@@ -410,6 +407,36 @@ const ArcBoardView = {
     _renderMultiArcBar(arc) {
         const mode = ArcBoardState.multiArcMode;
         const allArcs = ArcRepository.getAll();
+        const availableArcs = ArcBoardViewModel.getAvailableArcsForAdd();
+        const interArcConnections = InterArcConnectionRepository.getAll();
+
+        // Tags des arcs en comparaison
+        const compareTagsHtml = ArcBoardState.compareArcs.map(arcId => {
+            const compareArc = ArcRepository.getById(arcId);
+            if (!compareArc) return '';
+            const isMain = arcId === arc.id;
+            return `<span class="arc-compare-tag ${isMain ? 'main' : ''}" style="--tag-color: ${compareArc.color}">
+                <span class="arc-compare-tag-dot" style="background:${compareArc.color}"></span>
+                ${compareArc.title}
+                ${!isMain && ArcBoardState.compareArcs.length > 1 ? `<button onclick="ArcBoardViewModel.removeCompareArc('${arcId}')"><i data-lucide="x"></i></button>` : ''}
+            </span>`;
+        }).join('');
+
+        // Liste des connexions inter-arcs
+        const interArcHtml = interArcConnections.length > 0 ? `
+            <div class="arc-interarc-tags">
+                ${interArcConnections.map(conn => {
+                    const fromArc = ArcRepository.getById(conn.fromArcId);
+                    const toArc = ArcRepository.getById(conn.toArcId);
+                    return `<span class="arc-interarc-tag">
+                        <span class="arc-interarc-tag-dot" style="background:${fromArc?.color || '#999'}"></span>
+                        <i data-lucide="arrow-right"></i>
+                        <span class="arc-interarc-tag-dot" style="background:${toArc?.color || '#999'}"></span>
+                        <button onclick="InterArcConnectionRepository.delete('${conn.id}'); ArcBoardViewModel.render()"><i data-lucide="x"></i></button>
+                    </span>`;
+                }).join('')}
+            </div>
+        ` : '';
 
         return `
             <div class="arc-multi-bar">
@@ -423,327 +450,22 @@ const ArcBoardView = {
                     <button class="${mode === MultiArcModes.SOLO ? 'active' : ''}" onclick="ArcBoardViewModel.setMultiArcMode('solo')">Solo</button>
                     <button class="${mode === MultiArcModes.COMPARE ? 'active' : ''}" onclick="ArcBoardViewModel.setMultiArcMode('compare')">Comparer</button>
                 </div>
-            </div>
-        `;
-    },
 
-    /**
-     * Rendu du mode Compare (panneaux côte à côte avec tous les détails)
-     */
-    _renderCompareMode() {
-        const compareArcs = ArcBoardState.compareArcs;
-        const layout = ArcBoardState.compareLayout;
-        const availableArcs = ArcBoardViewModel.getAvailableArcsForAdd();
-        const interArcConnections = InterArcConnectionRepository.getAll();
-
-        // Générer les panneaux pour chaque arc
-        const panelsHtml = compareArcs.map((arcId, index) => {
-            const arc = ArcRepository.getById(arcId);
-            if (!arc) return '';
-
-            return `
-                <div class="arc-compare-panel" data-arc-id="${arcId}" data-panel-index="${index}">
-                    <div class="arc-compare-panel-header" style="--arc-color: ${arc.color}">
-                        <div class="arc-compare-panel-title">
-                            <span class="arc-compare-dot" style="background:${arc.color}"></span>
-                            <span class="arc-compare-name">${arc.title}</span>
-                        </div>
-                        ${compareArcs.length > 1 ? `
-                            <button class="arc-compare-close" onclick="ArcBoardViewModel.removeCompareArc('${arcId}')" title="Retirer de la comparaison">
-                                <i data-lucide="x"></i>
-                            </button>
-                        ` : ''}
-                    </div>
-                    <div class="arc-compare-canvas" data-arc-id="${arcId}">
-                        <div class="arc-compare-content" id="compareContent-${arcId}">
-                            ${this._renderCompareItems(arc)}
-                            ${this._renderCompareConnections(arc)}
-                        </div>
-                    </div>
-                    <div class="arc-compare-stats">
-                        <span><i data-lucide="columns-3"></i> ${arc.board.items.filter(i => i.type === 'column').length} colonnes</span>
-                        <span><i data-lucide="file-text"></i> ${this._countTotalCards(arc)} cartes</span>
-                        <span><i data-lucide="git-branch"></i> ${arc.board.connections?.length || 0} liens</span>
-                    </div>
-                </div>
-            `;
-        }).join('');
-
-        // Connexions inter-arcs
-        const interArcConnectionsHtml = interArcConnections.length > 0 ? `
-            <div class="arc-compare-interarc-list">
-                ${interArcConnections.map(conn => this._renderInterArcConnectionCompact(conn)).join('')}
-            </div>
-        ` : '';
-
-        return `
-            <div class="arc-compare-container">
-                <div class="arc-compare-bar">
-                    <div class="arc-compare-bar-left">
-                        <div class="arc-compare-layout-toggle">
-                            <button class="${layout === 'horizontal' ? 'active' : ''}"
-                                    onclick="ArcBoardViewModel.setCompareLayout('horizontal')"
-                                    title="Côte à côte">
-                                <i data-lucide="columns-2"></i>
-                            </button>
-                            <button class="${layout === 'vertical' ? 'active' : ''}"
-                                    onclick="ArcBoardViewModel.setCompareLayout('vertical')"
-                                    title="Empilé">
-                                <i data-lucide="rows-2"></i>
-                            </button>
-                        </div>
+                ${mode === MultiArcModes.COMPARE ? `
+                    <div class="arc-compare-controls">
+                        ${compareTagsHtml}
                         ${availableArcs.length > 0 ? `
-                            <select class="arc-compare-add-select" onchange="if(this.value) { ArcBoardViewModel.addCompareArc(this.value); this.value=''; }">
-                                <option value="">+ Ajouter un arc</option>
+                            <select class="arc-compare-add" onchange="if(this.value) { ArcBoardViewModel.addCompareArc(this.value); this.value=''; }">
+                                <option value="">+ Arc...</option>
                                 ${availableArcs.map(a => `<option value="${a.id}">${a.title}</option>`).join('')}
                             </select>
                         ` : ''}
                         <button class="arc-compare-link-btn" onclick="InterArcConnectionService.startConnection()" title="Créer un lien entre arcs">
                             <i data-lucide="link"></i>
-                            Lier des éléments
                         </button>
+                        ${interArcHtml}
                     </div>
-                    <div class="arc-compare-bar-right">
-                        <span class="arc-compare-count">${compareArcs.length} arc${compareArcs.length > 1 ? 's' : ''}</span>
-                        <button class="arc-compare-exit" onclick="ArcBoardViewModel.setMultiArcMode('solo')">
-                            <i data-lucide="x"></i>
-                            Quitter
-                        </button>
-                    </div>
-                </div>
-
-                ${interArcConnectionsHtml}
-
-                <div class="arc-compare-panels ${layout === 'vertical' ? 'arc-compare-vertical' : 'arc-compare-horizontal'}">
-                    ${panelsHtml}
-                </div>
-
-                <div class="arc-connection-mode-hint" id="connectionModeHint" style="display:none">
-                    <i data-lucide="link"></i>
-                    <span id="connectionHintText">Cliquez sur un élément source</span>
-                    <button onclick="InterArcConnectionService.cancel()"><i data-lucide="x"></i> Annuler</button>
-                </div>
-            </div>
-        `;
-    },
-
-    /**
-     * Compte le nombre total de cartes dans un arc
-     */
-    _countTotalCards(arc) {
-        return arc.board.items.reduce((total, item) => {
-            if (item.type === 'column' && item.cards) {
-                return total + item.cards.length;
-            }
-            return total;
-        }, 0);
-    },
-
-    /**
-     * Rendu des items d'un arc en mode Compare (avec tous les détails)
-     */
-    _renderCompareItems(arc) {
-        return arc.board.items.map(item => {
-            if (item.type === 'column') {
-                return this._renderCompareColumn(item, arc.id);
-            } else {
-                return this._renderCompareFloatingItem(item, arc.id);
-            }
-        }).join('');
-    },
-
-    /**
-     * Rendu d'une colonne en mode Compare
-     */
-    _renderCompareColumn(item, arcId) {
-        const cardsHtml = (item.cards || []).map(card => this._renderCompareCard(card, item.id, arcId)).join('');
-
-        return `
-            <div class="arc-compare-column"
-                 style="left:${item.x}px; top:${item.y}px; width:${item.width || 280}px"
-                 data-item-id="${item.id}"
-                 data-arc-id="${arcId}"
-                 onclick="InterArcConnectionService.handleClick('${arcId}', '${item.id}')">
-                <div class="arc-compare-column-header">
-                    <span class="arc-compare-column-title">${item.title || 'Colonne'}</span>
-                    <span class="arc-compare-column-count">${item.cards?.length || 0}</span>
-                </div>
-                <div class="arc-compare-column-body">
-                    ${cardsHtml}
-                </div>
-            </div>
-        `;
-    },
-
-    /**
-     * Rendu d'une carte en mode Compare
-     */
-    _renderCompareCard(card, columnId, arcId) {
-        const statusLabels = { 'setup': 'Introduction', 'development': 'Développement', 'climax': 'Point culminant', 'resolution': 'Résolution' };
-
-        let cardContent = '';
-        switch (card.type) {
-            case 'scene':
-                cardContent = `
-                    <div class="arc-compare-card-scene">
-                        <i data-lucide="book-open"></i>
-                        <div class="arc-compare-card-scene-info">
-                            <div class="arc-compare-card-breadcrumb">${card.breadcrumb || ''}</div>
-                            <div class="arc-compare-card-title">${card.sceneTitle || 'Scène'}</div>
-                            <div class="arc-compare-card-status">${statusLabels[card.status] || 'Développement'}</div>
-                        </div>
-                    </div>
-                `;
-                break;
-            case 'note':
-                cardContent = `
-                    <div class="arc-compare-card-note">
-                        <i data-lucide="file-text"></i>
-                        <div class="arc-compare-card-content">${card.content || ''}</div>
-                    </div>
-                `;
-                break;
-            case 'todo':
-                const completedCount = (card.items || []).filter(t => t.completed).length;
-                cardContent = `
-                    <div class="arc-compare-card-todo">
-                        <i data-lucide="check-square"></i>
-                        <div class="arc-compare-card-todo-info">
-                            <div class="arc-compare-card-title">${card.title || 'Tâches'}</div>
-                            <div class="arc-compare-card-progress">${completedCount}/${(card.items || []).length}</div>
-                        </div>
-                    </div>
-                `;
-                break;
-            case 'image':
-                cardContent = `
-                    <div class="arc-compare-card-image">
-                        ${card.src ? `<img src="${card.src}" alt="">` : '<i data-lucide="image"></i>'}
-                    </div>
-                `;
-                break;
-            case 'link':
-                cardContent = `
-                    <div class="arc-compare-card-link">
-                        <i data-lucide="link"></i>
-                        <span>${card.title || card.url || 'Lien'}</span>
-                    </div>
-                `;
-                break;
-            default:
-                cardContent = `<div class="arc-compare-card-default"><i data-lucide="file"></i> ${card.type}</div>`;
-        }
-
-        return `
-            <div class="arc-compare-card arc-compare-card-${card.type}"
-                 data-card-id="${card.id}"
-                 data-column-id="${columnId}"
-                 data-arc-id="${arcId}"
-                 onclick="event.stopPropagation(); InterArcConnectionService.handleClick('${arcId}', '${columnId}')">
-                ${cardContent}
-            </div>
-        `;
-    },
-
-    /**
-     * Rendu d'un item flottant en mode Compare
-     */
-    _renderCompareFloatingItem(item, arcId) {
-        let content = '';
-        switch (item.type) {
-            case 'note':
-                content = `<div class="arc-compare-floating-note">${item.content || ''}</div>`;
-                break;
-            case 'image':
-                content = item.src ? `<img src="${item.src}" alt="" style="max-width:${item.width || 200}px">` : '<i data-lucide="image"></i>';
-                break;
-            case 'todo':
-                content = `<div class="arc-compare-floating-todo"><i data-lucide="check-square"></i> ${item.title || 'Tâches'}</div>`;
-                break;
-            default:
-                content = `<i data-lucide="file"></i>`;
-        }
-
-        return `
-            <div class="arc-compare-floating arc-compare-floating-${item.type}"
-                 style="left:${item.x}px; top:${item.y}px; ${item.width ? `width:${item.width}px` : ''}"
-                 data-item-id="${item.id}"
-                 data-arc-id="${arcId}"
-                 onclick="InterArcConnectionService.handleClick('${arcId}', '${item.id}')">
-                ${content}
-            </div>
-        `;
-    },
-
-    /**
-     * Rendu des connexions d'un arc en mode Compare
-     */
-    _renderCompareConnections(arc) {
-        if (!arc.board.connections || arc.board.connections.length === 0) return '';
-
-        return `
-            <svg class="arc-compare-connections-svg">
-                <defs>
-                    <marker id="arrowhead-compare" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                        <polygon points="0 0, 10 3.5, 0 7" class="arc-connection-arrow"/>
-                    </marker>
-                </defs>
-                ${arc.board.connections.map(conn => {
-                    const fromItem = arc.board.items.find(i => i.id === conn.from);
-                    const toItem = arc.board.items.find(i => i.id === conn.to);
-                    if (!fromItem || !toItem) return '';
-
-                    const fromPos = this._getConnectionPoint(fromItem, conn.fromSide);
-                    const toPos = this._getConnectionPoint(toItem, conn.toSide);
-                    const path = this._createConnectionPath(fromPos, toPos);
-
-                    return `<path d="${path}" class="arc-compare-connection-line" marker-end="url(#arrowhead-compare)" />`;
-                }).join('')}
-            </svg>
-        `;
-    },
-
-    /**
-     * Rendu compact d'une connexion inter-arcs
-     */
-    _renderInterArcConnectionCompact(conn) {
-        const fromArc = ArcRepository.getById(conn.fromArcId);
-        const toArc = ArcRepository.getById(conn.toArcId);
-        const fromItem = fromArc ? BoardItemRepository.getById(conn.fromArcId, conn.fromItemId) : null;
-        const toItem = toArc ? BoardItemRepository.getById(conn.toArcId, conn.toItemId) : null;
-
-        const typeLabels = {
-            parallel: 'Parallèle',
-            cause: 'Cause →',
-            consequence: '← Conséquence',
-            echo: 'Écho',
-            contrast: 'Contraste'
-        };
-
-        const typeIcons = {
-            parallel: 'git-merge',
-            cause: 'arrow-right',
-            consequence: 'arrow-left',
-            echo: 'repeat',
-            contrast: 'scale'
-        };
-
-        return `
-            <div class="arc-compare-interarc" data-connection-id="${conn.id}">
-                <span class="arc-compare-interarc-from" style="--dot-color: ${fromArc?.color || '#999'}">
-                    <span class="arc-compare-interarc-dot"></span>
-                    ${fromArc?.title || '?'} › ${fromItem?.title || '?'}
-                </span>
-                <span class="arc-compare-interarc-type" title="${typeLabels[conn.type] || 'Lien'}">
-                    <i data-lucide="${typeIcons[conn.type] || 'link'}"></i>
-                </span>
-                <span class="arc-compare-interarc-to" style="--dot-color: ${toArc?.color || '#999'}">
-                    <span class="arc-compare-interarc-dot"></span>
-                    ${toArc?.title || '?'} › ${toItem?.title || '?'}
-                </span>
-                <button class="arc-compare-interarc-delete" onclick="InterArcConnectionRepository.delete('${conn.id}'); ArcBoardViewModel.render()" title="Supprimer">
-                    <i data-lucide="x"></i>
-                </button>
+                ` : ''}
             </div>
         `;
     },
@@ -907,13 +629,115 @@ const ArcBoardView = {
         const sidebarContainer = document.getElementById('arcUnassignedSidebar');
         if (!itemsContainer || !arc.board) return;
 
+        // MODE COMPARE : afficher plusieurs arcs empilés verticalement
+        if (ArcBoardState.multiArcMode === MultiArcModes.COMPARE && ArcBoardState.compareArcs.length > 0) {
+            this._renderCompareItems(itemsContainer, sidebarContainer);
+            return;
+        }
+
+        // MODE SOLO : affichage normal
+        this._renderSoloItems(arc, itemsContainer, sidebarContainer);
+    },
+
+    /**
+     * Rendu mode Solo (un seul arc)
+     */
+    _renderSoloItems(arc, itemsContainer, sidebarContainer) {
         // Construire la liste des scènes non attribuées depuis scenePresence
+        const unassignedScenes = this._getUnassignedScenes(arc);
+
+        // Filtrer les items réguliers
+        const regularItems = arc.board.items.filter(item => item.type !== 'scene');
+
+        // Rendre la zone "Non attribué" dans la sidebar
+        if (sidebarContainer) {
+            sidebarContainer.innerHTML = this._renderUnassignedZone(unassignedScenes);
+        }
+
+        // Rendre les items normaux dans le canvas
+        itemsContainer.innerHTML = regularItems.map(item => this._renderItem(item)).join('');
+
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+
+        // Masquer l'empty state si items présents
+        const emptyState = document.querySelector('.arc-board-empty');
+        if (emptyState) {
+            emptyState.style.display = arc.board.items.length > 0 ? 'none' : 'block';
+        }
+    },
+
+    /**
+     * Rendu mode Compare (plusieurs arcs empilés)
+     */
+    _renderCompareItems(itemsContainer, sidebarContainer) {
+        const ARC_VERTICAL_SPACING = 800; // Espacement vertical entre les arcs
+        let html = '';
+        let currentY = 0;
+
+        // Pour chaque arc à comparer
+        ArcBoardState.compareArcs.forEach((arcId, index) => {
+            const compareArc = ArcRepository.getById(arcId);
+            if (!compareArc) return;
+
+            // En-tête de l'arc (bande colorée)
+            html += `
+                <div class="arc-compare-header" style="top:${currentY}px; --arc-color:${compareArc.color}" data-arc-id="${arcId}">
+                    <span class="arc-compare-header-dot" style="background:${compareArc.color}"></span>
+                    <span class="arc-compare-header-title">${compareArc.title}</span>
+                    <span class="arc-compare-header-count">${compareArc.board.items.filter(i => i.type === 'column').length} colonnes</span>
+                </div>
+            `;
+
+            // Items de cet arc avec offset Y
+            const offsetY = currentY + 50; // 50px pour l'en-tête
+            compareArc.board.items.filter(item => item.type !== 'scene').forEach(item => {
+                html += this._renderItem(item, arcId, 0, offsetY);
+            });
+
+            // Calculer la hauteur de cet arc pour le prochain
+            const maxY = this._getArcMaxY(compareArc);
+            currentY += Math.max(maxY + 100, ARC_VERTICAL_SPACING);
+        });
+
+        itemsContainer.innerHTML = html;
+
+        // Sidebar : scènes non attribuées du premier arc
+        if (sidebarContainer && ArcBoardState.compareArcs.length > 0) {
+            const mainArc = ArcRepository.getById(ArcBoardState.compareArcs[0]);
+            if (mainArc) {
+                const unassignedScenes = this._getUnassignedScenes(mainArc);
+                sidebarContainer.innerHTML = this._renderUnassignedZone(unassignedScenes);
+            }
+        }
+
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+
+        // Masquer l'empty state
+        const emptyState = document.querySelector('.arc-board-empty');
+        if (emptyState) emptyState.style.display = 'none';
+    },
+
+    /**
+     * Calcule la hauteur max utilisée par un arc
+     */
+    _getArcMaxY(arc) {
+        let maxY = 0;
+        arc.board.items.forEach(item => {
+            const itemBottom = (item.y || 0) + (item.type === 'column' ? 400 : 100);
+            if (itemBottom > maxY) maxY = itemBottom;
+        });
+        return maxY;
+    },
+
+    /**
+     * Récupère les scènes non attribuées d'un arc
+     */
+    _getUnassignedScenes(arc) {
         const unassignedScenes = [];
         if (arc.scenePresence) {
             arc.scenePresence
                 .filter(p => !p.columnId || p.columnId === null)
                 .forEach(presence => {
-                    // Récupérer les infos de la scène
                     let sceneTitle = 'Scène sans titre';
                     let breadcrumb = '';
 
@@ -940,25 +764,7 @@ const ArcBoardView = {
                     });
                 });
         }
-
-        // Filtrer les items réguliers (plus de scènes flottantes dans arc.board.items)
-        const regularItems = arc.board.items.filter(item => item.type !== 'scene');
-
-        // Rendre la zone "Non attribué" dans la sidebar
-        if (sidebarContainer) {
-            sidebarContainer.innerHTML = this._renderUnassignedZone(unassignedScenes);
-        }
-
-        // Rendre les items normaux dans le canvas
-        itemsContainer.innerHTML = regularItems.map(item => this._renderItem(item)).join('');
-
-        if (typeof lucide !== 'undefined') lucide.createIcons();
-
-        // Masquer l'empty state si items présents
-        const emptyState = document.querySelector('.arc-board-empty');
-        if (emptyState) {
-            emptyState.style.display = arc.board.items.length > 0 ? 'none' : 'block';
-        }
+        return unassignedScenes;
     },
 
     _renderUnassignedZone(floatingScenes) {
@@ -1032,18 +838,19 @@ const ArcBoardView = {
         `;
     },
 
-    _renderItem(item) {
+    _renderItem(item, arcId = null, offsetX = 0, offsetY = 0) {
         const isSelected = ArcBoardState.selectedItems.includes(item.id);
+        const isCompareMode = ArcBoardState.multiArcMode === MultiArcModes.COMPARE;
 
         switch (item.type) {
-            case 'column': return this._renderColumn(item, isSelected);
-            case 'note': return this._renderNote(item, isSelected);
-            case 'image': return this._renderImage(item, isSelected);
-            case 'link': return this._renderLink(item, isSelected);
-            case 'todo': return this._renderTodo(item, isSelected);
-            case 'comment': return this._renderComment(item, isSelected);
-            case 'table': return this._renderTable(item, isSelected);
-            case 'scene': return this._renderSceneItem(item, isSelected);
+            case 'column': return this._renderColumn(item, isSelected, arcId, offsetX, offsetY);
+            case 'note': return this._renderNote(item, isSelected, arcId, offsetX, offsetY);
+            case 'image': return this._renderImage(item, isSelected, arcId, offsetX, offsetY);
+            case 'link': return this._renderLink(item, isSelected, arcId, offsetX, offsetY);
+            case 'todo': return this._renderTodo(item, isSelected, arcId, offsetX, offsetY);
+            case 'comment': return this._renderComment(item, isSelected, arcId, offsetX, offsetY);
+            case 'table': return this._renderTable(item, isSelected, arcId, offsetX, offsetY);
+            case 'scene': return this._renderSceneItem(item, isSelected, arcId, offsetX, offsetY);
             default: return '';
         }
     },
@@ -1087,29 +894,34 @@ const ArcBoardView = {
         }
     },
 
-    _renderColumn(item, isSelected) {
+    _renderColumn(item, isSelected, arcId = null, offsetX = 0, offsetY = 0) {
         const cardsHtml = (item.cards || []).map(card => this._renderCard(card, item.id)).join('');
+        const isCompareMode = arcId !== null;
+        const arc = isCompareMode ? ArcRepository.getById(arcId) : null;
+        const borderColor = arc ? arc.color : 'var(--border-color)';
 
         return `
-            <div class="arc-column ${isSelected ? 'selected' : ''}"
+            <div class="arc-column ${isSelected ? 'selected' : ''} ${isCompareMode ? 'arc-column-compare' : ''}"
                  id="item-${item.id}"
                  data-item-id="${item.id}"
                  data-item-type="column"
-                 style="left: ${item.x}px; top: ${item.y}px; width: ${item.width || ArcBoardConfig.column.defaultWidth}px"
-                 onclick="ArcBoardViewModel.selectItem('${item.id}', event.ctrlKey || event.metaKey)">
+                 ${arcId ? `data-arc-id="${arcId}"` : ''}
+                 style="left: ${(item.x || 0) + offsetX}px; top: ${(item.y || 0) + offsetY}px; width: ${item.width || ArcBoardConfig.column.defaultWidth}px; ${isCompareMode ? `--column-accent: ${borderColor}` : ''}"
+                 onclick="${isCompareMode ? `InterArcConnectionService.handleClick('${arcId}', '${item.id}')` : `ArcBoardViewModel.selectItem('${item.id}', event.ctrlKey || event.metaKey)`}">
 
-                <div class="arc-column-header" onmousedown="ItemMoveService.start(event, '${item.id}')">
+                <div class="arc-column-header" ${!isCompareMode ? `onmousedown="ItemMoveService.start(event, '${item.id}')"` : ''}>
+                    ${isCompareMode ? `<span class="arc-column-title">${item.title || 'Colonne'}</span>` : `
                     <input type="text" class="arc-column-title" value="${item.title || ''}"
                            placeholder="Titre de la colonne"
                            onchange="ArcBoardViewModel.updateItem('${item.id}', { title: this.value })"
-                           onclick="event.stopPropagation()">
+                           onclick="event.stopPropagation()">`}
                     <span class="arc-column-meta">${(item.cards || []).length} carte${(item.cards || []).length > 1 ? 's' : ''}</span>
                 </div>
 
                 <div class="arc-column-body"
-                     ondrop="DragDropService.handleColumnDrop(event, '${item.id}')"
+                     ${!isCompareMode ? `ondrop="DragDropService.handleColumnDrop(event, '${item.id}')"
                      ondragover="DragDropService.handleColumnDragOver(event)"
-                     ondragleave="DragDropService.handleColumnDragLeave(event)">
+                     ondragleave="DragDropService.handleColumnDragLeave(event)"` : ''}>
                     ${cardsHtml}
                     <div class="arc-card-add" onclick="event.stopPropagation(); ArcBoardView.showCardTypeMenu(event, '${item.id}')">
                         <i data-lucide="plus"></i> Ajouter une carte
@@ -1311,51 +1123,57 @@ const ArcBoardView = {
         }
     },
 
-    _renderNote(item, isSelected) {
+    _renderNote(item, isSelected, arcId = null, offsetX = 0, offsetY = 0) {
+        const isCompareMode = arcId !== null;
         return `
             <div class="arc-floating-item arc-floating-note ${isSelected ? 'selected' : ''}"
                  id="item-${item.id}"
                  data-item-id="${item.id}"
                  data-item-type="note"
-                 style="left: ${item.x}px; top: ${item.y}px; width: ${item.width || 250}px"
-                 onclick="ArcBoardViewModel.selectItem('${item.id}', event.ctrlKey || event.metaKey)">
-                ${this._renderDragHandle(item.id, true)}
-                <div class="arc-card-content" contenteditable="true"
-                     onblur="ArcBoardViewModel.updateItem('${item.id}', { content: this.innerHTML })"
+                 ${arcId ? `data-arc-id="${arcId}"` : ''}
+                 style="left: ${(item.x || 0) + offsetX}px; top: ${(item.y || 0) + offsetY}px; width: ${item.width || 250}px"
+                 onclick="${isCompareMode ? `InterArcConnectionService.handleClick('${arcId}', '${item.id}')` : `ArcBoardViewModel.selectItem('${item.id}', event.ctrlKey || event.metaKey)`}">
+                ${!isCompareMode ? this._renderDragHandle(item.id, true) : ''}
+                <div class="arc-card-content" ${!isCompareMode ? 'contenteditable="true"' : ''}
+                     ${!isCompareMode ? `onblur="ArcBoardViewModel.updateItem('${item.id}', { content: this.innerHTML })"` : ''}
                      onclick="event.stopPropagation()">${item.content || ''}</div>
             </div>
         `;
     },
 
-    _renderImage(item, isSelected) {
+    _renderImage(item, isSelected, arcId = null, offsetX = 0, offsetY = 0) {
+        const isCompareMode = arcId !== null;
         return `
             <div class="arc-floating-item arc-floating-image ${isSelected ? 'selected' : ''}"
                  id="item-${item.id}"
                  data-item-id="${item.id}"
                  data-item-type="image"
-                 style="left: ${item.x}px; top: ${item.y}px"
-                 onclick="ArcBoardViewModel.selectItem('${item.id}', event.ctrlKey || event.metaKey)">
-                ${this._renderDragHandle(item.id, true)}
+                 ${arcId ? `data-arc-id="${arcId}"` : ''}
+                 style="left: ${(item.x || 0) + offsetX}px; top: ${(item.y || 0) + offsetY}px"
+                 onclick="${isCompareMode ? `InterArcConnectionService.handleClick('${arcId}', '${item.id}')` : `ArcBoardViewModel.selectItem('${item.id}', event.ctrlKey || event.metaKey)`}">
+                ${!isCompareMode ? this._renderDragHandle(item.id, true) : ''}
                 ${item.src
                 ? `<img src="${item.src}" alt="" style="max-width: ${item.width || 300}px" draggable="false">`
-                : `<div class="arc-card-upload" style="padding: 40px" onclick="ArcBoardEventHandlers.triggerItemImageUpload('${item.id}')">
+                : (!isCompareMode ? `<div class="arc-card-upload" style="padding: 40px" onclick="ArcBoardEventHandlers.triggerItemImageUpload('${item.id}')">
                             <i data-lucide="cloud-upload"></i>
                             <span>Ajouter une image</span>
-                        </div>`
+                        </div>` : '<i data-lucide="image"></i>')
             }
             </div>
         `;
     },
 
-    _renderLink(item, isSelected) {
+    _renderLink(item, isSelected, arcId = null, offsetX = 0, offsetY = 0) {
+        const isCompareMode = arcId !== null;
         return `
             <div class="arc-floating-item ${isSelected ? 'selected' : ''}"
                  id="item-${item.id}"
                  data-item-id="${item.id}"
                  data-item-type="link"
-                 style="left: ${item.x}px; top: ${item.y}px; width: 280px"
-                 onclick="ArcBoardViewModel.selectItem('${item.id}', event.ctrlKey || event.metaKey)">
-                ${this._renderDragHandle(item.id, true)}
+                 ${arcId ? `data-arc-id="${arcId}"` : ''}
+                 style="left: ${(item.x || 0) + offsetX}px; top: ${(item.y || 0) + offsetY}px; width: 280px"
+                 onclick="${isCompareMode ? `InterArcConnectionService.handleClick('${arcId}', '${item.id}')` : `ArcBoardViewModel.selectItem('${item.id}', event.ctrlKey || event.metaKey)`}">
+                ${!isCompareMode ? this._renderDragHandle(item.id, true) : ''}
                 <div class="arc-card arc-card-link" style="margin:0">
                     ${item.url ? `
                         <div class="arc-link-preview">
@@ -1364,30 +1182,32 @@ const ArcBoardView = {
                                 <div class="arc-link-preview-url">${item.url}</div>
                             </div>
                         </div>
-                    ` : `
+                    ` : (!isCompareMode ? `
                         <div class="arc-link-input">
                             <i data-lucide="link"></i>
                             <input type="text" placeholder="Entrer une URL"
                                    onkeypress="ArcBoardEventHandlers.handleLinkInput(event, '${item.id}')"
                                    onclick="event.stopPropagation()">
                         </div>
-                    `}
+                    ` : '<i data-lucide="link"></i>')}
                 </div>
             </div>
         `;
     },
 
-    _renderTodo(item, isSelected) {
+    _renderTodo(item, isSelected, arcId = null, offsetX = 0, offsetY = 0) {
+        const isCompareMode = arcId !== null;
         const todosHtml = (item.items || []).map((todo, idx) => `
             <div class="arc-todo-item">
                 <div class="arc-todo-checkbox ${todo.completed ? 'checked' : ''}"
-                     onclick="ArcBoardEventHandlers.toggleFloatingTodo('${item.id}', ${idx})">
+                     ${!isCompareMode ? `onclick="ArcBoardEventHandlers.toggleFloatingTodo('${item.id}', ${idx})"` : ''}>
                     ${todo.completed ? '<i data-lucide="check"></i>' : ''}
                 </div>
+                ${isCompareMode ? `<span class="arc-todo-text ${todo.completed ? 'completed' : ''}">${todo.text || ''}</span>` : `
                 <input type="text" class="arc-todo-text ${todo.completed ? 'completed' : ''}"
                        value="${todo.text || ''}"
                        onchange="ArcBoardEventHandlers.updateFloatingTodoText('${item.id}', ${idx}, this.value)"
-                       onclick="event.stopPropagation()">
+                       onclick="event.stopPropagation()">`}
             </div>
         `).join('');
 
@@ -1396,42 +1216,47 @@ const ArcBoardView = {
                  id="item-${item.id}"
                  data-item-id="${item.id}"
                  data-item-type="todo"
-                 style="left: ${item.x}px; top: ${item.y}px; width: 260px"
-                 onclick="ArcBoardViewModel.selectItem('${item.id}', event.ctrlKey || event.metaKey)">
-                ${this._renderDragHandle(item.id, true)}
+                 ${arcId ? `data-arc-id="${arcId}"` : ''}
+                 style="left: ${(item.x || 0) + offsetX}px; top: ${(item.y || 0) + offsetY}px; width: 260px"
+                 onclick="${isCompareMode ? `InterArcConnectionService.handleClick('${arcId}', '${item.id}')` : `ArcBoardViewModel.selectItem('${item.id}', event.ctrlKey || event.metaKey)`}">
+                ${!isCompareMode ? this._renderDragHandle(item.id, true) : ''}
                 <div class="arc-card arc-card-todo" style="margin:0">
+                    ${isCompareMode ? `<span class="arc-card-title">${item.title || 'Liste de tâches'}</span>` : `
                     <input type="text" class="arc-card-title" value="${item.title || ''}"
                            placeholder="Liste de tâches"
                            onchange="ArcBoardViewModel.updateItem('${item.id}', { title: this.value })"
-                           onclick="event.stopPropagation()">
+                           onclick="event.stopPropagation()">`}
                     <div class="arc-todo-list">${todosHtml}</div>
-                    <div class="arc-todo-add" onclick="ArcBoardEventHandlers.addFloatingTodoItem('${item.id}'); event.stopPropagation();">
+                    ${!isCompareMode ? `<div class="arc-todo-add" onclick="ArcBoardEventHandlers.addFloatingTodoItem('${item.id}'); event.stopPropagation();">
                         <i data-lucide="plus"></i> Ajouter une tâche...
-                    </div>
+                    </div>` : ''}
                 </div>
             </div>
         `;
     },
 
-    _renderComment(item, isSelected) {
+    _renderComment(item, isSelected, arcId = null, offsetX = 0, offsetY = 0) {
+        const isCompareMode = arcId !== null;
         return `
             <div class="arc-floating-item ${isSelected ? 'selected' : ''}"
                  id="item-${item.id}"
                  data-item-id="${item.id}"
                  data-item-type="comment"
-                 style="left: ${item.x}px; top: ${item.y}px; width: 220px"
-                 onclick="ArcBoardViewModel.selectItem('${item.id}', event.ctrlKey || event.metaKey)">
-                ${this._renderDragHandle(item.id, true)}
+                 ${arcId ? `data-arc-id="${arcId}"` : ''}
+                 style="left: ${(item.x || 0) + offsetX}px; top: ${(item.y || 0) + offsetY}px; width: 220px"
+                 onclick="${isCompareMode ? `InterArcConnectionService.handleClick('${arcId}', '${item.id}')` : `ArcBoardViewModel.selectItem('${item.id}', event.ctrlKey || event.metaKey)`}">
+                ${!isCompareMode ? this._renderDragHandle(item.id, true) : ''}
                 <div class="arc-card arc-card-comment" style="margin:0">
-                    <div class="arc-card-content" contenteditable="true"
-                         onblur="ArcBoardViewModel.updateItem('${item.id}', { content: this.innerHTML })"
+                    <div class="arc-card-content" ${!isCompareMode ? 'contenteditable="true"' : ''}
+                         ${!isCompareMode ? `onblur="ArcBoardViewModel.updateItem('${item.id}', { content: this.innerHTML })"` : ''}
                          onclick="event.stopPropagation()">${item.content || ''}</div>
                 </div>
             </div>
         `;
     },
 
-    _renderTable(item, isSelected) {
+    _renderTable(item, isSelected, arcId = null, offsetX = 0, offsetY = 0) {
+        const isCompareMode = arcId !== null;
         const rows = item.rows || 3;
         const cols = item.cols || 3;
         const data = item.data || [];
@@ -1442,32 +1267,36 @@ const ArcBoardView = {
             for (let c = 0; c < cols; c++) {
                 const cellData = data[r]?.[c] || '';
                 const tag = r === 0 ? 'th' : 'td';
-                tableHtml += `<${tag} contenteditable="true"
-                               onblur="ArcBoardEventHandlers.updateTableCell('${item.id}', ${r}, ${c}, this.textContent)"
+                tableHtml += `<${tag} ${!isCompareMode ? 'contenteditable="true"' : ''}
+                               ${!isCompareMode ? `onblur="ArcBoardEventHandlers.updateTableCell('${item.id}', ${r}, ${c}, this.textContent)"` : ''}
                                onclick="event.stopPropagation()">${cellData}</${tag}>`;
             }
-            // Bouton supprimer ligne (sauf header)
-            if (r > 0) {
-                tableHtml += `<td class="arc-table-action" onclick="ArcBoardEventHandlers.removeTableRow('${item.id}', ${r}); event.stopPropagation();">
-                    <i data-lucide="minus"></i>
-                </td>`;
-            } else {
-                tableHtml += '<th class="arc-table-action"></th>';
+            // Bouton supprimer ligne (sauf header) - uniquement en mode solo
+            if (!isCompareMode) {
+                if (r > 0) {
+                    tableHtml += `<td class="arc-table-action" onclick="ArcBoardEventHandlers.removeTableRow('${item.id}', ${r}); event.stopPropagation();">
+                        <i data-lucide="minus"></i>
+                    </td>`;
+                } else {
+                    tableHtml += '<th class="arc-table-action"></th>';
+                }
             }
             tableHtml += '</tr>';
         }
-        // Ligne pour supprimer colonnes
-        tableHtml += '<tr class="arc-table-actions-row">';
-        for (let c = 0; c < cols; c++) {
-            if (cols > 1) {
-                tableHtml += `<td class="arc-table-action" onclick="ArcBoardEventHandlers.removeTableCol('${item.id}', ${c}); event.stopPropagation();">
-                    <i data-lucide="minus"></i>
-                </td>`;
-            } else {
-                tableHtml += '<td class="arc-table-action"></td>';
+        // Ligne pour supprimer colonnes - uniquement en mode solo
+        if (!isCompareMode) {
+            tableHtml += '<tr class="arc-table-actions-row">';
+            for (let c = 0; c < cols; c++) {
+                if (cols > 1) {
+                    tableHtml += `<td class="arc-table-action" onclick="ArcBoardEventHandlers.removeTableCol('${item.id}', ${c}); event.stopPropagation();">
+                        <i data-lucide="minus"></i>
+                    </td>`;
+                } else {
+                    tableHtml += '<td class="arc-table-action"></td>';
+                }
             }
+            tableHtml += '<td class="arc-table-action"></td></tr>';
         }
-        tableHtml += '<td class="arc-table-action"></td></tr>';
         tableHtml += '</table>';
 
         return `
@@ -1475,25 +1304,27 @@ const ArcBoardView = {
                  id="item-${item.id}"
                  data-item-id="${item.id}"
                  data-item-type="table"
-                 style="left: ${item.x}px; top: ${item.y}px"
-                 onclick="ArcBoardViewModel.selectItem('${item.id}', event.ctrlKey || event.metaKey)">
-                ${this._renderDragHandle(item.id, true)}
+                 ${arcId ? `data-arc-id="${arcId}"` : ''}
+                 style="left: ${(item.x || 0) + offsetX}px; top: ${(item.y || 0) + offsetY}px"
+                 onclick="${isCompareMode ? `InterArcConnectionService.handleClick('${arcId}', '${item.id}')` : `ArcBoardViewModel.selectItem('${item.id}', event.ctrlKey || event.metaKey)`}">
+                ${!isCompareMode ? this._renderDragHandle(item.id, true) : ''}
                 <div class="arc-card arc-card-table" style="margin:0">
                     ${tableHtml}
-                    <div class="arc-table-controls">
+                    ${!isCompareMode ? `<div class="arc-table-controls">
                         <button class="arc-table-btn" onclick="ArcBoardEventHandlers.addTableRow('${item.id}'); event.stopPropagation();" title="Ajouter une ligne">
                             <i data-lucide="plus"></i> Ligne
                         </button>
                         <button class="arc-table-btn" onclick="ArcBoardEventHandlers.addTableCol('${item.id}'); event.stopPropagation();" title="Ajouter une colonne">
                             <i data-lucide="plus"></i> Colonne
                         </button>
-                    </div>
+                    </div>` : ''}
                 </div>
             </div>
         `;
     },
 
-    _renderSceneItem(item, isSelected) {
+    _renderSceneItem(item, isSelected, arcId = null, offsetX = 0, offsetY = 0) {
+        const isCompareMode = arcId !== null;
         const statusLabels = { 'setup': 'Introduction', 'development': 'Développement', 'climax': 'Point culminant', 'resolution': 'Résolution' };
 
         return `
@@ -1502,12 +1333,13 @@ const ArcBoardView = {
                  data-item-id="${item.id}"
                  data-item-type="scene"
                  data-scene-id="${item.sceneId || ''}"
-                 style="left: ${item.x}px; top: ${item.y}px; width: ${item.width || 220}px; z-index: ${item.zIndex || 1}"
-                 onclick="ArcBoardViewModel.selectItem('${item.id}', event.ctrlKey || event.metaKey)">
-                ${this._renderDragHandle(item.id, true)}
-                <button class="arc-floating-delete" onclick="event.stopPropagation(); deleteArcItem('${item.id}')" title="Supprimer">
+                 ${arcId ? `data-arc-id="${arcId}"` : ''}
+                 style="left: ${(item.x || 0) + offsetX}px; top: ${(item.y || 0) + offsetY}px; width: ${item.width || 220}px; z-index: ${item.zIndex || 1}"
+                 onclick="${isCompareMode ? `InterArcConnectionService.handleClick('${arcId}', '${item.id}')` : `ArcBoardViewModel.selectItem('${item.id}', event.ctrlKey || event.metaKey)`}">
+                ${!isCompareMode ? this._renderDragHandle(item.id, true) : ''}
+                ${!isCompareMode ? `<button class="arc-floating-delete" onclick="event.stopPropagation(); deleteArcItem('${item.id}')" title="Supprimer">
                     <i data-lucide="x"></i>
-                </button>
+                </button>` : ''}
                 <div class="arc-card arc-card-scene" style="margin:0">
                     <div class="arc-card-scene-header">
                         <i data-lucide="book-open"></i>
@@ -1522,9 +1354,9 @@ const ArcBoardView = {
                             <span class="arc-card-scene-value">${statusLabels[item.status] || 'Développement'}</span>
                         </div>
                     </div>
-                    <button class="arc-card-scene-open" onclick="ArcBoardEventHandlers.openScene('${item.sceneId}'); event.stopPropagation();">
+                    ${!isCompareMode ? `<button class="arc-card-scene-open" onclick="ArcBoardEventHandlers.openScene('${item.sceneId}'); event.stopPropagation();">
                         <i data-lucide="external-link"></i> Ouvrir
-                    </button>
+                    </button>` : ''}
                 </div>
             </div>
         `;

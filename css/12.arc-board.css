@@ -2896,98 +2896,91 @@
 }
 
 /* ============================================
-   MODE COMPARE - Nouveau design complet
+   MODE COMPARE - Canvas unique avec arcs empilés
    ============================================ */
 
-.arc-compare-container {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    overflow: hidden;
-    background: var(--bg-tertiary);
-}
-
-/* Barre supérieure du mode Compare */
-.arc-compare-bar {
+/* Contrôles du mode Compare dans la barre multi-arcs */
+.arc-compare-controls {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 8px 12px;
-    background: var(--bg-primary);
-    border-bottom: 1px solid var(--border-color);
+    gap: 8px;
+    margin-left: 12px;
+}
+
+/* Tags des arcs en comparaison */
+.arc-compare-tag {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    background: color-mix(in srgb, var(--tag-color, var(--primary-color)) 15%, var(--bg-primary));
+    border: 1px solid color-mix(in srgb, var(--tag-color, var(--primary-color)) 30%, var(--border-color));
+    border-radius: 14px;
+    font-size: 11px;
+    color: var(--text-primary);
+}
+
+.arc-compare-tag.main {
+    font-weight: 600;
+}
+
+.arc-compare-tag-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
     flex-shrink: 0;
 }
 
-.arc-compare-bar-left {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.arc-compare-bar-right {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.arc-compare-layout-toggle {
-    display: flex;
-    background: var(--bg-tertiary);
-    border-radius: 6px;
-    padding: 2px;
-}
-
-.arc-compare-layout-toggle button {
+.arc-compare-tag button {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 28px;
-    height: 26px;
+    width: 14px;
+    height: 14px;
     padding: 0;
     background: none;
     border: none;
-    border-radius: 4px;
+    border-radius: 50%;
     color: var(--text-muted);
     cursor: pointer;
     transition: all 0.15s ease;
 }
 
-.arc-compare-layout-toggle button:hover {
-    color: var(--text-primary);
+.arc-compare-tag button:hover {
+    background: var(--error-color);
+    color: white;
 }
 
-.arc-compare-layout-toggle button.active {
-    background: var(--bg-primary);
-    color: var(--primary-color);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+.arc-compare-tag button i {
+    width: 10px;
+    height: 10px;
 }
 
-.arc-compare-layout-toggle button i {
-    width: 16px;
-    height: 16px;
-}
-
-.arc-compare-add-select {
-    padding: 6px 10px;
-    font-size: 12px;
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    background: var(--bg-primary);
-    color: var(--text-secondary);
+/* Dropdown pour ajouter un arc */
+.arc-compare-add {
+    padding: 4px 8px;
+    font-size: 11px;
+    border: 1px dashed var(--border-color);
+    border-radius: 14px;
+    background: transparent;
+    color: var(--text-muted);
     cursor: pointer;
     transition: all 0.15s ease;
 }
 
-.arc-compare-add-select:hover {
+.arc-compare-add:hover {
     border-color: var(--primary-color);
+    color: var(--primary-color);
 }
 
+/* Bouton lien inter-arcs */
 .arc-compare-link-btn {
     display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    font-size: 12px;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
     background: var(--primary-color);
     border: none;
     border-radius: 6px;
@@ -3005,502 +2998,107 @@
     height: 14px;
 }
 
-.arc-compare-count {
-    font-size: 12px;
-    color: var(--text-muted);
-    padding: 4px 10px;
-    background: var(--bg-tertiary);
-    border-radius: 12px;
-}
-
-.arc-compare-exit {
+/* Tags des connexions inter-arcs */
+.arc-interarc-tags {
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 6px 12px;
-    font-size: 12px;
-    background: var(--bg-tertiary);
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    color: var(--text-secondary);
-    cursor: pointer;
-    transition: all 0.15s ease;
+    margin-left: 8px;
+    padding-left: 8px;
+    border-left: 1px solid var(--border-color);
 }
 
-.arc-compare-exit:hover {
-    background: var(--error-color);
-    border-color: var(--error-color);
-    color: white;
-}
-
-.arc-compare-exit i {
-    width: 14px;
-    height: 14px;
-}
-
-/* Liste des connexions inter-arcs */
-.arc-compare-interarc-list {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 12px;
-    background: var(--bg-secondary);
-    border-bottom: 1px solid var(--border-color);
-    overflow-x: auto;
-    flex-shrink: 0;
-}
-
-.arc-compare-interarc {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 4px 8px 4px 10px;
-    background: var(--bg-primary);
-    border: 1px solid var(--border-color);
-    border-radius: 16px;
-    font-size: 11px;
-    white-space: nowrap;
-}
-
-.arc-compare-interarc-from,
-.arc-compare-interarc-to {
+.arc-interarc-tag {
     display: flex;
     align-items: center;
     gap: 4px;
-    color: var(--text-secondary);
+    padding: 3px 6px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    font-size: 10px;
 }
 
-.arc-compare-interarc-dot {
+.arc-interarc-tag-dot {
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: var(--dot-color, var(--text-muted));
 }
 
-.arc-compare-interarc-type {
+.arc-interarc-tag i {
+    width: 10px;
+    height: 10px;
+    color: var(--text-muted);
+}
+
+.arc-interarc-tag button {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 20px;
-    height: 20px;
-    color: var(--primary-color);
-}
-
-.arc-compare-interarc-type i {
-    width: 14px;
-    height: 14px;
-}
-
-.arc-compare-interarc-delete {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 18px;
-    height: 18px;
+    width: 12px;
+    height: 12px;
     padding: 0;
     background: none;
     border: none;
     border-radius: 50%;
     color: var(--text-muted);
     cursor: pointer;
-    transition: all 0.15s ease;
 }
 
-.arc-compare-interarc-delete:hover {
+.arc-interarc-tag button:hover {
     background: var(--error-color);
     color: white;
 }
 
-.arc-compare-interarc-delete i {
-    width: 12px;
-    height: 12px;
+.arc-interarc-tag button i {
+    width: 8px;
+    height: 8px;
 }
 
-/* Conteneur des panneaux */
-.arc-compare-panels {
-    flex: 1;
-    display: flex;
-    gap: 1px;
-    background: var(--border-color);
-    min-height: 0;
-    overflow: hidden;
-}
-
-.arc-compare-horizontal {
-    flex-direction: row;
-}
-
-.arc-compare-vertical {
-    flex-direction: column;
-}
-
-/* Panneau individuel */
-.arc-compare-panel {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    background: var(--bg-primary);
-    min-width: 0;
-    min-height: 0;
-    overflow: hidden;
-}
-
-.arc-compare-panel-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 14px;
-    background: linear-gradient(to right, color-mix(in srgb, var(--arc-color, var(--primary-color)) 15%, var(--bg-primary)), var(--bg-primary));
-    border-bottom: 2px solid var(--arc-color, var(--primary-color));
-    flex-shrink: 0;
-}
-
-.arc-compare-panel-title {
+/* En-tête d'arc dans le canvas (mode Compare) */
+.arc-compare-header {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 40px;
     display: flex;
     align-items: center;
     gap: 10px;
+    padding: 0 20px;
+    background: linear-gradient(to right, color-mix(in srgb, var(--arc-color, var(--primary-color)) 20%, var(--bg-primary)), var(--bg-primary));
+    border-bottom: 3px solid var(--arc-color, var(--primary-color));
+    z-index: 10;
 }
 
-.arc-compare-dot {
-    width: 10px;
-    height: 10px;
+.arc-compare-header-dot {
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
     flex-shrink: 0;
 }
 
-.arc-compare-name {
+.arc-compare-header-title {
     font-family: 'Inter', sans-serif;
     font-size: 14px;
     font-weight: 600;
     color: var(--text-primary);
 }
 
-.arc-compare-close {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 26px;
-    height: 26px;
-    padding: 0;
-    background: none;
-    border: none;
-    border-radius: 6px;
-    color: var(--text-muted);
-    cursor: pointer;
-    transition: all 0.15s ease;
-}
-
-.arc-compare-close:hover {
-    background: var(--error-color);
-    color: white;
-}
-
-.arc-compare-close i {
-    width: 16px;
-    height: 16px;
-}
-
-/* Zone de canvas de l'arc */
-.arc-compare-canvas {
-    flex: 1;
-    position: relative;
-    overflow: auto;
-    background-color: var(--bg-tertiary);
-    background-image:
-        radial-gradient(circle, var(--border-color) 1px, transparent 1px);
-    background-size: 24px 24px;
-}
-
-.arc-compare-content {
-    position: relative;
-    min-width: 2000px;
-    min-height: 1500px;
-    padding: 20px;
-}
-
-/* Statistiques */
-.arc-compare-stats {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
-    padding: 6px 12px;
-    background: var(--bg-secondary);
-    border-top: 1px solid var(--border-color);
+.arc-compare-header-count {
     font-size: 11px;
     color: var(--text-muted);
-    flex-shrink: 0;
+    margin-left: auto;
 }
 
-.arc-compare-stats span {
-    display: flex;
-    align-items: center;
-    gap: 4px;
+/* Colonnes en mode Compare (avec accent coloré) */
+.arc-column.arc-column-compare {
+    border-top: 3px solid var(--column-accent, var(--primary-color));
 }
 
-.arc-compare-stats i {
-    width: 12px;
-    height: 12px;
-    opacity: 0.7;
-}
-
-/* Colonnes en mode Compare */
-.arc-compare-column {
-    position: absolute;
-    background: var(--bg-primary);
-    border-radius: 10px;
-    box-shadow: 0 2px 8px var(--shadow), 0 0 0 1px var(--border-color);
+.arc-column.arc-column-compare .arc-column-header {
     cursor: pointer;
-    transition: all 0.2s ease;
 }
 
-.arc-compare-column:hover {
-    box-shadow: 0 4px 16px var(--shadow), 0 0 0 2px var(--primary-color);
-}
-
-.arc-compare-column-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 14px;
-    border-bottom: 1px solid var(--border-color);
-    background: var(--bg-secondary);
-    border-radius: 10px 10px 0 0;
-}
-
-.arc-compare-column-title {
-    font-family: 'Inter', sans-serif;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text-primary);
-}
-
-.arc-compare-column-count {
-    font-size: 11px;
-    padding: 2px 8px;
-    background: var(--bg-tertiary);
-    border-radius: 10px;
-    color: var(--text-muted);
-}
-
-.arc-compare-column-body {
-    padding: 8px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    max-height: 400px;
-    overflow-y: auto;
-}
-
-/* Cartes en mode Compare */
-.arc-compare-card {
-    padding: 10px 12px;
-    background: var(--bg-primary);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.15s ease;
-}
-
-.arc-compare-card:hover {
-    border-color: var(--primary-color);
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px var(--shadow);
-}
-
-/* Carte Scene */
-.arc-compare-card-scene {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-}
-
-.arc-compare-card-scene > i {
-    width: 16px;
-    height: 16px;
-    color: var(--primary-color);
-    flex-shrink: 0;
-    margin-top: 2px;
-}
-
-.arc-compare-card-scene-info {
-    flex: 1;
-    min-width: 0;
-}
-
-.arc-compare-card-breadcrumb {
-    font-size: 10px;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-    margin-bottom: 2px;
-}
-
-.arc-compare-card-title {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text-primary);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.arc-compare-card-status {
-    font-size: 11px;
-    color: var(--text-secondary);
-    margin-top: 4px;
-}
-
-/* Carte Note */
-.arc-compare-card-note {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-}
-
-.arc-compare-card-note > i {
-    width: 14px;
-    height: 14px;
-    color: var(--text-muted);
-    flex-shrink: 0;
-}
-
-.arc-compare-card-content {
-    font-size: 12px;
-    color: var(--text-secondary);
-    line-height: 1.4;
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-}
-
-/* Carte Todo */
-.arc-compare-card-todo {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.arc-compare-card-todo > i {
-    width: 14px;
-    height: 14px;
-    color: var(--accent-green);
-    flex-shrink: 0;
-}
-
-.arc-compare-card-todo-info {
-    flex: 1;
-}
-
-.arc-compare-card-progress {
-    font-size: 11px;
-    color: var(--text-muted);
-}
-
-/* Carte Image */
-.arc-compare-card-image {
-    text-align: center;
-}
-
-.arc-compare-card-image img {
-    max-width: 100%;
-    max-height: 80px;
-    border-radius: 4px;
-}
-
-.arc-compare-card-image > i {
-    width: 24px;
-    height: 24px;
-    color: var(--text-muted);
-    opacity: 0.5;
-}
-
-/* Carte Link */
-.arc-compare-card-link {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.arc-compare-card-link > i {
-    width: 14px;
-    height: 14px;
-    color: var(--accent-color);
-    flex-shrink: 0;
-}
-
-.arc-compare-card-link span {
-    font-size: 12px;
-    color: var(--text-secondary);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-/* Items flottants en mode Compare */
-.arc-compare-floating {
-    position: absolute;
-    padding: 10px 14px;
-    background: var(--bg-primary);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.15s ease;
-    box-shadow: 0 2px 6px var(--shadow);
-}
-
-.arc-compare-floating:hover {
-    border-color: var(--primary-color);
-    box-shadow: 0 4px 12px var(--shadow);
-}
-
-.arc-compare-floating-note {
-    font-size: 12px;
-    color: var(--text-secondary);
-    max-width: 200px;
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-line-clamp: 4;
-    -webkit-box-orient: vertical;
-}
-
-.arc-compare-floating-todo {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    color: var(--text-secondary);
-}
-
-.arc-compare-floating-todo i {
-    width: 14px;
-    height: 14px;
-    color: var(--accent-green);
-}
-
-/* SVG connexions en mode Compare */
-.arc-compare-connections-svg {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    overflow: visible;
-}
-
-.arc-compare-connection-line {
-    fill: none;
-    stroke: var(--text-muted);
-    stroke-width: 2;
-}
-
-/* Hint de connexion en mode Compare */
-.arc-compare-container .arc-connection-mode-hint {
-    position: absolute;
-    bottom: 80px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 100;
+.arc-column.arc-column-compare:hover {
+    box-shadow: 0 4px 16px var(--shadow), 0 0 0 2px var(--column-accent, var(--primary-color));
 }
