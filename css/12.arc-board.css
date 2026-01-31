@@ -3102,3 +3102,22 @@
 .arc-column.arc-column-compare:hover {
     box-shadow: 0 4px 16px var(--shadow), 0 0 0 2px var(--column-accent, var(--primary-color));
 }
+
+/* Connexions internes en mode Compare */
+.arc-connection-line[data-arc-id] {
+    stroke-width: 2;
+    opacity: 0.6;
+}
+
+/* Connexions inter-arcs (tiretées) */
+.arc-interarc-connection {
+    stroke: var(--primary-color) !important;
+    stroke-width: 2.5 !important;
+    stroke-dasharray: 8 4;
+    opacity: 0.9;
+}
+
+.arc-interarc-connection:hover {
+    stroke-width: 4 !important;
+    opacity: 1;
+}

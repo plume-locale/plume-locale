@@ -670,14 +670,21 @@ const ArcBoardView = {
      * Rendu mode Compare (plusieurs arcs empilés)
      */
     _renderCompareItems(itemsContainer, sidebarContainer) {
-        const ARC_VERTICAL_SPACING = 800; // Espacement vertical entre les arcs
+        const ARC_PADDING = 80; // Padding entre les arcs
+        const HEADER_HEIGHT = 50; // Hauteur de l'en-tête d'arc
         let html = '';
         let currentY = 0;
+
+        // Stocker les offsets par arc pour le rendu des connexions
+        this._compareArcOffsets = {};
 
         // Pour chaque arc à comparer
         ArcBoardState.compareArcs.forEach((arcId, index) => {
             const compareArc = ArcRepository.getById(arcId);
             if (!compareArc) return;
+
+            // Stocker l'offset pour cet arc
+            this._compareArcOffsets[arcId] = { x: 0, y: currentY + HEADER_HEIGHT };
 
             // En-tête de l'arc (bande colorée)
             html += `
@@ -689,14 +696,14 @@ const ArcBoardView = {
             `;
 
             // Items de cet arc avec offset Y
-            const offsetY = currentY + 50; // 50px pour l'en-tête
+            const offsetY = currentY + HEADER_HEIGHT;
             compareArc.board.items.filter(item => item.type !== 'scene').forEach(item => {
                 html += this._renderItem(item, arcId, 0, offsetY);
             });
 
-            // Calculer la hauteur de cet arc pour le prochain
-            const maxY = this._getArcMaxY(compareArc);
-            currentY += Math.max(maxY + 100, ARC_VERTICAL_SPACING);
+            // Calculer la hauteur réelle de cet arc (basée sur le contenu)
+            const arcHeight = this._getArcContentHeight(compareArc);
+            currentY += HEADER_HEIGHT + arcHeight + ARC_PADDING;
         });
 
         itemsContainer.innerHTML = html;
@@ -715,18 +722,121 @@ const ArcBoardView = {
         // Masquer l'empty state
         const emptyState = document.querySelector('.arc-board-empty');
         if (emptyState) emptyState.style.display = 'none';
+
+        // Rendre les connexions après le DOM mis à jour
+        requestAnimationFrame(() => {
+            this._renderCompareConnections();
+        });
     },
 
     /**
-     * Calcule la hauteur max utilisée par un arc
+     * Calcule la hauteur du contenu d'un arc (basée sur les éléments réels)
      */
-    _getArcMaxY(arc) {
-        let maxY = 0;
+    _getArcContentHeight(arc) {
+        let maxBottom = 0;
+
         arc.board.items.forEach(item => {
-            const itemBottom = (item.y || 0) + (item.type === 'column' ? 400 : 100);
-            if (itemBottom > maxY) maxY = itemBottom;
+            const itemY = item.y || 0;
+            let itemHeight = 100; // Hauteur par défaut
+
+            if (item.type === 'column') {
+                // Calculer la hauteur réelle de la colonne basée sur les cartes
+                const cardCount = (item.cards || []).length;
+                const headerHeight = 45;
+                const cardHeight = 80; // Hauteur moyenne d'une carte
+                const addBtnHeight = 35;
+                const padding = 20;
+                itemHeight = headerHeight + (cardCount * cardHeight) + addBtnHeight + padding;
+                itemHeight = Math.max(itemHeight, 150); // Minimum 150px
+            } else if (item.type === 'note' || item.type === 'comment') {
+                itemHeight = 80;
+            } else if (item.type === 'image') {
+                itemHeight = item.height || 150;
+            } else if (item.type === 'todo') {
+                const todoCount = (item.items || []).length;
+                itemHeight = 80 + (todoCount * 30);
+            } else if (item.type === 'table') {
+                const rows = item.rows || 3;
+                itemHeight = 50 + (rows * 35);
+            }
+
+            const bottom = itemY + itemHeight;
+            if (bottom > maxBottom) maxBottom = bottom;
         });
-        return maxY;
+
+        return Math.max(maxBottom, 100); // Minimum 100px
+    },
+
+    /**
+     * Rend les connexions en mode Compare (internes + inter-arcs)
+     */
+    _renderCompareConnections() {
+        const svg = document.getElementById('arcConnectionsSvg');
+        if (!svg) return;
+
+        const defs = svg.querySelector('defs');
+        svg.innerHTML = '';
+        if (defs) svg.appendChild(defs);
+
+        // 1. Connexions internes de chaque arc
+        ArcBoardState.compareArcs.forEach(arcId => {
+            const arc = ArcRepository.getById(arcId);
+            if (!arc?.board?.connections) return;
+
+            const offset = this._compareArcOffsets?.[arcId] || { x: 0, y: 0 };
+
+            arc.board.connections.forEach(conn => {
+                const fromEl = document.getElementById(`item-${conn.from}`);
+                const toEl = document.getElementById(`item-${conn.to}`);
+
+                if (!fromEl || !toEl) return;
+
+                const fromPos = this._getElementPosition(fromEl, conn.fromSide);
+                const toPos = this._getElementPosition(toEl, conn.toSide);
+
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                const d = this._createBezierPath(fromPos, toPos, conn.fromSide, conn.toSide);
+
+                path.setAttribute('d', d);
+                path.setAttribute('class', 'arc-connection-line');
+                path.setAttribute('data-connection-id', conn.id);
+                path.setAttribute('data-arc-id', arcId);
+                path.setAttribute('marker-end', 'url(#arrowhead)');
+                path.style.stroke = arc.color;
+                path.style.opacity = '0.6';
+
+                svg.appendChild(path);
+            });
+        });
+
+        // 2. Connexions inter-arcs
+        const interArcConnections = InterArcConnectionRepository.getAll();
+        interArcConnections.forEach(conn => {
+            // Trouver les éléments dans les arcs comparés
+            if (!ArcBoardState.compareArcs.includes(conn.fromArcId) ||
+                !ArcBoardState.compareArcs.includes(conn.toArcId)) return;
+
+            const fromEl = document.querySelector(`[data-arc-id="${conn.fromArcId}"][data-item-id="${conn.fromItemId}"]`);
+            const toEl = document.querySelector(`[data-arc-id="${conn.toArcId}"][data-item-id="${conn.toItemId}"]`);
+
+            if (!fromEl || !toEl) return;
+
+            const fromPos = this._getElementPosition(fromEl, 'right');
+            const toPos = this._getElementPosition(toEl, 'left');
+
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            const d = this._createBezierPath(fromPos, toPos, 'right', 'left');
+
+            path.setAttribute('d', d);
+            path.setAttribute('class', 'arc-connection-line arc-interarc-connection');
+            path.setAttribute('data-interarc-id', conn.id);
+            path.setAttribute('marker-end', 'url(#arrowhead-interarc)');
+            path.style.stroke = 'var(--primary-color)';
+            path.style.strokeWidth = '2';
+            path.style.strokeDasharray = '5,5';
+
+            svg.appendChild(path);
+        });
     },
 
     /**
