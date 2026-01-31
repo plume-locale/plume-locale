@@ -702,15 +702,15 @@ const ArcBoardView = {
                     <div class="arc-compare-header" style="--arc-color:${compareArc.color}">
                         <span class="arc-compare-header-dot" style="background:${compareArc.color}"></span>
                         <span class="arc-compare-header-title">${compareArc.title}</span>
-                        <span class="arc-compare-header-count">${compareArc.board.items.filter(i => i.type === 'column').length} colonnes</span>
                         <div class="arc-compare-opacity-control">
                             <i data-lucide="eye" class="arc-compare-opacity-icon"></i>
                             <input type="range" class="arc-compare-opacity-slider"
                                    min="0" max="100" value="${savedOpacity}"
                                    oninput="ArcBoardViewModel.setArcOpacity('${arcId}', this.value)"
-                                   title="Transparence du fond (${savedOpacity}%)">
+                                   title="Transparence (${savedOpacity}%)">
                             <span class="arc-compare-opacity-value">${savedOpacity}%</span>
                         </div>
+                        <span class="arc-compare-header-count">${compareArc.board.items.filter(i => i.type === 'column').length} colonnes</span>
                     </div>
                     <div class="arc-compare-content" style="position:relative; top:${HEADER_HEIGHT}px; height:calc(100% - ${HEADER_HEIGHT}px);">
             `;

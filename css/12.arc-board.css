@@ -3211,7 +3211,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-left: auto;
+    margin-left: 12px;
     padding-left: 12px;
     border-left: 1px solid color-mix(in srgb, var(--arc-color, var(--primary-color)) 30%, transparent);
 }
@@ -3277,12 +3277,13 @@
     text-align: right;
 }
 
-/* Application de l'opacité au fond de la section */
+/* Section d'arc en mode Compare - fond transparent pour voir les arcs en dessous */
 .arc-compare-section {
-    background: color-mix(in srgb, var(--bg-secondary) calc(var(--arc-opacity, 1) * 100%), transparent);
+    background: transparent;
 }
 
-/* Contenu avec opacité du fond seulement (pas les éléments) */
+/* Contenu avec opacité réelle (permet de voir les arcs en dessous) */
 .arc-compare-content {
-    background: color-mix(in srgb, var(--bg-secondary) calc(var(--arc-opacity, 1) * 100%), transparent);
+    background: var(--bg-secondary);
+    opacity: var(--arc-opacity, 1);
 }
