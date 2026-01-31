@@ -670,7 +670,7 @@ const ArcBoardView = {
      * Rendu mode Compare (plusieurs arcs empilés)
      */
     _renderCompareItems(itemsContainer, sidebarContainer) {
-        const ARC_PADDING = 80; // Padding entre les arcs
+        const ARC_PADDING = 30; // Padding entre les arcs
         const HEADER_HEIGHT = 50; // Hauteur de l'en-tête d'arc
         let html = '';
         let currentY = 0;
