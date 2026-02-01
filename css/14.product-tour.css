@@ -124,7 +124,7 @@
 
 /* Overlay */
 .driver-overlay {
-    background: rgba(0, 0, 0, 0.75);
+    background: rgba(0, 0, 0, 0.15);
     animation: fadeIn 0.3s ease;
 }
 
@@ -188,7 +188,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.75);
+    background: rgba(0, 0, 0, 0.15);
     z-index: 9999;
     animation: fadeIn 0.3s ease;
 }
@@ -330,7 +330,7 @@
 /* Dark theme adjustments */
 @media (prefers-color-scheme: dark) {
     .driver-overlay {
-        background: rgba(0, 0, 0, 0.85);
+        background: rgba(0, 0, 0, 0.15);
     }
 }
 
