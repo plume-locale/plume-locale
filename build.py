@@ -37,7 +37,8 @@ CSS_ORDER = [
     '10.mobile.css',
     '11.storygrid.css',
     '12.arc-board.css',
-    '13.thriller-board.css'
+    '13.thriller-board.css',
+    '14.product-tour.css'
 ]
 
 # Ordre des fichiers JS (selon concat.sh)

@@ -71,6 +71,11 @@ async function init() {
 
     // Update storage badge every 10 seconds
     setInterval(updateStorageBadge, 10000);
+
+    // Initialize product tour
+    if (typeof initProductTourVM === 'function') {
+        await initProductTourVM();
+    }
 }
 
 // Fonction utilitaire pour convertir un nombre en chiffres romains

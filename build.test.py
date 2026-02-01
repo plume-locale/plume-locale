@@ -36,7 +36,9 @@ CSS_ORDER = [
     '09.utilities.css',
     '10.mobile.css',
     '11.storygrid.css',
-    '12.arc-board.css'
+    '12.arc-board.css',
+    '13.thriller-board.css',
+    '14.product-tour.css'
 ]
 
 # Ordre des fichiers JS - MODIFIÉ pour js-refactor
@@ -109,7 +111,12 @@ JS_ORDER = [
     'js-refactor/47.plot-grid.model.js',
     'js-refactor/47.plot-grid.repository.js',
     'js-refactor/47.plot-grid.viewmodel.js',
-    'js-refactor/47.plot-grid.view.js'
+    'js-refactor/47.plot-grid.view.js',
+    # Product Tour Module (Module 48) - order: model -> repository -> view -> viewmodel
+    'js-refactor/48.product-tour.model.js',
+    'js-refactor/48.product-tour.repository.js',
+    'js-refactor/48.product-tour.view.js',
+    'js-refactor/48.product-tour.viewmodel.js'
 ]
 
 def read_file(path):
