@@ -136,12 +136,14 @@ const ProductTourConfigModel = {
             showButtons: ['next', 'previous', 'close'],
             disableActiveInteraction: false,
             onDestroyStarted: () => {
+                console.log('🎓 Tour destroy started');
                 // Sera géré par le ViewModel
                 if (typeof onTourCompleteVM === 'function') {
                     onTourCompleteVM();
                 }
             },
             onDestroyed: () => {
+                console.log('🎓 Tour destroyed');
                 // Cleanup après fermeture
                 if (typeof onTourDestroyedVM === 'function') {
                     onTourDestroyedVM();
