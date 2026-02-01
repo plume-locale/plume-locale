@@ -143,10 +143,14 @@ const ProductTourDriverRepository = {
      */
     createDriver: function (config, steps) {
         try {
-            if (typeof driver === 'undefined') {
+            // Check if Driver.js is loaded (window.driver for IIFE bundle)
+            if (typeof window.driver === 'undefined' && typeof driver === 'undefined') {
                 console.error('Driver.js library not loaded');
                 return null;
             }
+            
+            // Use window.driver if available, otherwise fall back to driver
+            const driverFn = window.driver || driver;
 
             // Filtrer les steps valides
             const validSteps = ProductTourStepsModel.filterValidSteps(steps);
@@ -156,7 +160,7 @@ const ProductTourDriverRepository = {
                 return null;
             }
 
-            driverInstance = driver({
+            driverInstance = driverFn({
                 ...config,
                 steps: validSteps
             });
