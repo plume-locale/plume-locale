@@ -16,7 +16,7 @@
     border-left: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
-    z-index: 200;
+    z-index: 100;
     box-shadow: -4px 0 20px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease;
 }
@@ -694,6 +694,20 @@
     }
 }
 
+/* Dark theme support */
+@media (prefers-color-scheme: dark) {
+    .word-rep-item {
+        background: var(--bg-tertiary);
+    }
+
+    .word-rep-item:hover {
+        background: var(--bg-accent);
+    }
+
+    .word-rep-sidebar {
+        background: var(--bg-accent);
+    }
+}
 
 /* Toggle button for sidebar */
 .word-rep-toggle-btn {
