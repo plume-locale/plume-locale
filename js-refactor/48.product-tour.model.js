@@ -220,34 +220,244 @@ const ProductTourStepsModel = {
                     align: 'start'
                 }
             },
+            // Navigation - Groupe 1: Écriture
             {
-                element: '.header-nav',
+                element: '.header-nav .nav-group:nth-child(1)',
                 popover: {
-                    title: 'Navigation Principale',
+                    title: '📝 Outils d\'Écriture',
                     description: `
-                        <p>La barre de navigation vous permet d'accéder à toutes les fonctionnalités :</p>
+                        <p>Organisez et visualisez votre histoire de différentes manières :</p>
                         <ul>
-                            <li><strong>Structure</strong> : Écriture et organisation</li>
-                            <li><strong>Personnages</strong> : Base de données des personnages</li>
-                            <li><strong>Univers</strong> : Lieux et éléments du monde</li>
-                            <li><strong>Visualisations</strong> : Graphiques et cartes</li>
+                            <li><strong>Structure</strong> : Vue hiérarchique (Actes → Chapitres → Scènes)</li>
+                            <li><strong>Tableau</strong> : Vue en cartes (Corkboard)</li>
+                            <li><strong>Intrigue</strong> : Graphique de tension narrative</li>
+                            <li><strong>Arcs</strong> : Suivi des arcs narratifs</li>
+                        </ul>
+                    `,
+                    side: 'bottom',
+                    align: 'start'
+                }
+            },
+            // Navigation - Groupe 2: Base de données
+            {
+                element: '.header-nav .nav-group:nth-child(2)',
+                popover: {
+                    title: '📚 Base de Données',
+                    description: `
+                        <p>Gérez tous les éléments de votre univers :</p>
+                        <ul>
+                            <li><strong>Personnages</strong> : Fiches détaillées avec relations</li>
+                            <li><strong>Univers</strong> : Lieux, objets, concepts</li>
+                            <li><strong>Codex</strong> : Encyclopédie de votre monde</li>
+                            <li><strong>Notes</strong> : Notes libres et idées</li>
+                        </ul>
+                    `,
+                    side: 'bottom',
+                    align: 'start'
+                }
+            },
+            // Navigation - Groupe 3: Visualisations
+            {
+                element: '.header-nav .nav-group:nth-child(3)',
+                popover: {
+                    title: '🗺️ Visualisations',
+                    description: `
+                        <p>Explorez votre histoire visuellement :</p>
+                        <ul>
+                            <li><strong>Mindmap</strong> : Carte mentale de votre histoire</li>
+                            <li><strong>Relations</strong> : Graphe des relations entre personnages</li>
+                            <li><strong>Carte</strong> : Carte géographique de votre monde</li>
+                            <li><strong>Timeline</strong> : Chronologie des événements</li>
                         </ul>
                     `,
                     side: 'bottom',
                     align: 'center'
                 }
             },
+            // Navigation - Groupe 4: Analyse
             {
-                element: '.header-actions',
+                element: '.header-nav .nav-group:nth-child(4)',
                 popover: {
-                    title: 'Actions Rapides',
+                    title: '📊 Analyse & Statistiques',
                     description: `
-                        <p>Accédez rapidement aux fonctions essentielles :</p>
+                        <p>Analysez votre texte en profondeur :</p>
                         <ul>
-                            <li><strong>Annuler/Rétablir</strong> : Historique des modifications</li>
-                            <li><strong>Timer Pomodoro</strong> : Gestion du temps d'écriture</li>
-                            <li><strong>Thèmes</strong> : Personnalisation de l'interface</li>
-                            <li><strong>Projets</strong> : Gestion de vos projets</li>
+                            <li><strong>Stats</strong> : Nombre de mots, chapitres, scènes</li>
+                            <li><strong>Analyse</strong> : Répétitions, lisibilité, style</li>
+                        </ul>
+                    `,
+                    side: 'bottom',
+                    align: 'center'
+                }
+            },
+            // Navigation - Groupe 5: Historique
+            {
+                element: '.header-nav .nav-group:nth-child(5)',
+                popover: {
+                    title: '💾 Snapshots',
+                    description: `
+                        <p>Sauvegardez des versions de votre travail :</p>
+                        <ul>
+                            <li>Créez des snapshots à tout moment</li>
+                            <li>Comparez différentes versions</li>
+                            <li>Restaurez une version antérieure</li>
+                        </ul>
+                    `,
+                    side: 'bottom',
+                    align: 'center'
+                }
+            },
+            
+            // Actions Header - Stats
+            {
+                element: '#headerStatsContainer',
+                popover: {
+                    title: '📈 Statistiques Rapides',
+                    description: `
+                        <p>Suivez votre progression en temps réel :</p>
+                        <ul>
+                            <li>Nombre total de mots</li>
+                            <li>Nombre de chapitres</li>
+                            <li>Mise à jour automatique</li>
+                        </ul>
+                    `,
+                    side: 'bottom',
+                    align: 'end'
+                }
+            },
+            // Actions Header - Split View
+            {
+                element: '#splitModeToggle',
+                popover: {
+                    title: '⚡ Mode Split',
+                    description: `
+                        <p>Travaillez sur deux scènes simultanément :</p>
+                        <ul>
+                            <li>Vue côte à côte</li>
+                            <li>Parfait pour comparer ou référencer</li>
+                            <li>Synchronisation du scroll optionnelle</li>
+                        </ul>
+                    `,
+                    side: 'bottom',
+                    align: 'end'
+                }
+            },
+            // Actions Header - Storage
+            {
+                element: '#storage-badge',
+                popover: {
+                    title: '💾 Espace de Stockage',
+                    description: `
+                        <p>Surveillez l'utilisation de votre stockage local :</p>
+                        <ul>
+                            <li>Indicateur visuel (vert/orange/rouge)</li>
+                            <li>Cliquez pour voir les détails</li>
+                            <li>Gérez vos projets pour libérer de l'espace</li>
+                        </ul>
+                    `,
+                    side: 'bottom',
+                    align: 'end'
+                }
+            },
+            // Actions Header - Undo/Redo
+            {
+                element: '#headerUndoBtn',
+                popover: {
+                    title: '↩️ Annuler / Rétablir',
+                    description: `
+                        <p>Historique complet de vos modifications :</p>
+                        <ul>
+                            <li><strong>Annuler</strong> : Ctrl+Z</li>
+                            <li><strong>Rétablir</strong> : Ctrl+Y</li>
+                            <li>Historique illimité pendant la session</li>
+                        </ul>
+                    `,
+                    side: 'bottom',
+                    align: 'end'
+                }
+            },
+            // Actions Header - Pomodoro
+            {
+                element: '#pomodoroHeaderBtn',
+                popover: {
+                    title: '⏱️ Timer Pomodoro',
+                    description: `
+                        <p>Gérez votre temps d'écriture efficacement :</p>
+                        <ul>
+                            <li>Sessions de 25 minutes</li>
+                            <li>Pauses de 5 minutes</li>
+                            <li>Notifications sonores</li>
+                        </ul>
+                    `,
+                    side: 'bottom',
+                    align: 'end'
+                }
+            },
+            // Actions Header - Import
+            {
+                element: '.header-action-btn[onclick="openImportChapterModal()"]',
+                popover: {
+                    title: '📥 Importer du Texte',
+                    description: `
+                        <p>Importez vos textes existants :</p>
+                        <ul>
+                            <li>Formats : .docx, .txt, .md, .epub</li>
+                            <li>Détection automatique de la structure</li>
+                            <li>Préservation de la mise en forme</li>
+                        </ul>
+                    `,
+                    side: 'bottom',
+                    align: 'end'
+                }
+            },
+            // Actions Header - Export
+            {
+                element: '.header-action-btn[onclick="showBackupMenu()"]',
+                popover: {
+                    title: '📤 Sauvegardes & Exports',
+                    description: `
+                        <p>Exportez votre travail dans différents formats :</p>
+                        <ul>
+                            <li><strong>DOCX</strong> : Microsoft Word</li>
+                            <li><strong>PDF</strong> : Document portable</li>
+                            <li><strong>JSON</strong> : Sauvegarde complète</li>
+                            <li><strong>TXT</strong> : Texte brut</li>
+                        </ul>
+                    `,
+                    side: 'bottom',
+                    align: 'end'
+                }
+            },
+            // Actions Header - Themes
+            {
+                element: '.header-action-btn[onclick="openThemeManager()"]',
+                popover: {
+                    title: '🎨 Gestionnaire de Thèmes',
+                    description: `
+                        <p>Personnalisez l'apparence de Plume :</p>
+                        <ul>
+                            <li>Thèmes clairs et sombres</li>
+                            <li>Couleurs personnalisables</li>
+                            <li>Polices d'écriture variées</li>
+                            <li>Sauvegarde de vos préférences</li>
+                        </ul>
+                    `,
+                    side: 'bottom',
+                    align: 'end'
+                }
+            },
+            // Actions Header - Projects
+            {
+                element: '.header-action-btn[onclick="openProjectsModal()"]',
+                popover: {
+                    title: '📁 Gestionnaire de Projets',
+                    description: `
+                        <p>Gérez tous vos projets d'écriture :</p>
+                        <ul>
+                            <li>Créer de nouveaux projets</li>
+                            <li>Basculer entre projets</li>
+                            <li>Dupliquer ou supprimer</li>
+                            <li>Stockage local sécurisé</li>
                         </ul>
                     `,
                     side: 'bottom',
