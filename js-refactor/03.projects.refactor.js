@@ -301,6 +301,36 @@ function renderProjectsList() {
     container.innerHTML = projects.map(proj => {
         const isActive = proj.id === currentProjectId;
 
+        // Calcul des statistiques
+        const actCount = proj.acts ? proj.acts.length : 0;
+        let chapterCount = 0;
+        let sceneCount = 0;
+        let wordCount = 0;
+
+        if (proj.acts) {
+            proj.acts.forEach(act => {
+                if (act.chapters) {
+                    chapterCount += act.chapters.length;
+                    act.chapters.forEach(chap => {
+                        if (chap.scenes) {
+                            sceneCount += chap.scenes.length;
+                            chap.scenes.forEach(scene => {
+                                const text = scene.content ? stripHTML(scene.content) : '';
+                                if (text.trim().length > 0) {
+                                    const words = text.trim().match(/[\w\u00C0-\u00FF]+(?:[''’][\w\u00C0-\u00FF]+)*/g);
+                                    if (words) wordCount += words.length;
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        }
+
+        const charCount = proj.characters ? proj.characters.length : 0;
+        const worldCount = proj.world ? proj.world.length : 0;
+        const codexCount = proj.codex ? proj.codex.length : 0;
+
         return `
             <div class="project-card ${isActive ? 'active' : ''}" onclick="switchToProject(${proj.id}); closeModal('projectsModal');">
                 <div class="project-card-header">
@@ -311,12 +341,50 @@ function renderProjectsList() {
                     ${isActive ? '<span style="color: var(--accent-red); font-weight: 600;">● Actif</span>' : ''}
                 </div>
                 ${proj.description ? `<div class="project-card-desc">${proj.description}</div>` : ''}
+                
+                <!-- Statistiques rapides -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 0.5rem; margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--border-color); font-size: 0.8rem; color: var(--text-muted);">
+                    <div style="display: flex; align-items: center; gap: 6px;" title="Nombre de mots total">
+                        <i data-lucide="align-left" style="width: 14px; height: 14px; color: var(--accent-gold);"></i> 
+                        <span style="font-weight: 600;">${wordCount.toLocaleString('fr-FR')}</span> mots
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px;" title="Nombre d'actes">
+                        <i data-lucide="book" style="width: 14px; height: 14px;"></i> 
+                        <span>${actCount} actes</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px;" title="Nombre de chapitres">
+                        <i data-lucide="bookmark" style="width: 14px; height: 14px;"></i> 
+                        <span>${chapterCount} chapitres</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px;" title="Nombre de scènes">
+                        <i data-lucide="file-text" style="width: 14px; height: 14px;"></i> 
+                        <span>${sceneCount} scènes</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px;" title="Personnages">
+                        <i data-lucide="users" style="width: 14px; height: 14px;"></i> 
+                        <span>${charCount} pers.</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px;" title="Entrées Univers">
+                        <i data-lucide="globe" style="width: 14px; height: 14px;"></i> 
+                        <span>${worldCount} univ.</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px;" title="Entrées Codex">
+                        <i data-lucide="book-open" style="width: 14px; height: 14px;"></i> 
+                        <span>${codexCount} codex</span>
+                    </div>
+                </div>
+
                 <div class="project-card-actions">
-                    <button class="btn btn-small" onclick="event.stopPropagation(); exportProjectIndividual(${proj.id})">📤 Exporter</button>
-                    <button class="btn btn-small" onclick="event.stopPropagation(); deleteProject(${proj.id})">🗑️ Supprimer</button>
+                    <button class="btn btn-small" onclick="event.stopPropagation(); showBackupMenu()"><i data-lucide="upload" style="width:12px;height:12px;margin-right:4px;vertical-align:middle;"></i> Exporter</button>
+                    <button class="btn btn-small" onclick="event.stopPropagation(); deleteProject(${proj.id})"><i data-lucide="trash-2" style="width:12px;height:12px;margin-right:4px;vertical-align:middle;"></i> Supprimer</button>
                 </div>
             </div>`;
     }).join('');
+
+    // Re-trigger icons
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
 }
 
 /**
@@ -408,3 +476,270 @@ function runTextAnalysis() {
 
     if (typeof displayAnalysisResults === 'function') displayAnalysisResults(analysis);
 }
+
+// [MVVM : ViewModel]
+// Helper : extrait les données brutes nécessaires depuis le modèle selon le contexte de vue
+function getTextForAnalysis(scope) {
+    console.log('getTextForAnalysis called with scope:', scope);
+    console.log('currentActId:', currentActId, 'currentChapterId:', currentChapterId, 'currentSceneId:', currentSceneId);
+
+    if (scope === 'current' && currentSceneId) {
+        const act = project.acts.find(a => a.id === currentActId);
+        if (!act) return '';
+        const chapter = act.chapters.find(c => c.id === currentChapterId);
+        if (!chapter) return '';
+        const scene = chapter.scenes.find(s => s.id === currentSceneId);
+        if (!scene) return '';
+        return stripHTML(scene.content);
+    } else if (scope === 'chapter') {
+        if (!currentChapterId) {
+            // Try to use first chapter of first act
+            if (project.acts.length > 0 && project.acts[0].chapters.length > 0) {
+                const chapter = project.acts[0].chapters[0];
+                const text = chapter.scenes.map(s => stripHTML(s.content)).join('\n\n');
+                return text;
+            }
+            return '';
+        }
+        const act = project.acts.find(a => a.id === currentActId);
+        if (!act) return '';
+        const chapter = act.chapters.find(c => c.id === currentChapterId);
+        if (!chapter) return '';
+        const text = chapter.scenes.map(s => stripHTML(s.content)).join('\n\n');
+        return text;
+    } else if (scope === 'act') {
+        if (!currentActId) {
+            // Try to use first act
+            if (project.acts.length > 0) {
+                const act = project.acts[0];
+                const text = act.chapters.flatMap(ch => ch.scenes.map(s => stripHTML(s.content))).join('\n\n');
+                return text;
+            }
+            return '';
+        }
+        const act = project.acts.find(a => a.id === currentActId);
+        if (!act) return '';
+        const text = act.chapters.flatMap(ch => ch.scenes.map(s => stripHTML(s.content))).join('\n\n');
+        return text;
+    } else if (scope === 'all') {
+        const text = project.acts.flatMap(a => a.chapters.flatMap(ch => ch.scenes.map(s => stripHTML(s.content)))).join('\n\n');
+        return text;
+    }
+    return '';
+}
+
+// [MVVM : Other]
+// [HELPER] Utilitaire de traitement de chaîne (agnostique)
+function stripHTML(html) {
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    return div.textContent || div.innerText || '';
+}
+
+// [MVVM : Model]
+// Algorithme pur : logique de détection des répétitions
+function detectRepetitions(text) {
+    // Correction pour inclure les caractères accentués français et autres Unicode
+    const words = text.toLowerCase().match(/[\p{L}]{4,}/gu) || [];
+    const frequency = {};
+    words.forEach(word => frequency[word] = (frequency[word] || 0) + 1);
+
+    const repeated = Object.entries(frequency)
+        .filter(([word, count]) => count >= 5)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 10);
+
+    return repeated;
+}
+
+// [MVVM : Model]
+// Algorithme pur : calcul de score de lisibilité
+function calculateReadability(text) {
+    const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
+    // Correction pour inclure les caractères accentués français et autres Unicode
+    const words = text.match(/[\p{L}]+/gu) || [];
+    const syllables = words.reduce((sum, word) => sum + countSyllables(word), 0);
+
+    if (sentences.length === 0 || words.length === 0) return { score: 0, level: 'N/A' };
+
+    // Flesch Reading Ease (adapted for French)
+    const avgWordsPerSentence = words.length / sentences.length;
+    const avgSyllablesPerWord = syllables / words.length;
+    const score = 206.835 - (1.015 * avgWordsPerSentence) - (84.6 * avgSyllablesPerWord);
+
+    let level = '';
+    if (score >= 90) level = 'Très facile';
+    else if (score >= 80) level = 'Facile';
+    else if (score >= 70) level = 'Assez facile';
+    else if (score >= 60) level = 'Standard';
+    else if (score >= 50) level = 'Assez difficile';
+    else if (score >= 30) level = 'Difficile';
+    else level = 'Très difficile';
+
+    return { score: Math.max(0, Math.min(100, score)).toFixed(1), level };
+}
+
+// [MVVM : Model]
+// Helper algorithmique : comptage de syllabes
+function countSyllables(word) {
+    word = word.toLowerCase();
+    const vowels = /[aeiouyàâäéèêëïîôùûü]/g;
+    const matches = word.match(vowels);
+    if (!matches) return 1;
+
+    let count = matches.length;
+    // Adjustments for French
+    if (word.endsWith('e')) count--;
+    if (word.match(/[aeiouy]{2,}/)) count--;
+    return Math.max(1, count);
+}
+
+// [MVVM : Model]
+// Algorithme pur : analyse de fréquence des mots
+function calculateWordFrequency(text) {
+    // Correction pour inclure les caractères accentués français et autres Unicode
+    const words = text.toLowerCase().match(/[\p{L}]{3,}/gu) || [];
+    const stopWords = new Set(['le', 'la', 'les', 'un', 'une', 'des', 'de', 'du', 'et', 'ou', 'où', 'qui', 'que', 'quoi', 'dont', 'ce', 'cette', 'ces', 'son', 'sa', 'ses', 'mon', 'ma', 'mes', 'ton', 'ta', 'tes', 'notre', 'nos', 'votre', 'vos', 'leur', 'leurs', 'je', 'tu', 'il', 'elle', 'nous', 'vous', 'ils', 'elles', 'on', 'ne', 'pas', 'plus', 'dans', 'sur', 'pour', 'par', 'avec', 'sans', 'est', 'était', 'être', 'avoir', 'fait', 'faire', 'dit', 'dire', 'peut', 'bien', 'tout', 'tous', 'comme', 'très', 'aussi', 'encore', 'mais', 'donc', 'ainsi']);
+
+    const frequency = {};
+    words.forEach(word => {
+        if (!stopWords.has(word)) {
+            frequency[word] = (frequency[word] || 0) + 1;
+        }
+    });
+
+    return Object.entries(frequency)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 15);
+}
+
+// [MVVM : Model]
+// Algorithme pur : statistiques de longueur de phrases
+function calculateSentenceLength(text) {
+    const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
+    const lengths = sentences.map(s => s.trim().split(/\s+/).length);
+
+    if (lengths.length === 0) return { avg: 0, min: 0, max: 0, distribution: [] };
+
+    const avg = lengths.reduce((a, b) => a + b, 0) / lengths.length;
+    const min = Math.min(...lengths);
+    const max = Math.max(...lengths);
+
+    // Distribution
+    const ranges = [
+        { label: '1-5 mots', count: lengths.filter(l => l >= 1 && l <= 5).length },
+        { label: '6-10 mots', count: lengths.filter(l => l >= 6 && l <= 10).length },
+        { label: '11-15 mots', count: lengths.filter(l => l >= 11 && l <= 15).length },
+        { label: '16-20 mots', count: lengths.filter(l => l >= 16 && l <= 20).length },
+        { label: '20+ mots', count: lengths.filter(l => l > 20).length }
+    ];
+
+    return { avg: avg.toFixed(1), min, max, distribution: ranges };
+}
+
+// [MVVM : Model]
+// Algorithme pur : analyse de distribution narrative/dialogue
+function analyzeNarrativeDistribution(text) {
+    const dialogRegex = /[«"—–]\s*[^»"—–]{10,}?\s*[»"—–]/g;
+    const dialogs = text.match(dialogRegex) || [];
+    const dialogLength = dialogs.join('').length;
+    const totalLength = text.length;
+
+    const dialogPercent = totalLength > 0 ? (dialogLength / totalLength * 100).toFixed(1) : 0;
+    const narrativePercent = totalLength > 0 ? (100 - dialogPercent).toFixed(1) : 0;
+
+    return {
+        dialogue: dialogPercent,
+        narrative: narrativePercent,
+        dialogCount: dialogs.length
+    };
+}
+
+// [MVVM : View]
+// Rendu des résultats d'analyse (Génération HTML)
+function displayAnalysisResults(analysis) {
+    const container = document.getElementById('analysisResults');
+
+    container.innerHTML = `
+                <div style="margin-top: 1rem;">
+                    <!-- General Stats -->
+                    <div style="background: var(--bg-primary); padding: 1rem; border-radius: 4px; border: 1px solid var(--border-color); margin-bottom: 1rem;">
+                        <div style="font-weight: 700; font-size: 1rem; margin-bottom: 0.75rem; color: var(--accent-gold);"><i data-lucide="bar-chart-3" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;"></i>Statistiques générales</div>
+                        <div style="font-size: 1.2rem; font-weight: 600;">${analysis.wordCount.toLocaleString('fr-FR')} mots</div>
+                    </div>
+
+                    <!-- Readability -->
+                    <div style="background: var(--bg-primary); padding: 1rem; border-radius: 4px; border: 1px solid var(--border-color); margin-bottom: 1rem;">
+                        <div style="font-weight: 700; font-size: 1rem; margin-bottom: 0.75rem; color: var(--accent-gold);"><i data-lucide="book-open" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;"></i>Lisibilité (Flesch)</div>
+                        <div style="font-size: 1.1rem; margin-bottom: 0.25rem;">Score: <strong>${analysis.readability.score}</strong> / 100</div>
+                        <div style="color: var(--text-muted);">Niveau: ${analysis.readability.level}</div>
+                        <div style="margin-top: 0.5rem; font-size: 0.75rem; color: var(--text-muted); line-height: 1.4;">
+                            Plus le score est élevé, plus le texte est facile à lire. 60-70 = Standard, 70-80 = Facile.
+                        </div>
+                    </div>
+
+                    <!-- Sentence Length -->
+                    <div style="background: var(--bg-primary); padding: 1rem; border-radius: 4px; border: 1px solid var(--border-color); margin-bottom: 1rem;">
+                        <div style="font-weight: 700; font-size: 1rem; margin-bottom: 0.75rem; color: var(--accent-gold);"><i data-lucide="ruler" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;"></i>Longueur des phrases</div>
+                        <div style="display: flex; gap: 1rem; margin-bottom: 0.75rem;">
+                            <div><strong>Moyenne:</strong> ${analysis.sentenceLength.avg} mots</div>
+                            <div><strong>Min:</strong> ${analysis.sentenceLength.min}</div>
+                            <div><strong>Max:</strong> ${analysis.sentenceLength.max}</div>
+                        </div>
+                        <div style="font-size: 0.8rem; font-weight: 600; margin-bottom: 0.5rem;">Distribution:</div>
+                        ${analysis.sentenceLength.distribution.map(r => `
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                                <span style="font-size: 0.75rem;">${r.label}</span>
+                                <div style="flex: 1; margin: 0 0.5rem; height: 8px; background: var(--bg-secondary); border-radius: 4px; overflow: hidden;">
+                                    <div style="height: 100%; width: ${r.count * 100 / analysis.sentenceLength.distribution.reduce((s, d) => s + d.count, 0)}%; background: var(--accent-gold);"></div>
+                                </div>
+                                <span style="font-size: 0.75rem; font-weight: 600; min-width: 30px; text-align: right;">${r.count}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <!-- Narrative Distribution -->
+                    <div style="background: var(--bg-primary); padding: 1rem; border-radius: 4px; border: 1px solid var(--border-color); margin-bottom: 1rem;">
+                        <div style="font-weight: 700; font-size: 1rem; margin-bottom: 0.75rem; color: var(--accent-gold);"><i data-lucide="message-circle" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;"></i>Distribution narrative</div>
+                        <div style="display: flex; gap: 1rem; margin-bottom: 0.75rem;">
+                            <div><strong>Dialogues:</strong> ${analysis.narrativeDistribution.dialogue}%</div>
+                            <div><strong>Narration:</strong> ${analysis.narrativeDistribution.narrative}%</div>
+                        </div>
+                        <div style="height: 20px; background: var(--bg-secondary); border-radius: 4px; overflow: hidden; display: flex;">
+                            <div style="height: 100%; width: ${analysis.narrativeDistribution.dialogue}%; background: #4CAF50;" title="Dialogues"></div>
+                            <div style="height: 100%; width: ${analysis.narrativeDistribution.narrative}%; background: var(--accent-gold);" title="Narration"></div>
+                        </div>
+                        <div style="margin-top: 0.5rem; font-size: 0.75rem; color: var(--text-muted);">
+                            ${analysis.narrativeDistribution.dialogCount} segments de dialogue détectés
+                        </div>
+                    </div>
+
+                    <!-- Word Frequency -->
+                    <div style="background: var(--bg-primary); padding: 1rem; border-radius: 4px; border: 1px solid var(--border-color); margin-bottom: 1rem;">
+                        <div style="font-weight: 700; font-size: 1rem; margin-bottom: 0.75rem; color: var(--accent-gold);"><i data-lucide="type" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;"></i>Mots les plus fréquents</div>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 0.5rem;">
+                            ${analysis.wordFrequency.map(([word, count]) => `
+                                <div style="padding: 0.4rem 0.6rem; background: var(--bg-secondary); border-radius: 2px; font-size: 0.75rem;">
+                                    <strong>${word}</strong>: ${count}×
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <!-- Repetitions -->
+                    <div style="background: var(--bg-primary); padding: 1rem; border-radius: 4px; border: 1px solid var(--border-color);">
+                        <div style="font-weight: 700; font-size: 1rem; margin-bottom: 0.75rem; color: var(--accent-red);"><i data-lucide="alert-triangle" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;"></i>Répétitions à surveiller (5+ occurrences)</div>
+                        ${analysis.repetitions.length > 0 ? `
+                            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 0.5rem;">
+                                ${analysis.repetitions.map(([word, count]) => `
+                                    <div style="padding: 0.4rem 0.6rem; background: rgba(196, 69, 54, 0.1); border: 1px solid var(--accent-red); border-radius: 2px; font-size: 0.75rem;">
+                                        <strong>${word}</strong>: ${count}×
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : '<div style="color: var(--text-muted); font-size: 0.85rem;">Aucune répétition excessive détectée</div>'}
+                    </div>
+                </div>
+            `;
+}
+

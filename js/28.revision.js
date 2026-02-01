@@ -27,7 +27,7 @@ function toggleRevisionMode() {
 
     if (revisionMode) {
         // Activer le mode révision
-        toolbar.className = 'revision-toolbar';
+        toolbar.className = 'editor-toolbar revision-toolbar';
         toolbar.innerHTML = `
                     <span class="revision-badge">✏️ MODE RÉVISION</span>
                     <button class="highlight-btn yellow ${selectedHighlightColor === 'yellow' ? 'active' : ''}" 
@@ -437,7 +437,7 @@ function renderAnnotationsPanel() {
     }
 
     // Afficher le panneau
-    parentPanel.classList.add('visible');
+    parentPanel.classList.remove('hidden');
 }
 
 
@@ -446,12 +446,12 @@ function renderAnnotationsPanel() {
 // Alterne l'affichage du panneau des annotations.
 function toggleAnnotationsPanel() {
     const panel = document.getElementById('annotationsPanel');
-    if (panel.classList.contains('visible')) {
-        panel.classList.remove('visible');
-        updateAnnotationsButton(false);
-    } else {
+    if (panel.classList.contains('hidden')) {
         renderAnnotationsPanel();
         updateAnnotationsButton(true);
+    } else {
+        panel.classList.add('hidden');
+        updateAnnotationsButton(false);
     }
 }
 
@@ -460,7 +460,7 @@ function toggleAnnotationsPanel() {
 function closeAnnotationsPanel() {
     const panel = document.getElementById('annotationsPanel');
     if (panel) {
-        panel.classList.remove('visible');
+        panel.classList.add('hidden');
         updateAnnotationsButton(false);
     }
 }
@@ -847,7 +847,7 @@ function highlightAnnotation(annotationId) {
 function closeAnnotationsPanel() {
     const panel = document.getElementById('annotationsPanel');
     if (panel) {
-        panel.classList.remove('visible');
+        panel.classList.add('hidden');
     }
 }
 

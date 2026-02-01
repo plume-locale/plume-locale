@@ -33,6 +33,26 @@ function rgbaToHex(color) {
     return '#000000';
 }
 
+function hexToRgb(hex) {
+    if (!hex) return '0, 0, 0';
+    if (hex.startsWith('rgba') || hex.startsWith('rgb')) {
+        const match = hex.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+        return match ? `${match[1]}, ${match[2]}, ${match[3]}` : '0, 0, 0';
+    }
+    // Handle #FFF
+    if (hex.length === 4) {
+        const r = parseInt(hex[1] + hex[1], 16);
+        const g = parseInt(hex[2] + hex[2], 16);
+        const b = parseInt(hex[3] + hex[3], 16);
+        return `${r}, ${g}, ${b}`;
+    }
+    // Handle #FFFFFF
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `${r}, ${g}, ${b}`;
+}
+
 const themeManager = {
     currentTheme: null,
     customThemes: [],
@@ -78,15 +98,18 @@ const themeManager = {
         'Sombre': {
             '--bg-primary': '#1a1a1a',
             '--bg-secondary': '#252525',
+            '--bg-tertiary': '#121212',
             '--bg-accent': '#f5f3ed',
             '--text-primary': '#e8e6e3',
             '--text-secondary': '#b8b6b3',
-            '--text-muted': '#888683',
+            '--text-muted': '#a8a6a3',
             '--border-color': '#3a3a3a',
             '--primary-color': '#ffd700',
             '--primary-hover': '#ffed4e',
             '--accent-red': '#ff6b5a',
             '--accent-gold': '#ffd700',
+            '--shadow-color': '0, 0, 0',
+            '--cork-bg-default': '#2a2a2a',
             '--highlight-yellow': 'rgba(255, 235, 59, 0.3)',
             '--highlight-green': 'rgba(76, 175, 80, 0.25)',
             '--highlight-blue': 'rgba(33, 150, 243, 0.25)',
@@ -297,15 +320,18 @@ const themeManager = {
         'Luxe': {
             '--bg-primary': '#050505',
             '--bg-secondary': '#111111',
+            '--bg-tertiary': '#000000',
             '--bg-accent': '#1a1a1a',
             '--text-primary': '#e0e0e0',
             '--text-secondary': '#a0a0a0',
-            '--text-muted': '#505050',
+            '--text-muted': '#808080',
             '--border-color': '#333333',
             '--primary-color': '#cfb53b',
             '--primary-hover': '#e6c94c',
             '--accent-red': '#800020',
             '--accent-gold': '#cfb53b',
+            '--shadow-color': '0, 0, 0',
+            '--cork-bg-default': '#1a1a1a',
             '--highlight-yellow': 'rgba(207, 181, 59, 0.25)',
             '--highlight-green': 'rgba(85, 107, 47, 0.3)',
             '--highlight-blue': 'rgba(70, 130, 180, 0.3)',
@@ -328,6 +354,16 @@ const themeManager = {
         const root = document.documentElement;
         Object.entries(colors).forEach(([variable, value]) => {
             root.style.setProperty(variable, value);
+
+            // Gérer les variables RGB correspondantes si possible
+            if (!variable.endsWith('-rgb') && !variable.includes('highlight') && !variable.includes('shadow')) {
+                try {
+                    const rgbValue = hexToRgb(value);
+                    root.style.setProperty(`${variable}-rgb`, rgbValue);
+                } catch (e) {
+                    // Ignorer les échecs de conversion (ex: dégradés ou valeurs complexes)
+                }
+            }
         });
         this.currentTheme = colors;
         this.saveCurrentTheme();
@@ -444,15 +480,15 @@ function openThemeManager() {
     modal.innerHTML = `
                 <div class="modal-content" style="max-width: 1000px; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column;">
                     <div class="modal-header">
-                        <h2>🎨 Gestionnaire de Thèmes</h2>
-                        <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">✕</button>
+                        <h2><i data-lucide="palette" style="width:24px;height:24px;vertical-align:middle;margin-right:8px;"></i>Gestionnaire de Thèmes</h2>
+                        <button class="modal-close" onclick="this.closest('.modal-overlay').remove()"><i data-lucide="x" style="width:18px;height:18px;"></i></button>
                     </div>
                     
                     <div style="flex: 1; overflow-y: auto; padding: 1.5rem;">
                         <!-- Thèmes prédéfinis -->
                         <div style="margin-bottom: 2rem;">
                             <h3 style="margin-bottom: 1rem; font-size: 1.2rem; color: var(--accent-gold);">
-                                📚 Thèmes Prédéfinis
+                                <i data-lucide="book-copy" style="width:18px;height:18px;vertical-align:middle;margin-right:6px;"></i>Thèmes Prédéfinis
                             </h3>
                             <div id="presetThemesList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem;">
                             </div>
@@ -461,7 +497,7 @@ function openThemeManager() {
                         <!-- Thèmes personnalisés -->
                         <div style="margin-bottom: 2rem;">
                             <h3 style="margin-bottom: 1rem; font-size: 1.2rem; color: var(--accent-gold);">
-                                ✨ Mes Thèmes Personnalisés
+                                <i data-lucide="sparkles" style="width:18px;height:18px;vertical-align:middle;margin-right:6px;"></i>Mes Thèmes Personnalisés
                             </h3>
                             <div id="customThemesList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem;">
                             </div>
@@ -470,7 +506,7 @@ function openThemeManager() {
                         <!-- Éditeur de couleurs -->
                         <div style="border-top: 2px solid var(--border-color); padding-top: 1.5rem;">
                             <h3 style="margin-bottom: 1rem; font-size: 1.2rem; color: var(--accent-gold);">
-                                🎨 Éditeur de Thème
+                                <i data-lucide="sliders-horizontal" style="width:18px;height:18px;vertical-align:middle;margin-right:6px;"></i>Éditeur de Thème
                             </h3>
                             
                             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
@@ -510,19 +546,19 @@ function openThemeManager() {
                             <!-- Actions de l'éditeur -->
                             <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; padding-top: 1rem; border-top: 1px solid var(--border-color);">
                                 <button onclick="applyCurrentEditorColors()" class="btn-primary">
-                                    ✓ Appliquer les Couleurs
+                                    <i data-lucide="check" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"></i>Appliquer les Couleurs
                                 </button>
                                 <button onclick="saveThemeAsCustom()" class="btn-primary" style="background: var(--accent-gold);">
-                                    💾 Sauvegarder comme Thème
+                                    <i data-lucide="save" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"></i>Sauvegarder comme Thème
                                 </button>
                                 <button onclick="exportCurrentTheme()" class="btn-secondary">
-                                    📤 Exporter en JSON
+                                    <i data-lucide="upload" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"></i>Exporter en JSON
                                 </button>
                                 <button onclick="importThemeFile()" class="btn-secondary">
-                                    📥 Importer depuis JSON
+                                    <i data-lucide="download" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"></i>Importer depuis JSON
                                 </button>
                                 <button onclick="resetToDefault()" class="btn-secondary" style="margin-left: auto;">
-                                    🔄 Réinitialiser
+                                    <i data-lucide="refresh-cw" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"></i>Réinitialiser
                                 </button>
                             </div>
                         </div>
@@ -535,6 +571,11 @@ function openThemeManager() {
     // Remplir les thèmes prédéfinis
     renderPresetThemes();
     renderCustomThemes();
+
+    // Activer les icônes Lucide dans la modale
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
 
     // Lier les changements de couleur en temps réel
     modal.querySelectorAll('input[type="color"]').forEach(input => {

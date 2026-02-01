@@ -142,7 +142,7 @@ function createSceneVersion() {
 
     // Rafraîchir le panneau d'annotations
     const annotationsPanel = document.getElementById('annotationsPanel');
-    if (annotationsPanel && annotationsPanel.classList.contains('visible')) {
+    if (annotationsPanel && !annotationsPanel.classList.contains('hidden')) {
         renderAnnotationsPanel();
     }
     updateAnnotationsButton(false);
@@ -198,7 +198,7 @@ function switchToSceneVersion(versionId) {
 
         // Rafraîchir le panneau d'annotations pour la nouvelle version
         const annotationsPanel = document.getElementById('annotationsPanel');
-        if (annotationsPanel && annotationsPanel.classList.contains('visible')) {
+        if (annotationsPanel && !annotationsPanel.classList.contains('hidden')) {
             renderAnnotationsPanel();
         }
         updateAnnotationsButton(false);

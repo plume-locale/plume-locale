@@ -110,6 +110,7 @@ let historyDebounceDelay = 2000; // 2 secondes de délai
 
 // GLOBAL DATA STATE (Moved for early initialization)
 let corkBoardFilter = {
+    mode: 'structured', // 'structured', 'kanban'
     type: 'all', // 'all', 'act', 'chapter'
     actId: null,
     chapterId: null

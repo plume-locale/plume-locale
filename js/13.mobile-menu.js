@@ -105,9 +105,16 @@ function closeMobileNav() {
     const toggleBtn = document.getElementById('mobileNavToggleBtn');
     const sidebar = document.querySelector('.sidebar');
 
-    if (dropdown.classList.contains('active')) {
+    if (dropdown && dropdown.classList.contains('active')) {
         dropdown.classList.remove('active');
-        toggleBtn.innerHTML = '?';
+        // Icône Lucid 'Menu' (pour ouvrir)
+        toggleBtn.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu">
+                    <line x1="4" x2="20" y1="12" y2="12"/>
+                    <line x1="4" x2="20" y1="6" y2="6"/>
+                    <line x1="4" x2="20" y1="18" y2="18"/>
+                </svg>
+            `;
         if (sidebar) sidebar.style.visibility = '';
     }
 }
@@ -184,7 +191,7 @@ function toggleToolbarFromFloating() {
 
     if (floatingMenu && floatingMenu.classList.contains('active')) {
         floatingMenu.classList.remove('active');
-        if (floatingToggle) floatingToggle.textContent = '??';
+        if (floatingToggle) floatingToggle.innerHTML = '<i data-lucide="pencil" style="width:16px;height:16px;"></i>';
     }
 
     // Ouvrir le toolbar complet
@@ -194,7 +201,7 @@ function toggleToolbarFromFloating() {
 
     if (toolbar && !toolbar.classList.contains('expanded')) {
         toolbar.classList.add('expanded');
-        if (toggleText) toggleText.textContent = '? Masquer les outils de formatage';
+        if (toggleText) toggleText.textContent = 'Masquer les outils de formatage';
         if (toggleBtn) toggleBtn.classList.add('expanded');
     }
 
@@ -300,7 +307,15 @@ window.addEventListener('resize', function () {
                 overlay.classList.remove('active');
                 overlay.style.display = 'none';
             }
-            if (menuBtn) menuBtn.innerHTML = '?';
+            if (menuBtn) {
+                menuBtn.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu">
+                        <line x1="4" x2="20" y1="12" y2="12"/>
+                        <line x1="4" x2="20" y1="6" y2="6"/>
+                        <line x1="4" x2="20" y1="18" y2="18"/>
+                    </svg>
+                `;
+            }
             document.body.style.overflow = '';
         }
     }, 100);

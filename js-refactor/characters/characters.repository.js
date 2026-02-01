@@ -68,5 +68,28 @@ const CharacterRepository = {
             return true;
         }
         return false;
+    },
+
+    /**
+     * Récupère tous les regroupements personnalisés définis.
+     */
+    getGroups() {
+        if (!project.groups) {
+            project.groups = [];
+        }
+        return project.groups;
+    },
+
+    /**
+     * Ajoute un nouveau regroupement à la liste globale.
+     */
+    addGroup(groupName) {
+        const groups = this.getGroups();
+        if (!groups.includes(groupName)) {
+            groups.push(groupName);
+            groups.sort();
+            return true;
+        }
+        return false;
     }
 };

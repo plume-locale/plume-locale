@@ -46,16 +46,16 @@ const PlotGridUI = {
                         display: flex;
                         flex-direction: column;
                         height: 100%;
-                        background: #d4d4d4;
+                        background: var(--bg-tertiary);
                         overflow: hidden;
                         position: relative;
                     }
                     .plot-grid-toolbar {
                         padding: 10px 20px;
-                        background: #f0f0f0;
+                        background: var(--bg-secondary);
                         display: flex;
                         gap: 15px;
-                        border-bottom: 1px solid #ccc;
+                        border-bottom: 1px solid var(--border-color);
                         align-items: center;
                     }
                     .plot-grid-wrapper {
@@ -71,8 +71,9 @@ const PlotGridUI = {
                     .pg-header-cell {
                         background: transparent;
                         padding: 10px;
-                        font-weight: 500;
-                        color: #888;
+                        font-size: 1.1rem;
+                        font-weight: bolder;
+                        color: var(--text-muted);
                         text-align: center;
                         position: sticky;
                         top: 0;
@@ -92,16 +93,28 @@ const PlotGridUI = {
                         text-align: center;
                         width: 100%;
                         font-family: inherit;
-                        font-size: 0.9rem;
+                        font-size: 1.1rem;
+                        font-weight: bolder;
                     }
                     .pg-header-input:hover, .pg-header-input:focus {
-                        border-bottom-color: #aaa;
+                        border-bottom-color: var(--primary-color);
                         outline: none;
+                    }
+                    .pg-ghost-header::placeholder {
+                        font-style: italic;
+                        color: var(--text-muted);
+                        opacity: 0.7;
+                    }
+                    .pg-ghost-header {
+                        opacity: 0.6;
+                    }
+                    .pg-ghost-header:hover, .pg-ghost-header:focus, .pg-ghost-header.editing {
+                        opacity: 1;
                     }
                     .pg-col-delete-btn {
                         opacity: 0;
                         cursor: pointer;
-                        color: #ccc;
+                        color: var(--text-muted);
                         transition: opacity 0.2s, color 0.2s;
                         font-size: 0.8rem;
                         display: flex;
@@ -111,7 +124,7 @@ const PlotGridUI = {
                         opacity: 1;
                     }
                     .pg-col-delete-btn:hover {
-                        color: #e74c3c;
+                        color: var(--accent-red);
                     }
                     .pg-gutter-cell {
                         width: 30px;
@@ -126,36 +139,51 @@ const PlotGridUI = {
                         min-height: 110px;
                         position: relative;
                     }
+                    .dabble-act-label {
+                        font-size: 0.75rem;
+                        font-weight: bold;
+                        color: white;
+                        background: var(--bg-accent);
+                        padding: 4px 12px;
+                        display: inline-block;
+                        border-radius: 4px;
+                        position: absolute;
+                        top: -55px;
+                        left: -90px;
+                        text-transform: uppercase;
+                        letter-spacing: 0.5px;
+                        z-index: 5;
+                        white-space: nowrap;
+                    }
                     .dabble-chapter-label {
                         font-size: 0.7rem;
                         font-weight: bold;
-                        color: #333;
-                        background: #fff;
-                        border: 1px solid #ccc;
-                        border-bottom: none;
+                        color: var(--text-primary);
+                        background: var(--bg-primary);
+                        border: 1px solid var(--border-color);
                         padding: 3px 10px;
                         display: inline-block;
-                        border-radius: 4px 4px 0 0;
-                        margin-bottom: -1px;
+                        border-radius: 4px;
                         position: absolute;
-                        top: -24px;
-                        left: 0;
+                        top: -25px;
+                        left: -50px;
+                        white-space: nowrap;
                     }
 
                     .pg-card {
-                        background: #fff;
-                        border: 1px solid #ccc;
+                        background: var(--bg-primary);
+                        border: 1px solid var(--border-color);
                         border-radius: 2px;
                         padding: 12px;
                         height: 90px; /* Fixed height for all cards */
-                        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                        box-shadow: 0 2px 4px var(--shadow);
                         cursor: pointer;
                         display: flex;
                         flex-direction: column;
                         justify-content: flex-start;
                         text-align: left;
                         font-size: 0.85rem;
-                        color: #444;
+                        color: var(--text-primary);
                         position: relative;
                         transition: transform 0.2s, box-shadow 0.2s;
                         overflow: hidden;
@@ -166,8 +194,8 @@ const PlotGridUI = {
                     }
                     .pg-card.structure-card {
                         font-style: italic;
-                        color: #777;
-                        border-top: 5px solid #f39c12;
+                        color: var(--text-secondary);
+                        border-top: 5px solid var(--accent-gold);
                     }
                     .pg-card-title {
                         font-weight: bold;
@@ -184,13 +212,13 @@ const PlotGridUI = {
                         right: 5px;
                         width: 16px;
                         height: 16px;
-                        background: rgba(0,0,0,0.05);
+                        background: rgba(var(--bg-accent-rgb), 0.05);
                         border-radius: 50%;
                         display: flex;
                         align-items: center;
                         justify-content: center;
                         font-size: 10px;
-                        color: #999;
+                        color: var(--text-muted);
                         opacity: 0;
                         transition: opacity 0.2s, background 0.2s;
                         cursor: pointer;
@@ -200,12 +228,12 @@ const PlotGridUI = {
                         opacity: 1;
                     }
                     .pg-card-delete:hover {
-                        background: #e74c3c;
-                        color: #fff;
+                        background: var(--accent-red);
+                        color: white;
                     }
                     .pg-card-content {
                         font-size: 0.8rem;
-                        color: #888;
+                        color: var(--text-muted);
                         display: -webkit-box;
                         -webkit-line-clamp: 2;
                         -webkit-box-orient: vertical;
@@ -223,10 +251,10 @@ const PlotGridUI = {
                         transform: translate(-50%, -50%);
                         width: 18px;
                         height: 18px;
-                        border: 1px solid #ccc;
+                        border: 1px solid var(--border-color);
                         border-radius: 2px;
-                        background: #fff;
-                        color: #999;
+                        background: var(--bg-primary);
+                        color: var(--text-muted);
                         font-size: 14px;
                         cursor: pointer;
                         opacity: 0;
@@ -238,9 +266,9 @@ const PlotGridUI = {
                     }
                     .pg-cell:hover .pg-add-btn { opacity: 1; }
                     .pg-add-btn:hover {
-                        border-color: #999;
-                        color: #444;
-                        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                        border-color: var(--text-muted);
+                        color: var(--text-primary);
+                        box-shadow: 0 1px 3px var(--shadow);
                     }
 
                     /* Row Insertion Handle - GUTTER STYLE */
@@ -256,13 +284,13 @@ const PlotGridUI = {
                     .pg-row-insert-btn {
                         width: 18px;
                         height: 18px;
-                        background: #fff;
-                        border: 1px solid #ccc;
+                        background: var(--bg-primary);
+                        border: 1px solid var(--border-color);
                         border-radius: 2px;
                         display: flex;
                         align-items: center;
                         justify-content: center;
-                        color: #999;
+                        color: var(--text-muted);
                         cursor: pointer;
                         opacity: 0;
                         transition: all 0.2s;
@@ -275,19 +303,19 @@ const PlotGridUI = {
                         opacity: 1;
                     }
                     .pg-row-insert-btn:hover {
-                        border-color: #999;
-                        color: #444;
+                        border-color: var(--text-muted);
+                        color: var(--text-primary);
                         transform: scale(1.1);
-                        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                        box-shadow: 0 1px 3px var(--shadow);
                     }
 
                     /* Scene Ghost */
                     .pg-scene-ghost {
-                        border: 2px dashed #ccc !important;
-                        background: rgba(255,255,255,0.5) !important;
+                        border: 2px dashed var(--border-color) !important;
+                        background: rgba(var(--bg-primary-rgb), 0.5) !important;
                         justify-content: center !important;
                         align-items: center !important;
-                        color: #bbb !important;
+                        color: var(--text-muted) !important;
                         font-style: italic;
                     }
 
@@ -297,7 +325,7 @@ const PlotGridUI = {
                     #pgModalOverlay {
                         position: fixed;
                         top: 0; left: 0; right: 0; bottom: 0;
-                        background: rgba(0,0,0,0.4);
+                        background: rgba(var(--bg-accent-rgb), 0.4);
                         z-index: 1000;
                         display: none;
                         align-items: center;
@@ -305,10 +333,10 @@ const PlotGridUI = {
                         backdrop-filter: blur(2px);
                     }
                     #pgModal {
-                        background: #fff;
+                        background: var(--bg-primary);
                         width: 500px;
                         height: 600px;
-                        box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+                        box-shadow: 0 10px 40px var(--shadow);
                         display: flex;
                         flex-direction: column;
                         padding: 40px;
@@ -326,12 +354,13 @@ const PlotGridUI = {
                         font-size: 1.5rem;
                         font-weight: bold;
                         border: none;
-                        border-bottom: 2px solid #f39c12;
+                        border-bottom: 2px solid var(--accent-gold);
                         outline: none;
                         width: 100%;
                         margin-bottom: 20px;
                         background: transparent;
                         line-height: 1.2;
+                        color: var(--text-primary);
                     }
                     .pg-modal-content {
                         flex: 1;
@@ -342,6 +371,7 @@ const PlotGridUI = {
                         background: transparent;
                         font-family: inherit;
                         font-size: 1rem;
+                        color: var(--text-secondary);
                     }
                     .pg-modal-footer {
                         display: flex;
@@ -354,13 +384,26 @@ const PlotGridUI = {
                         top: 10px; right: 10px;
                         cursor: pointer;
                         font-size: 24px;
-                        color: #999;
+                        color: var(--text-muted);
                     }
                 </style>
 
                 <div class="plot-grid-toolbar">
-                    <h2 style="margin: 0; font-size: 1.2rem; color: #444; flex: 1;">Grille d'intrigue pour ${project.title || 'Livre sans titre'}</h2>
-                    <button class="btn btn-secondary" onclick="renderPlotGridView()">🔄 Rafraîchir</button>
+                    <h2 style="margin: 0; font-size: 1.2rem; color: var(--text-primary); flex: 1;">Grille d'intrigue pour ${project.title || 'Livre sans titre'}</h2>
+                    
+                    <button class="btn btn-secondary" onclick="renderPlotGridView()"><i data-lucide="refresh-cw" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Rafraîchir</button>
+                    
+                    <div style="display: flex; gap: 5px; border-left: 1px solid var(--border-color); padding-left: 15px; margin-left: 5px;">
+                        <button class="btn btn-secondary" onclick="PlotGridImportExport.exportToExcel()" title="Exporter vers Excel">
+                            <i data-lucide="download" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Exporter
+                        </button>
+                        
+                        <button class="btn btn-secondary" onclick="document.getElementById('pgImportFile').click()" title="Importer depuis Excel">
+                            <i data-lucide="upload" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Importer
+                        </button>
+                        <input type="file" id="pgImportFile" style="display: none;" accept=".xlsx, .xls" onchange="PlotGridImportExport.importFromExcel(this.files[0])">
+                    </div>
+
                     ${typeof lucide !== 'undefined' ? '<i data-lucide="help-circle" title="Faites glisser les cartes (col 2+); Cliquez pour éditer; Les scènes éditent le résumé."></i>' : ''}
                 </div>
 
@@ -370,7 +413,7 @@ const PlotGridUI = {
 
                 <div id="pgModalOverlay" onclick="PlotGridUI.closeCardModal(event)">
                     <div id="pgModal" onclick="event.stopPropagation()">
-                        <span class="pg-modal-close" onclick="PlotGridUI.closeCardModal()">×</span>
+                        <span class="pg-modal-close" onclick="PlotGridUI.closeCardModal()"><i data-lucide="x" style="width:20px;height:20px;"></i></span>
                         <input type="text" id="pgModalTitleInput" class="pg-modal-title" placeholder="Titre">
                         <textarea id="pgModalContentInput" class="pg-modal-content" placeholder="Zone d'écriture..."></textarea>
                         <div class="pg-modal-footer">
@@ -395,7 +438,7 @@ const PlotGridUI = {
         const modalHTML = `
             <div id="pgModalOverlay" onclick="PlotGridUI.closeCardModal(event)">
                 <div id="pgModal" onclick="event.stopPropagation()">
-                    <span class="pg-modal-close" onclick="PlotGridUI.closeCardModal()">×</span>
+                    <span class="pg-modal-close" onclick="PlotGridUI.closeCardModal()"><i data-lucide="x" style="width:20px;height:20px;"></i></span>
                     <input type="text" id="pgModalTitleInput" class="pg-modal-title" placeholder="Titre">
                     <textarea id="pgModalContentInput" class="pg-modal-content" placeholder="Zone d'écriture..."></textarea>
                     <div class="pg-modal-footer">
@@ -415,7 +458,7 @@ const PlotGridUI = {
                 #pgModalOverlay {
                     position: fixed;
                     top: 0; left: 0; right: 0; bottom: 0;
-                    background: rgba(0,0,0,0.4);
+                    background: rgba(var(--bg-accent-rgb), 0.4);
                     z-index: 10000;
                     display: none;
                     align-items: center;
@@ -423,10 +466,10 @@ const PlotGridUI = {
                     backdrop-filter: blur(2px);
                 }
                 #pgModal {
-                    background: #fff;
+                    background: var(--bg-primary);
                     width: 500px;
                     max-height: 90vh;
-                    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+                    box-shadow: 0 10px 40px var(--shadow);
                     display: flex;
                     flex-direction: column;
                     padding: 40px;
@@ -444,13 +487,13 @@ const PlotGridUI = {
                     font-size: 1.5rem;
                     font-weight: bold;
                     border: none;
-                    border-bottom: 2px solid #f39c12;
+                    border-bottom: 2px solid var(--accent-gold);
                     outline: none;
                     width: 100%;
                     margin-bottom: 20px;
                     background: transparent;
                     line-height: 1.2;
-                    color: #333;
+                    color: var(--text-primary);
                 }
                 .pg-modal-content {
                     flex: 1;
@@ -462,7 +505,7 @@ const PlotGridUI = {
                     background: transparent;
                     font-family: inherit;
                     font-size: 1rem;
-                    color: #444;
+                    color: var(--text-secondary);
                 }
                 .pg-modal-footer {
                     display: flex;
@@ -475,7 +518,7 @@ const PlotGridUI = {
                     top: 10px; right: 10px;
                     cursor: pointer;
                     font-size: 24px;
-                    color: #999;
+                    color: var(--text-muted);
                     line-height: 1;
                 }
             `;
@@ -501,9 +544,14 @@ const PlotGridUI = {
                     </div>
                 `;
             } else {
+                // Ghost column - editable to create a new column with custom title
                 content = `
                     <div class="pg-col-header-container">
-                        <span style="color: #bbb; font-style: italic;">Ligne sans titre</span>
+                        <input class="pg-header-input pg-ghost-header"
+                               value=""
+                               placeholder="Ligne sans titre"
+                               onfocus="this.classList.add('editing')"
+                               onblur="PlotGridUI.createColumnFromGhost(${i}, this.value); this.classList.remove('editing')">
                     </div>
                 `;
             }
@@ -527,6 +575,7 @@ const PlotGridUI = {
                     if (row.type === 'structure') {
                         html += `
                             <div class="pg-cell" ondragover="event.preventDefault()">
+                                ${row.isFirstInAct ? `<div class="dabble-act-label">${row.parentActTitle}</div>` : ''}
                                 ${row.isFirstInChapter ? `<div class="dabble-chapter-label">${row.parentChapterTitle}</div>` : ''}
                                 <div class="pg-card structure-card" onclick="PlotGridUI.openSceneModal('${row.structureId}', this)">
                                     <div class="pg-card-title">${row.title}</div>
@@ -539,7 +588,7 @@ const PlotGridUI = {
                         html += `
                             <div class="pg-cell">
                                 <div class="pg-card structure-card pg-scene-ghost" onclick="PlotGridUI.createSceneFromRow('${row.id}')">
-                                    <span class="pg-card-delete" onclick="event.stopPropagation(); PlotGridUI.deleteCustomRow('${row.id}')" title="Supprimer la ligne">×</span>
+                                    <span class="pg-card-delete" onclick="event.stopPropagation(); PlotGridUI.deleteCustomRow('${row.id}')" title="Supprimer la ligne"><i data-lucide="x" style="width:12px;height:12px;"></i></span>
                                     <div style="font-size: 18px; margin-bottom: 5px;">+</div>
                                     <div style="font-size: 0.8rem;">Scène sans titre</div>
                                 </div>
@@ -559,7 +608,7 @@ const PlotGridUI = {
                                     draggable="true" 
                                     ondragstart="PlotGridUI.handleDragStart(event, '${card.id}')"
                                     onclick="PlotGridUI.openCardModal('${card.id}', this)">
-                                    <span class="pg-card-delete" onclick="event.stopPropagation(); PlotGridUI.deleteCardQuickly('${card.id}')" title="Supprimer la carte">×</span>
+                                    <span class="pg-card-delete" onclick="event.stopPropagation(); PlotGridUI.deleteCardQuickly('${card.id}')" title="Supprimer la carte"><i data-lucide="x" style="width:12px;height:12px;"></i></span>
                                     <div class="pg-card-title">${card.title}</div>
                                     <div class="pg-card-content">${card.content || ""}</div>
                                 </div>
@@ -580,6 +629,31 @@ const PlotGridUI = {
         if (PlotGridViewModel.updateColumnTitle(colId, newTitle)) {
             this.conditionalRender();
         }
+    },
+
+    /**
+     * Creates a new column from a ghost header when user types a custom title.
+     * @param {number} colIndex - The visual column index
+     * @param {string} title - The title entered by the user
+     */
+    createColumnFromGhost: function (colIndex, title) {
+        // Only create if user entered a non-empty title
+        if (!title || !title.trim()) return;
+
+        // Get current columns to check if we need to fill gaps
+        const columns = PlotGridViewModel.getGridData().columns;
+
+        // Ensure all columns up to colIndex exist
+        PlotGridRepository.ensureColumnsUntil(colIndex + 1);
+
+        // Get the newly created column and update its title
+        const updatedColumns = PlotGridViewModel.getGridData().columns;
+        const targetCol = updatedColumns[colIndex];
+        if (targetCol) {
+            PlotGridViewModel.updateColumnTitle(targetCol.id, title.trim());
+        }
+
+        this.conditionalRender();
     },
 
     addCardAt: function (rowId, colIndex) {
@@ -843,25 +917,39 @@ function initPlotGridMenu() {
     const writingGroup = document.querySelector('.nav-group');
     if (!writingGroup) return;
 
-    // 3. Create the button
+    // 3. Create the desktop button
     const btn = document.createElement('button');
     btn.id = 'header-tab-plotgrid';
     btn.className = 'nav-btn';
 
     btn.innerHTML = `
-        <span class="nav-btn-icon"><i data-lucide="grid-3x3"></i></span>
+        <span class="nav-btn-icon"><i data-lucide="layout-grid"></i></span>
         <span class="nav-btn-text">Plot Grid</span>
     `;
     btn.onclick = () => switchView('plotgrid');
 
     // 4. Insert it after the 'Intrigue' button if possible
-    // Note: There's a duplicate ID header-tab-plot in the HTML, 
+    // Note: There's a duplicate ID header-tab-plot in the HTML,
     // but getElementById usually returns the first one (Intrigue).
     const plotBtn = document.getElementById('header-tab-plot');
     if (plotBtn) {
         plotBtn.parentNode.insertBefore(btn, plotBtn.nextSibling);
     } else {
         writingGroup.appendChild(btn);
+    }
+
+    // 5. Add to mobile menu as well
+    const mobileNavPlotBtn = document.querySelector('.mobile-nav-item[data-view="plot"]');
+    if (mobileNavPlotBtn && !document.querySelector('.mobile-nav-item[data-view="plotgrid"]')) {
+        const mobileBtn = document.createElement('button');
+        mobileBtn.className = 'mobile-nav-item';
+        mobileBtn.setAttribute('data-view', 'plotgrid');
+        mobileBtn.onclick = () => switchViewMobile('plotgrid');
+        mobileBtn.innerHTML = `
+            <span class="mobile-nav-item-icon"><i data-lucide="layout-grid"></i></span>
+            <span>Plot Grid</span>
+        `;
+        mobileNavPlotBtn.parentNode.insertBefore(mobileBtn, mobileNavPlotBtn.nextSibling);
     }
 
     if (typeof lucide !== 'undefined') lucide.createIcons();

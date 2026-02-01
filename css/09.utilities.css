@@ -192,3 +192,61 @@
             color: var(--text-secondary);
             line-height: 1.8;
         }
+
+/* Import Chapter from DOCX Styles */
+.import-chapter-upload {
+    padding: 1rem 0;
+}
+
+.import-chapter-dropzone {
+    border: 2px dashed var(--border-color);
+    border-radius: 12px;
+    padding: 3rem 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    background: var(--bg-secondary);
+}
+
+.import-chapter-dropzone:hover,
+.import-chapter-dropzone.dragover {
+    border-color: var(--accent-gold);
+    background: rgba(212, 175, 55, 0.05);
+}
+
+.import-chapter-dropzone.dragover {
+    transform: scale(1.01);
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+}
+
+.import-chapter-spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid var(--bg-tertiary);
+    border-top-color: var(--accent-gold);
+    border-radius: 50%;
+    animation: import-spin 1s linear infinite;
+    margin: 0 auto;
+}
+
+@keyframes import-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.import-chapter-preview {
+    padding: 0.5rem 0;
+}
+
+.import-chapter-list {
+    background: var(--bg-secondary);
+}
+
+.import-chapter-item:last-child {
+    border-bottom: none;
+}
+
+.import-chapter-item:hover {
+    background: var(--bg-tertiary);
+}

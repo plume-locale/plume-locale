@@ -101,7 +101,10 @@ function initializeColorPickers(panel = null) {
         textSwatch.className = 'color-swatch';
         textSwatch.style.backgroundColor = color;
         textSwatch.title = color;
-        textSwatch.onclick = () => applyTextColor(color, panel);
+        textSwatch.onmousedown = (e) => {
+            e.preventDefault(); // Prevent focus loss from editor
+            applyTextColor(color, panel);
+        };
         textColorGrid.appendChild(textSwatch);
 
         // Background color swatch
@@ -109,7 +112,10 @@ function initializeColorPickers(panel = null) {
         bgSwatch.className = 'color-swatch';
         bgSwatch.style.backgroundColor = color;
         bgSwatch.title = color;
-        bgSwatch.onclick = () => applyBackgroundColor(color, panel);
+        bgSwatch.onmousedown = (e) => {
+            e.preventDefault(); // Prevent focus loss from editor
+            applyBackgroundColor(color, panel);
+        };
         bgColorGrid.appendChild(bgSwatch);
     });
 }
@@ -155,8 +161,17 @@ function toggleColorPicker(type, event, panel = null) {
 // Met à jour la couleur du texte dans l'éditeur et synchronise les inputs UI
 function applyTextColor(color, panel = null) {
     const idSuffix = panel ? `-${panel}` : '';
-    const textareaId = panel ? `editor-${panel}` : 'editor';
-    const textarea = document.getElementById(textareaId) || document.querySelector('.editor-textarea');
+    const textareaId = panel ? `editor-${panel}` : null;
+    let textarea = textareaId ? document.getElementById(textareaId) : null;
+
+    if (!textarea && !panel && typeof currentSceneId !== 'undefined' && currentSceneId) {
+        textarea = document.querySelector(`.editor-textarea[data-scene-id="${currentSceneId}"]`);
+    }
+
+    if (!textarea) textarea = document.querySelector('.editor-textarea');
+
+    // Focus BEFORE applying command to ensure selection is active
+    if (textarea) textarea.focus();
 
     if (panel) {
         // Use the specialized function for panels if it exists
@@ -173,7 +188,6 @@ function applyTextColor(color, panel = null) {
     const hex = document.getElementById(`textColorHex${idSuffix}`);
     if (input) input.value = color;
     if (hex) hex.value = color.toUpperCase();
-    if (textarea) textarea.focus();
 }
 
 // Apply background color
@@ -181,8 +195,17 @@ function applyTextColor(color, panel = null) {
 // Met à jour la couleur de fond dans l'éditeur et synchronise les inputs UI
 function applyBackgroundColor(color, panel = null) {
     const idSuffix = panel ? `-${panel}` : '';
-    const textareaId = panel ? `editor-${panel}` : 'editor';
-    const textarea = document.getElementById(textareaId) || document.querySelector('.editor-textarea');
+    const textareaId = panel ? `editor-${panel}` : null;
+    let textarea = textareaId ? document.getElementById(textareaId) : null;
+
+    if (!textarea && !panel && typeof currentSceneId !== 'undefined' && currentSceneId) {
+        textarea = document.querySelector(`.editor-textarea[data-scene-id="${currentSceneId}"]`);
+    }
+
+    if (!textarea) textarea = document.querySelector('.editor-textarea');
+
+    // Focus BEFORE applying command to ensure selection is active
+    if (textarea) textarea.focus();
 
     if (panel) {
         if (typeof formatTextInPanel === 'function') {
@@ -198,7 +221,6 @@ function applyBackgroundColor(color, panel = null) {
     const hex = document.getElementById(`bgColorHex${idSuffix}`);
     if (input) input.value = color;
     if (hex) hex.value = color.toUpperCase();
-    if (textarea) textarea.focus();
 }
 
 // Close color pickers when clicking outside

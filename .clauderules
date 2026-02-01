@@ -1,0 +1,38 @@
+# Règles du Projet Plume
+
+## 🎯 Vision du Projet
+Plume est un outil d'écriture structuré pour la narration, gérant des actes, chapitres, scènes et personnages avec des visualisations avancées (Thriller Board, Arc Board, Plot Grid).
+
+## 🏗 Architecture (MVVM + CRUD)
+Le projet utilise une architecture **MVVM (Model-View-ViewModel)** couplée à un pattern **Repository** pour le CRUD.
+- **Model** (`*.model.js`) : Définition des structures de données.
+- **Repository** (`*.repository.js`) : Gestion du stockage (localStorage) et opérations CRUD.
+- **ViewModel** (`*.viewmodel.js`) : Logique de présentation, état de l'UI et orchestration.
+- **View** (`*.view.js`) : Manipulations du DOM, rendu HTML et écouteurs d'événements.
+
+Les nouveaux développements se font dans `js-refactor/`.
+
+## 📝 Conventions de Documentation
+Chaque fonction **DOIT** être documentée avec le format suivant :
+```javascript
+// [MVVM : Type]
+// Description de ce que fait la fonction
+function nomDeLaFonction() { ... }
+```
+**Types autorisés** : `Model`, `View`, `ViewModel`, `Repository`, `Mixte`, `Other`.
+
+## naming Conventions
+- Fichiers : `numéro.domaine.type.js` (ex: `46.thriller-board.viewmodel.js`).
+- Fonctions/Variables : `camelCase`.
+- Dossiers : `kebab-case`.
+
+## 🛠 Commandes Utiles
+- **Build complet** : `python build.py`
+- **Vérification du build** : `python build.test.py`
+- **Output** : Le fichier généré se trouve dans `build/plume-build.html`.
+
+## 🛡 Règles de Travail
+1. **Analyse avant action** : Toujours expliquer le plan d'action avant de modifier du code.
+2. **Respect du build** : S'assurer que les nouveaux fichiers sont correctement nommés pour être inclus par `build.py`.
+3. **Purity** : Éviter de mélanger la logique métier (ViewModel) avec la manipulation directe du DOM (View).
+4. **Validation** : Vérifier la cohérence des données lors des opérations CRUD dans les Repositories.

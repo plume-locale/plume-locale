@@ -2,6 +2,17 @@
 // EXPORT NOVEL FUNCTIONS
 // ============================================
 
+/**
+ * Strips HTML tags from a string.
+ */
+function stripHTML(html) {
+    if (!html) return '';
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    return div.textContent || div.innerText || '';
+}
+
+
 // Global variable to track selection state
 let exportSelectionState = {};
 
@@ -312,7 +323,7 @@ function exportAsMarkdown(options) {
                 }
 
                 if (options.exportProse && scene.content) {
-                    markdown += `${scene.content}\n`;
+                    markdown += `${stripHTML(scene.content)}\n`;
                 }
 
                 // Add divider between scenes (except after last scene)
@@ -356,7 +367,7 @@ function exportAsTXT(options) {
                 }
 
                 if (options.exportProse && scene.content) {
-                    text += `${scene.content}\n`;
+                    text += `${stripHTML(scene.content)}\n`;
                 }
 
                 if (sceneIndex < chapter.scenes.length - 1) {
@@ -464,8 +475,9 @@ function exportAsHTML(options) {
                 }
 
                 if (options.exportProse && scene.content) {
-                    // Convert line breaks to paragraphs
-                    const paragraphs = scene.content.split('\n').filter(p => p.trim());
+                    // Convert line breaks to paragraphs after stripping HTML
+                    const plainText = stripHTML(scene.content);
+                    const paragraphs = plainText.split('\n').filter(p => p.trim());
                     paragraphs.forEach(para => {
                         html += `    <p>${para}</p>\n`;
                     });
@@ -478,19 +490,7 @@ function exportAsHTML(options) {
         });
     });
 
-    html += `
-        <!-- Arc Scene Panel -->
-        <div id="arcScenePanel" class="arc-scene-panel hidden">
-            <div class="arc-scene-panel-header">
-                <h3>Arcs dans cette scène</h3>
-                <button class="arc-panel-close" onclick="toggleArcScenePanel()">✕</button>
-            </div>
-            <div id="arcScenePanelContent" class="arc-scene-panel-content">
-                <!-- Contenu dynamique -->
-            </div>
-        </div>
-
-    </body>\n</html>`;
+    html += `    </body>\n</html>`;
 
     downloadFile(html, `${project.title}.html`, 'text/html');
     showNotification('✓ Export HTML terminé');
@@ -522,9 +522,10 @@ async function exportAsEPUB(options) {
     };
 
     // Helper to convert HTML content to XHTML
-    const toXHTML = (text) => {
-        if (!text) return '';
-        const paragraphs = text.split('\n').filter(p => p.trim());
+    const toXHTML = (html) => {
+        if (!html) return '';
+        const plainText = stripHTML(html);
+        const paragraphs = plainText.split('\n').filter(p => p.trim());
         return paragraphs.map(p => `<p>${escapeXML(p)}</p>`).join('\n');
     };
 
@@ -633,19 +634,7 @@ hr.divider {
     <div class="title-page">
         <h1>${escapeXML(project.title)}</h1>
     </div>
-
-        <!-- Arc Scene Panel -->
-        <div id="arcScenePanel" class="arc-scene-panel hidden">
-            <div class="arc-scene-panel-header">
-                <h3>Arcs dans cette scène</h3>
-                <button class="arc-panel-close" onclick="toggleArcScenePanel()">✕</button>
-            </div>
-            <div id="arcScenePanelContent" class="arc-scene-panel-content">
-                <!-- Contenu dynamique -->
-            </div>
-        </div>
-
-    </body>
+</body>
 </html>`;
     zip.file('OEBPS/title.xhtml', titlePageXHTML);
     manifestItems.push('<item id="title" href="title.xhtml" media-type="application/xhtml+xml"/>');
@@ -714,20 +703,7 @@ hr.divider {
                 }
             });
 
-            chapterContent += `
-        <!-- Arc Scene Panel -->
-        <div id="arcScenePanel" class="arc-scene-panel hidden">
-            <div class="arc-scene-panel-header">
-                <h3>Arcs dans cette scène</h3>
-                <button class="arc-panel-close" onclick="toggleArcScenePanel()">✕</button>
-            </div>
-            <div id="arcScenePanelContent" class="arc-scene-panel-content">
-                <!-- Contenu dynamique -->
-            </div>
-        </div>
-
-    </body>
-</html>`;
+            chapterContent += `    </body>\n</html>`;
 
             zip.file(`OEBPS/${fileName}`, chapterContent);
             manifestItems.push(`<item id="${chapterId}" href="${fileName}" media-type="application/xhtml+xml"/>`);
@@ -746,22 +722,7 @@ hr.divider {
         }
     });
 
-    navContent += `        </ol>
-    </nav>
-
-        <!-- Arc Scene Panel -->
-        <div id="arcScenePanel" class="arc-scene-panel hidden">
-            <div class="arc-scene-panel-header">
-                <h3>Arcs dans cette scène</h3>
-                <button class="arc-panel-close" onclick="toggleArcScenePanel()">✕</button>
-            </div>
-            <div id="arcScenePanelContent" class="arc-scene-panel-content">
-                <!-- Contenu dynamique -->
-            </div>
-        </div>
-
-    </body>
-</html>`;
+    navContent += `    </body>\n</html>`;
 
     zip.file('OEBPS/nav.xhtml', navContent);
     manifestItems.push('<item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/>');
@@ -874,7 +835,8 @@ async function exportAsDOCX(options) {
                 }
 
                 if (options.exportProse && scene.content) {
-                    const paragraphs = scene.content.split('\n').filter(p => p.trim());
+                    const plainText = stripHTML(scene.content);
+                    const paragraphs = plainText.split('\n').filter(p => p.trim());
                     paragraphs.forEach(para => {
                         children.push(
                             new Paragraph({
@@ -1101,7 +1063,7 @@ async function generateMarkdownContent(content, options) {
                 }
 
                 if (options.exportProse && scene.content) {
-                    markdown += `${scene.content}\n`;
+                    markdown += `${stripHTML(scene.content)}\n`;
                 }
 
                 if (sceneIndex < chapter.scenes.length - 1) {
@@ -1140,7 +1102,7 @@ async function generateTXTContent(content, options) {
                 }
 
                 if (options.exportProse && scene.content) {
-                    text += `${scene.content}\n`;
+                    text += `${stripHTML(scene.content)}\n`;
                 }
 
                 if (sceneIndex < chapter.scenes.length - 1) {
@@ -1199,7 +1161,8 @@ async function generateHTMLContent(content, options) {
                 }
 
                 if (options.exportProse && scene.content) {
-                    const paragraphs = scene.content.split('\n').filter(p => p.trim());
+                    const plainText = stripHTML(scene.content);
+                    const paragraphs = plainText.split('\n').filter(p => p.trim());
                     paragraphs.forEach(para => {
                         html += `    <p>${para}</p>\n`;
                     });
@@ -1212,19 +1175,7 @@ async function generateHTMLContent(content, options) {
         });
     });
 
-    html += `
-        <!-- Arc Scene Panel -->
-        <div id="arcScenePanel" class="arc-scene-panel hidden">
-            <div class="arc-scene-panel-header">
-                <h3>Arcs dans cette scène</h3>
-                <button class="arc-panel-close" onclick="toggleArcScenePanel()">✕</button>
-            </div>
-            <div id="arcScenePanelContent" class="arc-scene-panel-content">
-                <!-- Contenu dynamique -->
-            </div>
-        </div>
-
-    </body>\n</html>`;
+    html += `    </body>\n</html>`;
     return html;
 }
 
@@ -1290,7 +1241,8 @@ async function generateDOCXBlob(content, options) {
                 }
 
                 if (options.exportProse && scene.content) {
-                    const paragraphs = scene.content.split('\n').filter(p => p.trim());
+                    const plainText = stripHTML(scene.content);
+                    const paragraphs = plainText.split('\n').filter(p => p.trim());
                     paragraphs.forEach(para => {
                         children.push(
                             new Paragraph({

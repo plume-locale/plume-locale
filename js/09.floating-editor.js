@@ -288,13 +288,14 @@ function toggleFloatingEditorMenu() {
     if (menu.classList.contains('active')) {
         console.log('Fermeture du menu');
         menu.classList.remove('active');
-        toggle.textContent = '✏️';
+        toggle.innerHTML = '<i data-lucide="pencil" style="width:16px;height:16px;"></i>';
     } else {
         console.log('Ouverture du menu');
         menu.classList.add('active');
         updateFloatingMenuPosition();
-        toggle.textContent = '✖️';
+        toggle.innerHTML = '<i data-lucide="x" style="width:16px;height:16px;"></i>';
     }
+    if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
 // [MVVM : ViewModel]

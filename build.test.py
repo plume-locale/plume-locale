@@ -36,80 +36,125 @@ CSS_ORDER = [
     '09.utilities.css',
     '10.mobile.css',
     '11.storygrid.css',
-    '12.arc-board.css'
+    '12.arc-board.css',
+    'undo-redo.css'
 ]
 
 # Ordre des fichiers JS - MODIFIÉ pour js-refactor
 JS_ORDER = [
     'js-refactor/01.app.refactor.js',
+    '38.tension.js',
     '02.storage.js',
     'js-refactor/03.projects.refactor.js',
     '04.init.js',
-    '05.undo-redo.js',
-    'js-refactor/06.structure.model.js',
-    'js-refactor/06.structure.repository.js',
-    'js-refactor/06.structure.viewmodel.js',
+    'js-refactor/05.undo-redo.refactor.js',
+    # Structure refactored files 1/2
+    'js-refactor/structure/structure.model.js',
+    'js-refactor/structure/structure.repository.js',
+    'js-refactor/structure/structure.viewmodel.js',
+    # App
     'js-refactor/00.app.view.js',
-    'js-refactor/06.structure.view.js',
-    'js-refactor/06.structure.helpers.js',
+    # Structure refactored files 2/2
+    'js-refactor/structure/structure.view.js',
+    'js-refactor/structure/structure-organizer.view.js',
+    'js-refactor/structure/structure.helpers.js',
     'js-refactor/07.stats.refactor.js',
-    '08.auto-detect.js',
+    'js-refactor/08.auto-detect.refactor.js',
     '09.floating-editor.js',
     'js-refactor/10.colorpalette.refactor.js',
     '11.updateStats.js',
     '12.import-export.js',
     '13.mobile-menu.js',
     '14.dragndrop-acts.js',
-    'js-refactor/15.characters.model.js',
-    'js-refactor/15.characters.repository.js',
-    'js-refactor/15.characters.viewmodel.js',
-    'js-refactor/15.characters.view.js',
+    # Characters refactored files 
+    'js-refactor/characters/characters.model.js',
+    'js-refactor/characters/characters.repository.js',
+    'js-refactor/characters/characters.viewmodel.js',
+    'js-refactor/characters/characters.view.js',
     'js-refactor/16.split-view.js',
-    'js-refactor/17.world.model.js',
-    'js-refactor/17.world.repository.js',
-    'js-refactor/17.world.viewmodel.js',
-    'js-refactor/17.world.view.js',
+    # World refactored files 
+    'js-refactor/world/world.model.js',
+    'js-refactor/world/world.repository.js',
+    'js-refactor/world/world.viewmodel.js',
+    'js-refactor/world/world.view.js',
     '18.timeline.js',
     '19.notes.js',
     '20.snapshots.js',
     'js-refactor/21.sceneVersions.refactor.js',
     '22.diff.js',
     '23.stats.js',
-    '24.codex.js',
+    # Codex refactored files
+    'js-refactor/codex/codex.model.js',
+    'js-refactor/codex/codex.repository.js',
+    'js-refactor/codex/codex.viewmodel.js',
+    'js-refactor/codex/codex.view.js',
     '25.globalSearch.js',
-    '26.focusMode.js',
+    'js-refactor/26.focusMode.refactor.js',
     '27.keyboardShortcuts.js',
     'js-refactor/28.revision.refactor.js',
     'js-refactor/29.todos.refactor.js',
-    'js-refactor/30.corkboard.refactor.js',
+    # Corkboard refactored files (order: model -> repository -> viewmodel -> view -> handlers -> main)
+    'js-refactor/corkboard/corkboard.model.js',
+    'js-refactor/corkboard/corkboard.repository.js',
+    'js-refactor/corkboard/corkboard.viewmodel.js',
+    'js-refactor/corkboard/corkboard.view.js',
+    'js-refactor/corkboard/corkboard.handlers.js',
+    'js-refactor/corkboard/corkboard.main.js',
     '31.mindmap.js',
     '32.touch-events.js',
-    'js-refactor/33.plot.refactor.js',
+    # Plot module refactored files
+    'js-refactor/plot/plot.model.js',
+    'js-refactor/plot/plot.repository.js',
+    'js-refactor/plot/plot.viewmodel.js',
+    'js-refactor/plot/plot.view.js',
+    'js-refactor/plot/plot.init.js',
     '34.relations-graph.js',
     '35.renderMap.js',
     '36.timeline-metro.js',
     '37.theme-manager.js',
-    '38.tension.js',
     '39.export.js',
     '40.sidebar-views.js',
     '41.storageMonitoring.js',
     '42.mobile-swipe.js',
     'js-refactor/43.arcs.refactor.js',
     '44.storygrid.js',
-    '45.arc-board.js',
+    # Arc Board refactored files (order: config -> models -> repository -> viewmodel -> services -> views -> handlers -> main)
+    'js-refactor/arc-board/arc-board.config.js',
+    'js-refactor/arc-board/arc-board.models.js',
+    'js-refactor/arc-board/arc-board.repository.js',
+    'js-refactor/arc-board/arc-board.viewmodel.js',
+    'js-refactor/arc-board/arc-board.services.js',
+    'js-refactor/arc-board/arc-board.views.js',
+    'js-refactor/arc-board/arc-board.handlers.js',
+    'js-refactor/arc-board/arc-board.main.js',
     # Thriller Board refactored files (order: constants -> model -> repository -> helpers -> viewmodel -> view)
-    'js-refactor/46.thriller-board.constants.js',
-    'js-refactor/46.thriller-board.model.js',
-    'js-refactor/46.thriller-board.repository.js',
-    'js-refactor/46.thriller-board.helpers.js',
-    'js-refactor/46.thriller-board.viewmodel.js',
-    'js-refactor/46.thriller-board.type-editor.js',
-    'js-refactor/46.thriller-board.view.js',
+    'js-refactor/thriller-board/thriller-board.constants.js',
+    'js-refactor/thriller-board/thriller-board.model.js',
+    'js-refactor/thriller-board/thriller-board.repository.js',
+    'js-refactor/thriller-board/thriller-board.helpers.js',
+    'js-refactor/thriller-board/thriller-board.viewmodel.js',
+    'js-refactor/thriller-board/thriller-board.type-editor.js',
+    'js-refactor/thriller-board/thriller-board.view.js',
     # Plot Grid Module (Module 47)
-    'js-refactor/47.plot-grid.model.js',
-    'js-refactor/47.plot-grid.repository.js',
-    'js-refactor/47.plot-grid.viewmodel.js',
-    'js-refactor/47.plot-grid.view.js'
+    'js-refactor/plotgrid/plot-grid.model.js',
+    'js-refactor/plotgrid/plot-grid.repository.js',
+    'js-refactor/plotgrid/plot-grid.viewmodel.js',
+    'js-refactor/plotgrid/plot-grid.import-export.js',
+    'js-refactor/plotgrid/plot-grid.view.js',
+    # Scene Navigation (floating toolbar for moving text between scenes)
+    'js-refactor/28.sceneNavigation.js',
+    # Synonyms Module (French synonyms dictionary - local)
+    'js-refactor/synonyms/synonyms.config.js',
+    'js-refactor/synonyms/synonyms.model.js',
+    'js-refactor/synonyms/synonyms.dictionary.js',
+    'js-refactor/synonyms/synonyms.service.js',
+    'js-refactor/synonyms/synonyms.repository.js',
+    'js-refactor/synonyms/synonyms.viewmodel.js',
+    'js-refactor/synonyms/synonyms.view.js',
+    # Import Chapter Module (import .docx, .txt, .md, .epub, .pages)
+    'js-refactor/import-chapter/import-chapter.model.js',
+    'js-refactor/import-chapter/import-chapter.viewmodel.js',
+    'js-refactor/import-chapter/import-chapter.view.js'
 ]
 
 def read_file(path):
@@ -163,6 +208,19 @@ def collect_css():
             css_content.append('')
             found_count += 1
     
+    # Ajouter les CSS des modules dans js-refactor/
+    module_css_files = [
+        'js-refactor/synonyms/synonyms.css'
+    ]
+    for css_path in module_css_files:
+        filepath = os.path.join(BUILD_DIR, css_path)
+        if os.path.exists(filepath):
+            content = read_file(css_path)
+            css_content.append(f'/* ========== {css_path} ========== */')
+            css_content.append(content)
+            css_content.append('')
+            found_count += 1
+
     log(f"   [OK] {found_count} fichiers CSS trouves")
     return '\n'.join(css_content)
 
@@ -171,16 +229,22 @@ IGNORED_ORIGINALS = [
     '03.project.js',
     '06.structure.js',
     '07.stats.js',
+    '08.auto-detect.js',
     '15.characters.js',
     '17.world.js',
     '01.app.js',
     '10.colorpalette.js',
     '21.sceneVersions.js',
+    '26.focusMode.js',
     '28.revision.js',
     '29.todos.js',
+    '24.codex.js',
     '30.corkboard.js',
+    '30.corkboard.refactor.js',  # Remplacé par js-refactor/corkboard/*.js
     '33.plot.js',
     '43.arcs.js',
+    '45.arc-board.js',  # Remplacé par js-refactor/arc-board/*.js
+    '45.arc-board.refactor.js',  # Fichier bundle, on utilise les modules individuels
     '46.thriller-board.js'  # Remplacé par les fichiers refactorisés 46.thriller-board.*.js
 ]
 

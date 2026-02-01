@@ -6,9 +6,9 @@
     padding: 2rem;
     background: var(--bg-tertiary);
     background-image:
-        radial-gradient(circle at 20% 30%, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
-        radial-gradient(circle at 70% 60%, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
-        radial-gradient(circle at 40% 80%, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+        radial-gradient(circle at 20% 30%, rgba(var(--text-primary-rgb), 0.05) 1px, transparent 1px),
+        radial-gradient(circle at 70% 60%, rgba(var(--text-primary-rgb), 0.05) 1px, transparent 1px),
+        radial-gradient(circle at 40% 80%, rgba(var(--text-primary-rgb), 0.05) 1px, transparent 1px);
     background-size: 100px 100px, 150px 150px, 120px 120px;
     min-height: calc(100vh - 200px);
     overflow-y: auto;
@@ -175,39 +175,39 @@
 
 /* Couleurs prédéfinies pour POV/Intrigues */
 .cork-color-yellow {
-    background: #ffd93d;
+    background: var(--cork-bg-yellow);
 }
 
 .cork-color-pink {
-    background: #ff6b9d;
+    background: var(--cork-bg-pink);
 }
 
 .cork-color-blue {
-    background: #6bcfff;
+    background: var(--cork-bg-blue);
 }
 
 .cork-color-green {
-    background: #6bff9d;
+    background: var(--cork-bg-green);
 }
 
 .cork-color-purple {
-    background: #c26bff;
+    background: var(--cork-bg-purple);
 }
 
 .cork-color-orange {
-    background: #ffb56b;
+    background: var(--cork-bg-orange);
 }
 
 .cork-color-red {
-    background: #ff6b6b;
+    background: var(--cork-bg-red);
 }
 
 .cork-color-teal {
-    background: #6bffd9;
+    background: var(--cork-bg-teal);
 }
 
 .cork-color-default {
-    background: #fef9e7;
+    background: var(--cork-bg-default);
 }
 
 .cork-board-empty {
@@ -452,41 +452,80 @@
     border-top: 1px solid var(--border-color);
 }
 
-/* Couleurs pour les cartes de scène */
-.structured-color-yellow {
-    border-left: 3px solid #f4c430;
+/* Bordures des scènes basées EXCLUSIVEMENT sur le statut */
+.structured-scene-card.scene-status-draft,
+.cork-card.scene-status-draft {
+    border-left: 3px solid var(--accent-red) !important;
 }
 
-.structured-color-pink {
-    border-left: 3px solid #ff69b4;
+.structured-scene-card.scene-status-progress,
+.cork-card.scene-status-progress {
+    border-left: 3px solid var(--accent-gold) !important;
 }
 
-.structured-color-blue {
-    border-left: 3px solid #4a9eff;
+.structured-scene-card.scene-status-complete,
+.cork-card.scene-status-complete {
+    border-left: 3px solid var(--accent-green) !important;
 }
 
-.structured-color-green {
-    border-left: 3px solid #4caf50;
+.structured-scene-card.scene-status-review,
+.cork-card.scene-status-review {
+    border-left: 3px solid var(--accent-blue) !important;
 }
 
-.structured-color-purple {
-    border-left: 3px solid #9b59b6;
+/* KANBAN VIEW STYLES */
+.kanban-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    align-items: start;
+    padding: 0.5rem;
 }
 
-.structured-color-orange {
-    border-left: 3px solid #ff8c42;
+.kanban-column {
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    min-height: 600px;
+    box-shadow: 0 4px 12px var(--shadow);
+    transition: all 0.3s ease;
 }
 
-.structured-color-red {
-    border-left: 3px solid #e74c3c;
+.kanban-column:hover {
+    box-shadow: 0 8px 24px var(--shadow);
 }
 
-.structured-color-teal {
-    border-left: 3px solid #1abc9c;
+.kanban-column-header {
+    padding: 1.25rem;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    background: var(--bg-primary);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1rem;
 }
 
-.structured-color-default {
-    border-left: 3px solid #3a3a3a;
+.kanban-scenes-list {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    flex: 1;
+}
+
+.kanban-scenes-list .structured-scene-card {
+    margin: 0;
+    width: 100%;
+    transform: none !important;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.kanban-scenes-list .structured-scene-card:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px var(--shadow) !important;
 }
 
 @keyframes slideIn {
@@ -520,8 +559,8 @@
 /* Canvas pour les visualisations */
 .visualization-canvas {
     width: 100%;
-    height: 600px;
-    background: white;
+    height: 750px;
+    background: var(--bg-primary);
     border: 2px solid var(--border-color);
     border-radius: 4px;
     position: relative;
@@ -598,8 +637,8 @@
     position: relative;
     overflow: hidden;
     background:
-        linear-gradient(90deg, rgba(212, 175, 55, 0.05) 1px, transparent 1px),
-        linear-gradient(rgba(212, 175, 55, 0.05) 1px, transparent 1px);
+        linear-gradient(90deg, rgba(var(--accent-gold-rgb), 0.05) 1px, transparent 1px),
+        linear-gradient(rgba(var(--accent-gold-rgb), 0.05) 1px, transparent 1px);
     background-size: 20px 20px;
 }
 
@@ -750,17 +789,17 @@
 
 .mindmap-node.type-character {
     border-color: var(--accent-red);
-    background: rgba(196, 69, 54, 0.05);
+    background: rgba(var(--accent-red-rgb), 0.05);
 }
 
 .mindmap-node.type-element {
-    border-color: #4caf50;
-    background: rgba(76, 175, 80, 0.05);
+    border-color: var(--accent-green);
+    background: rgba(var(--accent-green-rgb), 0.05);
 }
 
 .mindmap-node.type-scene {
-    border-color: #2196f3;
-    background: rgba(33, 150, 243, 0.05);
+    border-color: var(--accent-blue);
+    background: rgba(var(--accent-blue-rgb), 0.05);
 }
 
 .mindmap-node.type-note {
@@ -770,17 +809,17 @@
 
 .mindmap-node.type-codex {
     border-color: var(--accent-purple);
-    background: rgba(167, 139, 250, 0.05);
+    background: rgba(var(--accent-purple-rgb), 0.05);
 }
 
 .mindmap-node.type-act {
     border-color: var(--primary-color);
-    background: rgba(255, 140, 66, 0.08);
+    background: rgba(var(--primary-color-rgb), 0.08);
 }
 
 .mindmap-node.type-chapter {
     border-color: var(--accent-blue);
-    background: rgba(74, 158, 255, 0.05);
+    background: rgba(var(--accent-blue-rgb), 0.05);
 }
 
 .mindmap-link-line {
@@ -1376,22 +1415,22 @@
 
 /* Arc Scene Panel Styles */
 .arc-scene-panel {
-    position: fixed;
-    right: 0;
-    top: 60px;
-    width: 350px;
-    height: calc(100vh - 60px);
-    background: var(--bg-primary);
+    background: var(--bg-secondary);
     border-left: 2px solid var(--border-color);
-    box-shadow: -4px 0 12px var(--shadow);
-    z-index: 900;
-    transition: transform 0.3s ease;
+    border-right: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
+    overflow: hidden;
+    min-width: 250px;
+    width: 280px;
+    height: 100%;
+    z-index: 10;
 }
 
 .arc-scene-panel.hidden {
-    transform: translateX(100%);
+    display: none;
+    min-width: 0;
+    width: 0;
 }
 
 .arc-scene-panel-header {
@@ -1507,6 +1546,16 @@
     font-size: 0.9rem;
 }
 
+.arc-column-select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 2px solid var(--border-color);
+    border-radius: 6px;
+    background: var(--bg-primary);
+    font-size: 0.9rem;
+    color: var(--text-primary);
+}
+
 .arc-notes-textarea {
     width: 100%;
     min-height: 60px;
@@ -1552,4 +1601,144 @@
     font-size: 3rem;
     margin-bottom: 1rem;
     opacity: 0.3;
+}
+
+/* ============================================ 
+   LIVE TENSION METER 
+   ============================================ */
+
+.tension-meter-container {
+    position: fixed;
+    bottom: 2rem;
+    right: 6.5rem;
+    /* Left of focus button */
+    width: 60px;
+    height: 60px;
+    background: var(--bg-primary);
+    border-radius: 50%;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: help;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 2px solid var(--border-color);
+}
+
+.tension-meter-container:hover {
+    transform: scale(1.1);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.tension-meter-svg {
+    transform: rotate(-90deg);
+    width: 50px;
+    height: 50px;
+}
+
+.tension-meter-bg {
+    fill: none;
+    stroke: var(--bg-secondary);
+    stroke-width: 4;
+}
+
+.tension-meter-fill {
+    fill: none;
+    stroke: var(--accent-blue);
+    stroke-width: 4;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.5s ease, stroke 0.5s ease;
+}
+
+.tension-value-display {
+    position: absolute;
+    font-family: 'Source Code Pro', monospace;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* Tooltip premium */
+.tension-tooltip {
+    position: absolute;
+    bottom: 110%;
+    right: 0;
+    width: 220px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    z-index: 1001;
+    pointer-events: none;
+}
+
+.tension-meter-container:hover .tension-tooltip {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(-5px);
+}
+
+.tension-tooltip-title {
+    font-weight: 700;
+    font-size: 0.9rem;
+    margin-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.tension-tooltip-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    margin-bottom: 0.4rem;
+    color: var(--text-secondary);
+}
+
+.tension-tags-container {
+    margin-top: 0.75rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.tension-tag {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.65rem;
+    font-weight: 600;
+}
+
+.tension-tag-high {
+    background: rgba(196, 69, 54, 0.1);
+    color: var(--accent-red);
+    border: 1px solid rgba(196, 69, 54, 0.2);
+}
+
+.tension-tag-medium {
+    background: rgba(184, 134, 11, 0.1);
+    color: var(--accent-gold);
+    border: 1px solid rgba(184, 134, 11, 0.2);
+}
+
+.tension-tag-low {
+    background: rgba(58, 123, 200, 0.1);
+    color: var(--accent-blue);
+    border: 1px solid rgba(58, 123, 200, 0.2);
+}
+
+.tension-meter-container.focus-hide {
+    opacity: 0.2;
+}
+
+.tension-meter-container.focus-hide:hover {
+    opacity: 1;
 }

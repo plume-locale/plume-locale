@@ -20,9 +20,12 @@ const CharacterModel = {
             pronouns: data.pronouns || '',
             sex: data.sex || '',
             race: data.race || 'Humain',
+            group: data.group || '',
             age: data.age || '',
             birthDate: data.birthDate || '',
+            deathDate: data.deathDate || '',
             birthPlace: data.birthPlace || '',
+            deathPlace: data.deathPlace || '',
             residence: data.residence || '',
             occupation: data.occupation || '',
             // Header

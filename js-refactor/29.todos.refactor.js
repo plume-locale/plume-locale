@@ -10,15 +10,15 @@ function toggleTodosPanel() {
     const btn = document.getElementById('sidebarTodosBtn');
     const toolBtn = document.getElementById('toolTodosBtn');
 
-    if (panel.classList.contains('visible')) {
-        panel.classList.remove('visible');
-        if (btn) btn.classList.remove('active');
-        if (toolBtn) toolBtn.classList.remove('active');
-    } else {
+    if (panel.classList.contains('hidden')) {
         renderTodosPanel();
-        panel.classList.add('visible');
+        panel.classList.remove('hidden');
         if (btn) btn.classList.add('active');
         if (toolBtn) toolBtn.classList.add('active');
+    } else {
+        panel.classList.add('hidden');
+        if (btn) btn.classList.remove('active');
+        if (toolBtn) toolBtn.classList.remove('active');
     }
 }
 
@@ -29,7 +29,7 @@ function closeTodosPanel() {
     const btn = document.getElementById('sidebarTodosBtn');
     const toolBtn = document.getElementById('toolTodosBtn');
     if (panel) {
-        panel.classList.remove('visible');
+        panel.classList.add('hidden');
     }
     if (btn) btn.classList.remove('active');
     if (toolBtn) toolBtn.classList.remove('active');
@@ -77,7 +77,7 @@ function renderTodosPanel() {
         panel.innerHTML = `
             <div class="annotations-panel-header">
                 <h3 style="margin: 0;"><i data-lucide="check-square" style="width:18px;height:18px;vertical-align:middle;margin-right:6px;"></i>TODOs (0)</h3>
-                <span class="annotations-panel-close" onclick="closeTodosPanel()" title="Fermer">×</span>
+                <span class="annotations-panel-close" onclick="closeTodosPanel()" title="Fermer"><i data-lucide="x" style="width:16px;height:16px;"></i></span>
             </div>
             <p style="text-align: center; color: var(--text-muted); padding: 2rem;">Aucun TODO dans le projet</p>
         `;
@@ -85,7 +85,7 @@ function renderTodosPanel() {
         panel.innerHTML = `
             <div class="annotations-panel-header">
                 <h3 style="margin: 0;"><i data-lucide="check-square" style="width:18px;height:18px;vertical-align:middle;margin-right:6px;"></i>TODOs (${pendingTodos.length} actif${pendingTodos.length > 1 ? 's' : ''})</h3>
-                <span class="annotations-panel-close" onclick="closeTodosPanel()" title="Fermer">×</span>
+                <span class="annotations-panel-close" onclick="closeTodosPanel()" title="Fermer"><i data-lucide="x" style="width:16px;height:16px;"></i></span>
             </div>
             
             ${pendingTodos.length > 0 ? `
@@ -97,7 +97,7 @@ function renderTodosPanel() {
                             <div class="annotation-content">${todo.text}</div>
                             <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
                                 <button class="btn btn-small" onclick="event.stopPropagation(); toggleTodoFromPanel(${todo.actId}, ${todo.chapterId}, ${todo.sceneId}, ${todo.id})">
-                                    Marquer terminé
+                                    <i data-lucide="check" style="width:12px;height:12px;vertical-align:middle;margin-right:4px;"></i>Marquer terminé
                                 </button>
                             </div>
                         </div>
@@ -114,7 +114,7 @@ function renderTodosPanel() {
                             <div class="annotation-content" style="text-decoration: line-through;">${todo.text}</div>
                             <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
                                 <button class="btn btn-small" onclick="event.stopPropagation(); toggleTodoFromPanel(${todo.actId}, ${todo.chapterId}, ${todo.sceneId}, ${todo.id})">
-                                    Rouvrir
+                                    <i data-lucide="rotate-ccw" style="width:12px;height:12px;vertical-align:middle;margin-right:4px;"></i>Rouvrir
                                 </button>
                             </div>
                         </div>
@@ -125,7 +125,7 @@ function renderTodosPanel() {
     }
 
     // Afficher le panneau
-    parentPanel.classList.add('visible');
+    parentPanel.classList.remove('hidden');
 
     // Rafraîchir les icônes Lucide
     setTimeout(() => {
@@ -154,6 +154,9 @@ function toggleTodoFromPanel(actId, chapterId, sceneId, todoId) {
     if (todo) {
         todo.completed = !todo.completed;
         saveProject();
+        if (typeof saveToHistory === 'function') {
+            saveToHistory('toggleTodo');
+        }
         renderTodosPanel();
         updateAnnotationsButton(false);
         renderActsList();
@@ -225,12 +228,16 @@ renderActsList = function () {
 
                     let badgeHTML = `<span class="scene-badge">${annotCount}</span>`;
                     if (todoCount > 0) {
-                        badgeHTML += `<span class="scene-badge" style="background: var(--accent-red);">✓${todoCount}</span>`;
+                        badgeHTML += `<span class="scene-badge" style="background: var(--accent-red);"><i data-lucide="check" style="width:10px;height:10px;vertical-align:middle;margin-right:2px;"></i>${todoCount}</span>`;
                     }
 
-                    const textSpan = sceneElement.querySelector('div > span:not(.drag-handle)');
-                    if (textSpan && !textSpan.querySelector('.scene-badge')) {
-                        textSpan.innerHTML += badgeHTML;
+                    // Chercher spécifiquement le span du titre
+                    const titleSpan = sceneElement.querySelector('.scene-title') ||
+                        sceneElement.querySelector('span[ondblclick*="startEditingScene"]') ||
+                        sceneElement.querySelector('div > span:not(.drag-handle)');
+
+                    if (titleSpan && !titleSpan.querySelector('.scene-badge')) {
+                        titleSpan.innerHTML += badgeHTML;
                     }
                 }
             });
@@ -311,7 +318,7 @@ function renderTodosList() {
     });
 
     if (todos.length === 0) {
-        editorView.innerHTML = '<div style="height: 100%; overflow-y: auto; padding: 3rem; text-align: center; color: var(--text-muted); font-size: 1.2rem;">📝 Aucun TODO<br><br><small style="font-size: 0.9rem;">Les TODOs apparaissent lorsque vous utilisez le mode révision</small></div>';
+        editorView.innerHTML = '<div style="height: 100%; overflow-y: auto; padding: 3rem; text-align: center; color: var(--text-muted); font-size: 1.2rem;"><i data-lucide="clipboard-list" style="width:48px;height:48px;margin-bottom:1rem;color:var(--text-muted);display:block;margin: 0 auto 1rem;"></i> Aucun TODO<br><br><small style="font-size: 0.9rem;">Les TODOs apparaissent lorsque vous utilisez le mode révision</small></div>';
     } else {
         editorView.innerHTML = `
             <div style="height: 100%; overflow-y: auto; padding: 2rem 3rem;">
@@ -326,7 +333,7 @@ function renderTodosList() {
                         <div style="flex: 1;">
                             <div style="font-size: 1rem; ${todo.completed ? 'text-decoration: line-through; opacity: 0.6;' : 'font-weight: 500;'}">${todo.text}</div>
                             <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">
-                                📍 ${todo.actTitle} › ${todo.chapterTitle} › ${todo.sceneTitle}
+                                <i data-lucide="map-pin" style="width:12px;height:12px;margin-right:4px;vertical-align:middle;"></i> ${todo.actTitle} › ${todo.chapterTitle} › ${todo.sceneTitle}
                             </div>
                         </div>
                     </div>
@@ -335,6 +342,7 @@ function renderTodosList() {
             </div>
         `;
     }
+    if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
 // [MVVM : ViewModel]
@@ -351,6 +359,9 @@ function toggleTodoFromList(todoId, actId, chapterId, sceneId) {
     if (todo) {
         todo.completed = !todo.completed;
         saveProject();
+        if (typeof saveToHistory === 'function') {
+            saveToHistory('toggleTodo');
+        }
         renderTodosList();
         renderActsList();
     }

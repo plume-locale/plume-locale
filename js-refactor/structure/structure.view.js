@@ -204,6 +204,9 @@ function renderActsList() {
     const container = document.getElementById('chaptersList');
     if (!container) return;
 
+    // Sauvegarder la position du scroll avant le rendu
+    const scrollTop = container.scrollTop;
+
     const vm = getStructureViewModel();
     if (!vm.acts || vm.acts.length === 0) {
         container.innerHTML = `
@@ -223,13 +226,13 @@ function renderActsList() {
 
         html += `<div class="act-group" id="act-${act.id}" data-act-id="${act.id}">
             <div class="act-header ${typeof currentActId !== 'undefined' && currentActId === act.id ? 'active' : ''}" data-act-id="${act.id}">
-                <span class="drag-handle" draggable="true" onclick="event.stopPropagation()">⋮⋮</span>
-                <span class="act-icon ${actExpanded ? 'expanded' : ''}" onclick="toggleAct(${act.id}); event.stopPropagation();" style="cursor: pointer;">▶</span>
+                <span class="drag-handle" draggable="true" onclick="event.stopPropagation()"><i data-lucide="grip-vertical" style="width:12px;height:12px;vertical-align:middle;"></i></span>
+                <span class="act-icon ${actExpanded ? 'expanded' : ''}" onclick="toggleAct(${act.id}); event.stopPropagation();" style="cursor: pointer;"><i data-lucide="${actExpanded ? 'chevron-down' : 'chevron-right'}" style="width:14px;height:14px;vertical-align:middle;"></i></span>
                 <span class="auto-number">${actIndex + 1}.</span>
-                <span class="act-title" ondblclick="event.stopPropagation(); startEditingAct(${act.id}, this)" onclick="toggleAct(${act.id})">${act.title}</span>
-                <span class="edit-hint">✏️</span>
+                <span class="act-title" ondblclick="event.stopPropagation(); startEditingAct(${act.id}, this)" onclick="${act.chapters.length > 0 ? `openAct(${act.id})` : ''}">${act.title}</span>
+                <span class="edit-hint"><i data-lucide="pencil" style="width:10px;height:10px;"></i></span>
                 <span class="word-count-badge" title="${actStats.totalWords.toLocaleString()} mots">${typeof formatWordCount === 'function' ? formatWordCount(actStats.totalWords) : actStats.totalWords}</span>
-                <button class="btn btn-icon btn-small delete-btn" onclick="event.stopPropagation(); deleteAct(${act.id})">×</button>
+                <button class="btn btn-icon btn-small delete-btn" onclick="event.stopPropagation(); deleteAct(${act.id})"><i data-lucide="x" style="width:12px;height:12px;"></i></button>
             </div>
             <div class="act-chapters ${actExpanded ? 'visible' : ''}">`;
 
@@ -241,15 +244,15 @@ function renderActsList() {
 
             html += `<div class="chapter-group" id="chapter-${chapter.id}" data-chapter-id="${chapter.id}" data-act-id="${act.id}">
                 <div class="chapter-header ${typeof currentChapterId !== 'undefined' && currentChapterId === chapter.id ? 'active' : ''}" data-chapter-id="${chapter.id}" data-act-id="${act.id}">
-                    <span class="drag-handle" draggable="true" onclick="event.stopPropagation()">⋮⋮</span>
-                    <span class="chapter-icon ${chExpanded ? 'expanded' : ''}" onclick="toggleChapter(${act.id}, ${chapter.id}); event.stopPropagation();" style="cursor: pointer;">▶</span>
+                    <span class="drag-handle" draggable="true" onclick="event.stopPropagation()"><i data-lucide="grip-vertical" style="width:12px;height:12px;vertical-align:middle;"></i></span>
+                    <span class="chapter-icon ${chExpanded ? 'expanded' : ''}" onclick="toggleChapter(${act.id}, ${chapter.id}); event.stopPropagation();" style="cursor: pointer;"><i data-lucide="${chExpanded ? 'chevron-down' : 'chevron-right'}" style="width:14px;height:14px;vertical-align:middle;"></i></span>
                     <span class="auto-number">${chNumber}</span>
-                    <span class="chapter-title" ondblclick="event.stopPropagation(); startEditingChapter(${act.id}, ${chapter.id}, this)" onclick="toggleChapter(${act.id}, ${chapter.id})">${chapter.title}</span>
-                    <span class="edit-hint">✏️</span>
+                    <span class="chapter-title" ondblclick="event.stopPropagation(); startEditingChapter(${act.id}, ${chapter.id}, this)" onclick="${chapter.scenes.length > 0 ? `openChapter(${act.id}, ${chapter.id})` : ''}">${chapter.title}</span>
+                    <span class="edit-hint"><i data-lucide="pencil" style="width:10px;height:10px;"></i></span>
                     <span class="word-count-badge" title="${chStats.totalWords.toLocaleString()} mots">${typeof formatWordCount === 'function' ? formatWordCount(chStats.totalWords) : chStats.totalWords}</span>
                     <span class="status-badge status-${chStatus}" title="${chStats.progressPercent}%"></span>
-                    <span class="chapter-count">${chapter.scenes.length}</span>
-                    <button class="btn btn-icon btn-small delete-btn" onclick="event.stopPropagation(); deleteChapter(${act.id}, ${chapter.id})">×</button>
+                    <span class="chapter-count" title="Nombre de scènes" style="cursor: default;">${chapter.scenes.length}</span>
+                    <button class="btn btn-icon btn-small delete-btn" onclick="event.stopPropagation(); deleteChapter(${act.id}, ${chapter.id})"><i data-lucide="x" style="width:12px;height:12px;"></i></button>
                 </div>
                 <div class="scenes-list ${chExpanded ? 'visible' : ''}">`;
 
@@ -263,17 +266,17 @@ function renderActsList() {
 
                 html += `<div class="scene-item draggable ${isActive ? 'active' : ''}" draggable="true" data-scene-id="${scene.id}" data-chapter-id="${chapter.id}" data-act-id="${act.id}" onclick="openScene(${act.id}, ${chapter.id}, ${scene.id})" ${tooltip ? `title="${tooltip}"` : ''}>
                     <div style="display: flex; align-items: center; gap: 0.4rem; flex: 1; min-width: 0;">
-                        <span class="drag-handle">⋮⋮</span>
+                        <span class="drag-handle"><i data-lucide="grip-vertical" style="width:12px;height:12px;vertical-align:middle;"></i></span>
                         <span class="auto-number">${sNumber}</span>
                         <div style="flex: 1; min-width: 0; overflow: hidden;">
                             <span ondblclick="event.stopPropagation(); startEditingScene(${act.id}, ${chapter.id}, ${scene.id}, this)" style="display: block;">${scene.title}</span>
                             ${synopsis ? `<span class="scene-synopsis">${synopsis}</span>` : ''}
                         </div>
-                        <span class="edit-hint">✏️</span>
+                        <span class="edit-hint"><i data-lucide="pencil" style="width:10px;height:10px;"></i></span>
                     </div>
                     <span class="word-count-badge" title="${sWords.toLocaleString()} mots">${typeof formatWordCount === 'function' ? formatWordCount(sWords) : sWords}</span>
                     <span class="status-badge status-${sStatus}" onclick="event.stopPropagation(); toggleSceneStatus(${act.id}, ${chapter.id}, ${scene.id}, event)" style="cursor: pointer;" title="Cliquez pour changer le statut"></span>
-                    <button class="btn btn-icon btn-small delete-btn" onclick="event.stopPropagation(); deleteScene(${act.id}, ${chapter.id}, ${scene.id})">×</button>
+                    <button class="btn btn-icon btn-small delete-btn" onclick="event.stopPropagation(); deleteScene(${act.id}, ${chapter.id}, ${scene.id})"><i data-lucide="x" style="width:12px;height:12px;"></i></button>
                 </div>`;
             });
 
@@ -295,7 +298,12 @@ function renderActsList() {
     if (typeof updateStats === 'function') updateStats();
     if (typeof updateProgressBar === 'function') updateProgressBar();
     if (typeof applyStatusFilters === 'function') applyStatusFilters();
-    if (typeof restoreTreeState === 'function') setTimeout(() => restoreTreeState(), 50);
+    if (typeof restoreTreeState === 'function') restoreTreeState();
+
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+
+    // Restaurer la position du scroll
+    container.scrollTop = scrollTop;
 }
 
 // --- ORCHESTRATION ---
@@ -655,7 +663,7 @@ function renderSceneCharacters(actId, chapterId, scene) {
         return `
             <span class="link-badge" onclick="event.stopPropagation(); switchView('characters'); openCharacterDetail(${charId});">
                 ${character.name}
-                <span class="link-badge-remove" onclick="event.stopPropagation(); toggleCharacterInScene(${actId}, ${chapterId}, ${scene.id}, ${charId}); openScene(${actId}, ${chapterId}, ${scene.id});">×</span>
+                <span class="link-badge-remove" onclick="event.stopPropagation(); toggleCharacterInScene(${actId}, ${chapterId}, ${scene.id}, ${charId}); openScene(${actId}, ${chapterId}, ${scene.id});"><i data-lucide="x" style="width:10px;height:10px;"></i></span>
             </span>`;
     }).join('');
 }
@@ -676,7 +684,7 @@ function renderSceneElements(actId, chapterId, scene) {
         return `
             <span class="link-badge" onclick="event.stopPropagation(); switchView('world'); openWorldDetail(${elemId});">
                 ${element.name}
-                <span class="link-badge-remove" onclick="event.stopPropagation(); toggleElementInScene(${actId}, ${chapterId}, ${scene.id}, ${elemId}); openScene(${actId}, ${chapterId}, ${scene.id});">×</span>
+                <span class="link-badge-remove" onclick="event.stopPropagation(); toggleElementInScene(${actId}, ${chapterId}, ${scene.id}, ${elemId}); openScene(${actId}, ${chapterId}, ${scene.id});"><i data-lucide="x" style="width:10px;height:10px;"></i></span>
            </span>`;
     }).join('');
 }
