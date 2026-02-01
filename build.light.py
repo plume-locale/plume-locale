@@ -38,7 +38,8 @@ CSS_ORDER = [
     '10.mobile.css',
     # '11.storygrid.css',  # RETIRÉ pour version Light
     '12.arc-board.css',
-    '14.word-repetition.css'
+    '14.word-repetition.css' ,
+    '14.product-tour.css' ,
 ]
 
 # Ordre des fichiers JS
@@ -161,7 +162,14 @@ JS_ORDER = [
     'js-refactor/word-repetition/word-repetition.viewmodel.js',
     'js-refactor/word-repetition/word-repetition.view.js',
     'js-refactor/word-repetition/word-repetition.handlers.js',
-    'js-refactor/word-repetition/word-repetition.main.js'
+    'js-refactor/word-repetition/word-repetition.main.js',
+    # Product tour
+    'js-refactor/48.product-tour.model.js',
+    'js-refactor/48.product-tour.repository.js',
+    'js-refactor/48.product-tour.viewmodel.js',
+    'js-refactor/48.product-tour.view.js',
+    'js-refactor/48.product-tour.handlers.js',
+    'js-refactor/48.product-tour.main.js',
 ]
 
 def read_file(path):
