@@ -149,7 +149,10 @@ const ProductTourDriverRepository = {
                 checkCount++;
                 const elapsed = Date.now() - startTime;
                 
-                if (typeof window.driver !== 'undefined' || typeof driver !== 'undefined') {
+                // Check for driver.js IIFE bundle export: window.driver.js.driver
+                const driverFn = window.driver?.js?.driver || window.driver?.driver || window.driver;
+                
+                if (typeof driverFn === 'function') {
                     console.log(`✅ Driver.js loaded after ${elapsed}ms (${checkCount} checks)`);
                     resolve(true);
                     return;
@@ -157,8 +160,9 @@ const ProductTourDriverRepository = {
                 
                 if (elapsed > timeout) {
                     console.error(`❌ Driver.js library loading timeout after ${elapsed}ms (${checkCount} checks)`);
-                    console.error('window.driver:', typeof window.driver);
-                    console.error('global driver:', typeof driver);
+                    console.error('window.driver:', window.driver);
+                    console.error('window.driver.js:', window.driver?.js);
+                    console.error('window.driver.js.driver:', window.driver?.js?.driver);
                     resolve(false);
                     return;
                 }
@@ -190,8 +194,14 @@ const ProductTourDriverRepository = {
                 return null;
             }
             
-            // Use window.driver if available, otherwise fall back to driver
-            const driverFn = window.driver || driver;
+            // Get the driver function from the IIFE bundle
+            // The bundle exports to window.driver.js.driver
+            const driverFn = window.driver?.js?.driver || window.driver?.driver || window.driver;
+            
+            if (typeof driverFn !== 'function') {
+                console.error('Driver function not found or not a function:', typeof driverFn);
+                return null;
+            }
 
             // Filtrer les steps valides
             const validSteps = ProductTourStepsModel.filterValidSteps(steps);
