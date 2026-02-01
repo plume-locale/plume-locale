@@ -96,9 +96,13 @@
             </button>
         </div>
 
-        <div class="mobile-nav-section">
-            <div class="mobile-nav-section-title"><i data-lucide="settings"></i> Actions</div>
-            <button class="mobile-nav-item" onclick="openProjectsModal(); toggleMobileNav();">
+        <div class="mobile-nav-section">
+            <div class="mobile-nav-section-title"><i data-lucide="settings"></i> Actions</div>
+            <button class="mobile-nav-item" onclick="if(typeof startProductTourVM === 'function') startProductTourVM(); toggleMobileNav();">
+                <span class="mobile-nav-item-icon"><i data-lucide="help-circle"></i></span>
+                <span>Visite Guidée</span>
+            </button>
+            <button class="mobile-nav-item" onclick="openProjectsModal(); toggleMobileNav();">
                 <span class="mobile-nav-item-icon"><i data-lucide="folder-open"></i></span>
                 <span>Mes Projets</span>
             </button>
