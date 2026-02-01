@@ -140,20 +140,32 @@ const ProductTourDriverRepository = {
      * @param {number} timeout - Timeout en ms (défaut: 5000).
      * @returns {Promise<boolean>} True si chargé, false sinon.
      */
-    waitForDriver: function (timeout = 5000) {
+    waitForDriver: function (timeout = 10000) {
         return new Promise((resolve) => {
             const startTime = Date.now();
+            let checkCount = 0;
             
             const checkDriver = () => {
+                checkCount++;
+                const elapsed = Date.now() - startTime;
+                
                 if (typeof window.driver !== 'undefined' || typeof driver !== 'undefined') {
+                    console.log(`✅ Driver.js loaded after ${elapsed}ms (${checkCount} checks)`);
                     resolve(true);
                     return;
                 }
                 
-                if (Date.now() - startTime > timeout) {
-                    console.error('Driver.js library loading timeout');
+                if (elapsed > timeout) {
+                    console.error(`❌ Driver.js library loading timeout after ${elapsed}ms (${checkCount} checks)`);
+                    console.error('window.driver:', typeof window.driver);
+                    console.error('global driver:', typeof driver);
                     resolve(false);
                     return;
+                }
+                
+                // Log every second
+                if (checkCount % 10 === 0) {
+                    console.log(`⏳ Waiting for Driver.js... ${elapsed}ms elapsed`);
                 }
                 
                 setTimeout(checkDriver, 100);

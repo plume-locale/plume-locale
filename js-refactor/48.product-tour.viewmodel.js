@@ -27,10 +27,22 @@ async function initProductTourVM() {
 
         // Vérifier si on doit afficher le modal de bienvenue
         if (ProductTourStateRepository.shouldShowOnStartup()) {
-            // Attendre un peu pour que l'app soit complètement chargée
-            setTimeout(() => {
-                showWelcomeModalVM();
-            }, 1000);
+            // Attendre que la page soit complètement chargée (y compris les scripts externes)
+            const waitForPageLoad = () => {
+                if (document.readyState === 'complete') {
+                    setTimeout(() => {
+                        showWelcomeModalVM();
+                    }, 1000);
+                } else {
+                    window.addEventListener('load', () => {
+                        setTimeout(() => {
+                            showWelcomeModalVM();
+                        }, 1000);
+                    });
+                }
+            };
+            
+            waitForPageLoad();
         }
 
         return {
