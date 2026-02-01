@@ -26,6 +26,8 @@ def log(message):
 
 # Ordre des fichiers CSS
 CSS_ORDER = [
+    # Vendor CSS (bundled)
+    '../vendor/driver.css',
     '01.variables.css',
     '02.base.css',
     '03.header.css',
@@ -44,6 +46,8 @@ CSS_ORDER = [
 
 # Ordre des fichiers JS
 JS_ORDER = [
+    # Vendor libraries (bundled)
+    'vendor/driver.js.iife.js',
     'js-refactor/01.app.refactor.js',
     '38.tension.js',
     '02.storage.js',
