@@ -306,8 +306,40 @@ const ProductTourDriverView = {
      * Nettoie les éléments de la vue après le tour.
      */
     cleanup: function () {
-        // Supprimer les éléments temporaires si nécessaire
+        console.log('🧹 Cleaning up tour elements...');
+        
+        // Supprimer les éléments temporaires
         const tempElements = document.querySelectorAll('[data-tour-temp]');
         tempElements.forEach(el => el.remove());
+        
+        // Supprimer tous les éléments Driver.js qui pourraient rester
+        const driverElements = [
+            '.driver-overlay',
+            '.driver-popover',
+            '#driver-popover-content',
+            '.driver-active-element',
+            '.driver-no-interaction',
+            '#driver-dummy-element'
+        ];
+        
+        driverElements.forEach(selector => {
+            const elements = document.querySelectorAll(selector);
+            elements.forEach(el => {
+                console.log('Removing element:', selector);
+                el.remove();
+            });
+        });
+        
+        // Retirer les classes Driver.js du body
+        document.body.classList.remove('driver-active', 'driver-fade', 'driver-simple');
+        
+        // Retirer les attributs aria ajoutés par Driver.js
+        document.querySelectorAll('[aria-haspopup="dialog"]').forEach(el => {
+            el.removeAttribute('aria-haspopup');
+            el.removeAttribute('aria-expanded');
+            el.removeAttribute('aria-controls');
+        });
+        
+        console.log('✅ Tour cleanup complete');
     }
 };
