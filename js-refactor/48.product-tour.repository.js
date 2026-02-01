@@ -136,15 +136,44 @@ const ProductTourStateRepository = {
 
 const ProductTourDriverRepository = {
     /**
+     * Attend que Driver.js soit chargé.
+     * @param {number} timeout - Timeout en ms (défaut: 5000).
+     * @returns {Promise<boolean>} True si chargé, false sinon.
+     */
+    waitForDriver: function (timeout = 5000) {
+        return new Promise((resolve) => {
+            const startTime = Date.now();
+            
+            const checkDriver = () => {
+                if (typeof window.driver !== 'undefined' || typeof driver !== 'undefined') {
+                    resolve(true);
+                    return;
+                }
+                
+                if (Date.now() - startTime > timeout) {
+                    console.error('Driver.js library loading timeout');
+                    resolve(false);
+                    return;
+                }
+                
+                setTimeout(checkDriver, 100);
+            };
+            
+            checkDriver();
+        });
+    },
+
+    /**
      * Initialise une instance Driver.js.
      * @param {Object} config - Configuration Driver.js.
      * @param {Array} steps - Steps du tour.
-     * @returns {Object|null} Instance Driver.js ou null.
+     * @returns {Promise<Object|null>} Instance Driver.js ou null.
      */
-    createDriver: function (config, steps) {
+    createDriver: async function (config, steps) {
         try {
-            // Check if Driver.js is loaded (window.driver for IIFE bundle)
-            if (typeof window.driver === 'undefined' && typeof driver === 'undefined') {
+            // Attendre que Driver.js soit chargé
+            const isLoaded = await this.waitForDriver();
+            if (!isLoaded) {
                 console.error('Driver.js library not loaded');
                 return null;
             }

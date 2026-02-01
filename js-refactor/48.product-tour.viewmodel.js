@@ -113,9 +113,9 @@ function hideWelcomeModalVM() {
 
 /**
  * Démarre la visite guidée.
- * @returns {Object} Résultat de l'opération.
+ * @returns {Promise<Object>} Résultat de l'opération.
  */
-function startProductTourVM() {
+async function startProductTourVM() {
     console.log('Starting product tour...');
 
     try {
@@ -136,12 +136,12 @@ function startProductTourVM() {
 
         // Créer la configuration Driver.js
         const isMobile = window.innerWidth < 768;
-        const config = isMobile 
+        const config = isMobile
             ? ProductTourConfigModel.createMobileConfig()
             : ProductTourConfigModel.createDriverConfig();
 
-        // Créer l'instance Driver.js
-        const driverInstance = ProductTourDriverRepository.createDriver(config, steps);
+        // Créer l'instance Driver.js (async)
+        const driverInstance = await ProductTourDriverRepository.createDriver(config, steps);
         if (!driverInstance) {
             ProductTourNotificationView.showError('Impossible de démarrer la visite');
             return {
