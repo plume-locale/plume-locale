@@ -217,6 +217,21 @@ if [ -d "$LIVE_DIR" ]; then
 fi
 
 log ""
+log "--- Génération de index.html ---"
+# Générer le fichier index.html
+if [ -f "$BUILD_DIR/build-index-live.sh" ]; then
+    "$BUILD_DIR/build-index-live.sh" >> "$LOG_FILE" 2>&1
+    if [ -f "$LIVE_DIR/index.html" ]; then
+        INDEX_SIZE=$(du -h "$LIVE_DIR/index.html" | cut -f1)
+        log "   [OK] index.html généré ($INDEX_SIZE)"
+    else
+        log "   [ERREUR] Échec de la génération de index.html"
+    fi
+else
+    log "   [!] Script build-index-live.sh non trouvé"
+fi
+
+log ""
 log "Pour commiter et pousser vers GitHub:"
 log "  git add live/"
 log "  git commit -m 'Deploy: version light pour production'"
