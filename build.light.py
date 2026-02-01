@@ -202,13 +202,24 @@ def collect_css():
     found_count = 0
     
     for filename in CSS_ORDER:
-        filepath = os.path.join(css_dir, filename)
-        if os.path.exists(filepath):
-            content = read_file(f'css/{filename}')
-            css_content.append(f'/* ========== {filename} ========== */')
-            css_content.append(content)
-            css_content.append('')
-            found_count += 1
+        if filename.startswith('../vendor/'):
+            # Vendor CSS files (bundled libraries)
+            vendor_path = filename.replace('../', '')
+            filepath = os.path.join(BUILD_DIR, vendor_path)
+            if os.path.exists(filepath):
+                content = read_file(vendor_path)
+                css_content.append(f'/* ========== {vendor_path} ========== */')
+                css_content.append(content)
+                css_content.append('')
+                found_count += 1
+        else:
+            filepath = os.path.join(css_dir, filename)
+            if os.path.exists(filepath):
+                content = read_file(f'css/{filename}')
+                css_content.append(f'/* ========== {filename} ========== */')
+                css_content.append(content)
+                css_content.append('')
+                found_count += 1
     
     # Ensuite les fichiers non listés (sauf Storygrid)
     for filepath in glob.glob(os.path.join(css_dir, '*.css')):
@@ -252,21 +263,31 @@ def collect_js():
     found_count = 0
     
     for filename in JS_ORDER:
-        if filename.startswith('js-refactor/'):
+        if filename.startswith('vendor/'):
+            # Vendor files (bundled libraries)
             filepath = os.path.join(BUILD_DIR, filename)
+            if os.path.exists(filepath):
+                content = read_file(filename)
+                js_content.append(f'// ========== {filename} ==========')
+                js_content.append(content)
+                js_content.append('')
+                found_count += 1
+        elif filename.startswith('js-refactor/'):
+            filepath = os.path.join(BUILD_DIR, filename)
+            if os.path.exists(filepath):
+                content = read_file(filename)
+                js_content.append(f'// ========== {filename} ==========')
+                js_content.append(content)
+                js_content.append('')
+                found_count += 1
         else:
             filepath = os.path.join(BUILD_DIR, 'js', filename)
-        
-        if os.path.exists(filepath):
-            if filename.startswith('js-refactor/'):
-                content = read_file(filename)
-            else:
+            if os.path.exists(filepath):
                 content = read_file(f'js/{filename}')
-            
-            js_content.append(f'// ========== {filename} ==========')
-            js_content.append(content)
-            js_content.append('')
-            found_count += 1
+                js_content.append(f'// ========== {filename} ==========')
+                js_content.append(content)
+                js_content.append('')
+                found_count += 1
     
     # Extra JS files (sans Storygrid ni Thriller)
     js_dir = os.path.join(BUILD_DIR, 'js')
