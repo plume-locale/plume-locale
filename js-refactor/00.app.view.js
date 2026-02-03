@@ -869,10 +869,19 @@ function getEditorToolbarHTML(panel = null) {
                     <i data-lucide="baseline" style="width:14px;height:14px; border-bottom: 2px solid currentColor;"></i>
                 </button>
                 <div class="color-picker-dropdown" id="textColorPicker${idSuffix}">
+                    <div class="color-picker-header">
+                        <i data-lucide="palette"></i>
+                        <span>Couleur du texte</span>
+                    </div>
                     <div class="color-grid" id="textColorGrid${idSuffix}"></div>
                     <div class="color-input-wrapper">
-                        <input type="color" id="textColorInput${idSuffix}" onchange="applyTextColor(this.value, ${panel ? `'${panel}'` : 'null'})">
-                        <input type="text" id="textColorHex${idSuffix}" placeholder="#000000" maxlength="7" onchange="applyTextColor(this.value, ${panel ? `'${panel}'` : 'null'})">
+                        <div class="color-manual-input">
+                            <input type="color" id="textColorInput${idSuffix}" onchange="applyTextColor(this.value, ${panel ? `'${panel}'` : 'null'})">
+                            <input type="text" id="textColorHex${idSuffix}" placeholder="#000000" maxlength="7" onchange="applyTextColor(this.value, ${panel ? `'${panel}'` : 'null'})">
+                        </div>
+                        <button class="color-reset-btn" onclick="applyTextColor('', ${panel ? `'${panel}'` : 'null'})" title="Réinitialiser">
+                            <i data-lucide="rotate-ccw"></i>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -881,10 +890,19 @@ function getEditorToolbarHTML(panel = null) {
                     <i data-lucide="highlighter" style="width:14px;height:14px; border-bottom: 2px solid yellow;"></i>
                 </button>
                 <div class="color-picker-dropdown" id="backgroundColorPicker${idSuffix}">
+                    <div class="color-picker-header">
+                        <i data-lucide="highlighter"></i>
+                        <span>Surlignage</span>
+                    </div>
                     <div class="color-grid" id="backgroundColorGrid${idSuffix}"></div>
                     <div class="color-input-wrapper">
-                        <input type="color" id="bgColorInput${idSuffix}" onchange="applyBackgroundColor(this.value, ${panel ? `'${panel}'` : 'null'})">
-                        <input type="text" id="bgColorHex${idSuffix}" placeholder="#FFFF00" maxlength="7" onchange="applyBackgroundColor(this.value, ${panel ? `'${panel}'` : 'null'})">
+                        <div class="color-manual-input">
+                            <input type="color" id="bgColorInput${idSuffix}" onchange="applyBackgroundColor(this.value, ${panel ? `'${panel}'` : 'null'})">
+                            <input type="text" id="bgColorHex${idSuffix}" placeholder="#FFFF00" maxlength="7" onchange="applyBackgroundColor(this.value, ${panel ? `'${panel}'` : 'null'})">
+                        </div>
+                        <button class="color-reset-btn" onclick="applyBackgroundColor('', ${panel ? `'${panel}'` : 'null'})" title="Réinitialiser">
+                            <i data-lucide="rotate-ccw"></i>
+                        </button>
                     </div>
                 </div>
             </div>

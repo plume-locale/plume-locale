@@ -1698,68 +1698,6 @@ select.toolbar-btn:hover {
     display: inline-block;
 }
 
-.color-picker-dropdown {
-    position: fixed;
-    background: var(--bg-primary);
-    border: 2px solid var(--border-color);
-    border-radius: 4px;
-    padding: 0.75rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    z-index: 99999;
-    display: none;
-    min-width: 200px;
-}
-
-.color-picker-dropdown.active {
-    display: block;
-}
-
-.color-grid {
-    display: grid;
-    grid-template-columns: repeat(8, 1fr);
-    gap: 0.25rem;
-    margin-bottom: 0.5rem;
-}
-
-.color-swatch {
-    width: 24px;
-    height: 24px;
-    border: 2px solid var(--border-color);
-    border-radius: 2px;
-    cursor: pointer;
-    transition: transform 0.2s ease;
-}
-
-.color-swatch:hover {
-    transform: scale(1.1);
-    border-color: var(--accent-gold);
-}
-
-.color-input-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
-    padding-top: 0.5rem;
-    border-top: 1px solid var(--border-color);
-}
-
-.color-input-wrapper input[type="color"] {
-    width: 40px;
-    height: 30px;
-    border: 1px solid var(--border-color);
-    border-radius: 2px;
-    cursor: pointer;
-}
-
-.color-input-wrapper input[type="text"] {
-    flex: 1;
-    padding: 0.3rem 0.5rem;
-    border: 1px solid var(--border-color);
-    border-radius: 2px;
-    font-family: 'Source Code Pro', monospace;
-    font-size: 0.85rem;
-}
 
 /* Font Size Selector */
 .font-size-selector {

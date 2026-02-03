@@ -3,7 +3,9 @@
 // Mixte (Controller/Initialization)
 async function init() {
     // Initialiser le thème le plus tôt possible
-    if (typeof themeManager !== 'undefined') {
+    if (typeof ThemeManagerModule !== 'undefined') {
+        ThemeManagerModule.init();
+    } else if (typeof themeManager !== 'undefined') {
         themeManager.init();
     }
 
