@@ -33,16 +33,18 @@
 #floatingEditorMenu {
     display: none;
     position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 60px;
-    background: white;
-    border-top: 1px solid #e0e0e0;
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
     z-index: 10001;
     overflow: visible;
     padding: 0;
-    flex-direction: column-reverse;
+    flex-direction: column;
+    border-radius: 12px;
+    width: 90vw;
+    max-width: 400px;
+    height: auto;
+    backdrop-filter: blur(10px);
 }
 
 #floatingEditorMenu.active {
@@ -50,50 +52,57 @@
 }
 
 #floatingMenuHandle {
-    display: none;
+    display: flex;
+    height: 14px;
+    background: var(--accent-gold);
+    border-radius: 12px 12px 0 0;
+    cursor: grab;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s ease;
+}
+
+#floatingMenuHandle::after {
+    content: "";
+    width: 30px;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 2px;
+}
+
+#floatingMenuHandle:active {
+    cursor: grabbing;
 }
 
 #floatingMenuContent {
-    padding: 6px 12px;
-    background: white;
+    padding: 10px;
+    background: transparent;
     display: flex;
+    flex-wrap: wrap;
+    /* Permet le retour à la ligne automatique */
     gap: 8px;
     align-items: center;
-    justify-content: flex-start;
-    overflow-x: auto;
-    overflow-y: hidden;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    height: 44px;
+    justify-content: center;
+    height: auto;
+    /* Hauteur s'adapte au nombre de lignes */
 }
 
-#floatingMenuContent::-webkit-scrollbar {
-    display: none;
-}
-
-/* Barre de sous-menu avancé */
+/* Barre de sous-menu avancé intégrée à la grille */
 #advancedMenuBar {
-    padding: 6px 12px;
-    background: white;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.03);
     display: none !important;
+    flex-wrap: wrap;
     gap: 8px;
     align-items: center;
-    justify-content: flex-start;
-    overflow-x: auto;
-    overflow-y: hidden;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    height: 44px;
-    border-bottom: 1px solid #e0e0e0;
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    justify-content: center;
+    height: auto;
+    border-top: 1px solid var(--border-color);
     width: 100%;
+    border-radius: 0 0 12px 12px;
 }
 
-#advancedMenuBar::-webkit-scrollbar {
-    display: none;
-}
-
-#floatingEditorMenu #advancedMenuBar.active {
+#advancedMenuBar.active {
     display: flex !important;
 }
 

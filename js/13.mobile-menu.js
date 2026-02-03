@@ -182,71 +182,8 @@ function toggleLinksPanel() {
     }
 }
 
-// [MVVM : View]
-// Interaction complexe entre deux éléments d'interface (menu flottant et toolbar).
-function toggleToolbarFromFloating() {
-    // Fermer le menu flottant
-    const floatingMenu = document.getElementById('floatingEditorMenu');
-    const floatingToggle = document.getElementById('floatingEditorToggle');
 
-    if (floatingMenu && floatingMenu.classList.contains('active')) {
-        floatingMenu.classList.remove('active');
-        if (floatingToggle) floatingToggle.innerHTML = '<i data-lucide="pencil" style="width:16px;height:16px;"></i>';
-    }
 
-    // Ouvrir le toolbar complet
-    const toolbar = document.getElementById('editorToolbar');
-    const toggleText = document.getElementById('toolbarToggleText');
-    const toggleBtn = document.querySelector('.toolbar-mobile-toggle');
-
-    if (toolbar && !toolbar.classList.contains('expanded')) {
-        toolbar.classList.add('expanded');
-        if (toggleText) toggleText.textContent = 'Masquer les outils de formatage';
-        if (toggleBtn) toggleBtn.classList.add('expanded');
-    }
-
-    // Scroll vers le toolbar pour le rendre visible
-    setTimeout(() => {
-        if (toolbar) {
-            toolbar.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-    }, 100);
-}
-
-// [MVVM : View]
-// Gestion de l'affichage du menu avancé (DOM + Style).
-function toggleAdvancedMenu() {
-    const advancedBar = document.getElementById('advancedMenuBar');
-    const advancedBtn = document.getElementById('advancedMenuBtn');
-
-    console.log('Toggle advanced menu clicked');
-    console.log('Advanced bar found:', !!advancedBar);
-    console.log('Current display:', advancedBar ? window.getComputedStyle(advancedBar).display : 'not found');
-
-    if (advancedBar.classList.contains('active')) {
-        console.log('Hiding advanced menu');
-        advancedBar.classList.remove('active');
-        advancedBtn.style.background = '';
-    } else {
-        console.log('Showing advanced menu');
-        advancedBar.classList.add('active');
-        advancedBtn.style.background = 'rgba(255,215,0,0.3)';
-
-        // Force display after a tick
-        setTimeout(() => {
-            console.log('After timeout display:', window.getComputedStyle(advancedBar).display);
-        }, 10);
-    }
-}
-
-// [MVVM : Other]
-// Interaction utilisateur (Prompt) -> Appel logique métier (formatText). (Mixte)
-function insertLink() {
-    const url = prompt('Entrez l\'URL du lien:');
-    if (url) {
-        formatText('createLink', url);
-    }
-}
 
 // [MVVM : View]
 // Surcharge d'une fonction existante pour ajouter un comportement purement visuel (fermer sidebar).
