@@ -688,5 +688,282 @@ const ArcBoardViewModel = {
                 valueDisplay.textContent = `${value}%`;
             }
         }
+    },
+
+    // ==========================================
+    // SCENE PANEL (Editor Integration)
+    // ==========================================
+
+    /**
+     * Alterne la visibilité du panneau des arcs pour une scène
+     */
+    toggleScenePanel() {
+        const panel = document.getElementById('arcScenePanel');
+        const toolBtn = document.getElementById('toolArcsBtn');
+        const sidebarBtn = document.getElementById('sidebarArcsBtn');
+        if (!panel) return;
+
+        panel.classList.toggle('hidden');
+        if (!panel.classList.contains('hidden')) {
+            this.renderScenePanel();
+            if (toolBtn) toolBtn.classList.add('active');
+            if (sidebarBtn) sidebarBtn.classList.add('active');
+        } else {
+            if (toolBtn) toolBtn.classList.remove('active');
+            if (sidebarBtn) sidebarBtn.classList.remove('active');
+        }
+    },
+
+    /**
+     * Rendu du panneau des arcs pour la scène courante
+     */
+    renderScenePanel() {
+        ArcBoardView.renderScenePanel();
+    },
+
+    /**
+     * Ajoute un arc à la scène courante
+     */
+    addArcToCurrentScene(arcId) {
+        if (!arcId || !currentSceneId || !currentChapterId || !currentActId) return;
+
+        const arc = ArcRepository.getById(arcId);
+        if (!arc) return;
+
+        if (!arc.scenePresence) arc.scenePresence = [];
+
+        // Vérifier si déjà présent
+        if (arc.scenePresence.some(p => p.sceneId == currentSceneId)) return;
+
+        // Ajouter la présence (Arc général par défaut = columnId: null)
+        arc.scenePresence.push({
+            actId: currentActId,
+            chapterId: currentChapterId,
+            sceneId: currentSceneId,
+            intensity: 3,
+            notes: '',
+            status: 'development',
+            columnId: null
+        });
+
+        saveProject();
+        this.renderScenePanel();
+
+        // Rafraîchir le board si cet arc est ouvert
+        if (ArcBoardState.currentArcId === arcId) {
+            this.renderItems();
+        }
+    },
+
+    /**
+     * Retire un arc de la scène courante
+     */
+    removeArcFromScene(arcId) {
+        if (!currentSceneId) return;
+
+        const arc = ArcRepository.getById(arcId);
+        if (!arc) return;
+
+        // Supprimer la carte scene du arc-board si elle existe
+        if (arc.board && arc.board.items) {
+            arc.board.items.forEach(item => {
+                if (item.type === 'column' && item.cards) {
+                    item.cards = item.cards.filter(card => !(card.type === 'scene' && card.sceneId == currentSceneId));
+                }
+            });
+            // Supprimer aussi tout élément flottant scene
+            arc.board.items = arc.board.items.filter(item => !(item.type === 'scene' && item.sceneId == currentSceneId));
+        }
+
+        arc.scenePresence = arc.scenePresence.filter(p => p.sceneId != currentSceneId);
+        saveProject();
+        this.renderScenePanel();
+
+        // Rafraîchir le board si cet arc est ouvert
+        if (ArcBoardState.currentArcId === arcId) {
+            this.renderItems();
+        }
+    },
+
+    /**
+     * Met à jour l'intensité d'un arc pour la scène courante
+     */
+    updateArcIntensity(arcId, intensity) {
+        if (!currentSceneId) return;
+
+        const arc = ArcRepository.getById(arcId);
+        if (!arc?.scenePresence) return;
+
+        const presence = arc.scenePresence.find(p => p.sceneId == currentSceneId);
+        if (presence) {
+            presence.intensity = parseInt(intensity);
+
+            // Synchroniser avec la carte/item sur le board
+            this._syncSceneData(arc, currentSceneId, { intensity: parseInt(intensity) });
+
+            saveProject();
+            this.renderScenePanel();
+            if (ArcBoardState.currentArcId === arcId) this.renderItems();
+        }
+    },
+
+    /**
+     * Met à jour le statut d'un arc pour la scène courante
+     */
+    updateArcStatus(arcId, status) {
+        if (!currentSceneId) return;
+
+        const arc = ArcRepository.getById(arcId);
+        if (!arc?.scenePresence) return;
+
+        const presence = arc.scenePresence.find(p => p.sceneId == currentSceneId);
+        if (presence) {
+            presence.status = status;
+
+            // Synchroniser
+            this._syncSceneData(arc, currentSceneId, { status });
+
+            saveProject();
+            this.renderScenePanel();
+            if (ArcBoardState.currentArcId === arcId) this.renderItems();
+        }
+    },
+
+    /**
+     * Met à jour la colonne d'un arc pour la scène courante
+     */
+    updateArcColumn(arcId, columnId) {
+        if (!currentSceneId) return;
+
+        const arc = ArcRepository.getById(arcId);
+        if (!arc) return;
+
+        const targetColumnId = (columnId && columnId !== 'null' && columnId !== '') ? columnId : null;
+
+        // Mettre à jour scenePresence
+        if (arc.scenePresence) {
+            const presence = arc.scenePresence.find(p => p.sceneId == currentSceneId);
+            if (presence) {
+                presence.columnId = targetColumnId;
+            } else {
+                // Fallback
+                arc.scenePresence.push({
+                    sceneId: currentSceneId,
+                    actId: currentActId,
+                    chapterId: currentChapterId,
+                    columnId: targetColumnId,
+                    intensity: 3,
+                    status: 'development',
+                    notes: ''
+                });
+            }
+        }
+
+        // Réorganiser sur le board
+        if (!arc.board) arc.board = createBoardModel();
+
+        // 1. Enlever la scène de partout sur le board
+        arc.board.items.forEach(item => {
+            if (item.type === 'column' && item.cards) {
+                item.cards = item.cards.filter(c => !(c.type === 'scene' && c.sceneId == currentSceneId));
+            }
+        });
+        arc.board.items = arc.board.items.filter(item => !(item.type === 'scene' && item.sceneId == currentSceneId));
+
+        // 2. Ajouter à la nouvelle colonne si spécifiée
+        if (targetColumnId) {
+            const column = arc.board.items.find(i => i.id === targetColumnId && i.type === 'column');
+            if (column) {
+                const presence = arc.scenePresence.find(p => p.sceneId == currentSceneId);
+                const sceneInfo = this._getSceneInfo(currentSceneId);
+
+                if (!column.cards) column.cards = [];
+                column.cards.push(createCardModel('scene', {
+                    sceneId: currentSceneId,
+                    sceneTitle: sceneInfo.title,
+                    breadcrumb: sceneInfo.breadcrumb,
+                    intensity: presence.intensity,
+                    status: presence.status,
+                    notes: presence.notes
+                }));
+            }
+        }
+
+        saveProject();
+        this.renderScenePanel();
+        if (ArcBoardState.currentArcId === arcId) this.renderItems();
+    },
+
+    /**
+     * Met à jour les notes d'un arc pour la scène courante
+     */
+    updateArcNotes(arcId, notes) {
+        if (!currentSceneId) return;
+
+        const arc = ArcRepository.getById(arcId);
+        if (!arc?.scenePresence) return;
+
+        const presence = arc.scenePresence.find(p => p.sceneId == currentSceneId);
+        if (presence) {
+            presence.notes = notes;
+
+            // Synchroniser
+            this._syncSceneData(arc, currentSceneId, { notes });
+
+            saveProject();
+            // Pas besoin de re-render le panel ici pour éviter de perdre le focus si on appelle sur oninput,
+            // mais on appelle généralement sur onblur
+            if (ArcBoardState.currentArcId === arcId) this.renderItems();
+        }
+    },
+
+    /**
+     * Synchronise les données d'une scène sur le board (carte ou flottant)
+     */
+    _syncSceneData(arc, sceneId, data) {
+        if (!arc.board?.items) return;
+
+        let found = false;
+        // 1. Chercher dans les colonnes
+        arc.board.items.forEach(item => {
+            if (item.type === 'column' && item.cards) {
+                const card = item.cards.find(c => c.type === 'scene' && c.sceneId == sceneId);
+                if (card) {
+                    Object.assign(card, data);
+                    found = true;
+                }
+            }
+        });
+
+        // 2. Chercher en flottant
+        if (!found) {
+            const floating = arc.board.items.find(i => i.type === 'scene' && i.sceneId == sceneId);
+            if (floating) {
+                Object.assign(floating, data);
+            }
+        }
+    },
+
+    /**
+     * Récupère les infos d'une scène (titre, breadcrumb)
+     */
+    _getSceneInfo(sceneId) {
+        let title = 'Scène sans titre';
+        let breadcrumb = '';
+
+        for (const act of project.acts || []) {
+            for (const chapter of act.chapters || []) {
+                const scene = chapter.scenes?.find(s => s.id == sceneId);
+                if (scene) {
+                    title = scene.title || 'Scène sans titre';
+                    const actTitle = act.title || `Acte ${project.acts.indexOf(act) + 1}`;
+                    const chapterTitle = chapter.title || `Chapitre ${act.chapters.indexOf(chapter) + 1}`;
+                    breadcrumb = `${actTitle} › ${chapterTitle}`;
+                    break;
+                }
+            }
+        }
+
+        return { title, breadcrumb };
     }
 };

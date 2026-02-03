@@ -426,9 +426,9 @@ const ArcBoardView = {
         const interArcHtml = interArcConnections.length > 0 ? `
             <div class="arc-interarc-tags">
                 ${interArcConnections.map(conn => {
-                    const fromArc = ArcRepository.getById(conn.fromArcId);
-                    const toArc = ArcRepository.getById(conn.toArcId);
-                    return `<span class="arc-interarc-tag" title="Lien inter-arc: ${fromArc?.title || '?'} vers ${toArc?.title || '?'}">
+            const fromArc = ArcRepository.getById(conn.fromArcId);
+            const toArc = ArcRepository.getById(conn.toArcId);
+            return `<span class="arc-interarc-tag" title="Lien inter-arc: ${fromArc?.title || '?'} vers ${toArc?.title || '?'}">
                         <span class="arc-interarc-tag-dot" style="background:${fromArc?.color || '#999'}"></span>
                         <span class="arc-interarc-tag-name">${fromArc?.title || '?'}</span>
                         <i data-lucide="arrow-right"></i>
@@ -436,7 +436,7 @@ const ArcBoardView = {
                         <span class="arc-interarc-tag-name">${toArc?.title || '?'}</span>
                         <button onclick="InterArcConnectionRepository.delete('${conn.id}'); ArcBoardViewModel.render()"><i data-lucide="x"></i></button>
                     </span>`;
-                }).join('')}
+        }).join('')}
             </div>
         ` : '';
 
@@ -868,9 +868,9 @@ const ArcBoardView = {
 
             // Chercher par data-item-id (colonnes, notes, etc.) OU data-card-id (cartes)
             const fromEl = document.querySelector(`[data-arc-id="${conn.fromArcId}"][data-item-id="${conn.fromItemId}"]`)
-                        || document.querySelector(`[data-arc-id="${conn.fromArcId}"][data-card-id="${conn.fromItemId}"]`);
+                || document.querySelector(`[data-arc-id="${conn.fromArcId}"][data-card-id="${conn.fromItemId}"]`);
             const toEl = document.querySelector(`[data-arc-id="${conn.toArcId}"][data-item-id="${conn.toItemId}"]`)
-                      || document.querySelector(`[data-arc-id="${conn.toArcId}"][data-card-id="${conn.toItemId}"]`);
+                || document.querySelector(`[data-arc-id="${conn.toArcId}"][data-card-id="${conn.toItemId}"]`);
 
             if (!fromEl || !toEl) return;
 
@@ -1578,9 +1578,9 @@ const ArcBoardView = {
         arc.board.connections.forEach(conn => {
             // Chercher par item-id OU data-card-id pour supporter les cartes
             const fromEl = document.getElementById(`item-${conn.from}`)
-                        || document.querySelector(`[data-card-id="${conn.from}"]`);
+                || document.querySelector(`[data-card-id="${conn.from}"]`);
             const toEl = document.getElementById(`item-${conn.to}`)
-                      || document.querySelector(`[data-card-id="${conn.to}"]`);
+                || document.querySelector(`[data-card-id="${conn.to}"]`);
 
             if (!fromEl || !toEl) return;
 
@@ -1828,5 +1828,141 @@ const ArcBoardView = {
                 }
             }, { once: true });
         }, 10);
+    },
+
+    // ==========================================
+    // SCENE PANEL (Editor Integration)
+    // ==========================================
+
+    /**
+     * Rendu du panneau des arcs pour la scène courante
+     */
+    renderScenePanel() {
+        const content = document.getElementById('arcScenePanelContent');
+        if (!content) return;
+
+        // Vérifier qu'une scène est sélectionnée
+        if (!currentSceneId || !currentChapterId || !currentActId) {
+            content.innerHTML = `
+                <div class="arc-panel-empty">
+                    <p>Sélectionnez une scène pour voir ses arcs</p>
+                </div>
+            `;
+            return;
+        }
+
+        // Récupérer les données de la scène
+        const sceneInfo = ArcBoardViewModel._getSceneInfo(currentSceneId);
+        const arcs = ArcRepository.getAll();
+
+        // Get arcs present in this scene
+        const arcsInScene = arcs.filter(arc =>
+            arc.scenePresence && arc.scenePresence.some(p => p.sceneId == currentSceneId)
+        );
+
+        if (arcsInScene.length === 0 && arcs.length === 0) {
+            content.innerHTML = `
+                <div class="arc-panel-empty">
+                    <div class="arc-panel-empty-icon"><i data-lucide="drama"></i></div>
+                    <p>Aucun arc narratif créé</p>
+                </div>
+            `;
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+            return;
+        }
+
+        let html = `
+            <div class="arc-scene-info">
+                <div class="arc-scene-info-title">Scène actuelle</div>
+                <div style="font-weight: 500;">${sceneInfo.title}</div>
+            </div>
+        `;
+
+        // Show arcs in scene
+        if (arcsInScene.length > 0) {
+            arcsInScene.forEach(arc => {
+                const presence = arc.scenePresence.find(p => p.sceneId == currentSceneId);
+                if (!presence) return;
+
+                const category = ArcRepository.getAllCategories()[arc.category || 'plot'] || ArcCategories.plot;
+
+                html += `
+                    <div class="arc-in-scene" data-arc-id="${arc.id}">
+                        <div class="arc-in-scene-header">
+                            <div class="arc-in-scene-title">
+                                <span style="color: ${arc.color || category.color}; margin-right: 8px;"><i data-lucide="${category.icon}"></i></span>
+                                <strong>${arc.title}</strong>
+                            </div>
+                            <button class="arc-in-scene-remove" onclick="removeArcFromScene('${arc.id}')" title="Retirer">×</button>
+                        </div>
+
+                        <div class="arc-in-scene-control">
+                            <label class="arc-in-scene-label">Intensité</label>
+                            <input type="range" min="1" max="5" value="${presence.intensity}"
+                                class="arc-intensity-slider"
+                                oninput="updateArcIntensity('${arc.id}', this.value)">
+                            <div class="arc-intensity-value">${presence.intensity}/5</div>
+                        </div>
+
+                        <div class="arc-in-scene-control">
+                            <label class="arc-in-scene-label">Statut</label>
+                            <select class="arc-status-select" onchange="updateArcStatus('${arc.id}', this.value)">
+                                <option value="setup" ${presence.status === 'setup' ? 'selected' : ''}>Introduction</option>
+                                <option value="development" ${presence.status === 'development' ? 'selected' : ''}>Développement</option>
+                                <option value="climax" ${presence.status === 'climax' ? 'selected' : ''}>Point culminant</option>
+                                <option value="resolution" ${presence.status === 'resolution' ? 'selected' : ''}>Résolution</option>
+                            </select>
+                        </div>
+
+                        <div class="arc-in-scene-control">
+                            <label class="arc-in-scene-label">Colonne du arc-board</label>
+                            <select class="arc-column-select" onchange="updateArcColumn('${arc.id}', this.value)">
+                                <option value="">Arc général (aucune colonne)</option>
+                                ${(arc.board && arc.board.items ? arc.board.items.filter(item => item.type === 'column').map(column =>
+                    `<option value="${column.id}" ${presence.columnId == column.id ? 'selected' : ''}>${column.title || 'Colonne sans titre'}</option>`
+                ).join('') : '')}
+                            </select>
+                        </div>
+
+                        <div class="arc-in-scene-control">
+                            <label class="arc-in-scene-label">Notes</label>
+                            <textarea class="arc-notes-textarea"
+                                placeholder="Notes pour cette scène..."
+                                onblur="updateArcNotes('${arc.id}', this.value)">${presence.notes || ''}</textarea>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // Add arc button
+        const availableArcs = arcs.filter(arc => !arcsInScene.find(asin => asin.id === arc.id));
+        if (availableArcs.length > 0) {
+            html += `
+                <div class="arc-panel-add-section" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+                    <select id="arcToAddSelect" class="arc-panel-add-select">
+                        <option value="">-- Ajouter un arc --</option>
+                        ${availableArcs.map(arc => {
+                const category = ArcRepository.getAllCategories()[arc.category || 'plot'] || ArcCategories.plot;
+                return `<option value="${arc.id}">${category.label} - ${arc.title}</option>`;
+            }).join('')}
+                    </select>
+                    <button class="arc-panel-add-btn" onclick="addArcToCurrentScene()">
+                        + Ajouter l'arc
+                    </button>
+                </div>
+            `;
+        }
+
+        content.innerHTML = html;
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    },
+
+    /**
+     * Rendu de l'icône d'un type d'arc
+     */
+    renderArcTypeIcon(typeKey) {
+        const category = ArcRepository.getAllCategories()[typeKey] || ArcCategories.plot;
+        return `<i data-lucide="${category.icon}" style="color: ${category.color}"></i>`;
     }
 };

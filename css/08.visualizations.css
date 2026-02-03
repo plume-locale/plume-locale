@@ -1929,17 +1929,19 @@
 .arc-panel-add-btn {
     width: 100%;
     padding: 0.75rem;
-    background: var(--primary-color);
-    color: white;
+    background: var(--accent-gold);
+    color: var(--text-primary);
     border: none;
     border-radius: 8px;
     font-weight: 600;
     cursor: pointer;
     margin-top: 0.5rem;
+    transition: transform 0.2s;
 }
 
 .arc-panel-add-btn:hover {
-    opacity: 0.9;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px var(--shadow);
 }
 
 .arc-panel-empty {

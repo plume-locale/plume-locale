@@ -152,7 +152,6 @@ JS_ORDER = [
     '40.sidebar-views.js',
     '41.storageMonitoring.js',
     '42.mobile-swipe.js',
-    'js-refactor/43.arcs.refactor.js',
     # '44.storygrid.js',  # RETIRÉ pour version Light
     # Arc Board
     'js-refactor/arc-board/arc-board.config.js',

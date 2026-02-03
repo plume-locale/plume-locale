@@ -39,13 +39,26 @@ const ArcBoardConfig = {
 
 // Catégories d'arcs prédéfinies
 const ArcCategories = Object.freeze({
-    intrigue: { label: 'Intrigue principale', icon: 'book-open', color: '#e74c3c' },
-    subplot: { label: 'Intrigue secondaire', icon: 'file-text', color: '#16a085' },
-    character: { label: 'Arc personnage', icon: 'user', color: '#3498db' },
-    relationship: { label: 'Relation', icon: 'heart', color: '#e91e63' },
-    theme: { label: 'Thème', icon: 'message-circle', color: '#9b59b6' },
-    mystery: { label: 'Mystère', icon: 'search', color: '#607d8b' },
-    worldbuilding: { label: 'Worldbuilding', icon: 'globe', color: '#1976d2' }
+    character: { icon: 'user', label: 'Personnage', color: '#3498db' },
+    plot: { icon: 'book-open', label: 'Intrigue principale', color: '#e74c3c' },
+    theme: { icon: 'message-circle', label: 'Thème', color: '#9b59b6' },
+    subplot: { icon: 'file-text', label: 'Intrigue secondaire', color: '#16a085' },
+    relationship: { icon: 'heart', label: 'Relation', color: '#e91e63' },
+    mystery: { icon: 'search', label: 'Mystère', color: '#607d8b' },
+    conflict: { icon: 'swords', label: 'Conflit', color: '#ff5722' },
+    growth: { icon: 'sprout', label: 'Croissance', color: '#4caf50' },
+    redemption: { icon: 'sparkles', label: 'Rédemption', color: '#ffd700' },
+    vengeance: { icon: 'flame', label: 'Vengeance', color: '#d32f2f' },
+    quest: { icon: 'map', label: 'Quête', color: '#ff9800' },
+    discovery: { icon: 'telescope', label: 'Découverte', color: '#00bcd4' },
+    transformation: { icon: 'butterfly', label: 'Transformation', color: '#ab47bc' },
+    political: { icon: 'crown', label: 'Politique', color: '#795548' },
+    philosophical: { icon: 'brain', label: 'Philosophique', color: '#546e7a' },
+    comedic: { icon: 'smile', label: 'Comédie', color: '#ffeb3b' },
+    tragic: { icon: 'frown', label: 'Tragédie', color: '#424242' },
+    action: { icon: 'zap', label: 'Action', color: '#ff6f00' },
+    worldbuilding: { icon: 'globe', label: 'Univers', color: '#1976d2' },
+    linked_characters: { icon: 'users', label: 'Personnages liés', color: '#8e24aa' }
 });
 
 // Types de cartes supportés

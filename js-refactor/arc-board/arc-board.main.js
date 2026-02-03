@@ -426,6 +426,46 @@ function renderArcContextForItem(item) {
     ArcBoardView.renderContextPanel(item);
 }
 
+// Panneau Arcs (Editeur)
+function toggleArcScenePanel() {
+    ArcBoardViewModel.toggleScenePanel();
+}
+
+function renderArcScenePanel() {
+    ArcBoardViewModel.renderScenePanel();
+}
+
+function addArcToCurrentScene() {
+    const s = document.getElementById('arcToAddSelect');
+    if (s && s.value) {
+        ArcBoardViewModel.addArcToCurrentScene(s.value);
+    }
+}
+
+function removeArcFromScene(arcId) {
+    ArcBoardViewModel.removeArcFromScene(arcId);
+}
+
+function updateArcIntensity(arcId, value) {
+    ArcBoardViewModel.updateArcIntensity(arcId, value);
+}
+
+function updateArcStatus(arcId, value) {
+    ArcBoardViewModel.updateArcStatus(arcId, value);
+}
+
+function updateArcColumn(arcId, value) {
+    ArcBoardViewModel.updateArcColumn(arcId, value);
+}
+
+function updateArcNotes(arcId, value) {
+    ArcBoardViewModel.updateArcNotes(arcId, value);
+}
+
+function renderArcTypeIcon(type) {
+    return ArcBoardView.renderArcTypeIcon(type);
+}
+
 // Copy/Paste
 function copySelectedItems() {
     ArcBoardViewModel.copy();
