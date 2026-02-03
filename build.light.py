@@ -102,7 +102,14 @@ JS_ORDER = [
     'js-refactor/characters/characters.repository.js',
     'js-refactor/characters/characters.viewmodel.js',
     'js-refactor/characters/characters.view.js',
-    'js-refactor/16.split-view.js',
+    # Split View Module
+    'js-refactor/splitview/splitview.model.js',
+    'js-refactor/splitview/splitview.repository.js',
+    'js-refactor/splitview/splitview.viewmodel.js',
+    'js-refactor/splitview/splitview.view.js',
+    'js-refactor/splitview/splitview.coordinator.js',
+    'js-refactor/splitview/splitview.handlers.js',
+    'js-refactor/splitview/splitview.main.js',
     # World refactored files 
     'js-refactor/world/world.model.js',
     'js-refactor/world/world.repository.js',
