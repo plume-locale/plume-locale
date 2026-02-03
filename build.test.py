@@ -88,7 +88,13 @@ JS_ORDER = [
     'js-refactor/codex/codex.repository.js',
     'js-refactor/codex/codex.viewmodel.js',
     'js-refactor/codex/codex.view.js',
-    '25.globalSearch.js',
+    # Search refactored files (order: model -> repository -> viewmodel -> view -> handlers -> main)
+    'js-refactor/search/search.model.js',
+    'js-refactor/search/search.repository.js',
+    'js-refactor/search/search.viewmodel.js',
+    'js-refactor/search/search.view.js',
+    'js-refactor/search/search.handlers.js',
+    'js-refactor/search/search.main.js',
     'js-refactor/26.focusMode.refactor.js',
     '27.keyboardShortcuts.js',
     'js-refactor/28.revision.refactor.js',
@@ -239,6 +245,7 @@ IGNORED_ORIGINALS = [
     '28.revision.js',
     '29.todos.js',
     '24.codex.js',
+    '25.globalSearch.js',
     '30.corkboard.js',
     '30.corkboard.refactor.js',  # Remplacé par js-refactor/corkboard/*.js
     '33.plot.js',

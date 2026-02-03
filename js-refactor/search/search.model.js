@@ -1,0 +1,175 @@
+/**
+ * Search Model
+ * Définit les structures de données pour le système de recherche globale
+ */
+
+/**
+ * Utilitaire pour s'assurer qu'une valeur est une chaîne
+ * @param {*} value - Valeur à convertir
+ * @param {string} defaultValue - Valeur par défaut
+ * @returns {string} Chaîne de caractères
+ */
+const ensureString = (value, defaultValue = '') => {
+    if (value === null || value === undefined) return defaultValue;
+    return String(value);
+};
+
+/**
+ * Factory pour créer un résultat de recherche
+ * @param {Object} params - Paramètres du résultat
+ * @returns {Object} Résultat de recherche formaté
+ */
+const SearchResultModel = {
+    create: (params = {}) => ({
+        id: params.id || generateId(),
+        type: ensureString(params.type, 'Unknown'),
+        title: ensureString(params.title, ''),
+        path: ensureString(params.path, ''),
+        preview: ensureString(params.preview, ''),
+        matchIndex: params.matchIndex || -1,
+        relevance: params.relevance || 0,
+        action: params.action || (() => { }),
+        metadata: params.metadata || {}
+    }),
+
+    /**
+     * Crée un résultat de recherche pour une scène
+     */
+    createSceneResult: (scene, act, chapter, query, matchIndex, preview) => {
+        return SearchResultModel.create({
+            id: scene.id,
+            type: 'Scène',
+            title: ensureString(scene.title, 'Sans titre'),
+            path: `${ensureString(act.title, 'Acte')} > ${ensureString(chapter.title, 'Chapitre')}`,
+            preview: ensureString(preview, ''),
+            matchIndex: matchIndex,
+            action: () => openScene(act.id, chapter.id, scene.id),
+            metadata: {
+                actId: act.id,
+                chapterId: chapter.id,
+                sceneId: scene.id
+            }
+        });
+    },
+
+    /**
+     * Crée un résultat de recherche pour un personnage
+     */
+    createCharacterResult: (character, query, preview) => {
+        return SearchResultModel.create({
+            id: character.id,
+            type: 'Personnage',
+            title: ensureString(character.name, 'Sans nom'),
+            path: ensureString(character.role, 'Personnage'),
+            preview: ensureString(preview || character.description, 'Aucune description'),
+            action: () => {
+                switchView('characters');
+                openCharacterDetail(character.id);
+            },
+            metadata: {
+                characterId: character.id,
+                role: character.role
+            }
+        });
+    },
+
+    /**
+     * Crée un résultat de recherche pour un élément d'univers
+     */
+    createWorldResult: (element, query, preview) => {
+        return SearchResultModel.create({
+            id: element.id,
+            type: 'Univers',
+            title: ensureString(element.name, 'Sans nom'),
+            path: ensureString(element.type, 'Élément'),
+            preview: ensureString(preview || element.description, 'Aucune description'),
+            action: () => {
+                switchView('world');
+                openWorldDetail(element.id);
+            },
+            metadata: {
+                elementId: element.id,
+                elementType: element.type
+            }
+        });
+    },
+
+    /**
+     * Crée un résultat de recherche pour un événement de chronologie
+     */
+    createTimelineResult: (event, query, preview) => {
+        return SearchResultModel.create({
+            id: event.id,
+            type: 'Chronologie',
+            title: ensureString(event.title, 'Sans titre'),
+            path: ensureString(event.date, 'Événement'),
+            preview: ensureString(preview || event.description, 'Aucune description'),
+            action: () => {
+                switchView('timeline');
+                openTimelineDetail(event.id);
+            },
+            metadata: {
+                eventId: event.id,
+                date: event.date
+            }
+        });
+    },
+
+    /**
+     * Crée un résultat de recherche pour une note
+     */
+    createNoteResult: (note, query, matchIndex, preview) => {
+        return SearchResultModel.create({
+            id: note.id,
+            type: 'Note',
+            title: ensureString(note.title, 'Sans titre'),
+            path: ensureString(note.category, 'Note'),
+            preview: ensureString(preview, ''),
+            matchIndex: matchIndex,
+            action: () => {
+                switchView('notes');
+                openNoteDetail(note.id);
+            },
+            metadata: {
+                noteId: note.id,
+                category: note.category
+            }
+        });
+    },
+
+    /**
+     * Crée un résultat de recherche pour une entrée de codex
+     */
+    createCodexResult: (entry, query, matchIndex, preview) => {
+        return SearchResultModel.create({
+            id: entry.id,
+            type: 'Codex',
+            title: ensureString(entry.title, 'Sans titre'),
+            path: ensureString(entry.category, 'Codex'),
+            preview: ensureString(preview, ''),
+            matchIndex: matchIndex,
+            action: () => {
+                switchView('codex');
+                openCodexDetail(entry.id);
+            },
+            metadata: {
+                entryId: entry.id,
+                category: entry.category
+            }
+        });
+    }
+};
+
+/**
+ * Modèle pour l'état de la recherche
+ */
+const SearchStateModel = {
+    create: () => ({
+        query: '',
+        results: [],
+        isActive: false,
+        isLoading: false,
+        lastSearchTime: null,
+        totalResults: 0
+    })
+};

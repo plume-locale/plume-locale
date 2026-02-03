@@ -94,7 +94,13 @@ JS_ORDER = [
     'js-refactor/codex/codex.repository.js',
     'js-refactor/codex/codex.viewmodel.js',
     'js-refactor/codex/codex.view.js',
-    '25.globalSearch.js',
+    # Search refactored files (order: model -> repository -> viewmodel -> view -> handlers -> main)
+    'js-refactor/search/search.model.js',
+    'js-refactor/search/search.repository.js',
+    'js-refactor/search/search.viewmodel.js',
+    'js-refactor/search/search.view.js',
+    'js-refactor/search/search.handlers.js',
+    'js-refactor/search/search.main.js',
     'js-refactor/26.focusMode.refactor.js',
     '27.keyboardShortcuts.js',
     'js-refactor/28.revision.refactor.js',
@@ -168,12 +174,12 @@ JS_ORDER = [
     'js-refactor/word-repetition/word-repetition.handlers.js',
     'js-refactor/word-repetition/word-repetition.main.js',
     # Product tour
-    'js-refactor/48.product-tour.model.js',
-    'js-refactor/48.product-tour.repository.js',
-    'js-refactor/48.product-tour.viewmodel.js',
-    'js-refactor/48.product-tour.view.js',
-    'js-refactor/48.product-tour.handlers.js',
-    'js-refactor/48.product-tour.main.js',
+    'js-refactor/product-tour/product-tour.model.js',
+    'js-refactor/product-tour/product-tour.repository.js',
+    'js-refactor/product-tour/product-tour.viewmodel.js',
+    'js-refactor/product-tour/product-tour.view.js',
+    'js-refactor/product-tour/product-tour.handlers.js',
+    'js-refactor/product-tour/product-tour.main.js',
 ]
 
 def read_file(path):
@@ -252,7 +258,7 @@ IGNORED_ORIGINALS = [
     '03.project.js', '06.structure.js', '07.stats.js', '08.auto-detect.js',
     '15.characters.js', '17.world.js', '01.app.js', '10.colorpalette.js',
     '21.sceneVersions.js', '26.focusMode.js', '28.revision.js', '29.todos.js',
-    '24.codex.js',
+    '24.codex.js', '25.globalSearch.js',
     '30.corkboard.js', '30.corkboard.refactor.js', '33.plot.js', '43.arcs.js', '45.arc-board.js',
     '45.arc-board.refactor.js', '46.thriller-board.js', '44.storygrid.js'
 ]

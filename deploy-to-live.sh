@@ -151,12 +151,10 @@ copy_file "js-refactor/word-repetition/word-repetition.viewmodel.js"
 copy_file "js-refactor/word-repetition/word-repetition.view.js"
 copy_file "js-refactor/word-repetition/word-repetition.handlers.js"
 copy_file "js-refactor/word-repetition/word-repetition.main.js"
-copy_file "js-refactor/48.product-tour.model.js"
-copy_file "js-refactor/48.product-tour.repository.js"
-copy_file "js-refactor/48.product-tour.viewmodel.js"
-copy_file "js-refactor/48.product-tour.view.js"
-copy_file "js-refactor/48.product-tour.handlers.js"
-copy_file "js-refactor/48.product-tour.main.js"
+copy_file "js-refactor/product-tour/product-tour.model.js"
+copy_file "js-refactor/product-tour/product-tour.repository.js"
+copy_file "js-refactor/product-tour/product-tour.viewmodel.js"
+copy_file "js-refactor/product-tour/product-tour.view.js"
 
 # Fichiers JS originaux (non refactorisés)
 copy_file "js/38.tension.js"
@@ -185,21 +183,12 @@ copy_file "js/40.sidebar-views.js"
 copy_file "js/41.storageMonitoring.js"
 copy_file "js/42.mobile-swipe.js"
 
-# Fichiers HTML
-copy_file "html/head.html"
-copy_file "html/body.html"
-copy_file "html/footer.html"
 
 # Fichiers de documentation
 copy_file "README.md"
 copy_file "LICENSE"
 copy_file ".gitignore"
 
-# Scripts de build
-copy_file "build.light.py"
-copy_file "build.py"
-copy_file "build.test.py"
-copy_file "build-timestamp.py"
 
 log ""
 log "========================================"

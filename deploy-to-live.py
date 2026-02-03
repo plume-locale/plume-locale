@@ -143,12 +143,11 @@ JS_ORDER = [
     'js-refactor/word-repetition/word-repetition.view.js',
     'js-refactor/word-repetition/word-repetition.handlers.js',
     'js-refactor/word-repetition/word-repetition.main.js',
-    'js-refactor/48.product-tour.model.js',
-    'js-refactor/48.product-tour.repository.js',
-    'js-refactor/48.product-tour.viewmodel.js',
-    'js-refactor/48.product-tour.view.js',
-    'js-refactor/48.product-tour.handlers.js',
-    'js-refactor/48.product-tour.main.js',
+    'js-refactor/product-tour/product-tour.model.js',
+    'js-refactor/product-tour/product-tour.repository.js',
+    'js-refactor/product-tour/product-tour.viewmodel.js',
+    'js-refactor/product-tour/product-tour.view.js',
+
 ]
 
 # Fichiers HTML essentiels
