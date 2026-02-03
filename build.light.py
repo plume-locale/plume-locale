@@ -112,6 +112,13 @@ JS_ORDER = [
     'js-refactor/corkboard/corkboard.view.js',
     'js-refactor/corkboard/corkboard.handlers.js',
     'js-refactor/corkboard/corkboard.main.js',
+    # GDrive Backup module refactored files
+    'js-refactor/gdrive-backup/gdrive-backup.model.js',
+    'js-refactor/gdrive-backup/gdrive-backup.repository.js',
+    'js-refactor/gdrive-backup/gdrive-backup.viewmodel.js',
+    'js-refactor/gdrive-backup/gdrive-backup.view.js',
+    'js-refactor/gdrive-backup/gdrive-backup.handlers.js',
+    'js-refactor/gdrive-backup/gdrive-backup.main.js',
     '31.mindmap.js',
     '32.touch-events.js',
     # Plot module refactored files
