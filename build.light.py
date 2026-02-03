@@ -294,15 +294,15 @@ def collect_css():
     log(f"   [OK] {found_count} fichiers CSS trouves")
     return '\n'.join(css_content)
 
-# Fichiers originaux à ignorer
+# Fichiers originaux à ignorer (déjà refactorisés ou retirés)
 IGNORED_ORIGINALS = [
-    '03.project.js', '06.structure.js', '07.stats.js', '08.auto-detect.js',
-    '15.characters.js', '17.world.js', '01.app.js', '10.colorpalette.js',
-    '21.sceneVersions.js', '26.focusMode.js', '28.revision.js', '29.todos.js',
-    '24.codex.js', '25.globalSearch.js', '09.floating-editor.js',
-    '30.corkboard.js', '30.corkboard.refactor.js', '33.plot.js', '43.arcs.js', '45.arc-board.js',
-    '45.arc-board.refactor.js', '46.thriller-board.js', '44.storygrid.js', '36.timeline-metro.js',
-    '11.updateStats.js', '23.stats.js'
+    '_01.app.js', '_03.project.js', '_05.undo-redo.js', '_06.structure.js', '_07.stats.js', 
+    '_08.auto-detect.js', '_09.floating-editor.js', '_10.colorpalette.js', '_11.updateStats.js',
+    '_15.characters.js', '_16.split-view.js', '_17.world.js', '_21.sceneVersions.js', 
+    '_23.stats.js', '_24.codex.js', '_25.globalSearch.js', '_26.focusMode.js', 
+    '_28.revision.js', '_29.todos.js', '_30.corkboard.js', '_30.corkboard.refactor.js', 
+    '_33.plot.js', '_36.timeline-metro.js', '_43.arcs.js', '_44.storygrid.js', 
+    '_45.arc-board.js', '_45.arc-board.refactor.js', '_46.thriller-board.js'
 ]
 
 def collect_js():
@@ -344,6 +344,7 @@ def collect_js():
         if (filename not in JS_ORDER and 
             f'js-refactor/{filename}' not in JS_ORDER and 
             filename not in IGNORED_ORIGINALS and
+            not filename.startswith('_') and
             'thriller' not in filename.lower() and
             'storygrid' not in filename.lower()):
             content = read_file(f'js/{filename}')
