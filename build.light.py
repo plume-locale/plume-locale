@@ -122,7 +122,12 @@ JS_ORDER = [
     'js-refactor/plot/plot.init.js',
     '34.relations-graph.js',
     '35.renderMap.js',
-    '36.timeline-metro.js',
+    'js-refactor/timeline-metro/timeline-metro.model.js',
+    'js-refactor/timeline-metro/timeline-metro.repository.js',
+    'js-refactor/timeline-metro/timeline-metro.viewmodel.js',
+    'js-refactor/timeline-metro/timeline-metro.view.js',
+    'js-refactor/timeline-metro/timeline-metro.handlers.js',
+    'js-refactor/timeline-metro/timeline-metro.main.js',
     '37.theme-manager.js',
     '39.export.js',
     '40.sidebar-views.js',
@@ -260,7 +265,7 @@ IGNORED_ORIGINALS = [
     '21.sceneVersions.js', '26.focusMode.js', '28.revision.js', '29.todos.js',
     '24.codex.js', '25.globalSearch.js',
     '30.corkboard.js', '30.corkboard.refactor.js', '33.plot.js', '43.arcs.js', '45.arc-board.js',
-    '45.arc-board.refactor.js', '46.thriller-board.js', '44.storygrid.js'
+    '45.arc-board.refactor.js', '46.thriller-board.js', '44.storygrid.js', '36.timeline-metro.js'
 ]
 
 def collect_js():

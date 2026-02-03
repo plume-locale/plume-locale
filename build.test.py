@@ -116,7 +116,12 @@ JS_ORDER = [
     'js-refactor/plot/plot.init.js',
     '34.relations-graph.js',
     '35.renderMap.js',
-    '36.timeline-metro.js',
+    'js-refactor/timeline-metro/timeline-metro.model.js',
+    'js-refactor/timeline-metro/timeline-metro.repository.js',
+    'js-refactor/timeline-metro/timeline-metro.viewmodel.js',
+    'js-refactor/timeline-metro/timeline-metro.view.js',
+    'js-refactor/timeline-metro/timeline-metro.handlers.js',
+    'js-refactor/timeline-metro/timeline-metro.main.js',
     '37.theme-manager.js',
     '39.export.js',
     '40.sidebar-views.js',
@@ -252,7 +257,8 @@ IGNORED_ORIGINALS = [
     '43.arcs.js',
     '45.arc-board.js',  # Remplacé par js-refactor/arc-board/*.js
     '45.arc-board.refactor.js',  # Fichier bundle, on utilise les modules individuels
-    '46.thriller-board.js'  # Remplacé par les fichiers refactorisés 46.thriller-board.*.js
+    '46.thriller-board.js',  # Remplacé par les fichiers refactorisés 46.thriller-board.*.js
+    '36.timeline-metro.js'
 ]
 
 def collect_js():
