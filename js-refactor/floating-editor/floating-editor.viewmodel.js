@@ -16,6 +16,10 @@ const FloatingEditorViewModel = {
             const defaultY = Math.max(10, (window.innerHeight / 2) - 200);
             floatingEditorModel.setPosition(defaultX, defaultY);
         }
+
+        // Render initial state
+        FloatingEditorView.render(floatingEditorModel);
+        FloatingEditorView.renderAdvanced(floatingEditorModel);
     },
 
     /**

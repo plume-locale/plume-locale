@@ -1007,6 +1007,7 @@ body.force-mobile-nav .split-mode-toggle span {
     }
 
     .scene-tools {
+        display: flex !important;
         padding: 0.3rem 0.5rem;
         gap: 0.25rem;
         flex-wrap: wrap;
