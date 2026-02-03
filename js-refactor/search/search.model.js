@@ -116,6 +116,42 @@ const SearchResultModel = {
     },
 
     /**
+     * Crée un résultat de recherche pour un événement de chronologie métro
+     */
+    createMetroTimelineResult: (event, query, preview) => {
+        return SearchResultModel.create({
+            id: event.id,
+            type: 'Métro',
+            title: ensureString(event.title, 'Sans titre'),
+            path: ensureString(event.date, 'Timeline Métro'),
+            preview: ensureString(preview || event.description, 'Aucune description'),
+            action: () => {
+                if (typeof openMetroEventFullView === 'function') {
+                    // Injecter l'ID dans le champ caché attendu par openMetroEventFullView
+                    let hiddenInput = document.getElementById('metroViewChoiceEventId');
+                    if (!hiddenInput) {
+                        hiddenInput = document.createElement('input');
+                        hiddenInput.type = 'hidden';
+                        hiddenInput.id = 'metroViewChoiceEventId';
+                        document.body.appendChild(hiddenInput);
+                    }
+                    hiddenInput.value = event.id;
+                    openMetroEventFullView();
+                } else {
+                    switchView('timelineviz');
+                    if (typeof MetroTimelineViewModel !== 'undefined') {
+                        setTimeout(() => MetroTimelineViewModel.openEventModal(event.id), 200);
+                    }
+                }
+            },
+            metadata: {
+                eventId: event.id,
+                date: event.date
+            }
+        });
+    },
+
+    /**
      * Crée un résultat de recherche pour une note
      */
     createNoteResult: (note, query, matchIndex, preview) => {

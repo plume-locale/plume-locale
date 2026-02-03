@@ -22,6 +22,7 @@ const SearchRepository = {
         results.push(...SearchRepository.searchCharacters(lowerQuery, query));
         results.push(...SearchRepository.searchWorld(lowerQuery, query));
         results.push(...SearchRepository.searchTimeline(lowerQuery, query));
+        results.push(...SearchRepository.searchMetroTimeline(lowerQuery, query));
         results.push(...SearchRepository.searchNotes(lowerQuery, query));
         results.push(...SearchRepository.searchCodex(lowerQuery, query));
 
@@ -167,6 +168,32 @@ const SearchRepository = {
         });
 
         console.log('[Search] Timeline: Found', results.length, 'results');
+        return results;
+    },
+
+    /**
+     * Recherche dans la chronologie métro
+     */
+    searchMetroTimeline: (lowerQuery, originalQuery) => {
+        const results = [];
+
+        if (!project.metroTimeline) return results;
+
+        project.metroTimeline.forEach(event => {
+            const searchText = [
+                String(event.title || ''),
+                String(event.description || ''),
+                String(event.date || '')
+            ].join(' ').toLowerCase();
+
+            if (searchText.includes(lowerQuery)) {
+                const preview = event.description || 'Aucune description';
+                results.push(
+                    SearchResultModel.createMetroTimelineResult(event, originalQuery, preview)
+                );
+            }
+        });
+
         return results;
     },
 
