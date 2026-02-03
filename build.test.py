@@ -65,7 +65,11 @@ JS_ORDER = [
     'js-refactor/structure/structure.view.js',
     'js-refactor/structure/structure-organizer.view.js',
     'js-refactor/structure/structure.helpers.js',
-    'js-refactor/07.stats.refactor.js',
+    'js-refactor/stats/stats.model.js',
+    'js-refactor/stats/stats.repository.js',
+    'js-refactor/stats/stats.viewmodel.js',
+    'js-refactor/stats/stats.view.js',
+    'js-refactor/stats/stats.main.js',
     'js-refactor/auto-detect/auto-detect.model.js',
     'js-refactor/auto-detect/auto-detect.repository.js',
     'js-refactor/auto-detect/auto-detect.viewmodel.js',
@@ -74,7 +78,6 @@ JS_ORDER = [
     'js-refactor/auto-detect/auto-detect.main.js',
     '09.floating-editor.js',
     'js-refactor/10.colorpalette.refactor.js',
-    '11.updateStats.js',
     '12.import-export.js',
     '13.mobile-menu.js',
     '14.dragndrop-acts.js',
@@ -94,7 +97,6 @@ JS_ORDER = [
     '20.snapshots.js',
     'js-refactor/21.sceneVersions.refactor.js',
     '22.diff.js',
-    '23.stats.js',
     # Codex refactored files
     'js-refactor/codex/codex.model.js',
     'js-refactor/codex/codex.repository.js',
@@ -273,7 +275,8 @@ IGNORED_ORIGINALS = [
     '21.sceneVersions.js', '26.focusMode.js', '28.revision.js', '29.todos.js',
     '24.codex.js', '25.globalSearch.js',
     '30.corkboard.js', '30.corkboard.refactor.js', '33.plot.js', '43.arcs.js', '45.arc-board.js',
-    '45.arc-board.refactor.js', '46.thriller-board.js', '44.storygrid.js', '36.timeline-metro.js'
+    '45.arc-board.refactor.js', '46.thriller-board.js', '44.storygrid.js', '36.timeline-metro.js',
+    '11.updateStats.js', '23.stats.js'
 ]
 
 def collect_js():
