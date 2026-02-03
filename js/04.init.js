@@ -2,6 +2,11 @@
 // [MVVM : Other]
 // Mixte (Controller/Initialization)
 async function init() {
+    // Initialiser le thème le plus tôt possible
+    if (typeof themeManager !== 'undefined') {
+        themeManager.init();
+    }
+
     // Initialiser IndexedDB en premier
     const dbReady = await initDB();
     if (!dbReady) {
@@ -11,7 +16,11 @@ async function init() {
     }
 
     // Charger les projets depuis IndexedDB
-    await loadAllProjects();
+    try {
+        await loadAllProjects();
+    } catch (e) {
+        console.error("❌ Erreur lors du chargement des projets:", e);
+    }
     await loadTreeState(); // Charger l'état d'expansion
 
     // Forcer la vue Structure au démarrage
@@ -187,4 +196,8 @@ function renameProject() {
     saveProject();
     showNotification('✓ Projet renommé');
 }
+
+// Lancer l'initialisation au chargement de la page
+window.addEventListener('load', init);
+
 

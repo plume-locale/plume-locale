@@ -48,6 +48,7 @@ CSS_ORDER = [
 JS_ORDER = [
     # Vendor libraries (bundled)
     'vendor/driver.js.iife.js',
+    'vendor/idb.js',
     'js-refactor/01.app.refactor.js',
     '38.tension.js',
     '02.storage.js',
@@ -65,7 +66,12 @@ JS_ORDER = [
     'js-refactor/floating-editor/floating-editor.handlers.js',
     'js-refactor/floating-editor/floating-editor.main.js',
     '04.init.js',
-    'js-refactor/05.undo-redo.refactor.js',
+    'js-refactor/undo-redo/undo-redo.model.js',
+    'js-refactor/undo-redo/undo-redo.repository.js',
+    'js-refactor/undo-redo/undo-redo.viewmodel.js',
+    'js-refactor/undo-redo/undo-redo.view.js',
+    'js-refactor/undo-redo/undo-redo.handlers.js',
+    'js-refactor/undo-redo/undo-redo.main.js',
     # Structure refactored files 1/2
     'js-refactor/structure/structure.model.js',
     'js-refactor/structure/structure.repository.js',

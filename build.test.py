@@ -59,7 +59,12 @@ JS_ORDER = [
     'js-refactor/project/project.handlers.js',
     'js-refactor/project/project.main.js',
     '04.init.js',
-    'js-refactor/05.undo-redo.refactor.js',
+    'js-refactor/undo-redo/undo-redo.model.js',
+    'js-refactor/undo-redo/undo-redo.repository.js',
+    'js-refactor/undo-redo/undo-redo.viewmodel.js',
+    'js-refactor/undo-redo/undo-redo.view.js',
+    'js-refactor/undo-redo/undo-redo.handlers.js',
+    'js-refactor/undo-redo/undo-redo.main.js',
     # Structure refactored files 1/2
     'js-refactor/structure/structure.model.js',
     'js-refactor/structure/structure.repository.js',

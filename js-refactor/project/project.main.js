@@ -4,12 +4,14 @@
  */
 
 (async function () {
-    // Attendre que la DB soit initialisée si nécessaire (géré par 04.init.js normalement)
-    // Mais on peut init le ViewModel ici
-    await ProjectViewModel.init();
+    // Ne PAS initialiser le ViewModel ici car la DB n'est pas encore prête !
+    // L'initialisation se fait via 04.init.js -> loadAllProjects()
+    // await ProjectViewModel.init();
+
+    // Les handlers peuvent être initialisés si le DOM est prêt (script en fin de body)
     ProjectHandlers.init();
 
-    console.log('🚀 Module Projet initialisé');
+    console.log('🚀 Module Projet chargé (attente init DB)');
 })();
 
 // Fonction de chargement initiale (appelée par l'app)

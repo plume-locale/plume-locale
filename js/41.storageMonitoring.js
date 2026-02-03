@@ -85,7 +85,11 @@ async function updateStorageBadge() {
         percentageText.textContent = percentage + '%';
 
         // Update badge status
-        badge.className = 'storage-badge';
+        // Update badge status (safely)
+        // Remove old status classes
+        badge.classList.remove('status-ok', 'status-warning', 'status-danger');
+
+        // Add new status class
         if (percentage >= 95) {
             badge.classList.add('status-danger');
         } else if (percentage >= 80) {
