@@ -105,7 +105,11 @@ JS_ORDER = [
     '18.timeline.js',
     '19.notes.js',
     '20.snapshots.js',
-    'js-refactor/21.sceneVersions.refactor.js',
+    'js-refactor/sceneVersion/sceneVersion.model.js',
+    'js-refactor/sceneVersion/sceneVersion.repository.js',
+    'js-refactor/sceneVersion/sceneVersion.viewmodel.js',
+    'js-refactor/sceneVersion/sceneVersion.view.js',
+    'js-refactor/sceneVersion/sceneVersion.main.js',
     '22.diff.js',
     # Codex refactored files
     'js-refactor/codex/codex.model.js',
@@ -179,7 +183,13 @@ JS_ORDER = [
     'js-refactor/plotgrid/plot-grid.viewmodel.js',
     'js-refactor/plotgrid/plot-grid.import-export.js',
     'js-refactor/plotgrid/plot-grid.view.js',
-    'js-refactor/28.sceneNavigation.js',
+    # Scene Navigation Module
+    'js-refactor/sceneNavigation/scene-navigation.model.js',
+    'js-refactor/sceneNavigation/scene-navigation.repository.js',
+    'js-refactor/sceneNavigation/scene-navigation.viewmodel.js',
+    'js-refactor/sceneNavigation/scene-navigation.view.js',
+    'js-refactor/sceneNavigation/scene-navigation.handlers.js',
+    'js-refactor/sceneNavigation/scene-navigation.main.js',
     # Synonyms Module (French synonyms dictionary - local)
     'js-refactor/synonyms/synonyms.config.js',
     'js-refactor/synonyms/synonyms.model.js',

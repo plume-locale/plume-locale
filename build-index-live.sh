@@ -111,7 +111,11 @@ for js_file in \
     "js/18.timeline.js" \
     "js/19.notes.js" \
     "js/20.snapshots.js" \
-    "js-refactor/21.sceneVersions.refactor.js" \
+    "js-refactor/sceneVersion/sceneVersion.model.js" \
+    "js-refactor/sceneVersion/sceneVersion.repository.js" \
+    "js-refactor/sceneVersion/sceneVersion.viewmodel.js" \
+    "js-refactor/sceneVersion/sceneVersion.view.js" \
+    "js-refactor/sceneVersion/sceneVersion.main.js" \
     "js/22.diff.js" \
     "js/23.stats.js" \
     "js-refactor/codex/codex.model.js" \
