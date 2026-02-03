@@ -52,7 +52,12 @@ JS_ORDER = [
     'js-refactor/01.app.refactor.js',
     '38.tension.js',
     '02.storage.js',
-    'js-refactor/03.projects.refactor.js',
+    'js-refactor/project/project.model.js',
+    'js-refactor/project/project.repository.js',
+    'js-refactor/project/project.viewmodel.js',
+    'js-refactor/project/project.view.js',
+    'js-refactor/project/project.handlers.js',
+    'js-refactor/project/project.main.js',
     '04.init.js',
     'js-refactor/05.undo-redo.refactor.js',
     # Structure refactored files 1/2
