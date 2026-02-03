@@ -131,7 +131,12 @@ JS_ORDER = [
     'js-refactor/search/search.main.js',
     'js-refactor/26.focusMode.refactor.js',
     '27.keyboardShortcuts.js',
-    'js-refactor/28.revision.refactor.js',
+    'js-refactor/revision/revision.model.js',
+    'js-refactor/revision/revision.repository.js',
+    'js-refactor/revision/revision.viewmodel.js',
+    'js-refactor/revision/revision.view.js',
+    'js-refactor/revision/revision.handlers.js',
+    'js-refactor/revision/revision.main.js',
     # Todo refactored files (order: model -> repository -> viewmodel -> view -> handlers -> main)
     'js-refactor/todo/todo.model.js',
     'js-refactor/todo/todo.repository.js',

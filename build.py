@@ -220,6 +220,27 @@ def collect_js():
                 js_content.append('')
                 refactor_files.append(f'word-repetition/{filename}')
 
+        # Collecter les fichiers du sous-dossier revision/
+        revision_dir = os.path.join(js_refactor_dir, 'revision')
+        if os.path.exists(revision_dir):
+            # Order matters: model -> repository -> viewmodel -> view -> handlers -> main
+            revision_files_ordered = [
+                'revision.model.js',
+                'revision.repository.js',
+                'revision.viewmodel.js',
+                'revision.view.js',
+                'revision.handlers.js',
+                'revision.main.js'
+            ]
+            for filename in revision_files_ordered:
+                filepath = os.path.join(revision_dir, filename)
+                if os.path.exists(filepath):
+                    content = read_file(f'js-refactor/revision/{filename}')
+                    js_content.append(f'// ========== js-refactor/revision/{filename} ==========')
+                    js_content.append(content)
+                    js_content.append('')
+                    refactor_files.append(f'revision/{filename}')
+
     log(f"   [OK] {found_count} fichiers JS trouves")
     if missing:
         log(f"   [!] {len(missing)} fichiers JS manquants:")

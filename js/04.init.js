@@ -69,6 +69,11 @@ async function init() {
     // Initialize storage monitoring
     initStorageMonitoring();
 
+    // Initialize Revision Module
+    if (typeof RevisionModule !== 'undefined' && RevisionModule.init) {
+        RevisionModule.init();
+    }
+
     // Initialize scene versions sidebar
     renderSceneVersionsList();
 

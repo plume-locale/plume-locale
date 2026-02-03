@@ -1160,6 +1160,11 @@ function renderActEditor(act) {
         initActScrollTracking(act.id, allScenes);
         // Auto-resize des synopsis existants
         document.querySelectorAll('.scene-separator-synopsis').forEach(autoResizeSynopsis);
+
+        // Update annotation density badges
+        if (typeof RevisionViewModel !== 'undefined' && RevisionViewModel.updateAnnotationsButton) {
+            RevisionViewModel.updateAnnotationsButton();
+        }
     }, 100);
 
     // Initialize scene navigation toolbar
@@ -1267,6 +1272,11 @@ function renderChapterEditor(act, chapter) {
         initChapterScrollTracking(act.id, chapter.id);
         // Auto-resize des synopsis existants
         document.querySelectorAll('.scene-separator-synopsis').forEach(autoResizeSynopsis);
+
+        // Update annotation density badges
+        if (typeof RevisionViewModel !== 'undefined' && RevisionViewModel.updateAnnotationsButton) {
+            RevisionViewModel.updateAnnotationsButton();
+        }
     }, 100);
 
     // Initialize scene navigation toolbar
