@@ -129,7 +129,13 @@ JS_ORDER = [
     'js-refactor/search/search.view.js',
     'js-refactor/search/search.handlers.js',
     'js-refactor/search/search.main.js',
-    'js-refactor/26.focusMode.refactor.js',
+    # Focus Mode refactored files
+    'js-refactor/focusMode/focusMode.model.js',
+    'js-refactor/focusMode/focusMode.repository.js',
+    'js-refactor/focusMode/focusMode.viewmodel.js',
+    'js-refactor/focusMode/focusMode.view.js',
+    'js-refactor/focusMode/focusMode.handlers.js',
+    'js-refactor/focusMode/focusMode.main.js',
     '27.keyboardShortcuts.js',
     'js-refactor/revision/revision.model.js',
     'js-refactor/revision/revision.repository.js',
@@ -300,6 +306,7 @@ IGNORED_ORIGINALS = [
     '_08.auto-detect.js', '_09.floating-editor.js', '_10.colorpalette.js', '_11.updateStats.js',
     '_15.characters.js', '_16.split-view.js', '_17.world.js', '_21.sceneVersions.js', 
     '_23.stats.js', '_24.codex.js', '_25.globalSearch.js', '_26.focusMode.js', 
+    '_26.focusMode.refactor.js', 
     '_28.revision.js', '_29.todos.js', '_30.corkboard.js', '_30.corkboard.refactor.js', 
     '_33.plot.js', '_36.timeline-metro.js', '_43.arcs.js', '_44.storygrid.js', 
     '_45.arc-board.js', '_45.arc-board.refactor.js', '_46.thriller-board.js'
