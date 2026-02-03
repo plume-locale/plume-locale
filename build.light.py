@@ -104,7 +104,13 @@ JS_ORDER = [
     'js-refactor/26.focusMode.refactor.js',
     '27.keyboardShortcuts.js',
     'js-refactor/28.revision.refactor.js',
-    'js-refactor/29.todos.refactor.js',
+    # Todo refactored files (order: model -> repository -> viewmodel -> view -> handlers -> main)
+    'js-refactor/todo/todo.model.js',
+    'js-refactor/todo/todo.repository.js',
+    'js-refactor/todo/todo.viewmodel.js',
+    'js-refactor/todo/todo.view.js',
+    'js-refactor/todo/todo.handlers.js',
+    'js-refactor/todo/todo.main.js',
     # Corkboard refactored files (order: model -> repository -> viewmodel -> view -> handlers -> main)
     'js-refactor/corkboard/corkboard.model.js',
     'js-refactor/corkboard/corkboard.repository.js',
@@ -144,14 +150,6 @@ JS_ORDER = [
     'js-refactor/arc-board/arc-board.views.js',
     'js-refactor/arc-board/arc-board.handlers.js',
     'js-refactor/arc-board/arc-board.main.js',
-    # Thriller Board - RETIRÉ pour version Light
-    # 'js-refactor/thriller-board/thriller-board.constants.js',
-    # 'js-refactor/thriller-board/thriller-board.model.js',
-    # 'js-refactor/thriller-board/thriller-board.repository.js',
-    # 'js-refactor/thriller-board/thriller-board.helpers.js',
-    # 'js-refactor/thriller-board/thriller-board.viewmodel.js',
-    # 'js-refactor/thriller-board/thriller-board.type-editor.js',
-    # 'js-refactor/thriller-board/thriller-board.view.js',
     # Plot Grid Module
     'js-refactor/plotgrid/plot-grid.model.js',
     'js-refactor/plotgrid/plot-grid.repository.js',

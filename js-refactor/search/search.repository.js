@@ -25,6 +25,31 @@ const SearchRepository = {
         results.push(...SearchRepository.searchMetroTimeline(lowerQuery, query));
         results.push(...SearchRepository.searchNotes(lowerQuery, query));
         results.push(...SearchRepository.searchCodex(lowerQuery, query));
+        results.push(...SearchRepository.searchTodos(lowerQuery, query));
+
+        return results;
+    },
+
+    /**
+     * Recherche dans les TODOs
+     */
+    searchTodos: (lowerQuery, originalQuery) => {
+        const results = [];
+        if (typeof TodoRepository === 'undefined') return results;
+
+        const todos = TodoRepository.getAll();
+        todos.forEach(todo => {
+            const searchText = ensureString(todo.text).toLowerCase();
+
+            if (searchText.includes(lowerQuery)) {
+                const matchIndex = searchText.indexOf(lowerQuery);
+                const preview = SearchRepository.getPreview(todo.text, matchIndex, originalQuery.length);
+
+                results.push(
+                    SearchResultModel.createTodoResult(todo, originalQuery, matchIndex, preview)
+                );
+            }
+        });
 
         return results;
     },
@@ -141,10 +166,7 @@ const SearchRepository = {
             return results;
         }
 
-        console.log('[Search] Timeline: Searching in', project.timeline.length, 'events for:', originalQuery);
-
         project.timeline.forEach((event, index) => {
-            // Convertir toutes les valeurs en chaînes pour gérer les nombres (dates, etc.)
             const searchText = [
                 String(event.title || ''),
                 String(event.description || ''),
@@ -153,13 +175,7 @@ const SearchRepository = {
                 String(event.date !== undefined && event.date !== null ? event.date : '')
             ].join(' ').toLowerCase();
 
-            if (index === 0) {
-                console.log('[Search] Timeline event structure:', event);
-                console.log('[Search] Timeline searchText:', searchText);
-            }
-
             if (searchText.includes(lowerQuery)) {
-                console.log('[Search] Timeline: Match found!', event);
                 const preview = event.description || 'Aucune description';
                 results.push(
                     SearchResultModel.createTimelineResult(event, originalQuery, preview)
@@ -167,7 +183,6 @@ const SearchRepository = {
             }
         });
 
-        console.log('[Search] Timeline: Found', results.length, 'results');
         return results;
     },
 

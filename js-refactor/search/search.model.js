@@ -193,6 +193,32 @@ const SearchResultModel = {
                 category: entry.category
             }
         });
+    },
+
+    /**
+     * Crée un résultat de recherche pour un TODO
+     */
+    createTodoResult: (todo, query, matchIndex, preview) => {
+        return SearchResultModel.create({
+            id: todo.id,
+            type: 'TODO',
+            title: ensureString(todo.text, 'Sans texte'),
+            path: `${ensureString(todo.actTitle, 'Acte')} > ${ensureString(todo.chapterTitle, 'Chapitre')} > ${ensureString(todo.sceneTitle, 'Scène')}`,
+            preview: ensureString(preview, ''),
+            matchIndex: matchIndex,
+            action: () => {
+                if (typeof openScene === 'function') {
+                    openScene(todo.actId, todo.chapterId, todo.sceneId);
+                    switchView('editor');
+                }
+            },
+            metadata: {
+                todoId: todo.id,
+                sceneId: todo.sceneId,
+                actId: todo.actId,
+                chapterId: todo.chapterId
+            }
+        });
     }
 };
 

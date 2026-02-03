@@ -281,8 +281,9 @@ function renderAnnotationsPanel() {
     // Migrer les anciennes annotations si nécessaire
     migrateSceneAnnotationsToVersion(scene);
 
-    // Obtenir les annotations de la version active
-    const annotations = getVersionAnnotations(scene);
+    // Obtenir les annotations de la version active et filtrer les TODOs
+    const allAnnotations = getVersionAnnotations(scene);
+    const annotations = allAnnotations.filter(a => a.type !== 'todo');
     const activeVersion = getActiveVersion(scene);
     const versionLabel = activeVersion ? (activeVersion.label || `Version ${activeVersion.number}`) : '';
 
@@ -307,13 +308,6 @@ function renderAnnotationsPanel() {
                             <div class="annotation-type ${a.type}">${getAnnotationTypeLabel(a.type)}</div>
                             <div class="annotation-content">${a.text}</div>
                             ${a.context ? `<div class="annotation-context">"${a.context}"</div>` : ''}
-                            ${a.type === 'todo' ? `
-                                <button class="btn btn-small ${a.completed ? 'btn-primary' : ''}" 
-                                        onclick="event.stopPropagation(); toggleAnnotationComplete(${a.id})" 
-                                        style="margin-top: 0.5rem;">
-                                    ${a.completed ? '<i data-lucide="check" style="width:12px;height:12px;vertical-align:middle;margin-right:4px;"></i>Terminé' : '<i data-lucide="circle" style="width:12px;height:12px;vertical-align:middle;margin-right:4px;"></i>À faire'}
-                                </button>
-                            ` : ''}
                             <button class="btn btn-small" onclick="event.stopPropagation(); deleteAnnotation(${a.id})" 
                                     style="margin-top: 0.5rem;"><i data-lucide="trash-2" style="width:12px;height:12px;vertical-align:middle;margin-right:4px;"></i>Supprimer</button>
                         </div>
@@ -368,9 +362,9 @@ function updateAnnotationsButton(isOpen) {
             if (chapter) {
                 const scene = chapter.scenes.find(s => s.id === currentSceneId);
                 if (scene) {
-                    const annotations = getVersionAnnotations(scene);
-                    annotationCount = annotations.length;
-                    todoCount = annotations.filter(a => a.type === 'todo' && !a.completed).length;
+                    const allAnnotations = getVersionAnnotations(scene);
+                    annotationCount = allAnnotations.filter(a => a.type !== 'todo').length;
+                    todoCount = allAnnotations.filter(a => a.type === 'todo' && !a.completed).length;
                 }
             }
         }
