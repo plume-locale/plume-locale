@@ -111,7 +111,12 @@ JS_ORDER = [
     'js-refactor/colorpalette/color-palette.view.js',
     'js-refactor/colorpalette/color-palette.handlers.js',
     'js-refactor/colorpalette/color-palette.main.js',
-    '13.mobile-menu.js',
+    # Mobile Menu refactored files (order: model -> repository -> viewmodel -> view -> main)
+    'js-refactor/mobile-menu/mobile-menu.model.js',
+    'js-refactor/mobile-menu/mobile-menu.repository.js',
+    'js-refactor/mobile-menu/mobile-menu.viewmodel.js',
+    'js-refactor/mobile-menu/mobile-menu.view.js',
+    'js-refactor/mobile-menu/mobile-menu.main.js',
     '14.dragndrop-acts.js',
     # Characters refactored files 
     'js-refactor/characters/characters.model.js',
@@ -387,7 +392,7 @@ IGNORED_ORIGINALS = [
     '_31.mindmap.js', '_32.touch-events.js',
     '_33.plot.js', '_34.relations-graph.js', '_35.renderMap.js', '_36.timeline-metro.js', '_43.arcs.js', '_44.storygrid.js', 
     '_45.arc-board.js', '_45.arc-board.refactor.js', '_46.thriller-board.js', '38.tension.js', '40.sidebar-views.js',
-    '12.import-export.js', '39.export.js', '41.storageMonitoring.js', '02.storage.js', '20.snapshots.js'
+    '12.import-export.js', '39.export.js', '41.storageMonitoring.js', '02.storage.js', '20.snapshots.js', '13.mobile-menu.js'
 ]
 
 def collect_js():

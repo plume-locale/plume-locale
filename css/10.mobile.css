@@ -552,7 +552,7 @@
     display: none;
     position: fixed;
     top: 50%;
-    left: 0;
+    left: 50px;
     transform: translateY(-50%);
     width: 24px;
     height: 100px;
@@ -821,6 +821,7 @@ body.force-mobile-nav .split-mode-toggle span {
     /* Layout Mobile */
     .app-content {
         flex-direction: column;
+        padding-left: 50px;
     }
 
     /* Sidebar versions en overlay sur mobile */
@@ -949,12 +950,13 @@ body.force-mobile-nav .split-mode-toggle span {
     }
 
     /* Sidebar Mobile - en overlay */
+    /* Sidebar Mobile - en overlay */
     .sidebar {
         position: fixed;
         top: 56px;
         left: -100%;
-        width: 85%;
-        max-width: 320px;
+        width: calc(100vw - 50px);
+        max-width: 450px;
         height: calc(100vh - 56px);
         z-index: 10002;
         transition: left 0.3s ease;
@@ -965,7 +967,8 @@ body.force-mobile-nav .split-mode-toggle span {
     }
 
     .sidebar.mobile-open {
-        left: 0;
+        left: 50px;
+        /* Leave space for tools sidebar */
     }
 
     /* Padding pour les listes de la sidebar sur mobile */
@@ -976,6 +979,35 @@ body.force-mobile-nav .split-mode-toggle span {
 
     .sidebar-actions {
         padding-bottom: calc(1rem + env(safe-area-inset-bottom, 20px));
+    }
+
+    /* Secondary Panels (Annotations, Todos, Plot, etc.) on Mobile */
+    .annotations-panel,
+    .sidebar-plot,
+    .arc-scene-panel,
+    .links-panel-sidebar,
+    .word-rep-sidebar {
+        position: fixed !important;
+        top: 56px !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        left: 50px !important;
+        /* Aside the tools bar */
+        width: auto !important;
+        z-index: 995 !important;
+        background: var(--bg-primary) !important;
+        box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+        border-left: 1px solid var(--border-color);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .annotations-panel.hidden,
+    .sidebar-plot.hidden,
+    .arc-scene-panel.hidden,
+    .links-panel-sidebar.hidden,
+    .word-rep-sidebar.hidden {
+        display: none !important;
     }
 
     /* Sidebar Structure - Optimisation mobile */
@@ -1291,7 +1323,8 @@ body.force-mobile-nav .split-mode-toggle span {
 
     /* Links panel toggle - comme toolbar */
     .links-panel-toggle {
-        display: block;
+        display: none;
+        /* Hidden, now using sidebar */
         width: 100%;
         padding: 12px;
         background: white;
@@ -1309,7 +1342,8 @@ body.force-mobile-nav .split-mode-toggle span {
         background: var(--bg-secondary);
     }
 
-    /* Links panel collapsible - comme toolbar */
+    /* Links panel collapsible - DEPRECATED for sidebar behavior */
+    /*
     #linksPanel {
         max-height: 0;
         overflow: hidden;
@@ -1317,13 +1351,16 @@ body.force-mobile-nav .split-mode-toggle span {
         padding: 0 1rem;
         border-bottom: none;
     }
+    */
 
+    /*
     #linksPanel.expanded {
         max-height: 500px;
         overflow-y: auto;
         padding: 0.75rem 1rem;
         border-bottom: 1px solid var(--border-color);
     }
+    */
 
     .links-panel-sticky>div {
         flex-direction: column;
