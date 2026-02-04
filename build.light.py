@@ -224,7 +224,12 @@ JS_ORDER = [
     'js-refactor/theme-manager/theme-manager.view.js',
     'js-refactor/theme-manager/theme-manager.main.js',
     '39.export.js',
-    '40.sidebar-views.js',
+    # Sidebar View Module
+    'js-refactor/sidebar-view/sidebar-view.model.js',
+    'js-refactor/sidebar-view/sidebar-view.repository.js',
+    'js-refactor/sidebar-view/sidebar-view.viewmodel.js',
+    'js-refactor/sidebar-view/sidebar-view.view.js',
+    'js-refactor/sidebar-view/sidebar-view.main.js',
     '41.storageMonitoring.js',
     '42.mobile-swipe.js',
     # '44.storygrid.js',  # RETIRÉ pour version Light
@@ -360,7 +365,7 @@ IGNORED_ORIGINALS = [
     '_28.revision.js', '_29.todos.js', '_30.corkboard.js', '_30.corkboard.refactor.js', 
     '_31.mindmap.js', '_32.touch-events.js',
     '_33.plot.js', '_34.relations-graph.js', '_35.renderMap.js', '_36.timeline-metro.js', '_43.arcs.js', '_44.storygrid.js', 
-    '_45.arc-board.js', '_45.arc-board.refactor.js', '_46.thriller-board.js', '38.tension.js'
+    '_45.arc-board.js', '_45.arc-board.refactor.js', '_46.thriller-board.js', '38.tension.js', '40.sidebar-views.js'
 ]
 
 def collect_js():
