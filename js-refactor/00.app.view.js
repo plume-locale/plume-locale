@@ -1414,6 +1414,11 @@ function updateChapterProgressIndicator(chapter) {
  * [MVVM : View]
  * Initialise le tracking de scroll pour l'éditeur de chapitre.
  */
+/**
+ * [MVVM : View]
+ * Initialise le tracking de scroll pour l'éditeur de chapitre.
+ * OPTIMISÉ avec requestAnimationFrame et Debounce
+ */
 function initChapterScrollTracking(actId, chapterId) {
     // Nettoyer le handler précédent s'il existe
     cleanupChapterScrollTracking();
@@ -1429,6 +1434,8 @@ function initChapterScrollTracking(actId, chapterId) {
     if (!chapter) return;
 
     let currentSceneIndex = 0;
+    let ticking = false;
+    let updateTimeout = null;
 
     function updateScrollPosition() {
         const sceneBlocks = Array.from(document.querySelectorAll('.chapter-scene-block'));
@@ -1439,6 +1446,8 @@ function initChapterScrollTracking(actId, chapterId) {
         let closestScene = 0;
         let closestDistance = Infinity;
 
+        // Optimisation: boucle simple (rapide pour < 100 éléments)
+        // Pourrait être binaire si positions triées, mais overkill ici
         sceneBlocks.forEach((block, index) => {
             const rect = block.getBoundingClientRect();
             const blockMiddle = rect.top + rect.height / 2;
@@ -1450,76 +1459,98 @@ function initChapterScrollTracking(actId, chapterId) {
             }
         });
 
-        // Mettre à jour le titre si la scène a changé
+        // ACTION DÉCLENCHÉE SI CHANGEMENT DE SCÈNE ACTIVE
         if (closestScene !== currentSceneIndex) {
             currentSceneIndex = closestScene;
-            const scene = chapter.scenes[closestScene];
-            if (scene) {
-                if (title) title.textContent = scene.title;
-                // Mettre à jour la scène active dans tout l'application (Sidebar, Links, etc.)
-                setActiveScene(actId, chapterId, scene.id);
-            }
 
-            // Update tension meter with current visible scene text from DOM
-            if (typeof updateLiveTensionMeter === 'function' && scene) {
-                const sceneEditor = document.querySelector(`.editor-textarea[data-scene-id="${scene.id}"]`);
-                const textToAnalyze = sceneEditor ? sceneEditor.innerHTML : (scene.content || '');
-                updateLiveTensionMeter(textToAnalyze, { actId, chapterId, sceneId: scene.id });
-            }
+            // Debounce les opérations lourdes (sidebar, tension meter, titre) et le changement d'URL/Historique
+            if (updateTimeout) clearTimeout(updateTimeout);
+
+            updateTimeout = setTimeout(() => {
+                const scene = chapter.scenes[closestScene];
+                if (scene) {
+                    if (title) title.textContent = scene.title;
+
+                    // Mettre à jour la scène active dans tout l'application (Sidebar, Links, etc.)
+                    // Cette opération est coûteuse si faite 60x/sec
+                    setActiveScene(actId, chapterId, scene.id);
+
+                    // Update tension meter with current visible scene text from DOM
+                    if (typeof updateLiveTensionMeter === 'function') {
+                        const sceneEditor = document.querySelector(`.editor-textarea[data-scene-id="${scene.id}"]`);
+                        const textToAnalyze = sceneEditor ? sceneEditor.innerHTML : (scene.content || '');
+                        updateLiveTensionMeter(textToAnalyze, { actId, chapterId, sceneId: scene.id });
+                    }
+                }
+            }, 100); // 100ms de délai pour stabilisation
         }
 
-        // Calculer la position de l'indicateur
+        // MISE À JOUR VISUELLE LÉGÈRE (INDICATEUR) - EXÉCUTÉE À CHAQUE FRAME
         const progressIndicator = document.getElementById('chapterProgressIndicator');
-        if (!progressIndicator) return;
+        if (progressIndicator) {
+            const segments = Array.from(progressIndicator.querySelectorAll('.progress-scene-segment'));
+            let topOffset = 0;
 
-        const segments = Array.from(progressIndicator.querySelectorAll('.progress-scene-segment'));
-        let topOffset = 0;
-
-        // Calculer l'offset jusqu'à la scène actuelle
-        for (let i = 0; i < currentSceneIndex; i++) {
-            const seg = segments[i];
-            if (seg) topOffset += seg.offsetHeight;
-        }
-
-        // Ajouter un pourcentage dans la scène actuelle basé sur le scroll
-        const currentBlock = sceneBlocks[currentSceneIndex];
-        if (currentBlock) {
-            const blockRect = currentBlock.getBoundingClientRect();
-            const viewportTop = 0;
-            const relativeScroll = Math.max(0, Math.min(1, (viewportTop - blockRect.top) / blockRect.height));
-
-            const currentSegment = segments[currentSceneIndex];
-            if (currentSegment) {
-                topOffset += currentSegment.offsetHeight * relativeScroll;
+            // Calculer l'offset jusqu'à la scène actuelle
+            for (let i = 0; i < currentSceneIndex; i++) {
+                const seg = segments[i];
+                if (seg) topOffset += seg.offsetHeight;
             }
-        }
 
-        indicator.style.top = `${topOffset}px`;
+            // Ajouter un pourcentage dans la scène actuelle basé sur le scroll
+            const currentBlock = sceneBlocks[currentSceneIndex];
+            if (currentBlock) {
+                const blockRect = currentBlock.getBoundingClientRect();
+                const viewportTop = 0; // Top du viewport ou container
+                // On compare le top du block par rapport au haut de l'écran (0)
+                // Si blockRect.top est positif, on est au début. S'il est négatif, on a scrollé dedans.
+                // On veut le ratio de "combien du bloc a passé le haut de l'écran"
+                // ou plutôt "combien du bloc a passé le milieu de l'écran ?"
+                // L'implémentation originale utilisait (0 - top) / height.
+                const relativeScroll = Math.max(0, Math.min(1, (0 - blockRect.top) / blockRect.height));
 
-        // Mettre en surbrillance le segment actif
-        segments.forEach((seg, i) => {
-            if (i === currentSceneIndex) {
-                seg.classList.add('active');
-            } else {
-                seg.classList.remove('active');
+                const currentSegment = segments[currentSceneIndex];
+                if (currentSegment) {
+                    topOffset += currentSegment.offsetHeight * relativeScroll;
+                }
             }
-        });
+
+            indicator.style.top = `${topOffset}px`;
+
+            // Mettre en surbrillance le segment actif
+            segments.forEach((seg, i) => {
+                if (i === currentSceneIndex) {
+                    seg.classList.add('active');
+                } else {
+                    seg.classList.remove('active');
+                }
+            });
+        }
     }
 
-    // Stocker le handler pour pouvoir le nettoyer plus tard
-    chapterScrollTrackingHandler = updateScrollPosition;
+    // Fonction throttle via rAF
+    chapterScrollTrackingHandler = function () {
+        if (!ticking) {
+            window.requestAnimationFrame(() => {
+                updateScrollPosition();
+                ticking = false;
+            });
+            ticking = true;
+        }
+    };
 
     // Forcer un premier appel immédiat pour synchroniser la scène 1 (index 0)
     currentSceneIndex = -1;
-    updateScrollPosition();
+    // On appelle updateScrollPosition directement pour l'init
+    window.requestAnimationFrame(updateScrollPosition);
 
     // Écouter le scroll sur le conteneur principal
     const container = document.querySelector('.editor-container');
     if (container) {
-        container.addEventListener('scroll', chapterScrollTrackingHandler);
+        container.addEventListener('scroll', chapterScrollTrackingHandler, { passive: true });
     } else {
         // Fallback
-        window.addEventListener('scroll', chapterScrollTrackingHandler);
+        window.addEventListener('scroll', chapterScrollTrackingHandler, { passive: true });
     }
 }
 
@@ -1569,9 +1600,8 @@ function scrollToChapterScene(sceneIndex) {
         // Placer le curseur au début de l'éditeur de cette scène
         const editor = sceneBlock.querySelector('.editor-textarea');
         if (editor) {
-            // Un petit délai pour laisser l'animation de scroll commencer/finir si nécessaire
-            // mais l'appel à focus() peut être immédiat
-            setCursorAtBeginning(editor);
+            // Note: On ne force plus le focus ici car cela interrompt le scroll fluide
+            // et peut bloquer la navigation. L'utilisateur cliquera s'il veut éditer.
         }
     }
 }
@@ -1645,6 +1675,11 @@ function updateActProgressIndicator(act) {
  * [MVVM : View]
  * Initialise le tracking de scroll pour l'éditeur d'acte.
  */
+/**
+ * [MVVM : View]
+ * Initialise le tracking de scroll pour l'éditeur d'acte.
+ * OPTIMISÉ avec requestAnimationFrame et Debounce
+ */
 function initActScrollTracking(actId, allScenes) {
     // Nettoyer le handler précédent s'il existe
     cleanupChapterScrollTracking();
@@ -1659,6 +1694,8 @@ function initActScrollTracking(actId, allScenes) {
     if (!act) return;
 
     let currentSceneIndex = 0;
+    let ticking = false;
+    let updateTimeout = null;
 
     function updateScrollPosition() {
         const sceneBlocks = Array.from(document.querySelectorAll('.act-scene-block'));
@@ -1669,6 +1706,7 @@ function initActScrollTracking(actId, allScenes) {
         let closestScene = 0;
         let closestDistance = Infinity;
 
+        // Optimisation
         sceneBlocks.forEach((block, index) => {
             const rect = block.getBoundingClientRect();
             const blockMiddle = rect.top + rect.height / 2;
@@ -1680,76 +1718,91 @@ function initActScrollTracking(actId, allScenes) {
             }
         });
 
-        // Mettre à jour le titre si la scène a changé
+        // ACTION DÉCLENCHÉE SI CHANGEMENT DE SCÈNE ACTIVE
         if (closestScene !== currentSceneIndex) {
             currentSceneIndex = closestScene;
             const sceneData = allScenes[closestScene];
-            if (sceneData) {
-                if (title) title.textContent = `${sceneData.chapterTitle} - ${sceneData.scene.title}`;
-                // Mettre à jour la scène active dans tout l'application (Sidebar, Links, etc.)
-                setActiveScene(actId, sceneData.chapterId, sceneData.scene.id);
-            }
 
-            // Update tension meter with current visible scene text from DOM for maximum accuracy
-            if (typeof updateLiveTensionMeter === 'function' && sceneData) {
-                const sceneEditor = document.querySelector(`.editor-textarea[data-scene-id="${sceneData.scene.id}"]`);
-                const textToAnalyze = sceneEditor ? sceneEditor.innerHTML : (sceneData.scene.content || '');
-                updateLiveTensionMeter(textToAnalyze);
-            }
+            // Debounce operations lourdes
+            if (updateTimeout) clearTimeout(updateTimeout);
+
+            updateTimeout = setTimeout(() => {
+                if (sceneData) {
+                    if (title) title.textContent = `${sceneData.chapterTitle} - ${sceneData.scene.title}`;
+
+                    // Mettre à jour la scène active dans tout l'application (Sidebar, Links, etc.)
+                    setActiveScene(actId, sceneData.chapterId, sceneData.scene.id);
+
+                    // Update tension meter with current visible scene text from DOM for maximum accuracy
+                    if (typeof updateLiveTensionMeter === 'function') {
+                        const sceneEditor = document.querySelector(`.editor-textarea[data-scene-id="${sceneData.scene.id}"]`);
+                        const textToAnalyze = sceneEditor ? sceneEditor.innerHTML : (sceneData.scene.content || '');
+                        updateLiveTensionMeter(textToAnalyze);
+                    }
+                }
+            }, 100);
         }
 
-        // Calculer la position de l'indicateur
+        // MISE À JOUR VISUELLE LÉGÈRE (INDICATEUR) - EXÉCUTÉE À CHAQUE FRAME
         const progressIndicator = document.getElementById('actProgressIndicator');
-        if (!progressIndicator) return;
+        if (progressIndicator) {
+            const segments = Array.from(progressIndicator.querySelectorAll('.progress-scene-segment'));
+            let topOffset = 0;
 
-        const segments = Array.from(progressIndicator.querySelectorAll('.progress-scene-segment'));
-        let topOffset = 0;
-
-        // Calculer l'offset jusqu'à la scène actuelle
-        for (let i = 0; i < currentSceneIndex; i++) {
-            const seg = segments[i];
-            if (seg) topOffset += seg.offsetHeight;
-        }
-
-        // Ajouter un pourcentage dans la scène actuelle basé sur le scroll
-        const currentBlock = sceneBlocks[currentSceneIndex];
-        if (currentBlock) {
-            const blockRect = currentBlock.getBoundingClientRect();
-            const viewportTop = 0;
-            const relativeScroll = Math.max(0, Math.min(1, (viewportTop - blockRect.top) / blockRect.height));
-
-            const currentSegment = segments[currentSceneIndex];
-            if (currentSegment) {
-                topOffset += currentSegment.offsetHeight * relativeScroll;
+            // Calculer l'offset jusqu'à la scène actuelle
+            for (let i = 0; i < currentSceneIndex; i++) {
+                const seg = segments[i];
+                if (seg) topOffset += seg.offsetHeight;
             }
-        }
 
-        indicator.style.top = `${topOffset}px`;
+            // Ajouter un pourcentage dans la scène actuelle basé sur le scroll
+            const currentBlock = sceneBlocks[currentSceneIndex];
+            if (currentBlock) {
+                const blockRect = currentBlock.getBoundingClientRect();
+                const viewportTop = 0;
+                const relativeScroll = Math.max(0, Math.min(1, (viewportTop - blockRect.top) / blockRect.height));
 
-        // Mettre en surbrillance le segment actif
-        segments.forEach((seg, i) => {
-            if (i === currentSceneIndex) {
-                seg.classList.add('active');
-            } else {
-                seg.classList.remove('active');
+                const currentSegment = segments[currentSceneIndex];
+                if (currentSegment) {
+                    topOffset += currentSegment.offsetHeight * relativeScroll;
+                }
             }
-        });
+
+            indicator.style.top = `${topOffset}px`;
+
+            // Mettre en surbrillance le segment actif
+            segments.forEach((seg, i) => {
+                if (i === currentSceneIndex) {
+                    seg.classList.add('active');
+                } else {
+                    seg.classList.remove('active');
+                }
+            });
+        }
     }
 
-    // Stocker le handler pour pouvoir le nettoyer plus tard
-    chapterScrollTrackingHandler = updateScrollPosition;
+    // Fonction throttle via rAF
+    chapterScrollTrackingHandler = function () {
+        if (!ticking) {
+            window.requestAnimationFrame(() => {
+                updateScrollPosition();
+                ticking = false;
+            });
+            ticking = true;
+        }
+    };
 
     // Forcer un premier appel immédiat pour synchroniser la scène 1 (index 0)
     currentSceneIndex = -1;
-    updateScrollPosition();
+    window.requestAnimationFrame(updateScrollPosition);
 
     // Écouter le scroll sur le conteneur principal
     const container = document.querySelector('.editor-container');
     if (container) {
-        container.addEventListener('scroll', chapterScrollTrackingHandler);
+        container.addEventListener('scroll', chapterScrollTrackingHandler, { passive: true });
     } else {
         // Fallback
-        window.addEventListener('scroll', chapterScrollTrackingHandler);
+        window.addEventListener('scroll', chapterScrollTrackingHandler, { passive: true });
     }
 }
 
@@ -1801,9 +1854,7 @@ function scrollToActScene(sceneIndex) {
 
         // Placer le curseur au début de l'éditeur de cette scène
         const editor = sceneBlock.querySelector('.editor-textarea');
-        if (editor) {
-            setCursorAtBeginning(editor);
-        }
+        // Note: focus supprimé pour éviter les conflits de scroll
     }
 }
 
