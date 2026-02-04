@@ -106,7 +106,6 @@ JS_ORDER = [
     'js-refactor/colorpalette/color-palette.view.js',
     'js-refactor/colorpalette/color-palette.handlers.js',
     'js-refactor/colorpalette/color-palette.main.js',
-    '12.import-export.js',
     '13.mobile-menu.js',
     '14.dragndrop-acts.js',
     # Characters refactored files 
@@ -223,7 +222,14 @@ JS_ORDER = [
     'js-refactor/theme-manager/theme-manager.viewmodel.js',
     'js-refactor/theme-manager/theme-manager.view.js',
     'js-refactor/theme-manager/theme-manager.main.js',
-    '39.export.js',
+    # Import/Export Module
+    'js-refactor/import-export/import-export.model.js',
+    'js-refactor/import-export/import-export.repository.js',
+    'js-refactor/import-export/google-drive.service.js',
+    'js-refactor/import-export/import-export.viewmodel.js',
+    'js-refactor/import-export/import-export.view.js',
+    'js-refactor/import-export/import-export.handlers.js',
+    'js-refactor/import-export/import-export.main.js',
     # Sidebar View Module
     'js-refactor/sidebar-view/sidebar-view.model.js',
     'js-refactor/sidebar-view/sidebar-view.repository.js',
@@ -365,7 +371,8 @@ IGNORED_ORIGINALS = [
     '_28.revision.js', '_29.todos.js', '_30.corkboard.js', '_30.corkboard.refactor.js', 
     '_31.mindmap.js', '_32.touch-events.js',
     '_33.plot.js', '_34.relations-graph.js', '_35.renderMap.js', '_36.timeline-metro.js', '_43.arcs.js', '_44.storygrid.js', 
-    '_45.arc-board.js', '_45.arc-board.refactor.js', '_46.thriller-board.js', '38.tension.js', '40.sidebar-views.js'
+    '_45.arc-board.js', '_45.arc-board.refactor.js', '_46.thriller-board.js', '38.tension.js', '40.sidebar-views.js',
+    '12.import-export.js', '39.export.js'
 ]
 
 def collect_js():
