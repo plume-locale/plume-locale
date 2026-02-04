@@ -58,7 +58,12 @@ JS_ORDER = [
     'js-refactor/tension/tension.view.js',
     'js-refactor/tension/tension.handlers.js',
     'js-refactor/tension/tension.main.js',
-    '02.storage.js',
+    # Storage Module
+    'js-refactor/storage/storage.model.js',
+    'js-refactor/storage/storage.repository.js',
+    'js-refactor/storage/storage.viewmodel.js',
+    'js-refactor/storage/storage.view.js',
+    'js-refactor/storage/storage.main.js',
     'js-refactor/project/project.model.js',
     'js-refactor/project/project.repository.js',
     'js-refactor/project/project.viewmodel.js',
@@ -377,7 +382,7 @@ IGNORED_ORIGINALS = [
     '_31.mindmap.js', '_32.touch-events.js',
     '_33.plot.js', '_34.relations-graph.js', '_35.renderMap.js', '_36.timeline-metro.js', '_43.arcs.js', '_44.storygrid.js', 
     '_45.arc-board.js', '_45.arc-board.refactor.js', '_46.thriller-board.js', '38.tension.js', '40.sidebar-views.js',
-    '12.import-export.js', '39.export.js', '41.storageMonitoring.js'
+    '12.import-export.js', '39.export.js', '41.storageMonitoring.js', '02.storage.js'
 ]
 
 def collect_js():
