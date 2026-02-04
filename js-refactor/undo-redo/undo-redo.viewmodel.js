@@ -200,6 +200,7 @@ const UndoRedoViewModel = {
         if (typeof ThrillerBoardView !== 'undefined' && typeof ThrillerBoardView.render === 'function') try { ThrillerBoardView.render(); } catch (e) { }
         if (typeof ArcBoardView !== 'undefined' && typeof ArcBoardView.render === 'function') try { ArcBoardView.render(); } catch (e) { }
         if (typeof ArcBoardViewModel !== 'undefined' && typeof ArcBoardViewModel.render === 'function') try { ArcBoardViewModel.render(); } catch (e) { }
+        if (typeof renderMindmapView === 'function') try { renderMindmapView(); } catch (e) { }
 
         // Generic fallback
         if (typeof renderCurrentView === 'function') {

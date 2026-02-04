@@ -175,6 +175,7 @@ const UndoRedoRepository = {
         integrate(window.WorldRepository, 'World');
         integrate(window.CodexRepository, 'Codex');
         integrate(window.PlotGridRepository, 'PlotGrid');
+        integrate(window.mindmapRepository, 'Mindmap', { immediate: ['generateAutoMindmap', 'addNode', 'deleteNode', 'addLink', 'updateLink', 'deleteLink'] });
 
         // Arc Board Repositories
         integrate(window.ArcRepository, 'Arc');

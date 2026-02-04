@@ -73,8 +73,12 @@ JS_ORDER = [
     '28.revision.js',
     '29.todos.js',
     '30.corkboard.js',
-    '31.mindmap.js',
-    '32.touch-events.js',
+        'js-refactor/mindmap/mindmap.model.js',
+        'js-refactor/mindmap/mindmap.repository.js',
+        'js-refactor/mindmap/mindmap.viewmodel.js',
+        'js-refactor/mindmap/mindmap.view.js',
+        'js-refactor/mindmap/mindmap.handlers.js',
+        'js-refactor/mindmap/mindmap.main.js',
     '33.plot.js',
     '34.relations-graph.js',
     '35.renderMap.js',
@@ -240,6 +244,26 @@ def collect_js():
                     js_content.append(content)
                     js_content.append('')
                     refactor_files.append(f'revision/{filename}')
+
+        # Collecter les fichiers du sous-dossier mindmap/
+        mindmap_dir = os.path.join(js_refactor_dir, 'mindmap')
+        if os.path.exists(mindmap_dir):
+            mindmap_files_ordered = [
+                'mindmap.model.js',
+                'mindmap.repository.js',
+                'mindmap.viewmodel.js',
+                'mindmap.view.js',
+                'mindmap.handlers.js',
+                'mindmap.main.js'
+            ]
+            for filename in mindmap_files_ordered:
+                filepath = os.path.join(mindmap_dir, filename)
+                if os.path.exists(filepath):
+                    content = read_file(f'js-refactor/mindmap/{filename}')
+                    js_content.append(f'// ========== js-refactor/mindmap/{filename} ==========')
+                    js_content.append(content)
+                    js_content.append('')
+                    refactor_files.append(f'mindmap/{filename}')
 
     log(f"   [OK] {found_count} fichiers JS trouves")
     if missing:

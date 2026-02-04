@@ -355,6 +355,7 @@ function ensureProjectStructure() {
     project.stats = project.stats || { dailyGoal: 500, totalGoal: 80000, writingSessions: [] };
     project.versions = project.versions || [];
     project.relationships = project.relationships || [];
+    project.mindmaps = project.mindmaps || [];
 }
 
 const originalSaveProject = saveProject;

@@ -181,8 +181,13 @@ JS_ORDER = [
     'js-refactor/corkboard/corkboard.view.js',
     'js-refactor/corkboard/corkboard.handlers.js',
     'js-refactor/corkboard/corkboard.main.js',
-    '31.mindmap.js',
-    '32.touch-events.js',
+    # Mindmap refactored files (order: model -> repository -> viewmodel -> view -> handlers -> main)
+    'js-refactor/mindmap/mindmap.model.js',
+    'js-refactor/mindmap/mindmap.repository.js',
+    'js-refactor/mindmap/mindmap.viewmodel.js',
+    'js-refactor/mindmap/mindmap.view.js',
+    'js-refactor/mindmap/mindmap.handlers.js',
+    'js-refactor/mindmap/mindmap.main.js',
     # Plot module refactored files
     'js-refactor/plot/plot.model.js',
     'js-refactor/plot/plot.repository.js',
@@ -336,6 +341,7 @@ IGNORED_ORIGINALS = [
     '_23.stats.js', '_24.codex.js', '_25.globalSearch.js', '_26.focusMode.js', 
     '_26.focusMode.refactor.js', 
     '_28.revision.js', '_29.todos.js', '_30.corkboard.js', '_30.corkboard.refactor.js', 
+    '_31.mindmap.js', '_32.touch-events.js',
     '_33.plot.js', '_36.timeline-metro.js', '_43.arcs.js', '_44.storygrid.js', 
     '_45.arc-board.js', '_45.arc-board.refactor.js', '_46.thriller-board.js'
 ]
