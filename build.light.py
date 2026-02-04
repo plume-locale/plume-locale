@@ -180,7 +180,13 @@ JS_ORDER = [
     'js-refactor/focusMode/focusMode.view.js',
     'js-refactor/focusMode/focusMode.handlers.js',
     'js-refactor/focusMode/focusMode.main.js',
-    '27.keyboardShortcuts.js',
+    # Keyboard Shortcuts refactored files (order: model -> repository -> viewmodel -> view -> handlers -> main)
+    'js-refactor/keyboard-shortcuts/keyboard-shortcuts.model.js',
+    'js-refactor/keyboard-shortcuts/keyboard-shortcuts.repository.js',
+    'js-refactor/keyboard-shortcuts/keyboard-shortcuts.viewmodel.js',
+    'js-refactor/keyboard-shortcuts/keyboard-shortcuts.view.js',
+    'js-refactor/keyboard-shortcuts/keyboard-shortcuts.handlers.js',
+    'js-refactor/keyboard-shortcuts/keyboard-shortcuts.main.js',
     'js-refactor/revision/revision.model.js',
     'js-refactor/revision/revision.repository.js',
     'js-refactor/revision/revision.viewmodel.js',
@@ -367,7 +373,8 @@ def collect_css():
     # Ajouter les CSS des modules dans js-refactor/
     module_css_files = [
         'js-refactor/synonyms/synonyms.css',
-        'js-refactor/map/map.css'
+        'js-refactor/map/map.css',
+        'js-refactor/keyboard-shortcuts/keyboard-shortcuts.css'
     ]
     for css_path in module_css_files:
         filepath = os.path.join(BUILD_DIR, css_path)
@@ -392,7 +399,8 @@ IGNORED_ORIGINALS = [
     '_31.mindmap.js', '_32.touch-events.js',
     '_33.plot.js', '_34.relations-graph.js', '_35.renderMap.js', '_36.timeline-metro.js', '_43.arcs.js', '_44.storygrid.js', 
     '_45.arc-board.js', '_45.arc-board.refactor.js', '_46.thriller-board.js', '38.tension.js', '40.sidebar-views.js',
-    '12.import-export.js', '39.export.js', '41.storageMonitoring.js', '02.storage.js', '20.snapshots.js', '13.mobile-menu.js'
+    '12.import-export.js', '39.export.js', '41.storageMonitoring.js', '02.storage.js', '20.snapshots.js', '13.mobile-menu.js',
+    '27.keyboardShortcuts.js'
 ]
 
 def collect_js():

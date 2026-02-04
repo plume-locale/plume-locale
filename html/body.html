@@ -151,6 +151,8 @@
                     title="Importer un texte (.docx, .txt, .md, .epub)"><i data-lucide="file-up"></i></button>
                 <button class="header-action-btn" onclick="showBackupMenu()" title="Sauvegardes et exports"><i
                         data-lucide="download"></i></button>
+                <button class="header-action-btn" onclick="KeyboardShortcutsHandlers.openShortcutsModal()"
+                    title="Raccourcis clavier (?)"><i data-lucide="help-circle"></i></button>
                 <button class="header-action-btn" onclick="openThemeManager()" title="Gérer les thèmes"><i
                         data-lucide="palette"></i></button>
                 <button class="header-action-btn" onclick="openProjectsModal()" title="Gérer les projets"><i
@@ -1770,6 +1772,185 @@
                 title="Citation">Citation</button>
             <button class="floating-btn-mini" onclick="formatText('insertHorizontalRule')"
                 title="Ligne horizontale">Ligne</button>
+        </div>
+    </div>
+    <!-- Keyboard Shortcuts Summary Modal -->
+    <div class="shortcuts-modal" id="shortcutsModal">
+        <div class="shortcuts-modal-content">
+            <div class="shortcuts-modal-header">
+                <div class="shortcuts-modal-title">
+                    <i data-lucide="keyboard"></i>
+                    <span>Raccourcis clavier</span>
+                </div>
+                <button class="shortcuts-modal-close" onclick="KeyboardShortcutsHandlers.closeShortcutsModal()"
+                    title="Fermer">
+                    <i data-lucide="x" style="width:20px;height:20px;"></i>
+                </button>
+            </div>
+            <div class="shortcuts-modal-body">
+                <!-- Section : Général -->
+                <div class="shortcut-category">
+                    <div class="shortcut-category-title"><i data-lucide="command" style="width:14px;height:14px;"></i>
+                        Général</div>
+                    <div class="shortcut-list">
+                        <div class="shortcut-item">
+                            <span class="shortcut-description">Ouvrir ce résumé</span>
+                            <div class="shortcut-keys"><span class="shortcut-key">?</span></div>
+                        </div>
+                        <div class="shortcut-item">
+                            <span class="shortcut-description">Recherche globale</span>
+                            <div class="shortcut-keys"><span class="shortcut-key">Ctrl</span> <span
+                                    class="shortcut-plus">+</span> <span class="shortcut-key">F</span></div>
+                        </div>
+                        <div class="shortcut-item">
+                            <span class="shortcut-description">Sauvegarder le projet</span>
+                            <div class="shortcut-keys"><span class="shortcut-key">Ctrl</span> <span
+                                    class="shortcut-plus">+</span> <span class="shortcut-key">S</span></div>
+                        </div>
+                        <div class="shortcut-item">
+                            <span class="shortcut-description">Mode Focus (Plein écran)</span>
+                            <div class="shortcut-keys"><span class="shortcut-key">F11</span></div>
+                        </div>
+                        <div class="shortcut-item">
+                            <span class="shortcut-description">Mode Révision</span>
+                            <div class="shortcut-keys"><span class="shortcut-key">Ctrl</span> <span
+                                    class="shortcut-plus">+</span> <span class="shortcut-key">R</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section : Écriture -->
+                <div class="shortcut-category">
+                    <div class="shortcut-category-title"><i data-lucide="pen-tool" style="width:14px;height:14px;"></i>
+                        Écriture</div>
+                    <div class="shortcut-list">
+                        <div class="shortcut-item">
+                            <span class="shortcut-description">Nouveau paragraphe</span>
+                            <div class="shortcut-keys"><span class="shortcut-key">Entrée</span></div>
+                        </div>
+                        <div class="shortcut-item">
+                            <span class="shortcut-description">Saut de ligne</span>
+                            <div class="shortcut-keys"><span class="shortcut-key">Maj</span> <span
+                                    class="shortcut-plus">+</span> <span class="shortcut-key">Entrée</span></div>
+                        </div>
+                        <div class="shortcut-item">
+                            <span class="shortcut-description">Espace insécable</span>
+                            <div class="shortcut-keys"><span class="shortcut-key">Ctrl</span> <span
+                                    class="shortcut-plus">+</span> <span class="shortcut-key">Maj</span> <span
+                                    class="shortcut-plus">+</span> <span class="shortcut-key">Espace</span></div>
+                        </div>
+                        <div class="shortcut-item">
+                            <span class="shortcut-description">Guillemet français ouvert ( « )</span>
+                            <div class="shortcut-keys"><span class="shortcut-key">Alt</span> <span
+                                    class="shortcut-plus">+</span> <span class="shortcut-key">Z</span></div>
+                        </div>
+                        <div class="shortcut-item">
+                            <span class="shortcut-description">Guillemet français fermé ( » )</span>
+                            <div class="shortcut-keys"><span class="shortcut-key">Alt</span> <span
+                                    class="shortcut-plus">+</span> <span class="shortcut-key">X</span></div>
+                        </div>
+                        <div class="shortcut-item">
+                            <span class="shortcut-description">Tiret cadratin ( — )</span>
+                            <div class="shortcut-keys"><span class="shortcut-key">Ctrl</span> <span
+                                    class="shortcut-plus">+</span> <span class="shortcut-key">Maj</span> <span
+                                    class="shortcut-plus">+</span> <span class="shortcut-key">-</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section : Style du texte -->
+                <div class="shortcut-category">
+                    <div class="shortcut-category-title"><i data-lucide="type" style="width:14px;height:14px;"></i>
+                        Style du texte</div>
+                    <div class="shortcut-list">
+                        <div class="shortcut-item">
+                            <span class="shortcut-description">Mettre en gras</span>
+                            <div class="shortcut-keys"><span class="shortcut-key">Ctrl</span> <span
+                                    class="shortcut-plus">+</span> <span class="shortcut-key">B</span></div>
+                        </div>
+                        <div class="shortcut-item">
+                            <span class="shortcut-description">Mettre en italique</span>
+                            <div class="shortcut-keys"><span class="shortcut-key">Ctrl</span> <span
+                                    class="shortcut-plus">+</span> <span class="shortcut-key">I</span></div>
+                        </div>
+                        <div class="shortcut-item">
+                            <span class="shortcut-description">Souligner</span>
+                            <div class="shortcut-keys"><span class="shortcut-key">Ctrl</span> <span
+                                    class="shortcut-plus">+</span> <span class="shortcut-key">U</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section : Presse-papier -->
+                <div class="shortcut-category">
+                    <div class="shortcut-category-title"><i data-lucide="clipboard" style="width:14px;height:14px;"></i>
+                        Édition</div>
+                    <div class="shortcut-list">
+                        <div class="shortcut-item">
+                            <span class="shortcut-description">Annuler</span>
+                            <div class="shortcut-keys"><span class="shortcut-key">Ctrl</span> <span
+                                    class="shortcut-plus">+</span> <span class="shortcut-key">Z</span></div>
+                        </div>
+                        <div class="shortcut-item">
+                            <span class="shortcut-description">Rétablir</span>
+                            <div class="shortcut-keys"><span class="shortcut-key">Ctrl</span> <span
+                                    class="shortcut-plus">+</span> <span class="shortcut-key">Y</span></div>
+                        </div>
+                        <div class="shortcut-item">
+                            <span class="shortcut-description">Couper</span>
+                            <div class="shortcut-keys"><span class="shortcut-key">Ctrl</span> <span
+                                    class="shortcut-plus">+</span> <span class="shortcut-key">X</span></div>
+                        </div>
+                        <div class="shortcut-item">
+                            <span class="shortcut-description">Copier</span>
+                            <div class="shortcut-keys"><span class="shortcut-key">Ctrl</span> <span
+                                    class="shortcut-plus">+</span> <span class="shortcut-key">C</span></div>
+                        </div>
+                        <div class="shortcut-item">
+                            <span class="shortcut-description">Coller</span>
+                            <div class="shortcut-keys"><span class="shortcut-key">Ctrl</span> <span
+                                    class="shortcut-plus">+</span> <span class="shortcut-key">V</span></div>
+                        </div>
+                        <div class="shortcut-item">
+                            <span class="shortcut-description">Coller sans mise en forme</span>
+                            <div class="shortcut-keys"><span class="shortcut-key">Maj</span> <span
+                                    class="shortcut-plus">+</span> <span class="shortcut-key">Ctrl</span> <span
+                                    class="shortcut-plus">+</span> <span class="shortcut-key">V</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section : Navigation & Menus -->
+                <div class="shortcut-category">
+                    <div class="shortcut-category-title"><i data-lucide="move" style="width:14px;height:14px;"></i>
+                        Navigation & Menus</div>
+                    <div class="shortcut-list">
+                        <div class="shortcut-item">
+                            <span class="shortcut-description">Fermer la fenêtre / Annuler</span>
+                            <div class="shortcut-keys"><span class="shortcut-key">Échap</span></div>
+                        </div>
+                        <div class="shortcut-item">
+                            <span class="shortcut-description">Valider / OK</span>
+                            <div class="shortcut-keys"><span class="shortcut-key">Entrée</span></div>
+                        </div>
+                        <div class="shortcut-item">
+                            <span class="shortcut-description">Début / Fin de ligne</span>
+                            <div class="shortcut-keys"><span class="shortcut-key">Origine</span> <span
+                                    class="shortcut-plus">/</span> <span class="shortcut-key">Fin</span></div>
+                        </div>
+                        <div class="shortcut-item">
+                            <span class="shortcut-description">Début / Fin du document</span>
+                            <div class="shortcut-keys"><span class="shortcut-key">Ctrl</span> <span
+                                    class="shortcut-plus">+</span> <span class="shortcut-key">Origine</span> <span
+                                    class="shortcut-plus">/</span> <span class="shortcut-key">Fin</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="shortcuts-modal-footer"
+                style="padding: 1rem 2rem; border-top: 1px solid var(--border-color); text-align: center; color: var(--text-muted); font-size: 0.8rem;">
+                Certains raccourcis peuvent varier selon votre système d'exploitation.
+            </div>
         </div>
     </div>
 </body>
