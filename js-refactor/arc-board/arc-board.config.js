@@ -39,38 +39,38 @@ const ArcBoardConfig = {
 
 // Catégories d'arcs prédéfinies
 const ArcCategories = Object.freeze({
-    character: { icon: 'user', label: 'Personnage', color: '#3498db' },
-    plot: { icon: 'book-open', label: 'Intrigue principale', color: '#e74c3c' },
-    theme: { icon: 'message-circle', label: 'Thème', color: '#9b59b6' },
-    subplot: { icon: 'file-text', label: 'Intrigue secondaire', color: '#16a085' },
-    relationship: { icon: 'heart', label: 'Relation', color: '#e91e63' },
-    mystery: { icon: 'search', label: 'Mystère', color: '#607d8b' },
-    conflict: { icon: 'swords', label: 'Conflit', color: '#ff5722' },
-    growth: { icon: 'sprout', label: 'Croissance', color: '#4caf50' },
-    redemption: { icon: 'sparkles', label: 'Rédemption', color: '#ffd700' },
-    vengeance: { icon: 'flame', label: 'Vengeance', color: '#d32f2f' },
-    quest: { icon: 'map', label: 'Quête', color: '#ff9800' },
-    discovery: { icon: 'telescope', label: 'Découverte', color: '#00bcd4' },
-    transformation: { icon: 'butterfly', label: 'Transformation', color: '#ab47bc' },
-    political: { icon: 'crown', label: 'Politique', color: '#795548' },
-    philosophical: { icon: 'brain', label: 'Philosophique', color: '#546e7a' },
-    comedic: { icon: 'smile', label: 'Comédie', color: '#ffeb3b' },
-    tragic: { icon: 'frown', label: 'Tragédie', color: '#424242' },
-    action: { icon: 'zap', label: 'Action', color: '#ff6f00' },
-    worldbuilding: { icon: 'globe', label: 'Univers', color: '#1976d2' },
-    linked_characters: { icon: 'users', label: 'Personnages liés', color: '#8e24aa' }
+    character: { icon: 'user', get label() { return Localization.t('arc.category.character'); }, color: '#3498db' },
+    plot: { icon: 'book-open', get label() { return Localization.t('arc.category.plot'); }, color: '#e74c3c' },
+    theme: { icon: 'message-circle', get label() { return Localization.t('arc.category.theme'); }, color: '#9b59b6' },
+    subplot: { icon: 'file-text', get label() { return Localization.t('arc.category.subplot'); }, color: '#16a085' },
+    relationship: { icon: 'heart', get label() { return Localization.t('arc.category.relationship'); }, color: '#e91e63' },
+    mystery: { icon: 'search', get label() { return Localization.t('arc.category.mystery'); }, color: '#607d8b' },
+    conflict: { icon: 'swords', get label() { return Localization.t('arc.category.conflict'); }, color: '#ff5722' },
+    growth: { icon: 'sprout', get label() { return Localization.t('arc.category.growth'); }, color: '#4caf50' },
+    redemption: { icon: 'sparkles', get label() { return Localization.t('arc.category.redemption'); }, color: '#ffd700' },
+    vengeance: { icon: 'flame', get label() { return Localization.t('arc.category.vengeance'); }, color: '#d32f2f' },
+    quest: { icon: 'map', get label() { return Localization.t('arc.category.quest'); }, color: '#ff9800' },
+    discovery: { icon: 'telescope', get label() { return Localization.t('arc.category.discovery'); }, color: '#00bcd4' },
+    transformation: { icon: 'butterfly', get label() { return Localization.t('arc.category.transformation'); }, color: '#ab47bc' },
+    political: { icon: 'crown', get label() { return Localization.t('arc.category.political'); }, color: '#795548' },
+    philosophical: { icon: 'brain', get label() { return Localization.t('arc.category.philosophical'); }, color: '#546e7a' },
+    comedic: { icon: 'smile', get label() { return Localization.t('arc.category.comedic'); }, color: '#ffeb3b' },
+    tragic: { icon: 'frown', get label() { return Localization.t('arc.category.tragic'); }, color: '#424242' },
+    action: { icon: 'zap', get label() { return Localization.t('arc.category.action'); }, color: '#ff6f00' },
+    worldbuilding: { icon: 'globe', get label() { return Localization.t('arc.category.worldbuilding'); }, color: '#1976d2' },
+    linked_characters: { icon: 'users', get label() { return Localization.t('arc.category.linked_characters'); }, color: '#8e24aa' }
 });
 
 // Types de cartes supportés
 const CardTypes = Object.freeze({
-    note: { label: 'Note', icon: 'file-text' },
-    image: { label: 'Image', icon: 'image' },
-    link: { label: 'Lien', icon: 'link' },
-    todo: { label: 'Tâches', icon: 'check-square' },
-    comment: { label: 'Commentaire', icon: 'message-square' },
-    table: { label: 'Tableau', icon: 'table' },
-    audio: { label: 'Audio', icon: 'music' },
-    scene: { label: 'Scène liée', icon: 'book-open' }
+    note: { get label() { return Localization.t('arc.type.note'); }, icon: 'file-text' },
+    image: { get label() { return Localization.t('arc.type.image'); }, icon: 'image' },
+    link: { get label() { return Localization.t('arc.type.link'); }, icon: 'link' },
+    todo: { get label() { return Localization.t('arc.type.todo'); }, icon: 'check-square' },
+    comment: { get label() { return Localization.t('arc.type.comment'); }, icon: 'message-square' },
+    table: { get label() { return Localization.t('arc.type.table'); }, icon: 'table' },
+    audio: { get label() { return Localization.t('arc.type.audio'); }, icon: 'music' },
+    scene: { get label() { return Localization.t('arc.type.scene'); }, icon: 'book-open' }
 });
 
 // Types d'items sur le board
@@ -104,11 +104,11 @@ const DragTypes = Object.freeze({
 
 // Types d'items disponibles pour création (toolbar et menu)
 const CreatableItemTypes = Object.freeze({
-    note: { label: 'Note', icon: 'file-text', canBeCard: true },
-    column: { label: 'Colonne', icon: 'columns-3', canBeCard: false },
-    link: { label: 'Lien', icon: 'link', canBeCard: true },
-    todo: { label: 'Tâches', icon: 'check-square', canBeCard: true },
-    comment: { label: 'Commentaire', icon: 'message-square', canBeCard: true },
-    table: { label: 'Tableau', icon: 'table', canBeCard: true },
-    image: { label: 'Image', icon: 'image', canBeCard: true }
+    note: { get label() { return Localization.t('arc.type.note'); }, icon: 'file-text', canBeCard: true },
+    column: { get label() { return Localization.t('arc.type.column'); }, icon: 'columns-3', canBeCard: false },
+    link: { get label() { return Localization.t('arc.type.link'); }, icon: 'link', canBeCard: true },
+    todo: { get label() { return Localization.t('arc.type.todo'); }, icon: 'check-square', canBeCard: true },
+    comment: { get label() { return Localization.t('arc.type.comment'); }, icon: 'message-square', canBeCard: true },
+    table: { get label() { return Localization.t('arc.type.table'); }, icon: 'table', canBeCard: true },
+    image: { get label() { return Localization.t('arc.type.image'); }, icon: 'image', canBeCard: true }
 });

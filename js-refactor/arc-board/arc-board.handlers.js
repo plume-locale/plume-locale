@@ -220,7 +220,7 @@ const ArcBoardEventHandlers = {
         const arc = ArcRepository.getById(arcId);
         if (!arc) return;
 
-        if (!confirm(`Voulez-vous vraiment supprimer l'arc "${arc.title}" ?\n\nCette action est irréversible.`)) {
+        if (!confirm(Localization.t('arc.confirm.delete_arc', arc.title))) {
             return;
         }
 
@@ -594,7 +594,7 @@ const ArcBoardEventHandlers = {
 // KEYBOARD SHORTCUTS
 // ==========================================
 
-document.addEventListener('keydown', function(event) {
+document.addEventListener('keydown', function (event) {
     // Ignorer si on édite du texte
     if (event.target.tagName === 'INPUT' ||
         event.target.tagName === 'TEXTAREA' ||

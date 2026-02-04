@@ -36,7 +36,7 @@ const ArcBoardView = {
             html += `
                 <div class="sidebar-empty">
                     <div class="sidebar-empty-icon"><i data-lucide="layout-dashboard"></i></div>
-                    <p>Aucun arc narratif</p>
+                    <p>${Localization.t('arc.sidebar.empty')}</p>
                 </div>
             `;
         } else if (arcs.length > 0) {
@@ -48,7 +48,7 @@ const ArcBoardView = {
             html += `
                 <div class="sidebar-tree-add" onclick="ArcBoardViewModel.showCategoryForm()">
                     <i data-lucide="folder-plus"></i>
-                    <span>Nouvelle catégorie</span>
+                    <span>${Localization.t('arc.sidebar.new_category')}</span>
                 </div>
             `;
         }
@@ -84,7 +84,7 @@ const ArcBoardView = {
         // Non catégorisés en premier
         if (uncategorized.length > 0) {
             html += this._renderCategory('uncategorized', {
-                label: 'Non catégorisé',
+                label: Localization.t('arc.category.uncategorized'),
                 icon: 'folder',
                 color: 'var(--text-muted)'
             }, uncategorized);
@@ -132,7 +132,7 @@ const ArcBoardView = {
                  onclick="ArcBoardViewModel.openArc('${arc.id}')"
                  data-arc-id="${arc.id}">
                 <span class="sidebar-tree-item-dot" style="background: ${arc.color || catData.color}"></span>
-                <span class="sidebar-tree-item-title">${arc.title || 'Sans titre'}</span>
+                <span class="sidebar-tree-item-title">${arc.title || Localization.t('arc.sidebar.untitled')}</span>
                 <button class="sidebar-tree-item-menu" onclick="event.stopPropagation(); ArcBoardView.showArcContextMenu(event, '${arc.id}')">
                     <i data-lucide="more-horizontal"></i>
                 </button>
@@ -147,8 +147,8 @@ const ArcBoardView = {
             : null;
 
         const isEditing = !!editingArc;
-        const formTitle = isEditing ? "Modifier l'arc" : 'Nouvel arc narratif';
-        const buttonText = isEditing ? 'Enregistrer' : 'Créer';
+        const formTitle = isEditing ? Localization.t('arc.form.edit_title') : Localization.t('arc.form.new_title');
+        const buttonText = isEditing ? Localization.t('btn.save') : Localization.t('btn.create');
 
         const arcTitle = editingArc?.title || '';
         const arcCategory = editingArc?.category || 'intrigue';
@@ -166,14 +166,14 @@ const ArcBoardView = {
                 <div class="sidebar-inline-form-body">
                     <input type="hidden" id="inlineArcId" value="${ArcBoardState.editingArcId || ''}">
                     <div class="sidebar-inline-form-group">
-                        <label>Titre *</label>
+                        <label>${Localization.t('arc.form.label_title')}</label>
                         <input type="text" id="inlineArcTitle" class="sidebar-inline-input"
-                               placeholder="Ex: La quête de rédemption"
+                               placeholder="${Localization.t('arc.form.placeholder_title')}"
                                value="${arcTitle.replace(/"/g, '&quot;')}"
                                onkeydown="ArcBoardEventHandlers.handleArcFormKeydown(event)">
                     </div>
                     <div class="sidebar-inline-form-group">
-                        <label>Catégorie</label>
+                        <label>${Localization.t('arc.form.label_category')}</label>
                         <select id="inlineArcCategory" class="sidebar-inline-select" onchange="ArcBoardEventHandlers.updateArcFormColor()">
                             ${Object.entries(allCategories).map(([key, cat]) =>
             `<option value="${key}" ${key === arcCategory ? 'selected' : ''}>${cat.label}</option>`
@@ -181,14 +181,14 @@ const ArcBoardView = {
                         </select>
                     </div>
                     <div class="sidebar-inline-form-group">
-                        <label>Couleur</label>
+                        <label>${Localization.t('arc.form.label_color')}</label>
                         <div class="sidebar-inline-color-row">
                             <input type="color" id="inlineArcColor" value="${arcColor}" class="sidebar-inline-color">
                             <span id="inlineArcColorHex" class="sidebar-inline-color-hex">${arcColor}</span>
                         </div>
                     </div>
                     <div class="sidebar-inline-form-actions">
-                        <button class="btn-secondary btn-sm" onclick="ArcBoardViewModel.hideArcForm()">Annuler</button>
+                        <button class="btn-secondary btn-sm" onclick="ArcBoardViewModel.hideArcForm()">${Localization.t('btn.cancel')}</button>
                         <button class="btn-primary btn-sm" onclick="ArcBoardEventHandlers.confirmArcForm()">
                             <i data-lucide="${isEditing ? 'save' : 'plus'}"></i> ${buttonText}
                         </button>
@@ -203,28 +203,28 @@ const ArcBoardView = {
             <div class="sidebar-inline-form">
                 <div class="sidebar-inline-form-header">
                     <i data-lucide="folder-plus"></i>
-                    <span>Nouvelle catégorie</span>
+                    <span>${Localization.t('arc.cat_form.new_title')}</span>
                     <button class="sidebar-inline-form-close" onclick="ArcBoardViewModel.hideCategoryForm()">
                         <i data-lucide="x"></i>
                     </button>
                 </div>
                 <div class="sidebar-inline-form-body">
                     <div class="sidebar-inline-form-group">
-                        <label>Nom *</label>
+                        <label>${Localization.t('arc.cat_form.label_name')}</label>
                         <input type="text" id="inlineCategoryName" class="sidebar-inline-input"
-                               placeholder="Ex: Arcs de croissance"
+                               placeholder="${Localization.t('arc.cat_form.placeholder_name')}"
                                onkeydown="ArcBoardEventHandlers.handleCategoryFormKeydown(event)">
                     </div>
                     <div class="sidebar-inline-form-group">
-                        <label>Couleur</label>
+                        <label>${Localization.t('arc.form.label_color')}</label>
                         <div class="sidebar-inline-color-row">
                             <input type="color" id="inlineCategoryColor" value="#6c757d" class="sidebar-inline-color">
                         </div>
                     </div>
                     <div class="sidebar-inline-form-actions">
-                        <button class="btn-secondary btn-sm" onclick="ArcBoardViewModel.hideCategoryForm()">Annuler</button>
+                        <button class="btn-secondary btn-sm" onclick="ArcBoardViewModel.hideCategoryForm()">${Localization.t('btn.cancel')}</button>
                         <button class="btn-primary btn-sm" onclick="ArcBoardEventHandlers.confirmCategoryForm()">
-                            <i data-lucide="plus"></i> Créer
+                            <i data-lucide="plus"></i> ${Localization.t('btn.create')}
                         </button>
                     </div>
                 </div>
@@ -288,8 +288,8 @@ const ArcBoardView = {
 
                         <div class="arc-connection-mode-hint" id="connectionModeHint" style="display:none">
                             <i data-lucide="git-branch"></i>
-                            <span id="connectionHintText">Cliquez sur l'élément source</span>
-                            <button onclick="ConnectionService.cancel()"><i data-lucide="x"></i> Annuler</button>
+                            <span id="connectionHintText">${Localization.t('arc.canvas.connection_hint')}</span>
+                            <button onclick="ConnectionService.cancel()"><i data-lucide="x"></i> ${Localization.t('btn.cancel')}</button>
                         </div>
 
                         ${arc.board.items.length === 0 ? this._renderEmptyState() : ''}
@@ -327,40 +327,40 @@ const ArcBoardView = {
         return `
             <div class="arc-board-toolbar">
                 <button class="arc-toolbar-btn ${ArcBoardState.activeTool === 'select' ? 'active' : ''}"
-                        data-tool="select" data-tooltip="Sélection" onclick="ArcBoardViewModel.setTool('select')">
+                        data-tool="select" data-tooltip="${Localization.t('arc.toolbar.select')}" onclick="ArcBoardViewModel.setTool('select')">
                     <i data-lucide="mouse-pointer-2"></i>
                 </button>
                 <button class="arc-toolbar-btn ${ArcBoardState.activeTool === 'pan' ? 'active' : ''}"
-                        data-tool="pan" data-tooltip="Déplacer" onclick="ArcBoardViewModel.setTool('pan')">
+                        data-tool="pan" data-tooltip="${Localization.t('arc.toolbar.pan')}" onclick="ArcBoardViewModel.setTool('pan')">
                     <i data-lucide="hand"></i>
                 </button>
 
                 <div class="arc-toolbar-separator"></div>
 
-                ${draggableBtn('note', 'Note (glisser-déposer)', 'file-text')}
-                ${draggableBtn('column', 'Colonne (glisser-déposer)', 'columns-3')}
-                ${draggableBtn('link', 'Lien (glisser-déposer)', 'link')}
-                ${draggableBtn('todo', 'Tâches (glisser-déposer)', 'check-square')}
-                ${draggableBtn('comment', 'Commentaire (glisser-déposer)', 'message-square')}
-                ${draggableBtn('table', 'Tableau (glisser-déposer)', 'table')}
+                ${draggableBtn('note', Localization.t('arc.toolbar.note'), 'file-text')}
+                ${draggableBtn('column', Localization.t('arc.toolbar.column'), 'columns-3')}
+                ${draggableBtn('link', Localization.t('arc.toolbar.link'), 'link')}
+                ${draggableBtn('todo', Localization.t('arc.toolbar.todo'), 'check-square')}
+                ${draggableBtn('comment', Localization.t('arc.toolbar.comment'), 'message-square')}
+                ${draggableBtn('table', Localization.t('arc.toolbar.table'), 'table')}
 
                 <div class="arc-toolbar-separator"></div>
 
-                ${draggableBtn('image', 'Image (glisser-déposer)', 'image')}
-                <button class="arc-toolbar-btn" data-tooltip="Upload" onclick="document.getElementById('arcFileInput').click()">
+                ${draggableBtn('image', Localization.t('arc.toolbar.image'), 'image')}
+                <button class="arc-toolbar-btn" data-tooltip="${Localization.t('arc.toolbar.upload')}" onclick="document.getElementById('arcFileInput').click()">
                     <i data-lucide="upload"></i>
                 </button>
 
                 <div class="arc-toolbar-separator"></div>
 
                 <button class="arc-toolbar-btn ${ArcBoardState.activeTool === 'connect' ? 'active' : ''}"
-                        data-tool="connect" data-tooltip="Connexion" onclick="ConnectionService.toggle()">
+                        data-tool="connect" data-tooltip="${Localization.t('arc.toolbar.connect')}" onclick="ConnectionService.toggle()">
                     <i data-lucide="git-branch"></i>
                 </button>
 
                 <div style="flex:1"></div>
 
-                <button class="arc-toolbar-btn" data-tooltip="Supprimer" onclick="ArcBoardViewModel.deleteSelected()">
+                <button class="arc-toolbar-btn" data-tooltip="${Localization.t('arc.toolbar.delete')}" onclick="ArcBoardViewModel.deleteSelected()">
                     <i data-lucide="trash-2"></i>
                 </button>
             </div>
@@ -370,14 +370,14 @@ const ArcBoardView = {
     _renderZoomControls() {
         return `
             <div class="arc-zoom-controls">
-                <button class="arc-zoom-btn" onclick="ArcBoardViewModel.zoom(-1)" title="Zoom arrière">
+                <button class="arc-zoom-btn" onclick="ArcBoardViewModel.zoom(-1)" title="${Localization.t('arc.zoom.out')}">
                     <i data-lucide="zoom-out"></i>
                 </button>
                 <span class="arc-zoom-level" id="arcZoomLevel">${Math.round(ArcBoardState.zoom * 100)}%</span>
-                <button class="arc-zoom-btn" onclick="ArcBoardViewModel.zoom(1)" title="Zoom avant">
+                <button class="arc-zoom-btn" onclick="ArcBoardViewModel.zoom(1)" title="${Localization.t('arc.zoom.in')}">
                     <i data-lucide="zoom-in"></i>
                 </button>
-                <button class="arc-zoom-btn" onclick="ArcBoardViewModel.resetView()" title="Réinitialiser">
+                <button class="arc-zoom-btn" onclick="ArcBoardViewModel.resetView()" title="${Localization.t('arc.zoom.reset')}">
                     <i data-lucide="maximize-2"></i>
                 </button>
             </div>
@@ -388,10 +388,9 @@ const ArcBoardView = {
         return `
             <div class="arc-board-empty">
                 <div class="arc-board-empty-icon"><i data-lucide="layout-dashboard"></i></div>
-                <div class="arc-board-empty-title">Board vide</div>
+                <div class="arc-board-empty-title">${Localization.t('arc.empty.title')}</div>
                 <div class="arc-board-empty-text">
-                    Utilisez la barre d'outils à gauche pour ajouter<br>
-                    des colonnes, notes, images et plus encore.
+                    ${Localization.t('arc.empty.text')}
                 </div>
             </div>
         `;
@@ -428,7 +427,7 @@ const ArcBoardView = {
                 ${interArcConnections.map(conn => {
             const fromArc = ArcRepository.getById(conn.fromArcId);
             const toArc = ArcRepository.getById(conn.toArcId);
-            return `<span class="arc-interarc-tag" title="Lien inter-arc: ${fromArc?.title || '?'} vers ${toArc?.title || '?'}">
+            return `<span class="arc-interarc-tag" title="${Localization.t('arc.interarc.tooltip', [fromArc?.title || '?', toArc?.title || '?'])}">
                         <span class="arc-interarc-tag-dot" style="background:${fromArc?.color || '#999'}"></span>
                         <span class="arc-interarc-tag-name">${fromArc?.title || '?'}</span>
                         <i data-lucide="arrow-right"></i>
@@ -449,8 +448,8 @@ const ArcBoardView = {
                 </div>
 
                 <div class="arc-multi-modes">
-                    <button class="${mode === MultiArcModes.SOLO ? 'active' : ''}" onclick="ArcBoardViewModel.setMultiArcMode('solo')">Solo</button>
-                    <button class="${mode === MultiArcModes.COMPARE ? 'active' : ''}" onclick="ArcBoardViewModel.setMultiArcMode('compare')">Comparer</button>
+                    <button class="${mode === MultiArcModes.SOLO ? 'active' : ''}" onclick="ArcBoardViewModel.setMultiArcMode('solo')">${Localization.t('arc.multi.solo')}</button>
+                    <button class="${mode === MultiArcModes.COMPARE ? 'active' : ''}" onclick="ArcBoardViewModel.setMultiArcMode('compare')">${Localization.t('arc.multi.compare')}</button>
                 </div>
 
                 ${mode === MultiArcModes.COMPARE ? `
@@ -458,11 +457,11 @@ const ArcBoardView = {
                         ${compareTagsHtml}
                         ${availableArcs.length > 0 ? `
                             <select class="arc-compare-add" onchange="if(this.value) { ArcBoardViewModel.addCompareArc(this.value); this.value=''; }">
-                                <option value="">+ Arc...</option>
+                                <option value="">${Localization.t('arc.multi.add_prompt')}</option>
                                 ${availableArcs.map(a => `<option value="${a.id}">${a.title}</option>`).join('')}
                             </select>
                         ` : ''}
-                        <button class="arc-compare-link-btn" onclick="InterArcConnectionService.startConnection()" title="Créer un lien entre arcs">
+                        <button class="arc-compare-link-btn" onclick="InterArcConnectionService.startConnection()" title="${Localization.t('arc.multi.link_btn')}">
                             <i data-lucide="link"></i>
                         </button>
                         ${interArcHtml}
@@ -505,7 +504,7 @@ const ArcBoardView = {
                 <div class="arc-context-header">
                     <div class="arc-context-title">
                         <i data-lucide="sliders-horizontal"></i>
-                        <span>Propriétés</span>
+                        <span>${Localization.t('arc.context.properties')}</span>
                     </div>
                     <button class="arc-context-close" onclick="ArcBoardViewModel.toggleContextPanel()">
                         <i data-lucide="x"></i>
@@ -520,11 +519,11 @@ const ArcBoardView = {
 
     _renderContextPanelDefault(arc) {
         const allCategories = ArcRepository.getAllCategories();
-        const catData = allCategories[arc.category] || { label: 'Non catégorisé', color: '#999' };
+        const catData = allCategories[arc.category] || { label: Localization.t('arc.category.uncategorized'), color: '#999' };
 
         return `
             <div class="arc-context-section">
-                <div class="arc-context-section-title">Arc actuel</div>
+                <div class="arc-context-section-title">${Localization.t('arc.context.current')}</div>
                 <div style="margin-bottom:12px">
                     <input type="text" class="form-input" value="${arc.title}"
                            onchange="ArcBoardEventHandlers.updateArcTitle(this.value)"
@@ -537,28 +536,28 @@ const ArcBoardView = {
             </div>
 
             <div class="arc-context-section">
-                <div class="arc-context-section-title">Ajouter au board</div>
+                <div class="arc-context-section-title">${Localization.t('arc.context.add_to_board')}</div>
                 <div class="arc-context-tools">
                     <div class="arc-context-tool" onclick="ArcBoardViewModel.addItem('column')">
-                        <i data-lucide="columns-3"></i><span>Colonne</span>
+                        <i data-lucide="columns-3"></i><span>${Localization.t('arc.context.column')}</span>
                     </div>
                     <div class="arc-context-tool" onclick="ArcBoardViewModel.addItem('note')">
-                        <i data-lucide="file-text"></i><span>Note</span>
+                        <i data-lucide="file-text"></i><span>${Localization.t('arc.context.note')}</span>
                     </div>
                     <div class="arc-context-tool" onclick="ArcBoardViewModel.addItem('image')">
-                        <i data-lucide="image"></i><span>Image</span>
+                        <i data-lucide="image"></i><span>${Localization.t('arc.context.image')}</span>
                     </div>
                     <div class="arc-context-tool" onclick="ArcBoardViewModel.addItem('todo')">
-                        <i data-lucide="check-square"></i><span>Tâches</span>
+                        <i data-lucide="check-square"></i><span>${Localization.t('arc.context.todo')}</span>
                     </div>
                 </div>
             </div>
 
             <div class="arc-context-section">
-                <div class="arc-context-section-title">Statistiques</div>
+                <div class="arc-context-section-title">${Localization.t('arc.context.stats')}</div>
                 <div style="font-size:13px;color:var(--text-secondary)">
-                    <div style="margin-bottom:4px">${arc.board.items.length} élément${arc.board.items.length > 1 ? 's' : ''}</div>
-                    <div>${arc.board.connections?.length || 0} connexion${(arc.board.connections?.length || 0) > 1 ? 's' : ''}</div>
+                    <div style="margin-bottom:4px">${Localization.t('arc.context.items_count', [arc.board.items.length, arc.board.items.length > 1 ? 's' : ''])}</div>
+                    <div>${Localization.t('arc.context.conn_count', [arc.board.connections?.length || 0, (arc.board.connections?.length || 0) > 1 ? 's' : ''])}</div>
                 </div>
             </div>
         `;
@@ -585,14 +584,14 @@ const ArcBoardView = {
             case 'column':
                 return `
                     <div class="arc-context-section">
-                        <div class="arc-context-section-title">Colonne</div>
+                        <div class="arc-context-section-title">${Localization.t('arc.context.column')}</div>
                         <div class="form-group">
-                            <label style="font-size:12px">Titre</label>
+                            <label style="font-size:12px">${Localization.t('arc.form.label_title')}</label>
                             <input type="text" class="form-input" value="${item.title || ''}"
                                    onchange="ArcBoardViewModel.updateItem('${item.id}', { title: this.value })">
                         </div>
                         <div class="form-group">
-                            <label style="font-size:12px">Largeur (px)</label>
+                            <label style="font-size:12px">${Localization.t('arc.context.col_width')}</label>
                             <input type="number" class="form-input" value="${item.width || ArcBoardConfig.column.defaultWidth}"
                                    min="${ArcBoardConfig.column.minWidth}" max="${ArcBoardConfig.column.maxWidth}"
                                    onchange="ArcBoardViewModel.updateItem('${item.id}', { width: parseInt(this.value) }); ArcBoardViewModel.renderItems();">
@@ -600,19 +599,19 @@ const ArcBoardView = {
                     </div>
                     <div class="arc-context-section">
                         <button class="arc-context-delete" onclick="ArcBoardViewModel.deleteSelected()">
-                            <i data-lucide="trash-2"></i> Supprimer
+                            <i data-lucide="trash-2"></i> ${Localization.t('btn.delete')}
                         </button>
                     </div>
                 `;
             default:
                 return `
                     <div class="arc-context-section">
-                        <div class="arc-context-section-title">Élément</div>
-                        <p style="font-size:13px;color:var(--text-secondary)">Type: ${item.type}</p>
+                        <div class="arc-context-section-title">${Localization.t('arc.context.element')}</div>
+                        <p style="font-size:13px;color:var(--text-secondary)">${Localization.t('arc.context.type', [item.type])}</p>
                     </div>
                     <div class="arc-context-section">
                         <button class="arc-context-delete" onclick="ArcBoardViewModel.deleteSelected()">
-                            <i data-lucide="trash-2"></i> Supprimer
+                            <i data-lucide="trash-2"></i> ${Localization.t('btn.delete')}
                         </button>
                     </div>
                 `;
@@ -908,8 +907,8 @@ const ArcBoardView = {
                         for (const chapter of act.chapters) {
                             const scene = chapter.scenes.find(s => s.id == presence.sceneId);
                             if (scene) {
-                                sceneTitle = scene.title || 'Scène sans titre';
-                                breadcrumb = `${act.title || 'Acte'} › ${chapter.title || 'Chapitre'}`;
+                                sceneTitle = scene.title || Localization.t('arc.unassigned.scene_no_title');
+                                breadcrumb = `${act.title || Localization.t('arc.unassigned.act_label')} › ${chapter.title || Localization.t('arc.unassigned.chapter_label')}`;
                                 break;
                             }
                         }
@@ -938,7 +937,7 @@ const ArcBoardView = {
                 <div class="arc-unassigned-header">
                     <div class="arc-unassigned-title">
                         <i data-lucide="inbox"></i>
-                        <span>Non attribué</span>
+                        <span>${Localization.t('arc.unassigned.label')}</span>
                     </div>
                     <span class="arc-unassigned-count">${floatingScenes.length}</span>
                 </div>
@@ -950,7 +949,7 @@ const ArcBoardView = {
                     ${floatingScenes.length === 0 ? `
                         <div class="arc-unassigned-empty">
                             <i data-lucide="check-circle" style="width:24px;height:24px;opacity:0.3;"></i>
-                            <span>Toutes les scènes sont organisées</span>
+                            <span>${Localization.t('arc.unassigned.empty')}</span>
                         </div>
                     ` : ''}
                 </div>
@@ -959,7 +958,12 @@ const ArcBoardView = {
     },
 
     _renderSceneCard(scene, isUnassigned = true) {
-        const statusLabels = { 'setup': 'Introduction', 'development': 'Développement', 'climax': 'Point culminant', 'resolution': 'Résolution' };
+        const statusLabels = {
+            'setup': Localization.t('arc.status.setup'),
+            'development': Localization.t('arc.status.development'),
+            'climax': Localization.t('arc.status.climax'),
+            'resolution': Localization.t('arc.status.resolution')
+        };
 
         const dragHandle = `
             <div class="arc-card-drag-handle"
@@ -973,7 +977,7 @@ const ArcBoardView = {
         `;
 
         const deleteBtn = `
-            <button class="arc-card-delete" onclick="event.stopPropagation(); deleteArcItem('${scene.id}')" title="Supprimer">
+            <button class="arc-card-delete" onclick="event.stopPropagation(); deleteArcItem('${scene.id}')" title="${Localization.t('btn.delete')}">
                 <i data-lucide="x"></i>
             </button>
         `;
@@ -990,12 +994,12 @@ const ArcBoardView = {
                 </div>
                 <div class="arc-card-scene-meta">
                     <div class="arc-card-scene-status">
-                        <span class="arc-card-scene-label">Statut:</span>
-                        <span class="arc-card-scene-value">${statusLabels[scene.status] || 'Développement'}</span>
+                        <span class="arc-card-scene-label">${Localization.t('arc.card.status')}</span>
+                        <span class="arc-card-scene-value">${statusLabels[scene.status] || Localization.t('arc.status.development')}</span>
                     </div>
                 </div>
                 <button class="arc-card-scene-open" onclick="ArcBoardEventHandlers.openScene('${scene.sceneId}'); event.stopPropagation();">
-                    <i data-lucide="external-link"></i> Ouvrir
+                    <i data-lucide="external-link"></i> ${Localization.t('arc.card.open')}
                 </button>
             </div>
         `;
@@ -1030,7 +1034,7 @@ const ArcBoardView = {
                 <div class="${className}">
                     <div class="arc-drag-move"
                          onmousedown="ItemMoveService.start(event, '${itemId}'${arcParam}); event.stopPropagation();"
-                         title="Déplacer sur le canvas">
+                         title="${Localization.t('arc.drag.canvas')}">
                         <i data-lucide="grip-vertical"></i>
                     </div>
                     <div class="arc-drag-to-column"
@@ -1038,7 +1042,7 @@ const ArcBoardView = {
                          ondragstart="DragDropService.startFloatingDrag(event, '${itemId}'${arcParam})"
                          ondragend="DragDropService.endDrag(event)"
                          onmousedown="event.stopPropagation()"
-                         title="Déposer dans une colonne">
+                         title="${Localization.t('arc.drag.column')}">
                         <i data-lucide="columns-3"></i>
                     </div>
                 </div>
@@ -1051,7 +1055,7 @@ const ArcBoardView = {
                      ondragstart="DragDropService.startCardDrag(event, '${itemId}', this.closest('.arc-column').dataset.itemId${arcParam})"
                      ondragend="DragDropService.endDrag(event)"
                      onmousedown="event.stopPropagation()"
-                     title="Glisser pour déplacer">
+                     title="${Localization.t('arc.drag.move')}">
                     <i data-lucide="grip-vertical"></i>
                 </div>
             `;
@@ -1080,10 +1084,10 @@ const ArcBoardView = {
 
                 <div class="arc-column-header" onmousedown="ItemMoveService.start(event, '${item.id}'${isCompareMode ? `, '${arcId}'` : ''})">
                     <input type="text" class="arc-column-title" value="${item.title || ''}"
-                           placeholder="Titre de la colonne"
+                           placeholder="${Localization.t('arc.column.placeholder')}"
                            onchange="ArcBoardViewModel.updateItem('${item.id}', { title: this.value }${isCompareMode ? `, '${arcId}'` : ''})"
                            onclick="event.stopPropagation()">
-                    <span class="arc-column-meta">${(item.cards || []).length} carte${(item.cards || []).length > 1 ? 's' : ''}</span>
+                    <span class="arc-column-meta">${(item.cards || []).length} card${(item.cards || []).length > 1 ? 's' : ''}</span>
                 </div>
 
                 <div class="arc-column-body"
@@ -1092,7 +1096,7 @@ const ArcBoardView = {
                      ondragleave="DragDropService.handleColumnDragLeave(event)">
                     ${cardsHtml}
                     <div class="arc-card-add" onclick="event.stopPropagation(); ArcBoardView.showCardTypeMenu(event, '${item.id}'${isCompareMode ? `, '${arcId}'` : ''})">
-                        <i data-lucide="plus"></i> Ajouter une carte
+                        <i data-lucide="plus"></i> ${Localization.t('arc.btn.add_card')}
                     </div>
                 </div>
 
@@ -1104,7 +1108,7 @@ const ArcBoardView = {
     _renderCard(card, columnId, arcId = null) {
         const arcParam = arcId ? `, '${arcId}'` : '';
         const deleteBtn = `
-            <button class="arc-card-delete" onclick="event.stopPropagation(); ArcBoardViewModel.deleteCard('${columnId}', '${card.id}'${arcParam})" title="Supprimer">
+            <button class="arc-card-delete" onclick="event.stopPropagation(); ArcBoardViewModel.deleteCard('${columnId}', '${card.id}'${arcParam})" title="${Localization.t('btn.delete')}">
                 <i data-lucide="x"></i>
             </button>
         `;
@@ -1144,7 +1148,7 @@ const ArcBoardView = {
                         ? `<img src="${card.src}" alt="" draggable="false">`
                         : `<div class="arc-card-upload" onclick="ArcBoardEventHandlers.triggerCardImageUpload('${columnId}', '${card.id}'${arcParam})">
                                     <i data-lucide="cloud-upload"></i>
-                                    <span>Ajouter une image</span>
+                                    <span>${Localization.t('arc.card.add_image')}</span>
                                 </div>`
                     }
                     </div>
@@ -1168,18 +1172,23 @@ const ArcBoardView = {
                     <div class="arc-card arc-card-todo" data-card-id="${card.id}" ${arcId ? `data-arc-id="${arcId}"` : ''} onclick="${connectionClick}">
                         ${dragHandle}${deleteBtn}
                         <input type="text" class="arc-card-title" value="${card.title || ''}"
-                               placeholder="Titre"
+                               placeholder="${Localization.t('arc.card.title_placeholder')}"
                                onchange="ArcBoardViewModel.updateCard('${columnId}', '${card.id}', { title: this.value }${arcParam})"
                                onclick="event.stopPropagation()">
                         <div class="arc-todo-list">${todosHtml}</div>
                         <div class="arc-todo-add" onclick="ArcBoardEventHandlers.addTodoItem('${columnId}', '${card.id}'${arcParam}); event.stopPropagation();">
-                            <i data-lucide="plus"></i> Ajouter une tâche...
+                            <i data-lucide="plus"></i> ${Localization.t('arc.btn.add_todo')}
                         </div>
                     </div>
                 `;
 
             case 'scene':
-                const statusLabels = { 'setup': 'Introduction', 'development': 'Développement', 'climax': 'Point culminant', 'resolution': 'Résolution' };
+                const statusLabels = {
+                    'setup': Localization.t('arc.status.setup'),
+                    'development': Localization.t('arc.status.development'),
+                    'climax': Localization.t('arc.status.climax'),
+                    'resolution': Localization.t('arc.status.resolution')
+                };
                 return `
                     <div class="arc-card arc-card-scene" data-card-id="${card.id}" data-scene-id="${card.sceneId || ''}" ${arcId ? `data-arc-id="${arcId}"` : ''} onclick="${connectionClick}">
                         ${dragHandle}${deleteBtn}
@@ -1187,17 +1196,17 @@ const ArcBoardView = {
                             <i data-lucide="book-open"></i>
                             <div class="arc-card-scene-title-wrapper">
                                 <div class="arc-card-scene-breadcrumb">${card.breadcrumb || ''}</div>
-                                <div class="arc-card-scene-title">${card.sceneTitle || 'Scène'}</div>
+                                <div class="arc-card-scene-title">${card.sceneTitle || Localization.t('arc.card.scene_label')}</div>
                             </div>
                         </div>
                         <div class="arc-card-scene-meta">
                             <div class="arc-card-scene-status">
-                                <span class="arc-card-scene-label">Statut:</span>
-                                <span class="arc-card-scene-value">${statusLabels[card.status] || 'Développement'}</span>
+                                <span class="arc-card-scene-label">${Localization.t('arc.card.status')}</span>
+                                <span class="arc-card-scene-value">${statusLabels[card.status] || Localization.t('arc.status.development')}</span>
                             </div>
                         </div>
                         <button class="arc-card-scene-open" onclick="ArcBoardEventHandlers.openScene('${card.sceneId}'); event.stopPropagation();">
-                            <i data-lucide="external-link"></i> Ouvrir
+                            <i data-lucide="external-link"></i> ${Localization.t('arc.card.open')}
                         </button>
                     </div>
                 `;
@@ -1217,7 +1226,7 @@ const ArcBoardView = {
                         ` : `
                             <div class="arc-link-input">
                                 <i data-lucide="link"></i>
-                                <input type="text" placeholder="Entrer une URL"
+                                <input type="text" placeholder="${Localization.t('arc.card.url_placeholder')}"
                                        onkeypress="ArcBoardEventHandlers.handleCardLinkInput(event, '${columnId}', '${card.id}'${arcParam})"
                                        onclick="event.stopPropagation()">
                             </div>
@@ -1277,11 +1286,11 @@ const ArcBoardView = {
                         ${dragHandle}${deleteBtn}
                         ${tableHtml}
                         <div class="arc-table-controls">
-                            <button class="arc-table-btn" onclick="ArcBoardEventHandlers.addCardTableRow('${columnId}', '${card.id}'${arcParam}); event.stopPropagation();" title="Ajouter une ligne">
-                                <i data-lucide="plus"></i> Ligne
+                            <button class="arc-table-btn" onclick="ArcBoardEventHandlers.addCardTableRow('${columnId}', '${card.id}'${arcParam}); event.stopPropagation();" title="${Localization.t('arc.card.table_row')}">
+                                <i data-lucide="plus"></i> ${Localization.t('arc.card.table_row')}
                             </button>
-                            <button class="arc-table-btn" onclick="ArcBoardEventHandlers.addCardTableCol('${columnId}', '${card.id}'${arcParam}); event.stopPropagation();" title="Ajouter une colonne">
-                                <i data-lucide="plus"></i> Colonne
+                            <button class="arc-table-btn" onclick="ArcBoardEventHandlers.addCardTableCol('${columnId}', '${card.id}'${arcParam}); event.stopPropagation();" title="${Localization.t('arc.card.table_col')}">
+                                <i data-lucide="plus"></i> ${Localization.t('arc.card.table_col')}
                             </button>
                         </div>
                     </div>
@@ -1533,7 +1542,7 @@ const ArcBoardView = {
                  style="left: ${(item.x || 0) + offsetX}px; top: ${(item.y || 0) + offsetY}px; width: ${item.width || 220}px; z-index: ${item.zIndex || 1}"
                  onclick="${clickHandler}">
                 ${this._renderDragHandle(item.id, true, arcId)}
-                <button class="arc-floating-delete" onclick="event.stopPropagation(); deleteArcItem('${item.id}'${arcParam})" title="Supprimer">
+                <button class="arc-floating-delete" onclick="event.stopPropagation(); deleteArcItem('${item.id}'${arcParam})" title="${Localization.t('btn.delete')}">
                     <i data-lucide="x"></i>
                 </button>
                 <div class="arc-card arc-card-scene" style="margin:0">
@@ -1541,17 +1550,17 @@ const ArcBoardView = {
                         <i data-lucide="book-open"></i>
                         <div class="arc-card-scene-title-wrapper">
                             <div class="arc-card-scene-breadcrumb">${item.breadcrumb || ''}</div>
-                            <div class="arc-card-scene-title">${item.sceneTitle || 'Scène'}</div>
+                            <div class="arc-card-scene-title">${item.sceneTitle || Localization.t('arc.card.scene_label')}</div>
                         </div>
                     </div>
                     <div class="arc-card-scene-meta">
                         <div class="arc-card-scene-status">
-                            <span class="arc-card-scene-label">Statut:</span>
-                            <span class="arc-card-scene-value">${statusLabels[item.status] || 'Développement'}</span>
+                            <span class="arc-card-scene-label">${Localization.t('arc.card.status')}</span>
+                            <span class="arc-card-scene-value">${statusLabels[item.status] || Localization.t('arc.status.development')}</span>
                         </div>
                     </div>
                     <button class="arc-card-scene-open" onclick="ArcBoardEventHandlers.openScene('${item.sceneId}'); event.stopPropagation();">
-                        <i data-lucide="external-link"></i> Ouvrir
+                        <i data-lucide="external-link"></i> ${Localization.t('arc.card.open')}
                     </button>
                 </div>
             </div>
@@ -1677,16 +1686,16 @@ const ArcBoardView = {
         view.innerHTML = `
             <div class="empty-state">
                 <div class="empty-state-icon"><i data-lucide="layout-dashboard"></i></div>
-                <div class="empty-state-title">${arcs.length === 0 ? 'Gérez vos arcs narratifs' : 'Sélectionnez un arc'}</div>
+                <div class="empty-state-title">${arcs.length === 0 ? Localization.t('arc.welcome.title_empty') : Localization.t('arc.welcome.title_select')}</div>
                 <div class="empty-state-text">
                     ${arcs.length === 0
-                ? 'Créez des boards visuels pour planifier vos arcs narratifs,<br>organiser vos idées et suivre la progression de votre histoire.'
-                : 'Choisissez un arc dans la barre latérale<br>ou créez-en un nouveau.'
+                ? Localization.t('arc.welcome.text_empty')
+                : Localization.t('arc.welcome.text_select')
             }
                 </div>
                 <button class="btn btn-primary" onclick="ArcBoardViewModel.showArcForm()">
                     <i data-lucide="${arcs.length === 0 ? 'sparkles' : 'plus'}"></i>
-                    ${arcs.length === 0 ? 'Créer votre premier arc' : 'Nouvel arc'}
+                    ${arcs.length === 0 ? Localization.t('arc.welcome.btn_first') : Localization.t('arc.welcome.btn_new')}
                 </button>
             </div>
         `;
@@ -1705,17 +1714,17 @@ const ArcBoardView = {
 
         menu.innerHTML = `
             <div class="arc-context-menu-item" onclick="ArcBoardViewModel.openArc('${arcId}')">
-                <i data-lucide="layout-dashboard"></i> Ouvrir
+                <i data-lucide="layout-dashboard"></i> ${Localization.t('arc.menu.open')}
             </div>
             <div class="arc-context-menu-item" onclick="ArcBoardViewModel.showArcForm('${arcId}')">
-                <i data-lucide="settings"></i> Modifier
+                <i data-lucide="settings"></i> ${Localization.t('arc.menu.edit')}
             </div>
             <div class="arc-context-menu-item" onclick="ArcBoardEventHandlers.duplicateArc('${arcId}')">
-                <i data-lucide="copy"></i> Dupliquer
+                <i data-lucide="copy"></i> ${Localization.t('arc.menu.duplicate')}
             </div>
             <div class="arc-context-menu-separator"></div>
             <div class="arc-context-menu-item danger" onclick="ArcBoardEventHandlers.deleteArc('${arcId}')">
-                <i data-lucide="trash-2"></i> Supprimer
+                <i data-lucide="trash-2"></i> ${Localization.t('arc.toolbar.delete')}
             </div>
         `;
 
@@ -1738,21 +1747,21 @@ const ArcBoardView = {
 
         menu.innerHTML = `
             <div class="arc-context-menu-item" onclick="ArcBoardViewModel.addItemAt('column', ${event.clientX}, ${event.clientY})">
-                <i data-lucide="columns-3"></i> Ajouter une colonne
+                <i data-lucide="columns-3"></i> ${Localization.t('arc.btn.add_column')}
             </div>
             <div class="arc-context-menu-item" onclick="ArcBoardViewModel.addItemAt('note', ${event.clientX}, ${event.clientY})">
-                <i data-lucide="file-text"></i> Ajouter une note
+                <i data-lucide="file-text"></i> ${Localization.t('arc.btn.add_note')}
             </div>
             <div class="arc-context-menu-item" onclick="ArcBoardViewModel.addItemAt('image', ${event.clientX}, ${event.clientY})">
-                <i data-lucide="image"></i> Ajouter une image
+                <i data-lucide="image"></i> ${Localization.t('arc.btn.add_image')}
             </div>
             <div class="arc-context-menu-separator"></div>
             <div class="arc-context-menu-item" onclick="ArcBoardViewModel.paste()">
-                <i data-lucide="clipboard"></i> Coller
+                <i data-lucide="clipboard"></i> ${Localization.t('arc.menu.paste')}
             </div>
             <div class="arc-context-menu-separator"></div>
             <div class="arc-context-menu-item" onclick="ArcBoardViewModel.resetView()">
-                <i data-lucide="maximize-2"></i> Réinitialiser le zoom
+                <i data-lucide="maximize-2"></i> ${Localization.t('arc.menu.reset_zoom')}
             </div>
         `;
 
@@ -1796,7 +1805,7 @@ const ArcBoardView = {
         const arcParam = arcId ? `, '${arcId}'` : '';
         menu.innerHTML = `
             <div class="arc-card-type-menu-header">
-                <span>Type de carte</span>
+                <span>${Localization.t('arc.menu.card_type')}</span>
             </div>
             <div class="arc-card-type-menu-grid">
                 ${cardTypes.map(([type, config]) => `
@@ -1845,7 +1854,7 @@ const ArcBoardView = {
         if (!currentSceneId || !currentChapterId || !currentActId) {
             content.innerHTML = `
                 <div class="arc-panel-empty">
-                    <p>Sélectionnez une scène pour voir ses arcs</p>
+                    <p>${Localization.t('arc.panel.empty_current')}</p>
                 </div>
             `;
             return;
@@ -1864,7 +1873,7 @@ const ArcBoardView = {
             content.innerHTML = `
                 <div class="arc-panel-empty">
                     <div class="arc-panel-empty-icon"><i data-lucide="drama"></i></div>
-                    <p>Aucun arc narratif créé</p>
+                    <p>${Localization.t('arc.panel.empty_all')}</p>
                 </div>
             `;
             if (typeof lucide !== 'undefined') lucide.createIcons();
@@ -1873,7 +1882,7 @@ const ArcBoardView = {
 
         let html = `
             <div class="arc-scene-info">
-                <div class="arc-scene-info-title">Scène actuelle</div>
+                <div class="arc-scene-info-title">${Localization.t('arc.panel.scene_title')}</div>
                 <div style="font-weight: 500;">${sceneInfo.title}</div>
             </div>
         `;
@@ -1885,6 +1894,12 @@ const ArcBoardView = {
                 if (!presence) return;
 
                 const category = ArcRepository.getAllCategories()[arc.category || 'plot'] || ArcCategories.plot;
+                const statusLabels = {
+                    'setup': Localization.t('arc.status.setup'),
+                    'development': Localization.t('arc.status.development'),
+                    'climax': Localization.t('arc.status.climax'),
+                    'resolution': Localization.t('arc.status.resolution')
+                };
 
                 html += `
                     <div class="arc-in-scene" data-arc-id="${arc.id}">
@@ -1893,11 +1908,11 @@ const ArcBoardView = {
                                 <span style="color: ${arc.color || category.color}; margin-right: 8px;"><i data-lucide="${category.icon}"></i></span>
                                 <strong>${arc.title}</strong>
                             </div>
-                            <button class="arc-in-scene-remove" onclick="removeArcFromScene('${arc.id}')" title="Retirer">×</button>
+                            <button class="arc-in-scene-remove" onclick="removeArcFromScene('${arc.id}')" title="${Localization.t('btn.remove')}">×</button>
                         </div>
 
                         <div class="arc-in-scene-control">
-                            <label class="arc-in-scene-label">Intensité</label>
+                            <label class="arc-in-scene-label">${Localization.t('arc.panel.intensity')}</label>
                             <input type="range" min="1" max="5" value="${presence.intensity}"
                                 class="arc-intensity-slider"
                                 oninput="updateArcIntensity('${arc.id}', this.value)">
@@ -1905,29 +1920,29 @@ const ArcBoardView = {
                         </div>
 
                         <div class="arc-in-scene-control">
-                            <label class="arc-in-scene-label">Statut</label>
+                            <label class="arc-in-scene-label">${Localization.t('arc.card.status')}</label>
                             <select class="arc-status-select" onchange="updateArcStatus('${arc.id}', this.value)">
-                                <option value="setup" ${presence.status === 'setup' ? 'selected' : ''}>Introduction</option>
-                                <option value="development" ${presence.status === 'development' ? 'selected' : ''}>Développement</option>
-                                <option value="climax" ${presence.status === 'climax' ? 'selected' : ''}>Point culminant</option>
-                                <option value="resolution" ${presence.status === 'resolution' ? 'selected' : ''}>Résolution</option>
+                                <option value="setup" ${presence.status === 'setup' ? 'selected' : ''}>${statusLabels.setup}</option>
+                                <option value="development" ${presence.status === 'development' ? 'selected' : ''}>${statusLabels.development}</option>
+                                <option value="climax" ${presence.status === 'climax' ? 'selected' : ''}>${statusLabels.climax}</option>
+                                <option value="resolution" ${presence.status === 'resolution' ? 'selected' : ''}>${statusLabels.resolution}</option>
                             </select>
                         </div>
 
                         <div class="arc-in-scene-control">
-                            <label class="arc-in-scene-label">Colonne du arc-board</label>
+                            <label class="arc-in-scene-label">${Localization.t('arc.panel.column_select')}</label>
                             <select class="arc-column-select" onchange="updateArcColumn('${arc.id}', this.value)">
-                                <option value="">Arc général (aucune colonne)</option>
+                                <option value="">${Localization.t('arc.panel.general_arc')}</option>
                                 ${(arc.board && arc.board.items ? arc.board.items.filter(item => item.type === 'column').map(column =>
-                    `<option value="${column.id}" ${presence.columnId == column.id ? 'selected' : ''}>${column.title || 'Colonne sans titre'}</option>`
+                    `<option value="${column.id}" ${presence.columnId == column.id ? 'selected' : ''}>${column.title || Localization.t('arc.panel.no_title_col')}</option>`
                 ).join('') : '')}
                             </select>
                         </div>
 
                         <div class="arc-in-scene-control">
-                            <label class="arc-in-scene-label">Notes</label>
+                            <label class="arc-in-scene-label">${Localization.t('arc.context.note')}s</label>
                             <textarea class="arc-notes-textarea"
-                                placeholder="Notes pour cette scène..."
+                                placeholder="${Localization.t('arc.panel.notes_placeholder')}"
                                 onblur="updateArcNotes('${arc.id}', this.value)">${presence.notes || ''}</textarea>
                         </div>
                     </div>
@@ -1941,14 +1956,14 @@ const ArcBoardView = {
             html += `
                 <div class="arc-panel-add-section" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
                     <select id="arcToAddSelect" class="arc-panel-add-select">
-                        <option value="">-- Ajouter un arc --</option>
+                        <option value="">${Localization.t('arc.panel.add_arc_prompt')}</option>
                         ${availableArcs.map(arc => {
                 const category = ArcRepository.getAllCategories()[arc.category || 'plot'] || ArcCategories.plot;
                 return `<option value="${arc.id}">${category.label} - ${arc.title}</option>`;
             }).join('')}
                     </select>
                     <button class="arc-panel-add-btn" onclick="addArcToCurrentScene()">
-                        + Ajouter l'arc
+                        ${Localization.t('arc.panel.add_arc_btn')}
                     </button>
                 </div>
             `;
