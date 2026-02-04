@@ -211,8 +211,8 @@ function renderActsList() {
     if (!vm.acts || vm.acts.length === 0) {
         container.innerHTML = `
             <div style="padding: 2rem; text-align: center; color: var(--text-muted);">
-                <div style="margin-bottom: 1rem;">Aucun chapitre</div>
-                <button class="btn btn-primary" onclick="openAddChapterModal()">+ Créer un chapitre</button>
+                <div style="margin-bottom: 1rem;">${Localization.t('sidebar.empty.no_chapters')}</div>
+                <button class="btn btn-primary" onclick="openAddChapterModal()">${Localization.t('btn.add_chapter')}</button>
             </div>`;
         if (typeof updateStats === 'function') updateStats();
         return;
@@ -280,11 +280,11 @@ function renderActsList() {
                 </div>`;
             });
 
-            html += `<div class="scene-item" onclick="openAddSceneModal(${act.id}, ${chapter.id})" style="opacity: 0.6; font-style: italic;">+ Ajouter une scène</div>
+            html += `<div class="scene-item" onclick="openAddSceneModal(${act.id}, ${chapter.id})" style="opacity: 0.6; font-style: italic;">${Localization.t('sidebar.btn.add_scene')}</div>
                 </div></div>`;
         });
 
-        html += `<div class="scene-item" onclick="openAddChapterModal(${act.id})" style="opacity: 0.6; font-style: italic; margin-left: 1rem;">+ Ajouter un chapitre</div>
+        html += `<div class="scene-item" onclick="openAddChapterModal(${act.id})" style="opacity: 0.6; font-style: italic; margin-left: 1rem;">${Localization.t('sidebar.btn.add_chapter')}</div>
             </div></div>`;
     });
 
@@ -537,8 +537,8 @@ function updateProgressBar() {
 
     // Mettre à jour le texte de progression
     const completedPercent = total > 0 ? Math.round((counts.complete / total) * 100) : 0;
-    document.getElementById('progressStatsText').textContent = `${total} scène${total > 1 ? 's' : ''}`;
-    document.getElementById('progressPercent').textContent = `${completedPercent}% terminé`;
+    document.getElementById('progressStatsText').textContent = Localization.t('sidebar.progress.scenecount', [total, total > 1 ? 's' : '']);
+    document.getElementById('progressPercent').textContent = Localization.t('sidebar.progress.percent', [completedPercent]);
 
     // Mettre à jour les segments de la barre
     if (total > 0) {
@@ -777,3 +777,9 @@ function openElementLinker(actId, chapterId, sceneId) {
     const modal = document.getElementById('referencesModal');
     if (modal) modal.classList.add('active');
 }
+// --- INITIALISATION ---
+
+// Écouter les changements de langue
+window.addEventListener('localeChanged', () => {
+    renderActsList();
+});

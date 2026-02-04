@@ -209,27 +209,15 @@ function switchView(view) {
         renderMobileSidebarView(view);
     }
 
-    // Update sidebar actions
-    const actionsHTML = {
-        editor: `<button class="btn btn-primary" onclick="openAddActModal()">${Localization.t('btn.add_act')}</button><button class="btn btn-primary" onclick="openAddChapterModal()">${Localization.t('btn.add_chapter')}</button><button class="btn btn-primary" onclick="openAddSceneModalQuick()">${Localization.t('btn.add_scene')}</button>`,
-        characters: `<button class="btn btn-primary" onclick="openAddCharacterModal()">+ ${Localization.t('nav.characters')}</button>`,
-        world: `<button class="btn btn-primary" onclick="openAddWorldModal()">+ ${Localization.t('nav.world')}</button>`,
-        notes: `<button class="btn btn-primary" onclick="openAddNoteModal()">+ ${Localization.t('nav.notes')}</button>`,
-        codex: `<button class="btn btn-primary" onclick="openAddCodexModal()">+ ${Localization.t('nav.codex')}</button>`,
-        arcs: `<button class="btn btn-primary" onclick="createNewArc()">+ ${Localization.t('nav.arcs')}</button>`,
-
-    };
-    const sidebarActions = document.getElementById('sidebarActions');
-    if (sidebarActions) {
-        sidebarActions.innerHTML = actionsHTML[view] || '';
-    }
+    // Initial render of sidebar actions
+    updateSidebarActions(view);
 
     // Hide plot sidebar when leaving editor
     if (view !== 'editor' && !splitViewActive) {
         document.getElementById('sidebarPlot')?.classList.add('hidden');
     }
 
-    // Rendu du contenu
+    // Initial render of view content
     renderViewContent(view, 'editorView');
 
     // Live Tension Meter Visibility
@@ -243,6 +231,50 @@ function switchView(view) {
         if (typeof lucide !== 'undefined') lucide.createIcons();
     }, 50);
 }
+
+/**
+ * Updates the sidebar actions buttons based on current view.
+ */
+function updateSidebarActions(view) {
+    const sidebarActions = document.getElementById('sidebarActions');
+    if (!sidebarActions) return;
+
+    let html = '';
+    const v = view || currentView;
+
+    switch (v) {
+        case 'editor':
+            html = `
+                <button class="btn btn-primary" onclick="openAddActModal()">${Localization.t('btn.add_act')}</button>
+                <button class="btn btn-primary" onclick="openAddChapterModal()">${Localization.t('btn.add_chapter')}</button>
+                <button class="btn btn-primary" onclick="openAddSceneModalQuick()">${Localization.t('btn.add_scene')}</button>
+            `;
+            break;
+        case 'characters':
+            html = `<button class="btn btn-primary" onclick="openAddCharacterModal()">+ ${Localization.t('nav.characters')}</button>`;
+            break;
+        case 'world':
+            html = `<button class="btn btn-primary" onclick="openAddWorldModal()">+ ${Localization.t('nav.world')}</button>`;
+            break;
+        case 'notes':
+            html = `<button class="btn btn-primary" onclick="openAddNoteModal()">+ ${Localization.t('nav.notes')}</button>`;
+            break;
+        case 'codex':
+            html = `<button class="btn btn-primary" onclick="openAddCodexModal()">+ ${Localization.t('nav.codex')}</button>`;
+            break;
+        case 'arcs':
+            html = `<button class="btn btn-primary" onclick="createNewArc()">+ ${Localization.t('nav.arcs')}</button>`;
+            break;
+    }
+
+    sidebarActions.innerHTML = html;
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+// Ensure sidebar actions are updated when locale changes
+window.addEventListener('localeChanged', () => {
+    updateSidebarActions(currentView);
+});
 
 /**
  * Rend le contenu spécifique d'une vue dans un conteneur.
