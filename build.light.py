@@ -51,7 +51,13 @@ JS_ORDER = [
     'vendor/driver.js.iife.js',
     'vendor/idb.js',
     'js-refactor/01.app.refactor.js',
-    '38.tension.js',
+    # Tension Module
+    'js-refactor/tension/tension.model.js',
+    'js-refactor/tension/tension.repository.js',
+    'js-refactor/tension/tension.viewmodel.js',
+    'js-refactor/tension/tension.view.js',
+    'js-refactor/tension/tension.handlers.js',
+    'js-refactor/tension/tension.main.js',
     '02.storage.js',
     'js-refactor/project/project.model.js',
     'js-refactor/project/project.repository.js',
@@ -354,7 +360,7 @@ IGNORED_ORIGINALS = [
     '_28.revision.js', '_29.todos.js', '_30.corkboard.js', '_30.corkboard.refactor.js', 
     '_31.mindmap.js', '_32.touch-events.js',
     '_33.plot.js', '_34.relations-graph.js', '_35.renderMap.js', '_36.timeline-metro.js', '_43.arcs.js', '_44.storygrid.js', 
-    '_45.arc-board.js', '_45.arc-board.refactor.js', '_46.thriller-board.js'
+    '_45.arc-board.js', '_45.arc-board.refactor.js', '_46.thriller-board.js', '38.tension.js'
 ]
 
 def collect_js():
