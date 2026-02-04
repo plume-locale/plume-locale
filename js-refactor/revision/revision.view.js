@@ -99,6 +99,17 @@ const RevisionView = {
             node = node.parentElement;
         }
 
+        // Cas des annotations (TODOs, commentaires, etc.)
+        const annotationMarker = node.closest('.annotation-marker');
+        if (annotationMarker) {
+            const annotationId = annotationMarker.getAttribute('data-annotation-id');
+            if (annotationId && typeof RevisionViewModel !== 'undefined') {
+                RevisionViewModel.deleteAnnotation(parseInt(annotationId));
+                return true;
+            }
+        }
+
+        // Cas des surlignages simples
         if (node.className && node.className.includes('highlight-')) {
             const parent = node.parentNode;
             while (node.firstChild) {

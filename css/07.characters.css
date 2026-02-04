@@ -2989,9 +2989,22 @@ select.toolbar-btn:hover {
     border-bottom: 2px solid #D32F2F;
 }
 
+.annotation-marker.completed {
+    background: rgba(128, 128, 128, 0.2) !important;
+    border-bottom: 1px dashed #777 !important;
+    text-decoration: line-through;
+    opacity: 0.8;
+}
+
 .annotation-marker.note {
     background: rgba(76, 175, 80, 0.3);
     border-bottom: 2px solid #4CAF50;
+}
+
+/* Boutons de suppression sur les cartes */
+.btn-delete-card:hover {
+    background: rgba(244, 67, 54, 0.1) !important;
+    color: var(--accent-red) !important;
 }
 
 .annotation-popup {

@@ -13,11 +13,102 @@ const TodoViewModel = {
             todo.completed = !todo.completed;
             TodoRepository.save('toggleTodo');
 
+            // Trouver la scène parente
+            const scene = typeof RevisionRepository !== 'undefined' ?
+                RevisionRepository.findSceneById(sceneId) : null;
+
+            if (scene) {
+                // 1. Si la scène est ouverte, on met à jour le DOM en direct
+                if (typeof currentSceneId !== 'undefined' && currentSceneId == sceneId) {
+                    const marker = document.getElementById(`annotation-${todoId}`);
+                    if (marker) {
+                        if (todo.completed) marker.classList.add('completed');
+                        else marker.classList.remove('completed');
+                    }
+                    // Sauvegarder le HTML modifié depuis l'éditeur
+                    if (typeof RevisionViewModel !== 'undefined') {
+                        RevisionViewModel.updateSceneContent();
+                    }
+                }
+                // 2. Si la scène n'est pas ouverte, on met à jour la chaîne HTML stockée
+                else if (scene.content) {
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = scene.content;
+                    const marker = tempDiv.querySelector(`#annotation-${todoId}`);
+                    if (marker) {
+                        if (todo.completed) marker.classList.add('completed');
+                        else marker.classList.remove('completed');
+                        scene.content = tempDiv.innerHTML;
+
+                        // Si des versions existent, mettre à jour la version active aussi
+                        if (typeof RevisionRepository !== 'undefined') {
+                            const activeVersion = RevisionRepository.getActiveVersion(scene);
+                            if (activeVersion) activeVersion.content = scene.content;
+                        }
+
+                        TodoRepository.save('toggleTodoOffline');
+                    }
+                }
+            }
+
             // Rafraîchir les vues impactées
             TodoViewModel.refreshUI();
             return true;
         }
         return false;
+    },
+
+    /**
+     * Supprime définitivement un TODO
+     */
+    deleteTodo: (sceneId, todoId) => {
+        if (!confirm('Supprimer définitivement ce TODO ?')) return false;
+
+        const scene = typeof RevisionRepository !== 'undefined' ?
+            RevisionRepository.findSceneById(sceneId) : null;
+
+        if (!scene) return false;
+
+        // 1. Si c'est la scène actuelle, on retire du DOM en direct
+        if (typeof currentSceneId !== 'undefined' && currentSceneId == sceneId) {
+            if (typeof RevisionView !== 'undefined' && RevisionView.removeAnnotationMarker) {
+                RevisionView.removeAnnotationMarker(todoId);
+            }
+            // Sauvegarder le contenu nettoyé depuis l'éditeur
+            if (typeof RevisionViewModel !== 'undefined') {
+                RevisionViewModel.updateSceneContent();
+            }
+        }
+        // 2. Si la scène n'est pas ouverte, nettoyer la chaîne HTML stockée
+        else if (scene.content) {
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = scene.content;
+            const marker = tempDiv.querySelector(`#annotation-${todoId}`);
+            if (marker) {
+                const textContent = marker.textContent;
+                const textNode = document.createTextNode(textContent);
+                marker.parentNode.replaceChild(textNode, marker);
+                scene.content = tempDiv.innerHTML;
+
+                // Mettre à jour la version active aussi
+                if (typeof RevisionRepository !== 'undefined') {
+                    const activeVersion = RevisionRepository.getActiveVersion(scene);
+                    if (activeVersion) activeVersion.content = scene.content;
+                }
+            }
+        }
+
+        // 3. Retirer les données de l'annotation du repository
+        if (typeof RevisionRepository !== 'undefined') {
+            RevisionRepository.removeAnnotation(scene, todoId);
+        } else {
+            scene.annotations = (scene.annotations || []).filter(a => a.id !== todoId);
+        }
+
+        TodoRepository.save('deleteTodo');
+        TodoViewModel.refreshUI();
+
+        return true;
     },
 
     /**

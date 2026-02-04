@@ -34,8 +34,12 @@ const TodoView = {
                     <div style="margin-bottom: 1rem;">
                         <div style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem; text-transform: uppercase;">À faire</div>
                         ${pendingTodos.map(todo => `
-                            <div class="annotation-card todo" onclick="TodoViewModel.goToScene(${todo.actId}, ${todo.chapterId}, ${todo.sceneId})" style="cursor: pointer;">
-                                <div style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.25rem;">${todo.sceneTitle}</div>
+                            <div class="annotation-card todo" onclick="TodoViewModel.goToScene(${todo.actId}, ${todo.chapterId}, ${todo.sceneId})" style="cursor: pointer; position: relative;">
+                                <button class="btn-delete-card" title="Supprimer" onclick="event.stopPropagation(); TodoViewModel.deleteTodo(${todo.sceneId}, ${todo.id})" 
+                                        style="position: absolute; top: 8px; right: 8px; background: transparent; border: none; color: var(--text-muted); padding: 4px; border-radius: 4px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; cursor: pointer;">
+                                    <i data-lucide="trash-2" style="width:14px;height:14px;"></i>
+                                </button>
+                                <div style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.25rem; padding-right: 20px;">${todo.sceneTitle}</div>
                                 <div class="annotation-content">${todo.text}</div>
                                 <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
                                     <button class="btn btn-small" onclick="event.stopPropagation(); TodoViewModel.toggleTodo(${todo.sceneId}, ${todo.id})">
@@ -51,8 +55,12 @@ const TodoView = {
                     <div>
                         <div style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem; text-transform: uppercase;">Terminés (${completedTodos.length})</div>
                         ${completedTodos.map(todo => `
-                            <div class="annotation-card" style="opacity: 0.6; cursor: pointer;" onclick="TodoViewModel.goToScene(${todo.actId}, ${todo.chapterId}, ${todo.sceneId})">
-                                <div style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.25rem;">${todo.sceneTitle}</div>
+                            <div class="annotation-card" style="opacity: 0.6; cursor: pointer; position: relative;" onclick="TodoViewModel.goToScene(${todo.actId}, ${todo.chapterId}, ${todo.sceneId})">
+                                <button class="btn-delete-card" title="Supprimer" onclick="event.stopPropagation(); TodoViewModel.deleteTodo(${todo.sceneId}, ${todo.id})" 
+                                        style="position: absolute; top: 8px; right: 8px; background: transparent; border: none; color: var(--text-muted); padding: 4px; border-radius: 4px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; cursor: pointer;">
+                                    <i data-lucide="trash-2" style="width:14px;height:14px;"></i>
+                                </button>
+                                <div style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.25rem; padding-right: 20px;">${todo.sceneTitle}</div>
                                 <div class="annotation-content" style="text-decoration: line-through;">${todo.text}</div>
                                 <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
                                     <button class="btn btn-small" onclick="event.stopPropagation(); TodoViewModel.toggleTodo(${todo.sceneId}, ${todo.id})">
@@ -101,7 +109,7 @@ const TodoView = {
                     <div style="display: flex; flex-direction: column; gap: 1rem;">
                     ${sortedTodos.map(todo => `
                         <div class="todo-item" onclick="TodoViewModel.openFromList(${todo.actId}, ${todo.chapterId}, ${todo.sceneId})" 
-                             style="display: flex; gap: 1rem; padding: 1rem; background: var(--bg-secondary); border-left: 3px solid ${todo.completed ? 'var(--text-muted)' : 'var(--accent-gold)'}; border-radius: 4px; cursor: pointer; transition: all 0.2s;">
+                             style="display: flex; gap: 1rem; padding: 1rem; background: var(--bg-secondary); border-left: 3px solid ${todo.completed ? 'var(--text-muted)' : 'var(--accent-gold)'}; border-radius: 4px; cursor: pointer; transition: all 0.2s; position: relative;">
                             <input type="checkbox" ${todo.completed ? 'checked' : ''} 
                                    onclick="event.stopPropagation(); TodoViewModel.toggleTodo(${todo.sceneId}, ${todo.id})"
                                    style="margin-top: 0.25rem;">
@@ -112,6 +120,10 @@ const TodoView = {
                                     ${todo.actTitle} › ${todo.chapterTitle} › ${todo.sceneTitle}
                                 </div>
                             </div>
+                            <button class="btn-delete-card" title="Supprimer" onclick="event.stopPropagation(); TodoViewModel.deleteTodo(${todo.sceneId}, ${todo.id})" 
+                                    style="position: absolute; top: 12px; right: 12px; background: transparent; border: none; color: var(--text-muted); padding: 4px; border-radius: 4px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; cursor: pointer;">
+                                <i data-lucide="trash-2" style="width:16px;height:16px;"></i>
+                            </button>
                         </div>
                     `).join('')}
                     </div>
