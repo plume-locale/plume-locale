@@ -4,67 +4,88 @@
     <!-- Mobile Navigation Dropdown (déplacé hors du grid) -->
     <div class="mobile-nav-dropdown" id="mobileNavDropdown">
         <div class="mobile-nav-section">
-            <div class="mobile-nav-section-title"><i data-lucide="pen-tool"></i> écriture</div> <button
-                class="mobile-nav-item active" onclick="switchViewMobile('editor')" data-view="editor"> <span
-                    class="mobile-nav-item-icon"><i data-lucide="pen-line"></i></span> <span>Structure</span> </button>
+            <div class="mobile-nav-section-title"><i data-lucide="pen-tool"></i> <span
+                    data-i18n="mobile.group.write">écriture</span></div> <button class="mobile-nav-item active"
+                onclick="switchViewMobile('editor')" data-view="editor"> <span class="mobile-nav-item-icon"><i
+                        data-lucide="pen-line"></i></span> <span data-i18n="nav.structure">Structure</span> </button>
             <button class="mobile-nav-item" onclick="switchViewMobile('corkboard')" data-view="corkboard"> <span
-                    class="mobile-nav-item-icon"><i data-lucide="layout-grid"></i></span> <span>Tableau</span> </button>
+                    class="mobile-nav-item-icon"><i data-lucide="layout-grid"></i></span> <span
+                    data-i18n="nav.corkboard">Tableau</span> </button>
             <button class="mobile-nav-item" onclick="switchViewMobile('plot')" data-view="plot"> <span
-                    class="mobile-nav-item-icon"><i data-lucide="trending-up"></i></span> <span>Intrigue</span>
+                    class="mobile-nav-item-icon"><i data-lucide="trending-up"></i></span> <span
+                    data-i18n="nav.plot">Intrigue</span>
             </button> <button class="mobile-nav-item" onclick="switchViewMobile('arcs')" data-view="arcs"> <span
-                    class="mobile-nav-item-icon"><i data-lucide="git-commit-horizontal"></i></span> <span>Arcs
-                    Narratifs</span> </button> <button class="mobile-nav-item" onclick="switchViewMobile('thriller')"
-                data-view="thriller"> <span class="mobile-nav-item-icon"><i data-lucide="hat-glasses"></i></span>
-                <span>Thriller</span> </button> <button class="mobile-nav-item" onclick="switchViewMobile('storygrid')"
-                data-view="storygrid"> <span class="mobile-nav-item-icon"><i data-lucide="grid-3x3"></i></span>
-                <span>Storygrid</span> </button>
+                    class="mobile-nav-item-icon"><i data-lucide="git-commit-horizontal"></i></span> <span
+                    data-i18n="nav.arcs">Arcs Narratifs</span> </button> <button class="mobile-nav-item"
+                onclick="switchViewMobile('thriller')" data-view="thriller"> <span class="mobile-nav-item-icon"><i
+                        data-lucide="hat-glasses"></i></span>
+                <span data-i18n="nav.thriller">Thriller</span> </button> <button class="mobile-nav-item"
+                onclick="switchViewMobile('storygrid')" data-view="storygrid"> <span class="mobile-nav-item-icon"><i
+                        data-lucide="grid-3x3"></i></span>
+                <span data-i18n="nav.storygrid">Storygrid</span> </button>
         </div>
         <div class="mobile-nav-section">
-            <div class="mobile-nav-section-title"><i data-lucide="database"></i> Base de données</div> <button
-                class="mobile-nav-item" onclick="switchViewMobile('characters')" data-view="characters"> <span
-                    class="mobile-nav-item-icon"><i data-lucide="users"></i></span> <span>Personnages</span> </button>
+            <div class="mobile-nav-section-title"><i data-lucide="database"></i> <span data-i18n="mobile.group.db">Base
+                    de données</span></div> <button class="mobile-nav-item" onclick="switchViewMobile('characters')"
+                data-view="characters"> <span class="mobile-nav-item-icon"><i data-lucide="users"></i></span> <span
+                    data-i18n="nav.characters">Personnages</span> </button>
             <button class="mobile-nav-item" onclick="switchViewMobile('world')" data-view="world"> <span
-                    class="mobile-nav-item-icon"><i data-lucide="globe"></i></span> <span>Univers</span> </button>
+                    class="mobile-nav-item-icon"><i data-lucide="globe"></i></span> <span
+                    data-i18n="nav.world">Univers</span> </button>
             <button class="mobile-nav-item" onclick="switchViewMobile('codex')" data-view="codex"> <span
-                    class="mobile-nav-item-icon"><i data-lucide="book-open"></i></span> <span>Codex</span> </button>
+                    class="mobile-nav-item-icon"><i data-lucide="book-open"></i></span> <span
+                    data-i18n="nav.codex">Codex</span> </button>
             <button class="mobile-nav-item" onclick="switchViewMobile('notes')" data-view="notes"> <span
-                    class="mobile-nav-item-icon"><i data-lucide="sticky-note"></i></span> <span>Notes</span> </button>
+                    class="mobile-nav-item-icon"><i data-lucide="sticky-note"></i></span> <span
+                    data-i18n="nav.notes">Notes</span> </button>
         </div>
         <div class="mobile-nav-section">
-            <div class="mobile-nav-section-title"><i data-lucide="eye"></i> Visualisation</div> <button
-                class="mobile-nav-item" onclick="switchViewMobile('mindmap')" data-view="mindmap"> <span
-                    class="mobile-nav-item-icon"><i data-lucide="git-branch"></i></span> <span>Mindmap</span> </button>
+            <div class="mobile-nav-section-title"><i data-lucide="eye"></i> <span
+                    data-i18n="mobile.group.viz">Visualisation</span></div> <button class="mobile-nav-item"
+                onclick="switchViewMobile('mindmap')" data-view="mindmap"> <span class="mobile-nav-item-icon"><i
+                        data-lucide="git-branch"></i></span> <span data-i18n="nav.mindmap">Mindmap</span> </button>
             <button class="mobile-nav-item" onclick="switchViewMobile('relations')" data-view="relations"> <span
-                    class="mobile-nav-item-icon"><i data-lucide="link"></i></span> <span>Relations</span> </button>
+                    class="mobile-nav-item-icon"><i data-lucide="link"></i></span> <span
+                    data-i18n="nav.relations">Relations</span> </button>
             <button class="mobile-nav-item" onclick="switchViewMobile('map')" data-view="map"> <span
-                    class="mobile-nav-item-icon"><i data-lucide="map"></i></span> <span>Carte</span> </button> <button
-                class="mobile-nav-item" onclick="switchViewMobile('timelineviz')" data-view="timelineviz"> <span
-                    class="mobile-nav-item-icon"><i data-lucide="clock"></i></span> <span>Timeline</span> </button>
+                    class="mobile-nav-item-icon"><i data-lucide="map"></i></span> <span data-i18n="nav.map">Carte</span>
+            </button> <button class="mobile-nav-item" onclick="switchViewMobile('timelineviz')" data-view="timelineviz">
+                <span class="mobile-nav-item-icon"><i data-lucide="clock"></i></span> <span
+                    data-i18n="nav.timeline">Timeline</span> </button>
         </div>
         <div class="mobile-nav-section">
-            <div class="mobile-nav-section-title"><i data-lucide="wrench"></i> Outils</div> <button
-                class="mobile-nav-item" onclick="switchViewMobile('stats')" data-view="stats"> <span
-                    class="mobile-nav-item-icon"><i data-lucide="bar-chart-3"></i></span> <span>Stats</span> </button>
+            <div class="mobile-nav-section-title"><i data-lucide="wrench"></i> <span
+                    data-i18n="mobile.group.tools">Outils</span></div> <button class="mobile-nav-item"
+                onclick="switchViewMobile('stats')" data-view="stats"> <span class="mobile-nav-item-icon"><i
+                        data-lucide="bar-chart-3"></i></span> <span data-i18n="nav.stats">Stats</span> </button>
             <button class="mobile-nav-item" onclick="switchViewMobile('analysis')" data-view="analysis"> <span
-                    class="mobile-nav-item-icon"><i data-lucide="scan-search"></i></span> <span>Analyse</span> </button>
+                    class="mobile-nav-item-icon"><i data-lucide="scan-search"></i></span> <span
+                    data-i18n="nav.analysis">Analyse</span> </button>
         </div>
         <div class="mobile-nav-section">
-            <div class="mobile-nav-section-title"><i data-lucide="history"></i> Historique</div> <button
-                class="mobile-nav-item" onclick="switchViewMobile('versions')" data-view="versions"> <span
-                    class="mobile-nav-item-icon"><i data-lucide="history"></i></span> <span>Snapshots</span> </button>
+            <div class="mobile-nav-section-title"><i data-lucide="history"></i> <span
+                    data-i18n="mobile.group.history">Historique</span></div> <button class="mobile-nav-item"
+                onclick="switchViewMobile('versions')" data-view="versions"> <span class="mobile-nav-item-icon"><i
+                        data-lucide="history"></i></span> <span data-i18n="nav.snapshots">Snapshots</span> </button>
         </div>
         <div class="mobile-nav-section">
-            <div class="mobile-nav-section-title"><i data-lucide="settings"></i> Actions</div> <button
-                class="mobile-nav-item" onclick="openProjectsModal(); toggleMobileNav();"> <span
-                    class="mobile-nav-item-icon"><i data-lucide="folder-open"></i></span> <span>Mes Projets</span>
+            <div class="mobile-nav-section-title"><i data-lucide="settings"></i> <span
+                    data-i18n="mobile.group.actions">Actions</span></div> <button class="mobile-nav-item"
+                onclick="openProjectsModal(); toggleMobileNav();"> <span class="mobile-nav-item-icon"><i
+                        data-lucide="folder-open"></i></span> <span data-i18n="mobile.action.projects">Mes
+                    Projets</span>
             </button> <button class="mobile-nav-item" onclick="openThemeManager(); toggleMobileNav();"> <span
-                    class="mobile-nav-item-icon"><i data-lucide="palette"></i></span> <span>Thèmes</span> </button>
+                    class="mobile-nav-item-icon"><i data-lucide="palette"></i></span> <span
+                    data-i18n="mobile.action.themes">Thèmes</span> </button>
             <button class="mobile-nav-item" onclick="undo(); toggleMobileNav();" id="mobileUndoBtn"> <span
-                    class="mobile-nav-item-icon"><i data-lucide="undo-2"></i></span> <span>Annuler</span> </button>
+                    class="mobile-nav-item-icon"><i data-lucide="undo-2"></i></span> <span
+                    data-i18n="mobile.action.undo">Annuler</span> </button>
             <button class="mobile-nav-item" onclick="redo(); toggleMobileNav();" id="mobileRedoBtn"> <span
-                    class="mobile-nav-item-icon"><i data-lucide="redo-2"></i></span> <span>Rétablir</span> </button>
+                    class="mobile-nav-item-icon"><i data-lucide="redo-2"></i></span> <span
+                    data-i18n="mobile.action.redo">Rétablir</span> </button>
             <button class="mobile-nav-item" onclick="showBackupMenu(); toggleMobileNav();"> <span
-                    class="mobile-nav-item-icon"><i data-lucide="download"></i></span> <span>Sauvegarde/Export</span>
+                    class="mobile-nav-item-icon"><i data-lucide="download"></i></span> <span
+                    data-i18n="mobile.action.backup">Sauvegarde/Export</span>
             </button>
         </div>
     </div> <!-- Barre de progression d'écriture (mode focus) - hors du grid -->
@@ -75,17 +96,19 @@
     <div class="app-container"> <!-- Top Header -->
         <div class="app-header">
             <div class="app-logo" onclick="renameProject()" style="cursor: pointer;"
-                title="Cliquer pour renommer le projet"> <span class="app-logo-icon"><i
-                        data-lucide="feather"></i></span> <span id="headerProjectTitle">Plume</span> <i
-                    data-lucide="pencil" style="width: 12px; height: 12px; opacity: 0.5; margin-left: 4px;"></i> </div>
+                title="Cliquer pour renommer le projet" data-i18n-title="header.logo.title"> <span
+                    class="app-logo-icon"><i data-lucide="feather"></i></span> <span
+                    id="headerProjectTitle">Plume</span> <i data-lucide="pencil"
+                    style="width: 12px; height: 12px; opacity: 0.5; margin-left: 4px;"></i> </div>
             <!-- Mobile Navigation Toggle --> <button class="mobile-nav-toggle-btn" onclick="toggleMobileNav()"
                 id="mobileNavToggleBtn"> <i data-lucide="menu"></i> </button>
             <nav class="header-nav"> <!-- Section 1 : Structure, Tableau, Intrigue -->
                 <div class="nav-group"> <button class="nav-btn active" onclick="switchView('editor')"
                         id="header-tab-editor"> <span class="nav-btn-icon"><i data-lucide="pen-line"></i></span> <span
-                            class="nav-btn-text">Structure</span> </button> <button class="nav-btn"
-                        onclick="switchView('corkboard')" id="header-tab-corkboard"> <span class="nav-btn-icon"><i
-                                data-lucide="layout-grid"></i></span> <span class="nav-btn-text">Tableau</span>
+                            class="nav-btn-text" data-i18n="nav.structure">Structure</span> </button> <button
+                        class="nav-btn" onclick="switchView('corkboard')" id="header-tab-corkboard"> <span
+                            class="nav-btn-icon"><i data-lucide="layout-grid"></i></span> <span class="nav-btn-text"
+                            data-i18n="nav.corkboard">Tableau</span>
                     </button> <button class="nav-btn" onclick="switchView('plot')" id="header-tab-plot"> <span
                             class="nav-btn-icon"><i data-lucide="trending-up"></i></span> <span
                             class="nav-btn-text">Intrigue</span> </button> <button class="nav-btn"
@@ -99,9 +122,10 @@
                 </div> <!-- Section 2 : Personnages, Univers, Codex, Notes -->
                 <div class="nav-group"> <button class="nav-btn" onclick="switchView('characters')"
                         id="header-tab-characters"> <span class="nav-btn-icon"><i data-lucide="users"></i></span> <span
-                            class="nav-btn-text">Personnages</span> </button> <button class="nav-btn"
-                        onclick="switchView('world')" id="header-tab-world"> <span class="nav-btn-icon"><i
-                                data-lucide="globe"></i></span> <span class="nav-btn-text">Univers</span> </button>
+                            class="nav-btn-text" data-i18n="nav.characters">Personnages</span> </button> <button
+                        class="nav-btn" onclick="switchView('world')" id="header-tab-world"> <span
+                            class="nav-btn-icon"><i data-lucide="globe"></i></span> <span class="nav-btn-text"
+                            data-i18n="nav.world">Univers</span> </button>
                     <button class="nav-btn" onclick="switchView('codex')" id="header-tab-codex"> <span
                             class="nav-btn-icon"><i data-lucide="book-open"></i></span> <span
                             class="nav-btn-text">Codex</span> </button> <button class="nav-btn"
@@ -109,60 +133,66 @@
                                 data-lucide="sticky-note"></i></span> <span class="nav-btn-text">Notes</span> </button>
                 </div> <!-- Section 3 : Mindmap, Relations, Carte, Timeline -->
                 <div class="nav-group"> <button class="nav-btn" onclick="switchView('mindmap')" id="header-tab-mindmap">
-                        <span class="nav-btn-icon"><i data-lucide="git-branch"></i></span> <span
-                            class="nav-btn-text">Mindmap</span> </button> <button class="nav-btn"
+                        <span class="nav-btn-icon"><i data-lucide="git-branch"></i></span> <span class="nav-btn-text"
+                            data-i18n="nav.mindmap">Mindmap</span> </button> <button class="nav-btn"
                         onclick="switchView('relations')" id="header-tab-relations"> <span class="nav-btn-icon"><i
-                                data-lucide="link"></i></span> <span class="nav-btn-text">Relations</span> </button>
+                                data-lucide="link"></i></span> <span class="nav-btn-text"
+                            data-i18n="nav.relations">Relations</span> </button>
                     <button class="nav-btn" onclick="switchView('map')" id="header-tab-map"> <span
-                            class="nav-btn-icon"><i data-lucide="map"></i></span> <span
-                            class="nav-btn-text">Carte</span> </button> <button class="nav-btn"
+                            class="nav-btn-icon"><i data-lucide="map"></i></span> <span class="nav-btn-text"
+                            data-i18n="nav.map">Carte</span> </button> <button class="nav-btn"
                         onclick="switchView('timelineviz')" id="header-tab-timeline-viz"> <span class="nav-btn-icon"><i
-                                data-lucide="clock"></i></span> <span class="nav-btn-text">Timeline</span> </button>
+                                data-lucide="clock"></i></span> <span class="nav-btn-text"
+                            data-i18n="nav.timeline">Timeline</span> </button>
                 </div> <!-- Section 4 : Stats, Analyse -->
                 <div class="nav-group"> <button class="nav-btn" onclick="switchView('stats')" id="header-tab-stats">
-                        <span class="nav-btn-icon"><i data-lucide="bar-chart-3"></i></span> <span
-                            class="nav-btn-text">Stats</span> </button> <button class="nav-btn"
+                        <span class="nav-btn-icon"><i data-lucide="bar-chart-3"></i></span> <span class="nav-btn-text"
+                            data-i18n="nav.stats">Stats</span> </button> <button class="nav-btn"
                         onclick="switchView('analysis')" id="header-tab-analysis"> <span class="nav-btn-icon"><i
-                                data-lucide="scan-search"></i></span> <span class="nav-btn-text">Analyse</span>
+                                data-lucide="scan-search"></i></span> <span class="nav-btn-text"
+                            data-i18n="nav.analysis">Analyse</span>
                     </button> </div> <!-- Section 5 : Snapshots -->
                 <div class="nav-group"> <button class="nav-btn" onclick="switchView('versions')"
                         id="header-tab-versions"> <span class="nav-btn-icon"><i data-lucide="history"></i></span> <span
-                            class="nav-btn-text">Snapshots</span> </button> </div>
+                            class="nav-btn-text" data-i18n="nav.snapshots">Snapshots</span> </button> </div>
             </nav> <!-- Actions à droite -->
             <div class="header-actions">
                 <div id="headerStatsContainer"
                     style="font-size: 0.85rem; color: var(--text-muted); margin-right: 0.5rem;"> <span
-                        id="headerTotalWords">0 mots</span> <span id="headerStatsSeparator"> / </span> <span
-                        id="headerTotalChapters">0 chapitres</span> </div> <!-- Split View Toggle --> <button
+                        id="headerTotalWords">0</span> <span id="headerStatsSeparator"> / </span> <span
+                        id="headerTotalChapters">0</span> </div> <!-- Split View Toggle --> <button
                     class="split-mode-toggle" onclick="toggleSplitView()" id="splitModeToggle"
-                    title="Activer/désactiver le mode split (vue côte à côte)"> <i data-lucide="columns-2"
+                    title="Activer/désactiver le mode split" data-i18n-title="header.split"> <i data-lucide="columns-2"
                         style="width:14px;height:14px;"></i> <span>Split</span> </button>
                 <!-- Storage badge intégré dans le header -->
                 <div class="storage-badge-header status-ok" id="storage-badge" onclick="showStorageDetails()"
-                    title="Espace de stockage"> <span class="storage-icon"><i data-lucide="hard-drive"></i></span> <span
-                        id="storage-percentage">...</span> </div>
+                    title="Espace de stockage" data-i18n-title="header.storage"> <span class="storage-icon"><i
+                            data-lucide="hard-drive"></i></span> <span id="storage-percentage">...</span> </div>
                 <button class="header-action-btn" onclick="undo()" id="headerUndoBtn" title="Annuler (Ctrl+Z)"
-                    disabled><i data-lucide="undo-2"></i></button>
+                    data-i18n-title="header.undo" disabled><i data-lucide="undo-2"></i></button>
                 <button class="header-action-btn" onclick="redo()" id="headerRedoBtn" title="Rétablir (Ctrl+Y)"
-                    disabled><i data-lucide="redo-2"></i></button>
+                    data-i18n-title="header.redo" disabled><i data-lucide="redo-2"></i></button>
                 <button class="header-action-btn" onclick="togglePomodoroPopup()" id="pomodoroHeaderBtn"
-                    title="Timer Pomodoro"><i data-lucide="timer"></i></button>
-                <button class="header-action-btn" onclick="openImportChapterModal()"
-                    title="Importer un texte (.docx, .txt, .md, .epub)"><i data-lucide="file-up"></i></button>
-                <button class="header-action-btn" onclick="showBackupMenu()" title="Sauvegardes et exports"><i
-                        data-lucide="download"></i></button>
+                    title="Timer Pomodoro" data-i18n-title="header.pomodoro"><i data-lucide="timer"></i></button>
+                <button class="header-action-btn" onclick="openImportChapterModal()" title="Importer un texte"
+                    data-i18n-title="header.import"><i data-lucide="file-up"></i></button>
+                <button class="header-action-btn" onclick="showBackupMenu()" title="Sauvegardes et exports"
+                    data-i18n-title="header.backup"><i data-lucide="download"></i></button>
                 <button class="header-action-btn" onclick="KeyboardShortcutsHandlers.openShortcutsModal()"
-                    title="Raccourcis clavier (?)"><i data-lucide="help-circle"></i></button>
-                <button class="header-action-btn" onclick="openThemeManager()" title="Gérer les thèmes"><i
-                        data-lucide="palette"></i></button>
-                <button class="header-action-btn" onclick="openProjectsModal()" title="Gérer les projets"><i
-                        data-lucide="folder-open"></i></button>
+                    title="Raccourcis clavier" data-i18n-title="header.shortcuts"><i
+                        data-lucide="help-circle"></i></button>
+                <button class="header-action-btn" onclick="openThemeManager()" title="Gérer les thèmes"
+                    data-i18n-title="header.themes"><i data-lucide="palette"></i></button>
+                <button class="header-action-btn" onclick="openProjectsModal()" title="Gérer les projets"
+                    data-i18n-title="header.projects"><i data-lucide="folder-open"></i></button>
+                <button class="header-action-btn" onclick="Localization.toggleLocale()" title="Changer la langue"
+                    data-i18n-title="header.lang.switch"><i data-lucide="languages"></i></button>
             </div>
         </div>
         <!-- Pomodoro Popup -->
         <div class="pomodoro-popup" id="pomodoroPopup">
             <div class="pomodoro-popup-header">
-                <span>Pomodoro</span>
+                <span data-i18n="pomodoro.popup.title">Pomodoro</span>
                 <span class="pomodoro-popup-close" onclick="togglePomodoroPopup()"><i data-lucide="x"
                         style="width:14px;height:14px;"></i></span>
             </div>
@@ -179,7 +209,7 @@
                 <div class="pomodoro-stats">
                     <div class="pomodoro-stat">
                         <span class="pomodoro-stat-value" id="pomodorosCompleted">0</span>
-                        <span class="pomodoro-stat-label">sessions</span>
+                        <span class="pomodoro-stat-label" data-i18n="pomodoro.stats.sessions">sessions</span>
                     </div>
                 </div>
             </div>
@@ -219,25 +249,25 @@
                     <button class="status-filter-btn draft active" onclick="toggleStatusFilter('draft')"
                         data-status="draft">
                         <span class="status-filter-dot draft"></span>
-                        <span>Brouillon</span>
+                        <span data-i18n="sidebar.status.draft">Brouillon</span>
                         <span class="status-filter-count" id="countDraft">0</span>
                     </button>
                     <button class="status-filter-btn progress active" onclick="toggleStatusFilter('progress')"
                         data-status="progress">
                         <span class="status-filter-dot progress"></span>
-                        <span>En cours</span>
+                        <span data-i18n="sidebar.status.progress">En cours</span>
                         <span class="status-filter-count" id="countProgress">0</span>
                     </button>
                     <button class="status-filter-btn complete active" onclick="toggleStatusFilter('complete')"
                         data-status="complete">
                         <span class="status-filter-dot complete"></span>
-                        <span>Terminé</span>
+                        <span data-i18n="sidebar.status.complete">Terminé</span>
                         <span class="status-filter-count" id="countComplete">0</span>
                     </button>
                     <button class="status-filter-btn review active" onclick="toggleStatusFilter('review')"
                         data-status="review">
                         <span class="status-filter-dot review"></span>
-                        <span>À réviser</span>
+                        <span data-i18n="sidebar.status.review">À réviser</span>
                         <span class="status-filter-count" id="countReview">0</span>
                     </button>
                 </div>
@@ -246,12 +276,12 @@
                     <button class="scene-tool-btn" onclick="toggleVersionsSidebar()" id="headerVersionsToggle"
                         title="Afficher/masquer les versions de scène">
                         <i data-lucide="git-branch"></i>
-                        <span>Versions</span>
+                        <span data-i18n="tool.versions">Versions</span>
                     </button>
                     <button class="scene-tool-btn" onclick="toggleAnnotationsPanel()" id="sidebarAnnotationsBtn"
-                        title="Afficher/masquer les annotations">
+                        title="Afficher/masquer les annotations" data-i18n-title="tool.annotations">
                         <i data-lucide="message-square"></i>
-                        <span>Annotations</span>
+                        <span data-i18n="tool.annotations">Annotations</span>
                         <span class="scene-tool-badge" id="annotationsBadge" style="display: none;">0</span>
                     </button>
                     <button class="scene-tool-btn" onclick="toggleTodosPanel()" id="sidebarTodosBtn"
@@ -261,30 +291,32 @@
                         <span class="scene-tool-badge" id="todosBadge" style="display: none;">0</span>
                     </button>
                     <button class="scene-tool-btn" onclick="toggleArcScenePanel()" id="sidebarArcsBtn"
-                        title="Afficher/masquer les Arcs Narratifs">
+                        title="Afficher/masquer les Arcs Narratifs" data-i18n-title="tool.arcs">
                         <i data-lucide="git-commit-horizontal"></i>
-                        <span>Arcs</span>
+                        <span data-i18n="tool.arcs">Arcs</span>
                     </button>
                     <button class="scene-tool-btn" onclick="PlotGridUI.toggleSidebar()" id="sidebarPlotBtn"
-                        title="Afficher/masquer l'Intrigue">
+                        title="Afficher/masquer l'Intrigue" data-i18n-title="tool.plot">
                         <i data-lucide="trending-up"></i>
-                        <span>Intrigue</span>
+                        <span data-i18n="tool.plot">Intrigue</span>
                     </button>
                 </div>
                 <!-- Boutons déplier/replier tout -->
                 <div class="tree-collapse-toolbar" id="treeCollapseToolbar">
-                    <button class="tree-collapse-btn" onclick="expandAllTree()" title="Tout déplier">
+                    <button class="tree-collapse-btn" onclick="expandAllTree()" title="Tout déplier"
+                        data-i18n-title="tool.tree.expand">
                         <i data-lucide="unfold-vertical" style="width:12px;height:12px;"></i>
-                        <span>Déplier</span>
+                        <span data-i18n="tool.tree.expand">Déplier</span>
                     </button>
-                    <button class="tree-collapse-btn" onclick="collapseAllTree()" title="Tout replier">
+                    <button class="tree-collapse-btn" onclick="collapseAllTree()" title="Tout replier"
+                        data-i18n-title="tool.tree.collapse">
                         <i data-lucide="fold-vertical" style="width:12px;height:12px;"></i>
-                        <span>Replier</span>
+                        <span data-i18n="tool.tree.collapse">Replier</span>
                     </button>
                     <button class="tree-collapse-btn" onclick="openStructureOrganizer()"
-                        title="Réorganiser la structure (vue globale)">
+                        title="Réorganiser la structure (vue globale)" data-i18n-title="tool.tree.organize">
                         <i data-lucide="layout-list" style="width:12px;height:12px;"></i>
-                        <span>Organiser</span>
+                        <span data-i18n="tool.tree.organize">Organiser</span>
                     </button>
                 </div>
                 <div class="chapters-list" id="chaptersList">
@@ -345,9 +377,11 @@
                     <!-- Message for views without sidebar -->
                 </div>
                 <div class="sidebar-actions" id="sidebarActions">
-                    <button class="btn btn-primary" onclick="openAddActModal()">+ Acte</button>
-                    <button class="btn btn-primary" onclick="openAddChapterModal()">+ Chapitre</button>
-                    <button class="btn btn-primary" onclick="openAddSceneModalQuick()">+ Scène</button>
+                    <button class="btn btn-primary" onclick="openAddActModal()" data-i18n="btn.add_act">+ Acte</button>
+                    <button class="btn btn-primary" onclick="openAddChapterModal()" data-i18n="btn.add_chapter">+
+                        Chapitre</button>
+                    <button class="btn btn-primary" onclick="openAddSceneModalQuick()" data-i18n="btn.add_scene">+
+                        Scène</button>
                 </div>
             </div>
             <!-- Vertical Tools Sidebar -->
@@ -484,66 +518,69 @@
             <div class="editor-container" id="editorView">
                 <div class="empty-state">
                     <div class="empty-state-icon"><i data-lucide="pen-tool"></i></div>
-                    <div class="empty-state-title">Commencez votre histoire</div>
-                    <div class="empty-state-text">
+                    <div class="empty-state-title" data-i18n="empty.start">Commencez votre histoire</div>
+                    <div class="empty-state-text" data-i18n="empty.create_chapter">
                         Créez votre premier chapitre pour commencer à écrire.
                     </div>
-                    <button class="btn btn-primary" onclick="openAddChapterModal()">+ Créer un chapitre</button>
+                    <button class="btn btn-primary" onclick="openAddChapterModal()" data-i18n="btn.create">+ Créer un
+                        chapitre</button>
                 </div>
             </div>
         </div><!-- Fin app-content -->
         <!-- Focus Mode Toggle Button -->
-        <button class="focus-toggle-btn" onclick="toggleFocusPanel()"><i data-lucide="settings"></i> Paramètres
-            Focus</button>
+        <button class="focus-toggle-btn" onclick="toggleFocusPanel()"><i data-lucide="settings"></i> <span
+                data-i18n="focus.settings_title">Paramètres Focus</span></button>
         <!-- Focus Mode Panel (inside app-container for fullscreen) -->
         <div class="focus-mode-panel" id="focusPanel">
             <div class="focus-panel-header">
-                <div class="focus-panel-title"><i data-lucide="brain"></i> Mode Focus</div>
+                <div class="focus-panel-title"><i data-lucide="brain"></i> <span data-i18n="focus.title">Mode
+                        Focus</span></div>
             </div>
             <div class="focus-panel-content">
                 <!-- Pomodoro Timer -->
                 <div class="focus-section">
-                    <div class="focus-section-title"><i data-lucide="timer"></i> Timer Pomodoro</div>
+                    <div class="focus-section-title"><i data-lucide="timer"></i> <span
+                            data-i18n="focus.pomodoro_title">Timer Pomodoro</span></div>
                     <div class="pomodoro-timer">
                         <div class="pomodoro-display" id="pomodoroDisplay">25:00</div>
                         <div class="pomodoro-controls">
                             <button class="btn btn-small" onclick="startPomodoro()"><i data-lucide="play"></i>
-                                Démarrer</button>
+                                <span data-i18n="btn.start">Démarrer</span></button>
                             <button class="btn btn-small" onclick="pausePomodoro()"><i data-lucide="pause"></i>
-                                Pause</button>
+                                <span data-i18n="btn.pause">Pause</span></button>
                             <button class="btn btn-small" onclick="resetPomodoro()"><i data-lucide="rotate-ccw"></i>
-                                Reset</button>
+                                <span data-i18n="btn.reset">Reset</span></button>
                         </div>
                         <div class="focus-stats">
                             <div class="focus-stat-box">
                                 <div class="focus-stat-value" id="pomodorosCompleted">0</div>
-                                <div class="focus-stat-label">Pomodoros</div>
+                                <div class="focus-stat-label" data-i18n="focus.stats.pomodoros">Pomodoros</div>
                             </div>
                             <div class="focus-stat-box">
                                 <div class="focus-stat-value" id="focusWordCount">0</div>
-                                <div class="focus-stat-label">Mots</div>
+                                <div class="focus-stat-label" data-i18n="focus.stats.words">Mots</div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <!-- Focus Settings -->
                 <div class="focus-section">
-                    <div class="focus-section-title">Paramètres</div>
+                    <div class="focus-section-title" data-i18n="focus.settings_title">Paramètres</div>
                     <div style="display: flex; flex-direction: column; gap: 0.75rem;">
                         <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
                             <input type="checkbox" id="hideToolbar" onchange="toggleToolbar()">
-                            <span>Masquer la barre d'outils</span>
+                            <span data-i18n="focus.option.toolbar">Masquer la barre d'outils</span>
                         </label>
                         <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
                             <input type="checkbox" id="hideLinksPanel" onchange="toggleLinksPanelVisibility()">
-                            <span>Masquer le panneau de liens</span>
+                            <span data-i18n="focus.option.links">Masquer le panneau de liens</span>
                         </label>
                     </div>
                 </div>
                 <!-- Exit Focus Mode -->
                 <div class="focus-section">
                     <button class="btn btn-primary" style="width: 100%;" onclick="toggleFocusMode()">
-                        <i data-lucide="arrow-left"></i> Quitter le mode Focus
+                        <i data-lucide="arrow-left"></i> <span data-i18n="btn.quit_focus">Quitter le mode Focus</span>
                     </button>
                 </div>
             </div>
@@ -588,7 +625,7 @@
     <div class="modal storage-details-modal" id="storage-modal">
         <div class="modal-content" style="max-width: 500px;">
             <div class="modal-header">
-                <h2><i data-lucide="save"></i> Espace de stockage</h2>
+                <h2><i data-lucide="save"></i> <span data-i18n="modal.storage.title">Espace de stockage</span></h2>
                 <button class="modal-close" onclick="closeModal('storage-modal')"><i data-lucide="x"
                         style="width:18px;height:18px;"></i></button>
             </div>
@@ -600,11 +637,11 @@
                 </div>
                 <div class="storage-stats">
                     <div class="storage-stat">
-                        <div class="storage-stat-label">Utilisé</div>
+                        <div class="storage-stat-label" data-i18n="modal.storage.used">Utilisé</div>
                         <div class="storage-stat-value" id="storage-used">0 MB</div>
                     </div>
                     <div class="storage-stat">
-                        <div class="storage-stat-label">Disponible</div>
+                        <div class="storage-stat-label" data-i18n="modal.storage.available">Disponible</div>
                         <div class="storage-stat-value" id="storage-available">5 MB</div>
                     </div>
                 </div>
@@ -612,56 +649,59 @@
                 <details id="storage-recommendations-details" style="margin-top: 1rem;">
                     <summary style="cursor: pointer; font-weight: 600; color: var(--accent-green); font-size: 0.9rem;">
                         <i data-lucide="check-circle"
-                            style="width:14px;height:14px;vertical-align:middle;margin-right:6px;"></i> Espace suffisant
+                            style="width:14px;height:14px;vertical-align:middle;margin-right:6px;"></i> <span
+                            data-i18n="modal.storage.sufficient">Espace suffisant</span>
                     </summary>
                     <div id="storage-recommendations-container" style="margin-top: 0.5rem;"></div>
                 </details>
             </div>
 
             <div class="modal-actions" style="margin-top: 1rem;">
-                <button class="btn" onclick="closeModal('storage-modal')">Fermer</button>
+                <button class="btn" onclick="closeModal('storage-modal')" data-i18n="btn.close">Fermer</button>
             </div>
         </div>
     </div>
     <!-- Modals -->
     <div class="modal" id="addActModal">
         <div class="modal-content">
-            <div class="modal-title">Nouvel Acte</div>
+            <div class="modal-title" data-i18n="modal.act.title">Nouvel Acte</div>
             <div class="form-group">
-                <label class="form-label">Titre de l'acte</label>
-                <input type="text" class="form-input" id="actTitleInput" placeholder="Acte I : L'éveil">
+                <label class="form-label" data-i18n="modal.act.label">Titre de l'acte</label>
+                <!-- Placeholder will be handled via JS/or just manually updated for now if static text -->
+                <input type="text" class="form-input" id="actTitleInput" placeholder="Acte I : L'éveil"
+                    data-i18n-placeholder="modal.act.placeholder">
             </div>
             <div class="modal-actions">
-                <button class="btn" onclick="closeModal('addActModal')">Annuler</button>
-                <button class="btn btn-primary" onclick="addAct()">Créer</button>
+                <button class="btn" onclick="closeModal('addActModal')" data-i18n="btn.cancel">Annuler</button>
+                <button class="btn btn-primary" onclick="addAct()" data-i18n="btn.create">Créer</button>
             </div>
         </div>
     </div>
     <!-- Add Chapter Modal -->
     <div class="modal" id="addChapterModal">
         <div class="modal-content">
-            <div class="modal-title">Nouveau Chapitre</div>
+            <div class="modal-title" data-i18n="modal.chapter.title">Nouveau Chapitre</div>
             <div class="form-group">
-                <label class="form-label">Titre du chapitre</label>
+                <label class="form-label" data-i18n="modal.chapter.label">Titre du chapitre</label>
                 <input type="text" class="form-input" id="chapterTitleInput" placeholder="Chapitre 1 : Le Début">
             </div>
             <div class="modal-actions">
-                <button class="btn" onclick="closeModal('addChapterModal')">Annuler</button>
-                <button class="btn btn-primary" onclick="addChapter()">Créer</button>
+                <button class="btn" onclick="closeModal('addChapterModal')" data-i18n="btn.cancel">Annuler</button>
+                <button class="btn btn-primary" onclick="addChapter()" data-i18n="btn.create">Créer</button>
             </div>
         </div>
     </div>
     <!-- Add Scene Modal -->
     <div class="modal" id="addSceneModal">
         <div class="modal-content">
-            <div class="modal-title">Nouvelle Scène</div>
+            <div class="modal-title" data-i18n="modal.scene.title">Nouvelle Scène</div>
             <div class="form-group">
-                <label class="form-label">Titre de la scène</label>
+                <label class="form-label" data-i18n="modal.scene.label">Titre de la scène</label>
                 <input type="text" class="form-input" id="sceneTitleInput" placeholder="Scène 1 : Rencontre">
             </div>
             <div class="modal-actions">
-                <button class="btn" onclick="closeModal('addSceneModal')">Annuler</button>
-                <button class="btn btn-primary" onclick="addScene()">Créer</button>
+                <button class="btn" onclick="closeModal('addSceneModal')" data-i18n="btn.cancel">Annuler</button>
+                <button class="btn btn-primary" onclick="addScene()" data-i18n="btn.create">Créer</button>
             </div>
         </div>
     </div>
@@ -681,37 +721,37 @@
     <!-- Add Character Modal -->
     <div class="modal" id="addCharacterModal">
         <div class="modal-content">
-            <div class="modal-title">Nouveau Personnage</div>
+            <div class="modal-title" data-i18n="modal.character.title">Nouveau Personnage</div>
             <div class="form-group">
-                <label class="form-label">Nom du personnage</label>
+                <label class="form-label" data-i18n="modal.character.name">Nom du personnage</label>
                 <input type="text" class="form-input" id="characterNameInput" placeholder="Akiko">
             </div>
             <div class="form-group">
-                <label class="form-label">Rôle</label>
+                <label class="form-label" data-i18n="modal.character.role">Rôle</label>
                 <input type="text" class="form-input" id="characterRoleInput"
                     placeholder="Protagoniste, Antagoniste, Allié...">
             </div>
             <div class="form-group">
-                <label class="form-label">Description rapide</label>
+                <label class="form-label" data-i18n="modal.character.desc">Description rapide</label>
                 <textarea class="form-input" id="characterDescInput" placeholder="Description du personnage..."
                     rows="3"></textarea>
             </div>
             <div class="modal-actions">
-                <button class="btn" onclick="closeModal('addCharacterModal')">Annuler</button>
-                <button class="btn btn-primary" onclick="addCharacter()">Créer</button>
+                <button class="btn" onclick="closeModal('addCharacterModal')" data-i18n="btn.cancel">Annuler</button>
+                <button class="btn btn-primary" onclick="addCharacter()" data-i18n="btn.create">Créer</button>
             </div>
         </div>
     </div>
     <!-- Add World Element Modal -->
     <div class="modal" id="addWorldModal">
         <div class="modal-content">
-            <div class="modal-title">Nouvel élément d'Univers</div>
+            <div class="modal-title" data-i18n="modal.world.title">Nouvel élément d'Univers</div>
             <div class="form-group">
-                <label class="form-label">Nom</label>
+                <label class="form-label" data-i18n="modal.world.name">Nom</label>
                 <input type="text" class="form-input" id="worldNameInput" placeholder="Cité de Voile">
             </div>
             <div class="form-group">
-                <label class="form-label">Type</label>
+                <label class="form-label" data-i18n="modal.world.type">Type</label>
                 <select class="form-input" id="worldTypeInput">
                     <option value="Lieu">Lieu</option>
                     <option value="Objet">Objet</option>
@@ -721,13 +761,13 @@
                 </select>
             </div>
             <div class="form-group">
-                <label class="form-label">Description rapide</label>
+                <label class="form-label" data-i18n="modal.world.desc">Description rapide</label>
                 <textarea class="form-input" id="worldDescInput" placeholder="Description de l'élément..."
                     rows="3"></textarea>
             </div>
             <div class="modal-actions">
-                <button class="btn" onclick="closeModal('addWorldModal')">Annuler</button>
-                <button class="btn btn-primary" onclick="addWorldElement()">Créer</button>
+                <button class="btn" onclick="closeModal('addWorldModal')" data-i18n="btn.cancel">Annuler</button>
+                <button class="btn btn-primary" onclick="addWorldElement()" data-i18n="btn.create">Créer</button>
             </div>
         </div>
     </div>
@@ -735,27 +775,28 @@
     <div class="modal" id="locationModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 id="locationModalTitle"><i data-lucide="map-pin"></i> Lieu sur la carte</h2>
+                <h2 id="locationModalTitle"><i data-lucide="map-pin"></i> <span data-i18n="modal.location.title">Lieu
+                        sur la carte</span></h2>
                 <button class="modal-close" onclick="closeModal('locationModal')"><i data-lucide="x"></i></button>
             </div>
             <div class="form-group">
-                <label class="form-label">Nom du lieu</label>
+                <label class="form-label" data-i18n="modal.location.name">Nom du lieu</label>
                 <input type="text" class="form-input" id="locationNameInput" placeholder="Cité d'Opaline">
             </div>
             <div class="form-group">
-                <label class="form-label">Type de lieu</label>
+                <label class="form-label" data-i18n="modal.location.type">Type de lieu</label>
                 <select class="form-input" id="locationTypeInput">
                     <!-- Populated dynamically by MapView -->
                 </select>
             </div>
             <div class="form-group">
-                <label class="form-label">Description</label>
+                <label class="form-label" data-i18n="modal.location.desc">Description</label>
                 <textarea class="form-input" id="locationDescInput" placeholder="Description courte du lieu..."
                     rows="4"></textarea>
             </div>
             <div class="modal-actions">
-                <button class="btn" onclick="closeModal('locationModal')">Annuler</button>
-                <button class="btn btn-primary" id="btnSaveLocation">Enregistrer</button>
+                <button class="btn" onclick="closeModal('locationModal')" data-i18n="btn.cancel">Annuler</button>
+                <button class="btn btn-primary" id="btnSaveLocation" data-i18n="btn.save">Enregistrer</button>
             </div>
         </div>
     </div>
@@ -764,35 +805,39 @@
     <div class="modal" id="mapConfigModal">
         <div class="modal-content" style="max-width: 700px;">
             <div class="modal-header">
-                <h2><i data-lucide="settings"></i> Gérer les types et icônes</h2>
+                <h2><i data-lucide="settings"></i> <span data-i18n="modal.map_config.title">Gérer les types et
+                        icônes</span></h2>
                 <button class="modal-close" onclick="closeModal('mapConfigModal')"><i data-lucide="x"></i></button>
             </div>
             <div class="modal-body" style="padding: 1.5rem 0;">
                 <div style="margin-bottom: 2rem;">
-                    <h3 style="font-size: 1rem; margin-bottom: 1rem; color: var(--accent-gold);">Nouvelle catégorie</h3>
+                    <h3 style="font-size: 1rem; margin-bottom: 1rem; color: var(--accent-gold);"
+                        data-i18n="modal.map_config.category_title">Nouvelle catégorie</h3>
                     <div style="display: flex; gap: 0.5rem;">
                         <input type="text" id="newMapCategoryInput" class="form-input"
                             placeholder="Ex: Science-Fiction">
-                        <button class="btn btn-primary" id="btnAddMapCategory">Ajouter</button>
+                        <button class="btn btn-primary" id="btnAddMapCategory"
+                            data-i18n="modal.map_config.btn_add">Ajouter</button>
                     </div>
                 </div>
 
                 <div style="margin-bottom: 2rem;">
-                    <h3 style="font-size: 1rem; margin-bottom: 1rem; color: var(--accent-gold);">Nouveau type</h3>
+                    <h3 style="font-size: 1rem; margin-bottom: 1rem; color: var(--accent-gold);"
+                        data-i18n="modal.map_config.type_title">Nouveau type</h3>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
                         <div class="form-group">
-                            <label class="form-label">Nom</label>
+                            <label class="form-label" data-i18n="modal.map_config.name">Nom</label>
                             <input type="text" id="newMapTypeName" class="form-input" placeholder="Ex: Laboratoire">
                         </div>
                         <div class="form-group">
-                            <label class="form-label">Catégorie</label>
+                            <label class="form-label" data-i18n="modal.map_config.category">Catégorie</label>
                             <select id="newMapTypeCategory" class="form-input"></select>
                         </div>
                     </div>
 
                     <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; margin-bottom: 1rem;">
                         <div class="form-group">
-                            <label class="form-label">Icône</label>
+                            <label class="form-label" data-i18n="modal.map_config.icon">Icône</label>
                             <input type="hidden" id="newMapTypeIconValue" value="map-pin">
                             <div id="newMapTypeIconGrid" class="icon-selector-grid">
                                 <!-- Populated by JS -->

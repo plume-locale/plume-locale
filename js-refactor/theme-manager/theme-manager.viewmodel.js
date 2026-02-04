@@ -95,7 +95,7 @@ const ThemeManagerViewModel = {
                 try {
                     const theme = JSON.parse(e.target.result);
                     if (theme.colors && theme.name) resolve(theme);
-                    else reject(new Error('Format de thème invalide'));
+                    else reject(new Error(Localization.t('theme.error.invalid_format')));
                 } catch (error) { reject(error); }
             };
             reader.readAsText(file);

@@ -16,7 +16,7 @@ const ThemeManagerView = {
         modal.innerHTML = `
             <div class="modal-content theme-manager-modal">
                 <div class="modal-header">
-                    <h2><i data-lucide="palette"></i> Gestionnaire de Thèmes</h2>
+                    <h2><i data-lucide="palette"></i> ${Localization.t('theme.modal.title')}</h2>
                     <button class="modal-close" onclick="this.closest('.modal-overlay').remove()"><i data-lucide="x"></i></button>
                 </div>
                 
@@ -25,13 +25,13 @@ const ThemeManagerView = {
                     <div class="theme-presets-sidebar">
                         <div class="section-header" style="margin-bottom: 1.5rem;">
                             <i data-lucide="layers" style="width:16px; color: var(--accent-gold);"></i>
-                            <span style="font-weight: 700; font-size: 0.8rem; text-transform: uppercase;">Préréglages</span>
+                            <span style="font-weight: 700; font-size: 0.8rem; text-transform: uppercase;">${Localization.t('theme.section.presets')}</span>
                         </div>
                         <div id="presetThemesList"></div>
                         
                         <div class="section-header" style="margin-top: 2.5rem; margin-bottom: 1.5rem;">
                             <i data-lucide="sparkles" style="width:16px; color: var(--accent-gold);"></i>
-                            <span style="font-weight: 700; font-size: 0.8rem; text-transform: uppercase;">Mes Thèmes</span>
+                            <span style="font-weight: 700; font-size: 0.8rem; text-transform: uppercase;">${Localization.t('theme.section.custom')}</span>
                         </div>
                         <div id="customThemesList"></div>
                     </div>
@@ -41,7 +41,7 @@ const ThemeManagerView = {
                         <section class="editor-section">
                             <div class="section-header">
                                 <i data-lucide="sliders-horizontal"></i>
-                                <span class="section-title">Palettes & Couleurs</span>
+                                <span class="section-title">${Localization.t('theme.section.colors')}</span>
                             </div>
                             
                             <div class="color-controls-grid">
@@ -67,18 +67,18 @@ const ThemeManagerView = {
                 <!-- Global Footer Actions -->
                 <div class="theme-manager-footer">
                     <button onclick="ThemeManagerView.reset()" class="theme-btn theme-btn-danger-ghost">
-                        <i data-lucide="refresh-cw"></i> Réinitialiser
+                        <i data-lucide="refresh-cw"></i> ${Localization.t('theme.btn.reset')}
                     </button>
                     
                     <div style="display: flex; gap: 0.75rem;">
                         <button onclick="ThemeManagerView.export()" class="theme-btn theme-btn-ghost">
-                            <i data-lucide="share-2"></i> Exporter
+                            <i data-lucide="share-2"></i> ${Localization.t('theme.btn.export')}
                         </button>
                         <button onclick="ThemeManagerView.import()" class="theme-btn theme-btn-ghost">
-                            <i data-lucide="download"></i> Importer
+                            <i data-lucide="download"></i> ${Localization.t('theme.btn.import')}
                         </button>
                         <button onclick="ThemeManagerView.saveTheme()" class="theme-btn theme-btn-main">
-                            <i data-lucide="save"></i> Sauvegarder
+                            <i data-lucide="save"></i> ${Localization.t('theme.btn.save')}
                         </button>
                     </div>
                 </div>
@@ -114,7 +114,7 @@ const ThemeManagerView = {
 
         const customs = ThemeManagerRepository.getCustomThemes();
         if (customs.length === 0) {
-            container.innerHTML = `<p style="font-size: 0.8rem; color: var(--text-muted); font-style: italic; text-align: center; padding: 1rem; border: 1px dashed var(--border-color); border-radius: 12px;">Aucun thème perso</p>`;
+            container.innerHTML = `<p style="font-size: 0.8rem; color: var(--text-muted); font-style: italic; text-align: center; padding: 1rem; border: 1px dashed var(--border-color); border-radius: 12px;">${Localization.t('theme.custom.empty')}</p>`;
             return;
         }
 
@@ -161,12 +161,12 @@ const ThemeManagerView = {
         if (colors) {
             ThemeManagerViewModel.applyTheme(colors);
             ThemeManagerView._updateInputs(colors);
-            if (typeof showNotification === 'function') showNotification(`✓ Thème "${name}" appliqué`);
+            if (typeof showNotification === 'function') showNotification(Localization.t('theme.notify.applied', [name]));
         }
     },
 
     deleteTheme: (name) => {
-        if (confirm(`Supprimer le thème "${name}" ?`)) {
+        if (confirm(Localization.t('theme.confirm.delete', [name]))) {
             let themes = ThemeManagerRepository.getCustomThemes();
             themes = themes.filter(t => t.name !== name);
             ThemeManagerRepository.saveCustomThemes(themes);
@@ -176,7 +176,7 @@ const ThemeManagerView = {
     },
 
     saveTheme: () => {
-        const name = prompt('Nom de votre thème :');
+        const name = prompt(Localization.t('theme.prompt.name'));
         if (!name) return;
 
         const colors = ThemeManagerView._getCurrentColorsFromInputs();
@@ -189,11 +189,12 @@ const ThemeManagerView = {
         ThemeManagerRepository.saveCustomThemes(themes);
         ThemeManagerView.renderCustoms();
         if (typeof lucide !== 'undefined') lucide.createIcons();
-        if (typeof showNotification === 'function') showNotification(`✓ Thème "${name}" sauvegardé`);
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+        if (typeof showNotification === 'function') showNotification(Localization.t('theme.notify.saved', [name]));
     },
 
     export: () => {
-        const name = prompt('Nom pour l\'export :', 'MonThème');
+        const name = prompt(Localization.t('theme.prompt.export_name'), 'MonThème');
         if (!name) return;
         const colors = ThemeManagerView._getCurrentColorsFromInputs();
         ThemeManagerViewModel.exportTheme(colors, name);
@@ -206,13 +207,13 @@ const ThemeManagerView = {
         input.onchange = async (e) => {
             try {
                 const theme = await ThemeManagerViewModel.importTheme(e.target.files[0]);
-                const apply = confirm(`Voulez-vous appliquer le thème "${theme.name}" ?`);
+                const apply = confirm(Localization.t('theme.confirm.apply', [theme.name]));
                 if (apply) {
                     ThemeManagerViewModel.applyTheme(theme.colors);
                     ThemeManagerView._updateInputs(theme.colors);
                 }
 
-                const save = confirm(`Sauvegarder "${theme.name}" dans vos thèmes ?`);
+                const save = confirm(Localization.t('theme.confirm.save_import', [theme.name]));
                 if (save) {
                     let themes = ThemeManagerRepository.getCustomThemes();
                     themes = themes.filter(t => t.name !== theme.name);
@@ -222,14 +223,14 @@ const ThemeManagerView = {
                     if (typeof lucide !== 'undefined') lucide.createIcons();
                 }
             } catch (err) {
-                alert('Fichier invalide');
+                alert(Localization.t('theme.error.invalid_file'));
             }
         };
         input.click();
     },
 
     reset: () => {
-        if (confirm('Réinitialiser aux couleurs d\'origine ?')) {
+        if (confirm(Localization.t('theme.confirm.reset'))) {
             ThemeManagerViewModel.applyTheme(ThemeManagerModel.defaultVariables);
             ThemeManagerView._updateInputs(ThemeManagerModel.defaultVariables);
         }

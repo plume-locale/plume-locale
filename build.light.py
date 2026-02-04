@@ -51,6 +51,12 @@ JS_ORDER = [
     'vendor/driver.js.iife.js',
     'vendor/idb.js',
     'js-refactor/01.app.refactor.js',
+    # Localization Module
+    'js-refactor/localization/locales/fr.js',
+    'js-refactor/localization/locales/en.js',
+    'js-refactor/localization/localization.model.js',
+    'js-refactor/localization/localization.view.js',
+    'js-refactor/localization/localization.manager.js',
     # Tension Module
     'js-refactor/tension/tension.model.js',
     'js-refactor/tension/tension.repository.js',

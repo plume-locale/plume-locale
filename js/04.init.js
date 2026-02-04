@@ -9,6 +9,11 @@ async function init() {
         themeManager.init();
     }
 
+    // Initialiser la localisation
+    if (typeof Localization !== 'undefined') {
+        Localization.init();
+    }
+
     // Initialiser IndexedDB en premier
     const dbReady = await initDB();
     if (!dbReady) {

@@ -211,12 +211,12 @@ function switchView(view) {
 
     // Update sidebar actions
     const actionsHTML = {
-        editor: '<button class="btn btn-primary" onclick="openAddActModal()">+ Acte</button><button class="btn btn-primary" onclick="openAddChapterModal()">+ Chapitre</button><button class="btn btn-primary" onclick="openAddSceneModalQuick()">+ Scène</button>',
-        characters: '<button class="btn btn-primary" onclick="openAddCharacterModal()">+ Personnage</button>',
-        world: '<button class="btn btn-primary" onclick="openAddWorldModal()">+ Élément</button>',
-        notes: '<button class="btn btn-primary" onclick="openAddNoteModal()">+ Note</button>',
-        codex: '<button class="btn btn-primary" onclick="openAddCodexModal()">+ Entrée</button>',
-        arcs: '<button class="btn btn-primary" onclick="createNewArc()">+ Arc narratif</button>',
+        editor: `<button class="btn btn-primary" onclick="openAddActModal()">${Localization.t('btn.add_act')}</button><button class="btn btn-primary" onclick="openAddChapterModal()">${Localization.t('btn.add_chapter')}</button><button class="btn btn-primary" onclick="openAddSceneModalQuick()">${Localization.t('btn.add_scene')}</button>`,
+        characters: `<button class="btn btn-primary" onclick="openAddCharacterModal()">+ ${Localization.t('nav.characters')}</button>`,
+        world: `<button class="btn btn-primary" onclick="openAddWorldModal()">+ ${Localization.t('nav.world')}</button>`,
+        notes: `<button class="btn btn-primary" onclick="openAddNoteModal()">+ ${Localization.t('nav.notes')}</button>`,
+        codex: `<button class="btn btn-primary" onclick="openAddCodexModal()">+ ${Localization.t('nav.codex')}</button>`,
+        arcs: `<button class="btn btn-primary" onclick="createNewArc()">+ ${Localization.t('nav.arcs')}</button>`,
 
     };
     const sidebarActions = document.getElementById('sidebarActions');
@@ -282,16 +282,16 @@ function renderViewContent(view, containerId) {
                 container.innerHTML = `
                     <div class="empty-state">
                         <div class="empty-state-icon"><i data-lucide="pencil" style="width:48px;height:48px;stroke-width:1;"></i></div>
-                        <div class="empty-state-title">Commencez votre histoire</div>
-                        <div class="empty-state-text">Créez votre premier chapitre pour commencer à écrire.</div>
-                        <button class="btn btn-primary" onclick="openAddChapterModal()">+ Créer un chapitre</button>
+                        <div class="empty-state-title">${Localization.t('empty.start')}</div>
+                        <div class="empty-state-text">${Localization.t('empty.create_chapter')}</div>
+                        <button class="btn btn-primary" onclick="openAddChapterModal()">${Localization.t('btn.create')}</button>
                     </div>`;
             } else {
                 container.innerHTML = `
                     <div class="empty-state">
                         <div class="empty-state-icon"><i data-lucide="pencil" style="width:48px;height:48px;stroke-width:1;"></i></div>
-                        <div class="empty-state-title">Sélectionnez une scène</div>
-                        <div class="empty-state-text">Choisissez une scène dans la barre latérale pour commencer à écrire.</div>
+                        <div class="empty-state-title">${Localization.t('empty.select_scene')}</div>
+                        <div class="empty-state-text">${Localization.t('empty.select_sidebar')}</div>
                     </div>`;
             }
             break;
