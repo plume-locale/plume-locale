@@ -74,13 +74,98 @@
     color: var(--text-primary);
 }
 
+/* Tabs System */
+.shortcuts-tabs {
+    display: flex;
+    background: var(--bg-secondary);
+    padding: 0 2rem;
+    border-bottom: 1px solid var(--border-color);
+    gap: 1.5rem;
+}
+
+.shortcuts-tab {
+    padding: 1rem 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    position: relative;
+    transition: color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.shortcuts-tab:hover {
+    color: var(--text-primary);
+}
+
+.shortcuts-tab.active {
+    color: var(--accent-gold);
+}
+
+.shortcuts-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--accent-gold);
+}
+
 .shortcuts-modal-body {
     flex: 1;
     overflow-y: auto;
     padding: 2rem;
-    display: flex;
+    display: none;
+    /* Hidden by default, shown when active */
     flex-direction: column;
     gap: 2rem;
+}
+
+.shortcuts-modal-body.active {
+    display: flex;
+}
+
+.gesture-item {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 1rem;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.gesture-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-primary);
+    border-radius: 8px;
+    color: var(--accent-gold);
+    flex-shrink: 0;
+    border: 1px solid var(--border-color);
+}
+
+.gesture-info {
+    flex: 1;
+}
+
+.gesture-name {
+    display: block;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 0.15rem;
+}
+
+.gesture-description {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--text-muted);
 }
 
 .shortcut-category {

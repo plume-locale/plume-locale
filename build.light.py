@@ -263,7 +263,13 @@ JS_ORDER = [
     'js-refactor/storageMonitoring/storageMonitoring.viewmodel.js',
     'js-refactor/storageMonitoring/storageMonitoring.view.js',
     'js-refactor/storageMonitoring/storageMonitoring.main.js',
-    '42.mobile-swipe.js',
+    # Mobile Swipe refactored files
+    'js-refactor/mobile-swipe/mobile-swipe.model.js',
+    'js-refactor/mobile-swipe/mobile-swipe.repository.js',
+    'js-refactor/mobile-swipe/mobile-swipe.viewmodel.js',
+    'js-refactor/mobile-swipe/mobile-swipe.view.js',
+    'js-refactor/mobile-swipe/mobile-swipe.handlers.js',
+    'js-refactor/mobile-swipe/mobile-swipe.main.js',
     # '44.storygrid.js',  # RETIRÉ pour version Light
     # Arc Board
     'js-refactor/arc-board/arc-board.config.js',
@@ -400,7 +406,7 @@ IGNORED_ORIGINALS = [
     '_33.plot.js', '_34.relations-graph.js', '_35.renderMap.js', '_36.timeline-metro.js', '_43.arcs.js', '_44.storygrid.js', 
     '_45.arc-board.js', '_45.arc-board.refactor.js', '_46.thriller-board.js', '38.tension.js', '40.sidebar-views.js',
     '12.import-export.js', '39.export.js', '41.storageMonitoring.js', '02.storage.js', '20.snapshots.js', '13.mobile-menu.js',
-    '27.keyboardShortcuts.js'
+    '27.keyboardShortcuts.js', '42.mobile-swipe.js'
 ]
 
 def collect_js():

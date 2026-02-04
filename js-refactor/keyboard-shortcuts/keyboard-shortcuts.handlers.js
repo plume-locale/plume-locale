@@ -54,6 +54,7 @@ const KeyboardShortcutsHandlers = {
         const modal = document.getElementById('shortcutsModal');
         if (modal) {
             modal.classList.add('active');
+            KeyboardShortcutsHandlers.switchTab('keyboard');
             if (typeof lucide !== 'undefined') lucide.createIcons();
         }
     },
@@ -61,5 +62,33 @@ const KeyboardShortcutsHandlers = {
     closeShortcutsModal: () => {
         const modal = document.getElementById('shortcutsModal');
         if (modal) modal.classList.remove('active');
+    },
+
+    /**
+     * Bascule entre les onglets du modal de raccourcis.
+     * @param {string} tabId - 'keyboard' ou 'mobile'
+     */
+    switchTab: (tabId) => {
+        const tabKeyboard = document.getElementById('tabKeyboardShortcuts');
+        const tabMobile = document.getElementById('tabMobileShortcuts');
+        const bodyKeyboard = document.getElementById('bodyKeyboardShortcuts');
+        const bodyMobile = document.getElementById('bodyMobileShortcuts');
+
+        if (!tabKeyboard || !tabMobile || !bodyKeyboard || !bodyMobile) return;
+
+        if (tabId === 'keyboard') {
+            tabKeyboard.classList.add('active');
+            tabMobile.classList.remove('active');
+            bodyKeyboard.classList.add('active');
+            bodyMobile.classList.remove('active');
+        } else {
+            tabKeyboard.classList.remove('active');
+            tabMobile.classList.add('active');
+            bodyKeyboard.classList.remove('active');
+            bodyMobile.classList.add('active');
+
+            // Re-render icons if needed
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        }
     }
 };

@@ -1787,7 +1787,17 @@
                     <i data-lucide="x" style="width:20px;height:20px;"></i>
                 </button>
             </div>
-            <div class="shortcuts-modal-body">
+            <div class="shortcuts-tabs">
+                <div class="shortcuts-tab active" id="tabKeyboardShortcuts"
+                    onclick="KeyboardShortcutsHandlers.switchTab('keyboard')">
+                    <i data-lucide="keyboard" style="width:16px;height:16px;"></i> Clavier
+                </div>
+                <div class="shortcuts-tab" id="tabMobileShortcuts"
+                    onclick="KeyboardShortcutsHandlers.switchTab('mobile')">
+                    <i data-lucide="smartphone" style="width:16px;height:16px;"></i> Tactile (Mobile)
+                </div>
+            </div>
+            <div class="shortcuts-modal-body active" id="bodyKeyboardShortcuts">
                 <!-- Section : Général -->
                 <div class="shortcut-category">
                     <div class="shortcut-category-title"><i data-lucide="command" style="width:14px;height:14px;"></i>
@@ -1943,6 +1953,30 @@
                             <div class="shortcut-keys"><span class="shortcut-key">Ctrl</span> <span
                                     class="shortcut-plus">+</span> <span class="shortcut-key">Origine</span> <span
                                     class="shortcut-plus">/</span> <span class="shortcut-key">Fin</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB : Mobile Swipe Gestures -->
+            <div class="shortcuts-modal-body" id="bodyMobileShortcuts">
+                <div class="shortcut-category">
+                    <div class="shortcut-category-title"><i data-lucide="hand" style="width:14px;height:14px;"></i>
+                        Gestes Tactiles</div>
+                    <div class="shortcut-list" id="mobileGestureList">
+                        <div class="gesture-item">
+                            <div class="gesture-icon"><i data-lucide="arrow-right-to-line"></i></div>
+                            <div class="gesture-info">
+                                <span class="gesture-name">Ouvrir la barre latérale</span>
+                                <span class="gesture-description">Glisser depuis le bord gauche vers la droite</span>
+                            </div>
+                        </div>
+                        <div class="gesture-item">
+                            <div class="gesture-icon"><i data-lucide="arrow-left-to-line"></i></div>
+                            <div class="gesture-info">
+                                <span class="gesture-name">Fermer la barre latérale</span>
+                                <span class="gesture-description">Glisser vers la gauche n'importe où</span>
+                            </div>
                         </div>
                     </div>
                 </div>
