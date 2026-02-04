@@ -236,7 +236,12 @@ JS_ORDER = [
     'js-refactor/sidebar-view/sidebar-view.viewmodel.js',
     'js-refactor/sidebar-view/sidebar-view.view.js',
     'js-refactor/sidebar-view/sidebar-view.main.js',
-    '41.storageMonitoring.js',
+    # Storage Monitoring Refactored Module
+    'js-refactor/storageMonitoring/storageMonitoring.model.js',
+    'js-refactor/storageMonitoring/storageMonitoring.repository.js',
+    'js-refactor/storageMonitoring/storageMonitoring.viewmodel.js',
+    'js-refactor/storageMonitoring/storageMonitoring.view.js',
+    'js-refactor/storageMonitoring/storageMonitoring.main.js',
     '42.mobile-swipe.js',
     # '44.storygrid.js',  # RETIRÉ pour version Light
     # Arc Board
@@ -372,7 +377,7 @@ IGNORED_ORIGINALS = [
     '_31.mindmap.js', '_32.touch-events.js',
     '_33.plot.js', '_34.relations-graph.js', '_35.renderMap.js', '_36.timeline-metro.js', '_43.arcs.js', '_44.storygrid.js', 
     '_45.arc-board.js', '_45.arc-board.refactor.js', '_46.thriller-board.js', '38.tension.js', '40.sidebar-views.js',
-    '12.import-export.js', '39.export.js'
+    '12.import-export.js', '39.export.js', '41.storageMonitoring.js'
 ]
 
 def collect_js():
