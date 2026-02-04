@@ -10,36 +10,47 @@ const sceneNavigationView = {
     ensureToolbarCreated() {
         if (document.getElementById('sceneNavToolbar')) return;
 
-        const toolbar = document.createElement('div');
-        toolbar.id = 'sceneNavToolbar';
-        toolbar.className = 'scene-nav-toolbar';
-        toolbar.innerHTML = `
-            <div class="scene-nav-buttons">
-                <button class="scene-nav-btn scene-nav-prev" title="Déplacer vers la scène précédente (tout le texte avant le curseur)">
-                    <i data-lucide="chevron-left" style="width:16;height:16;"></i>
-                </button>
-                <button class="scene-nav-btn scene-nav-next" title="Déplacer vers la scène suivante (tout le texte après le curseur)">
-                    <i data-lucide="chevron-right" style="width:16;height:16;"></i>
-                </button>
-            </div>
-            <div class="scene-nav-line"></div>
-            <div class="scene-nav-word-counts">
-                <span class="scene-nav-words-before" title="Mots avant le curseur">0 mots</span>
-                <span class="scene-nav-words-after" title="Mots après le curseur">0 mots</span>
-            </div>
-        `;
+        try {
+            console.log('[SceneNav] Creating toolbar elements...');
+            const toolbar = document.createElement('div');
+            toolbar.id = 'sceneNavToolbar';
+            toolbar.className = 'scene-nav-toolbar';
+            // Force z-index inline to guarantee visibility priority
+            toolbar.style.zIndex = '10005';
+            toolbar.innerHTML = `
+                <div class="scene-nav-buttons">
+                    <button class="scene-nav-btn scene-nav-prev" title="Déplacer vers la scène précédente (tout le texte avant le curseur)">
+                        <i data-lucide="chevron-left" style="width:16;height:16;"></i>
+                    </button>
+                    <button class="scene-nav-btn scene-nav-next" title="Déplacer vers la scène suivante (tout le texte après le curseur)">
+                        <i data-lucide="chevron-right" style="width:16;height:16;"></i>
+                    </button>
+                </div>
+                <div class="scene-nav-line"></div>
+                <div class="scene-nav-word-counts">
+                    <span class="scene-nav-words-before" title="Mots avant le curseur">0 mots</span>
+                    <span class="scene-nav-words-after" title="Mots après le curseur">0 mots</span>
+                </div>
+            `;
 
-        document.body.appendChild(toolbar);
-        window.sceneNavigationModel.toolbar = toolbar;
+            document.body.appendChild(toolbar);
+            console.log('[SceneNav] Toolbar created and appended to DOM');
 
-        // Initialiser Lucide si disponible
-        if (window.lucide) {
-            window.lucide.createIcons({
-                attrs: {
-                    'stroke-width': 2
-                },
-                nameAttr: 'data-lucide'
-            });
+            if (window.sceneNavigationModel) {
+                window.sceneNavigationModel.toolbar = toolbar;
+            }
+
+            // Initialiser Lucide si disponible
+            if (window.lucide) {
+                window.lucide.createIcons({
+                    attrs: {
+                        'stroke-width': 2
+                    },
+                    nameAttr: 'data-lucide'
+                });
+            }
+        } catch (error) {
+            console.error('[SceneNav] Critical error creating toolbar:', error);
         }
     },
 
@@ -72,6 +83,7 @@ const sceneNavigationView = {
         // Détecter le contexte
         const ctx = window.sceneNavigationViewModel.detectSceneContext(editor);
         if (!ctx) {
+            console.log('[SceneNav] Hiding: Failed to detect context');
             this.hide();
             return;
         }
@@ -97,21 +109,26 @@ const sceneNavigationView = {
         // Positionnement
         const buttonsEl = toolbar.querySelector('.scene-nav-buttons');
         if (buttonsEl) {
-            buttonsEl.style.left = `${editorRect.left - 70}px`;
+            const btnLeft = Math.max(10, editorRect.left - 70);
+            buttonsEl.style.left = `${btnLeft}px`;
             buttonsEl.style.top = `${verticalCenter - 14}px`;
         }
 
         const wordCountsEl = toolbar.querySelector('.scene-nav-word-counts');
         if (wordCountsEl) {
-            wordCountsEl.style.left = `${editorRect.right + 15}px`;
+            const wcLeft = Math.min(window.innerWidth - 120, editorRect.right + 15);
+            wordCountsEl.style.left = `${wcLeft}px`;
             wordCountsEl.style.top = `${verticalCenter - 16}px`;
         }
 
         // Boutons adjacents
         const adjacent = window.sceneNavigationViewModel.getAdjacentScenes(ctx);
+        console.log('[SceneNav] Context:', ctx, 'Adjacent:', adjacent);
+
         this.updateButtons(adjacent);
 
         if (!adjacent.previous && !adjacent.next) {
+            console.log('[SceneNav] Hiding: No adjacent scenes found for context', ctx);
             this.hide();
             return;
         }
@@ -119,7 +136,10 @@ const sceneNavigationView = {
         // Compteurs de mots
         this.updateWordCounts(editor, range);
 
-        toolbar.classList.add('visible');
+        if (!toolbar.classList.contains('visible')) {
+            console.log('[SceneNav] Showing toolbar');
+            toolbar.classList.add('visible');
+        }
         window.sceneNavigationModel.lastCursorRect = rect;
     },
 

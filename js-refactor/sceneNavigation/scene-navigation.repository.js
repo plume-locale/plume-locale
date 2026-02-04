@@ -9,9 +9,11 @@ const sceneNavigationRepository = {
      */
     getFlatScenes() {
         const allScenes = [];
-        if (!window.project || !window.project.acts) return allScenes;
+        const proj = (typeof project !== 'undefined') ? project : (window.project || null);
 
-        for (const act of window.project.acts) {
+        if (!proj || !proj.acts) return allScenes;
+
+        for (const act of proj.acts) {
             for (const chapter of (act.chapters || [])) {
                 for (const scene of (chapter.scenes || [])) {
                     allScenes.push({
@@ -29,9 +31,10 @@ const sceneNavigationRepository = {
      * Trouve une scène par son ID et le contexte du chapitre/acte.
      */
     findScene(actId, chapterId, sceneId) {
-        if (!window.project || !window.project.acts) return null;
+        const proj = (typeof project !== 'undefined') ? project : (window.project || null);
+        if (!proj || !proj.acts) return null;
 
-        const act = window.project.acts.find(a => a.id === actId);
+        const act = proj.acts.find(a => a.id === actId);
         if (!act) return null;
 
         const chapter = (act.chapters || []).find(c => c.id === chapterId);

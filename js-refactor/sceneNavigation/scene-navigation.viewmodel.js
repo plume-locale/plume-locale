@@ -8,19 +8,24 @@ const sceneNavigationViewModel = {
      * Détecte le contexte de la scène à partir de l'éditeur.
      */
     detectSceneContext(editor) {
+        // Resolve global variables (support 'let' scope vs 'window' property)
+        const gSceneId = (typeof currentSceneId !== 'undefined') ? currentSceneId : (window.currentSceneId || null);
+        const gChapterId = (typeof currentChapterId !== 'undefined') ? currentChapterId : (window.currentChapterId || null);
+        const gActId = (typeof currentActId !== 'undefined') ? currentActId : (window.currentActId || null);
+
         // Mode scène unique : utiliser les variables globales si définies
-        if (window.currentSceneId && window.currentChapterId && window.currentActId) {
+        if (gSceneId && gChapterId && gActId) {
             return {
-                sceneId: window.currentSceneId,
-                chapterId: window.currentChapterId,
-                actId: window.currentActId
+                sceneId: gSceneId,
+                chapterId: gChapterId,
+                actId: gActId
             };
         }
 
         // Mode chapitre ou acte : récupérer depuis les attributs data-*
         const sceneId = editor.getAttribute('data-scene-id');
-        const chapterId = editor.getAttribute('data-chapter-id') || window.currentChapterId;
-        const actId = editor.getAttribute('data-act-id') || window.currentActId;
+        const chapterId = editor.getAttribute('data-chapter-id') || gChapterId;
+        const actId = editor.getAttribute('data-act-id') || gActId;
 
         if (sceneId && chapterId && actId) {
             return {
@@ -34,8 +39,8 @@ const sceneNavigationViewModel = {
         const sceneBlock = editor.closest('[data-scene-id]');
         if (sceneBlock) {
             const blockSceneId = sceneBlock.getAttribute('data-scene-id');
-            const blockChapterId = sceneBlock.getAttribute('data-chapter-id') || window.currentChapterId;
-            const blockActId = sceneBlock.getAttribute('data-act-id') || window.currentActId;
+            const blockChapterId = sceneBlock.getAttribute('data-chapter-id') || gChapterId;
+            const blockActId = sceneBlock.getAttribute('data-act-id') || gActId;
 
             if (blockSceneId && blockChapterId && blockActId) {
                 return {
@@ -63,11 +68,15 @@ const sceneNavigationViewModel = {
         if (!ctx) return result;
 
         const allScenes = window.sceneNavigationRepository.getFlatScenes();
+        console.log('[SceneNavModel] Scenes:', allScenes.length, 'Target:', ctx);
+        if (allScenes.length > 0) console.log('[SceneNavModel] First:', allScenes[0]);
+
         const currentIndex = allScenes.findIndex(
-            s => s.actId === ctx.actId &&
-                s.chapterId === ctx.chapterId &&
-                s.scene.id === ctx.sceneId
+            s => s.actId == ctx.actId &&
+                s.chapterId == ctx.chapterId &&
+                s.scene.id == ctx.sceneId
         );
+        console.log('[SceneNavModel] Index:', currentIndex);
 
         if (currentIndex === -1) return result;
 
