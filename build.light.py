@@ -117,7 +117,13 @@ JS_ORDER = [
     'js-refactor/mobile-menu/mobile-menu.viewmodel.js',
     'js-refactor/mobile-menu/mobile-menu.view.js',
     'js-refactor/mobile-menu/mobile-menu.main.js',
-    '14.dragndrop-acts.js',
+    # Drag and Drop Acts Module
+    'js-refactor/dragndrop-acts/dragndrop-acts.model.js',
+    'js-refactor/dragndrop-acts/dragndrop-acts.repository.js',
+    'js-refactor/dragndrop-acts/dragndrop-acts.viewmodel.js',
+    'js-refactor/dragndrop-acts/dragndrop-acts.view.js',
+    'js-refactor/dragndrop-acts/dragndrop-acts.handlers.js',
+    'js-refactor/dragndrop-acts/dragndrop-acts.main.js',
     # Characters refactored files 
     'js-refactor/characters/characters.model.js',
     'js-refactor/characters/characters.repository.js',
@@ -406,7 +412,7 @@ IGNORED_ORIGINALS = [
     '_33.plot.js', '_34.relations-graph.js', '_35.renderMap.js', '_36.timeline-metro.js', '_43.arcs.js', '_44.storygrid.js', 
     '_45.arc-board.js', '_45.arc-board.refactor.js', '_46.thriller-board.js', '38.tension.js', '40.sidebar-views.js',
     '12.import-export.js', '39.export.js', '41.storageMonitoring.js', '02.storage.js', '20.snapshots.js', '13.mobile-menu.js',
-    '27.keyboardShortcuts.js', '42.mobile-swipe.js'
+    '27.keyboardShortcuts.js', '42.mobile-swipe.js', '14.dragndrop-acts.js'
 ]
 
 def collect_js():

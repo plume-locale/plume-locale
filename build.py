@@ -56,7 +56,7 @@ JS_ORDER = [
     '11.updateStats.js',
     '12.import-export.js',
     '13.mobile-menu.js',
-    '14.dragndrop-acts.js',
+    # '14.dragndrop-acts.js',  # Refactored to js-refactor/dragndrop-acts/
     '15.characters.js',
     '16.split-view.js',
     '17.world.js',
@@ -264,6 +264,26 @@ def collect_js():
                     js_content.append(content)
                     js_content.append('')
                     refactor_files.append(f'mindmap/{filename}')
+        
+        # Collecter les fichiers du sous-dossier dragndrop-acts/
+        dragndrop_acts_dir = os.path.join(js_refactor_dir, 'dragndrop-acts')
+        if os.path.exists(dragndrop_acts_dir):
+            dragndrop_acts_files_ordered = [
+                'dragndrop-acts.model.js',
+                'dragndrop-acts.repository.js',
+                'dragndrop-acts.viewmodel.js',
+                'dragndrop-acts.view.js',
+                'dragndrop-acts.handlers.js',
+                'dragndrop-acts.main.js'
+            ]
+            for filename in dragndrop_acts_files_ordered:
+                filepath = os.path.join(dragndrop_acts_dir, filename)
+                if os.path.exists(filepath):
+                    content = read_file(f'js-refactor/dragndrop-acts/{filename}')
+                    js_content.append(f'// ========== js-refactor/dragndrop-acts/{filename} ==========')
+                    js_content.append(content)
+                    js_content.append('')
+                    refactor_files.append(f'dragndrop-acts/{filename}')
 
     log(f"   [OK] {found_count} fichiers JS trouves")
     if missing:

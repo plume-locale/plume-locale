@@ -90,7 +90,13 @@ JS_ORDER = [
     'js-refactor/10.colorpalette.refactor.js',
     '12.import-export.js',
     '13.mobile-menu.js',
-    '14.dragndrop-acts.js',
+    # Drag and Drop Acts Module
+    'js-refactor/dragndrop-acts/dragndrop-acts.model.js',
+    'js-refactor/dragndrop-acts/dragndrop-acts.repository.js',
+    'js-refactor/dragndrop-acts/dragndrop-acts.viewmodel.js',
+    'js-refactor/dragndrop-acts/dragndrop-acts.view.js',
+    'js-refactor/dragndrop-acts/dragndrop-acts.handlers.js',
+    'js-refactor/dragndrop-acts/dragndrop-acts.main.js',
     # Characters refactored files 
     'js-refactor/characters/characters.model.js',
     'js-refactor/characters/characters.repository.js',
@@ -322,7 +328,7 @@ IGNORED_ORIGINALS = [
     '24.codex.js', '25.globalSearch.js', '19.notes.js',
     '30.corkboard.js', '30.corkboard.refactor.js', '31.mindmap.js', '32.touch-events.js', '33.plot.js', '35.renderMap.js', '43.arcs.js', '45.arc-board.js',
     '45.arc-board.refactor.js', '46.thriller-board.js', '44.storygrid.js', '36.timeline-metro.js',
-    '11.updateStats.js', '23.stats.js', '_35.renderMap.js'
+    '11.updateStats.js', '23.stats.js', '_35.renderMap.js', '14.dragndrop-acts.js'
 ]
 
 def collect_js():

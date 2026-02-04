@@ -56,7 +56,7 @@ JS_ORDER = [
     '11.updateStats.js',
     '12.import-export.js',
     '13.mobile-menu.js',
-    '14.dragndrop-acts.js',
+    # '14.dragndrop-acts.js',  # Refactored to js-refactor/dragndrop-acts/
     '15.characters.js',
     '16.split-view.js',
     '17.world.js',
