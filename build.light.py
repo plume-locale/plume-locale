@@ -134,7 +134,13 @@ JS_ORDER = [
     'js-refactor/sceneVersion/sceneVersion.viewmodel.js',
     'js-refactor/sceneVersion/sceneVersion.view.js',
     'js-refactor/sceneVersion/sceneVersion.main.js',
-    '22.diff.js',
+    # Diff refactored files
+    'js-refactor/diff/diff.model.js',
+    'js-refactor/diff/diff.repository.js',
+    'js-refactor/diff/diff.viewmodel.js',
+    'js-refactor/diff/diff.view.js',
+    'js-refactor/diff/diff.handlers.js',
+    'js-refactor/diff/diff.main.js',
     # Codex refactored files
     'js-refactor/codex/codex.model.js',
     'js-refactor/codex/codex.repository.js',
@@ -326,7 +332,7 @@ def collect_css():
 IGNORED_ORIGINALS = [
     '_01.app.js', '_03.project.js', '_05.undo-redo.js', '_06.structure.js', '_07.stats.js', 
     '_08.auto-detect.js', '_09.floating-editor.js', '_10.colorpalette.js', '_11.updateStats.js',
-    '_15.characters.js', '_16.split-view.js', '_17.world.js', '_19.notes.js', '_21.sceneVersions.js', 
+    '_15.characters.js', '_16.split-view.js', '_17.world.js', '_19.notes.js', '_21.sceneVersions.js', '_22.diff.js', 
     '_23.stats.js', '_24.codex.js', '_25.globalSearch.js', '_26.focusMode.js', 
     '_26.focusMode.refactor.js', 
     '_28.revision.js', '_29.todos.js', '_30.corkboard.js', '_30.corkboard.refactor.js', 

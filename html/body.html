@@ -555,16 +555,16 @@
                     <span><i data-lucide="repeat"></i></span>
                     <span>Comparaison des versions</span>
                 </div>
-                <button class="diff-modal-close" onclick="closeDiffModal()"><i data-lucide="x"
+                <button class="diff-modal-close" id="btnCloseDiffModal"><i data-lucide="x"
                         style="width:18px;height:18px;"></i></button>
             </div>
             <div class="diff-toolbar">
                 <div class="diff-version-selector">
                     <span>Comparer</span>
-                    <select class="diff-version-select" id="diffVersionOld" onchange="updateDiff()">
+                    <select class="diff-version-select" id="diffVersionOld">
                     </select>
                     <span>avec</span>
-                    <select class="diff-version-select" id="diffVersionNew" onchange="updateDiff()">
+                    <select class="diff-version-select" id="diffVersionNew">
                     </select>
                 </div>
                 <div class="diff-stats" id="diffStats">
@@ -572,9 +572,8 @@
                     <span class="diff-stat removed">−0 supprimés</span>
                 </div>
                 <div class="diff-view-toggle">
-                    <button class="diff-view-btn active" onclick="setDiffView('unified')"
-                        id="btnDiffUnified">Unifié</button>
-                    <button class="diff-view-btn" onclick="setDiffView('side')" id="btnDiffSide">Côte à côte</button>
+                    <button class="diff-view-btn active" id="btnDiffUnified">Unifié</button>
+                    <button class="diff-view-btn" id="btnDiffSide">Côte à côte</button>
                 </div>
             </div>
             <div class="diff-content" id="diffContent">

@@ -115,7 +115,13 @@ JS_ORDER = [
     'js-refactor/sceneVersion/sceneVersion.viewmodel.js',
     'js-refactor/sceneVersion/sceneVersion.view.js',
     'js-refactor/sceneVersion/sceneVersion.main.js',
-    '22.diff.js',
+    # Diff refactored files
+    'js-refactor/diff/diff.model.js',
+    'js-refactor/diff/diff.repository.js',
+    'js-refactor/diff/diff.viewmodel.js',
+    'js-refactor/diff/diff.view.js',
+    'js-refactor/diff/diff.handlers.js',
+    'js-refactor/diff/diff.main.js',
     # Codex refactored files
     'js-refactor/codex/codex.model.js',
     'js-refactor/codex/codex.repository.js',
@@ -301,7 +307,7 @@ def collect_css():
 IGNORED_ORIGINALS = [
     '03.project.js', '06.structure.js', '07.stats.js', '08.auto-detect.js',
     '15.characters.js', '17.world.js', '01.app.js', '10.colorpalette.js',
-    '21.sceneVersions.js', '26.focusMode.js', '28.revision.js', '29.todos.js',
+    '21.sceneVersions.js', '22.diff.js', '_22.diff.js', '26.focusMode.js', '28.revision.js', '29.todos.js',
     '24.codex.js', '25.globalSearch.js', '19.notes.js',
     '30.corkboard.js', '30.corkboard.refactor.js', '33.plot.js', '43.arcs.js', '45.arc-board.js',
     '45.arc-board.refactor.js', '46.thriller-board.js', '44.storygrid.js', '36.timeline-metro.js',
