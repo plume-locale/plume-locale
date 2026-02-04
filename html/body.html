@@ -783,6 +783,95 @@
             </div>
         </div>
     </div>
+    <!-- Map Location Modal -->
+    <div class="modal" id="locationModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="locationModalTitle"><i data-lucide="map-pin"></i> Lieu sur la carte</h2>
+                <button class="modal-close" onclick="closeModal('locationModal')"><i data-lucide="x"></i></button>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Nom du lieu</label>
+                <input type="text" class="form-input" id="locationNameInput" placeholder="Cité d'Opaline">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Type de lieu</label>
+                <select class="form-input" id="locationTypeInput">
+                    <!-- Populated dynamically by MapView -->
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Description</label>
+                <textarea class="form-input" id="locationDescInput" placeholder="Description courte du lieu..."
+                    rows="4"></textarea>
+            </div>
+            <div class="modal-actions">
+                <button class="btn" onclick="closeModal('locationModal')">Annuler</button>
+                <button class="btn btn-primary" id="btnSaveLocation">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Map Configuration Modal -->
+    <div class="modal" id="mapConfigModal">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h2><i data-lucide="settings"></i> Gérer les types et icônes</h2>
+                <button class="modal-close" onclick="closeModal('mapConfigModal')"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body" style="padding: 1.5rem 0;">
+                <div style="margin-bottom: 2rem;">
+                    <h3 style="font-size: 1rem; margin-bottom: 1rem; color: var(--accent-gold);">Nouvelle catégorie</h3>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <input type="text" id="newMapCategoryInput" class="form-input"
+                            placeholder="Ex: Science-Fiction">
+                        <button class="btn btn-primary" id="btnAddMapCategory">Ajouter</button>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 2rem;">
+                    <h3 style="font-size: 1rem; margin-bottom: 1rem; color: var(--accent-gold);">Nouveau type</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                        <div class="form-group">
+                            <label class="form-label">Nom</label>
+                            <input type="text" id="newMapTypeName" class="form-input" placeholder="Ex: Laboratoire">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Catégorie</label>
+                            <select id="newMapTypeCategory" class="form-input"></select>
+                        </div>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                        <div class="form-group">
+                            <label class="form-label">Icône</label>
+                            <input type="hidden" id="newMapTypeIconValue" value="map-pin">
+                            <div id="newMapTypeIconGrid" class="icon-selector-grid">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Couleur</label>
+                            <div style="border: 1px solid var(--border-color); padding: 0.5rem; border-radius: 4px; background: var(--bg-primary); display: flex; align-items: center; justify-content: center; height: 120px;">
+                                <input type="color" id="newMapTypeColor" class="form-input" style="width: 100%; height: 80px; padding: 2px; cursor: pointer;" value="#d4af37">
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" id="btnAddMapType" style="width: 100%;">Créer ce type</button>
+                </div>
+
+                <hr style="border: 0; border-top: 1px solid var(--border-color); margin-bottom: 2rem;">
+
+                <div id="mapTypesListContainer">
+                    <!-- List of existing types by category -->
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn" onclick="closeModal('mapConfigModal')">Fermer</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Add Timeline Event Modal -->
     <div class="modal" id="addTimelineModal">
         <div class="modal-content">

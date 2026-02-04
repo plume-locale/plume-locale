@@ -170,7 +170,12 @@ JS_ORDER = [
     'js-refactor/plot/plot.view.js',
     'js-refactor/plot/plot.init.js',
     '34.relations-graph.js',
-    '35.renderMap.js',
+    'js-refactor/map/map.model.js',
+    'js-refactor/map/map.repository.js',
+    'js-refactor/map/map.viewmodel.js',
+    'js-refactor/map/map.view.js',
+    'js-refactor/map/map.handlers.js',
+    'js-refactor/map/map.main.js',
     'js-refactor/timeline-metro/timeline-metro.model.js',
     'js-refactor/timeline-metro/timeline-metro.repository.js',
     'js-refactor/timeline-metro/timeline-metro.viewmodel.js',
@@ -294,7 +299,8 @@ def collect_css():
     
     # Ajouter les CSS des modules dans js-refactor/
     module_css_files = [
-        'js-refactor/synonyms/synonyms.css'
+        'js-refactor/synonyms/synonyms.css',
+        'js-refactor/map/map.css'
     ]
     for css_path in module_css_files:
         filepath = os.path.join(BUILD_DIR, css_path)
@@ -314,9 +320,9 @@ IGNORED_ORIGINALS = [
     '15.characters.js', '17.world.js', '01.app.js', '10.colorpalette.js',
     '21.sceneVersions.js', '22.diff.js', '_22.diff.js', '26.focusMode.js', '28.revision.js', '29.todos.js',
     '24.codex.js', '25.globalSearch.js', '19.notes.js',
-    '30.corkboard.js', '30.corkboard.refactor.js', '31.mindmap.js', '32.touch-events.js', '33.plot.js', '43.arcs.js', '45.arc-board.js',
+    '30.corkboard.js', '30.corkboard.refactor.js', '31.mindmap.js', '32.touch-events.js', '33.plot.js', '35.renderMap.js', '43.arcs.js', '45.arc-board.js',
     '45.arc-board.refactor.js', '46.thriller-board.js', '44.storygrid.js', '36.timeline-metro.js',
-    '11.updateStats.js', '23.stats.js'
+    '11.updateStats.js', '23.stats.js', '_35.renderMap.js'
 ]
 
 def collect_js():
@@ -357,7 +363,10 @@ def collect_js():
     for filepath in glob.glob(os.path.join(js_dir, '*.js')):
         filename = os.path.basename(filepath)
         # Ne pas inclure si déjà dans JS_ORDER ou si c'est un original refactorisé
-        if filename not in JS_ORDER and f'js-refactor/{filename}' not in JS_ORDER and filename not in IGNORED_ORIGINALS:
+        if (filename not in JS_ORDER and 
+            f'js-refactor/{filename}' not in JS_ORDER and 
+            filename not in IGNORED_ORIGINALS and
+            not filename.startswith('_')):
             content = read_file(f'js/{filename}')
             js_content.append(f'// ========== {filename} ==========')
             js_content.append(content)

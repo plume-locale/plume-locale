@@ -173,15 +173,15 @@ function switchView(view) {
         'arcs': 'arcsList',
         'mindmap': 'mindmapList',
         'timelineviz': 'timelineVizList',
-        'thriller': 'thrillerList'
+        'thriller': 'thrillerList',
+        'map': 'mapList'
     };
 
-    const editorViewVues = ['stats', 'analysis', 'versions', 'todos', 'timeline', 'corkboard', 'plot', 'plotgrid', 'relations', 'map'];
+    const editorViewVues = ['stats', 'analysis', 'versions', 'todos', 'timeline', 'corkboard', 'plot', 'plotgrid', 'relations'];
 
     const viewLabelsNoSidebar = {
         'stats': 'Statistiques', 'analysis': 'Analyse', 'versions': 'Versions',
         'todos': 'TODOs', 'timeline': 'Timeline', 'corkboard': 'Tableau',
-        'plot': 'Intrigue', 'plotgrid': 'Plot grid', 'relations': 'Relations', 'map': 'Carte',
         'thriller': 'Thriller', 'storygrid': 'Story Grid'
     };
 
@@ -705,6 +705,11 @@ function restoreTreeState() {
 function closeModal(modalId) {
     document.getElementById(modalId)?.classList.remove('active');
 }
+
+function openModal(modalId) {
+    document.getElementById(modalId)?.classList.add('active');
+}
+
 
 function openProjectsModal() {
     if (typeof renderProjectsList === 'function') renderProjectsList();

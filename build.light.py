@@ -200,7 +200,12 @@ JS_ORDER = [
     'js-refactor/relation-map/relation-map.view.js',
     'js-refactor/relation-map/relation-map.handlers.js',
     'js-refactor/relation-map/relation-map.main.js',
-    '35.renderMap.js',
+    'js-refactor/map/map.model.js',
+    'js-refactor/map/map.repository.js',
+    'js-refactor/map/map.viewmodel.js',
+    'js-refactor/map/map.view.js',
+    'js-refactor/map/map.handlers.js',
+    'js-refactor/map/map.main.js',
     'js-refactor/timeline-metro/timeline-metro.model.js',
     'js-refactor/timeline-metro/timeline-metro.repository.js',
     'js-refactor/timeline-metro/timeline-metro.viewmodel.js',
@@ -324,7 +329,8 @@ def collect_css():
     
     # Ajouter les CSS des modules dans js-refactor/
     module_css_files = [
-        'js-refactor/synonyms/synonyms.css'
+        'js-refactor/synonyms/synonyms.css',
+        'js-refactor/map/map.css'
     ]
     for css_path in module_css_files:
         filepath = os.path.join(BUILD_DIR, css_path)
@@ -347,7 +353,7 @@ IGNORED_ORIGINALS = [
     '_26.focusMode.refactor.js', 
     '_28.revision.js', '_29.todos.js', '_30.corkboard.js', '_30.corkboard.refactor.js', 
     '_31.mindmap.js', '_32.touch-events.js',
-    '_33.plot.js', '_34.relations-graph.js', '_36.timeline-metro.js', '_43.arcs.js', '_44.storygrid.js', 
+    '_33.plot.js', '_34.relations-graph.js', '_35.renderMap.js', '_36.timeline-metro.js', '_43.arcs.js', '_44.storygrid.js', 
     '_45.arc-board.js', '_45.arc-board.refactor.js', '_46.thriller-board.js'
 ]
 
