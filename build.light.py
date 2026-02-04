@@ -138,7 +138,12 @@ JS_ORDER = [
     'js-refactor/notes/notes.view.js',
     'js-refactor/notes/notes.handlers.js',
     'js-refactor/notes/notes.main.js',
-    '20.snapshots.js',
+    # Snapshots refactored files (order: model -> repository -> viewmodel -> view -> main)
+    'js-refactor/snapshots/snapshots.model.js',
+    'js-refactor/snapshots/snapshots.repository.js',
+    'js-refactor/snapshots/snapshots.viewmodel.js',
+    'js-refactor/snapshots/snapshots.view.js',
+    'js-refactor/snapshots/snapshots.main.js',
     'js-refactor/sceneVersion/sceneVersion.model.js',
     'js-refactor/sceneVersion/sceneVersion.repository.js',
     'js-refactor/sceneVersion/sceneVersion.viewmodel.js',
@@ -382,7 +387,7 @@ IGNORED_ORIGINALS = [
     '_31.mindmap.js', '_32.touch-events.js',
     '_33.plot.js', '_34.relations-graph.js', '_35.renderMap.js', '_36.timeline-metro.js', '_43.arcs.js', '_44.storygrid.js', 
     '_45.arc-board.js', '_45.arc-board.refactor.js', '_46.thriller-board.js', '38.tension.js', '40.sidebar-views.js',
-    '12.import-export.js', '39.export.js', '41.storageMonitoring.js', '02.storage.js'
+    '12.import-export.js', '39.export.js', '41.storageMonitoring.js', '02.storage.js', '20.snapshots.js'
 ]
 
 def collect_js():

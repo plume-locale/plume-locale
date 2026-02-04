@@ -9,7 +9,7 @@ const GoogleDriveService = {
     // TODO: REPLACE THESE WITH YOUR OWN VALUES
     // Get them at https://console.cloud.google.com/
     CLIENT_ID: '972309035258-63fnna3391k2rmue6askpje309lrpsdm.apps.googleusercontent.com',
-    API_KEY: 'AIzaSyBWZpFoOapyDb4Wd3y1EttnLnwWiD5rsK0',
+    API_KEY: '',
 
     // Discovery doc URL for APIs used by the quickstart
     DISCOVERY_DOC: 'https://www.googleapis.com/discovery/v1/apis/drive/v3/rest',
