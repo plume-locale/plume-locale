@@ -14,7 +14,7 @@ const CodexView = {
         // Récupérer les données via le ViewModel ou Repository
         // Ici on utilise le Repository car c'est de la lecture pure pour affichage
         if (CodexRepository.count() === 0) {
-            container.innerHTML = '<div style="padding: 1rem; text-align: center; color: var(--text-muted); font-size: 0.85rem;">Aucune entrée</div>';
+            container.innerHTML = `<div style="padding: 1rem; text-align: center; color: var(--text-muted); font-size: 0.85rem;">${Localization.t('codex.list.empty')}</div>`;
             return;
         }
 
@@ -35,7 +35,7 @@ const CodexView = {
                 <div class="treeview-group">
                     <div class="treeview-header" onclick="toggleCodexGroup('${groupKey}')">
                         <i data-lucide="${isCollapsed ? 'chevron-right' : 'chevron-down'}" class="treeview-chevron"></i>
-                        <span class="treeview-label">${category}</span>
+                        <span class="treeview-label">${Localization.t('codex.category.' + category)}</span>
                         <span class="treeview-count">${groups[category].length}</span>
                     </div>
                     <div class="treeview-children ${isCollapsed ? 'collapsed' : ''}">
@@ -45,7 +45,7 @@ const CodexView = {
                                 <div class="treeview-item" onclick="openCodexDetail(${entry.id})">
                                     <span class="treeview-item-icon"><i data-lucide="${iconName}" style="width:14px;height:14px;vertical-align:middle;"></i></span>
                                     <span class="treeview-item-label">${entry.title}</span>
-                                    <button class="treeview-item-delete" onclick="event.stopPropagation(); deleteCodexEntry(${entry.id})" title="Supprimer">×</button>
+                                    <button class="treeview-item-delete" onclick="event.stopPropagation(); deleteCodexEntry(${entry.id})" title="${Localization.t('codex.action.delete')}">×</button>
                                 </div>
                             `;
             }).join('')}
@@ -96,7 +96,7 @@ const CodexView = {
         // Générer les options de catégorie
         const categories = getCodexCategories();
         const categoryOptions = categories.map(cat =>
-            `<option value="${cat}" ${entry.category === cat ? 'selected' : ''}>${cat}</option>`
+            `<option value="${cat}" ${entry.category === cat ? 'selected' : ''}>${Localization.t('codex.category.' + cat)}</option>`
         ).join('');
 
         editorView.innerHTML = `
@@ -106,27 +106,27 @@ const CodexView = {
                         <input type="text" class="form-input" value="${entry.title}" 
                                style="font-size: 1.8rem; font-weight: 600; font-family: 'Noto Serif JP', serif; padding: 0.5rem;"
                                onchange="updateCodexField(${id}, 'title', this.value)"
-                               placeholder="Titre de l'entrée">
-                        <span style="font-size: 0.8rem; padding: 0.4rem 0.8rem; background: var(--accent-gold); color: var(--bg-primary); border-radius: 2px;">${entry.category}</span>
+                               placeholder="${Localization.t('codex.detail.placeholder.title')}">
+                        <span style="font-size: 0.8rem; padding: 0.4rem 0.8rem; background: var(--accent-gold); color: var(--bg-primary); border-radius: 2px;">${Localization.t('codex.category.' + entry.category)}</span>
                     </div>
-                    <button class="btn" onclick="switchView('editor')">← Retour à l'éditeur</button>
+                    <button class="btn" onclick="switchView('editor')">${Localization.t('codex.detail.btn.back_editor')}</button>
                 </div>
                 
                 <div class="detail-section">
-                    <div class="detail-section-title">Catégorie</div>
+                    <div class="detail-section-title">${Localization.t('codex.detail.category')}</div>
                     <select class="form-input" onchange="updateCodexField(${id}, 'category', this.value)">
                         ${categoryOptions}
                     </select>
                 </div>
 
                 <div class="detail-section">
-                    <div class="detail-section-title">Résumé</div>
+                    <div class="detail-section-title">${Localization.t('codex.detail.summary')}</div>
                     <textarea class="form-input" rows="3" 
-                              onchange="updateCodexField(${id}, 'summary', this.value)">${entry.summary}</textarea>
+                               onchange="updateCodexField(${id}, 'summary', this.value)">${entry.summary}</textarea>
                 </div>
 
                 <div class="detail-section">
-                    <div class="detail-section-title">Contenu détaillé</div>
+                    <div class="detail-section-title">${Localization.t('codex.detail.content')}</div>
                     <textarea class="form-input" rows="20" 
                               onchange="updateCodexField(${id}, 'content', this.value)">${entry.content}</textarea>
                 </div>
@@ -148,11 +148,11 @@ const CodexView = {
         const modalContent = document.getElementById('referencesModalContent');
         const modal = document.getElementById('referencesModal');
 
-        if (modalTitle) modalTitle.textContent = `Références : ${character.name}`;
+        if (modalTitle) modalTitle.textContent = Localization.t('codex.refs.title', [character.name]);
         if (modalContent) {
             modalContent.innerHTML = `
                 <div class="references-section">
-                    <div class="references-title"><i data-lucide="file-text" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Scènes où ${character.name} apparaît (${scenes.length})</div>
+                    <div class="references-title"><i data-lucide="file-text" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>${Localization.t('codex.refs.scenes_count', [character.name, scenes.length])}</div>
                     ${scenes.length > 0 ? scenes.map(scene => `
                         <div class="reference-item" onclick="openScene(${scene.actId}, ${scene.chapterId}, ${scene.sceneId}); closeModal('referencesModal');">
                             <div>
@@ -161,12 +161,12 @@ const CodexView = {
                             </div>
                             <span>→</span>
                         </div>
-                    `).join('') : '<div style="padding: 1rem; color: var(--text-muted);">Aucune scène liée</div>'}
+                    `).join('') : `<div style="padding: 1rem; color: var(--text-muted);">${Localization.t('codex.refs.no_scenes')}</div>`}
                 </div>
 
                 <div class="references-section">
-                    <div class="references-title"><i data-lucide="link" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Gérer les liens</div>
-                    <button class="btn btn-small" onclick="openLinkManagerForCharacter(${characterId})">+ Lier à des scènes</button>
+                    <div class="references-title"><i data-lucide="link" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>${Localization.t('codex.refs.manage_links')}</div>
+                    <button class="btn btn-small" onclick="openLinkManagerForCharacter(${characterId})">${Localization.t('codex.refs.btn.link')}</button>
                 </div>
             `;
         }
@@ -190,11 +190,11 @@ const CodexView = {
         const modalContent = document.getElementById('referencesModalContent');
         const modal = document.getElementById('referencesModal');
 
-        if (modalTitle) modalTitle.textContent = `Références : ${element.name}`;
+        if (modalTitle) modalTitle.textContent = Localization.t('codex.refs.title', [element.name]);
         if (modalContent) {
             modalContent.innerHTML = `
                 <div class="references-section">
-                    <div class="references-title"><i data-lucide="file-text" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Scènes où ${element.name} apparaît (${scenes.length})</div>
+                    <div class="references-title"><i data-lucide="file-text" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>${Localization.t('codex.refs.scenes_count', [element.name, scenes.length])}</div>
                     ${scenes.length > 0 ? scenes.map(scene => `
                         <div class="reference-item" onclick="openScene(${scene.actId}, ${scene.chapterId}, ${scene.sceneId}); closeModal('referencesModal');">
                             <div>
@@ -203,12 +203,12 @@ const CodexView = {
                             </div>
                             <span>→</span>
                         </div>
-                    `).join('') : '<div style="padding: 1rem; color: var(--text-muted);">Aucune scène liée</div>'}
+                    `).join('') : `<div style="padding: 1rem; color: var(--text-muted);">${Localization.t('codex.refs.no_scenes')}</div>`}
                 </div>
 
                 <div class="references-section">
-                    <div class="references-title"><i data-lucide="link" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Gérer les liens</div>
-                    <button class="btn btn-small" onclick="openLinkManagerForElement(${elementId})">+ Lier à des scènes</button>
+                    <div class="references-title"><i data-lucide="link" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>${Localization.t('codex.refs.manage_links')}</div>
+                    <button class="btn btn-small" onclick="openLinkManagerForElement(${elementId})">${Localization.t('codex.refs.btn.link')}</button>
                 </div>
             `;
         }
@@ -251,12 +251,12 @@ function addCodexEntry() {
 
         closeModal('addCodexModal');
     } else {
-        alert(result.error || "Erreur lors de l'ajout");
+        alert(result.error || Localization.t('codex.error.add'));
     }
 }
 
 function deleteCodexEntry(id) {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer cette entrée ?')) return;
+    if (!confirm(Localization.t('codex.confirm.delete'))) return;
     CodexViewModel.deleteEntry(id);
 }
 
@@ -305,14 +305,14 @@ function toggleElementInScene(sceneActId, sceneChapterId, sceneId, elementId) {
 if (typeof openLinkManagerForCharacter === 'undefined') {
     window.openLinkManagerForCharacter = function (id) {
         console.warn("openLinkManagerForCharacter non implémenté. Utilisez le lien depuis la scène.");
-        alert("Cette fonctionnalité n'est pas encore disponible. Veuillez utiliser le panneau 'Liens' depuis une scène.");
+        alert(Localization.t('codex.info.not_available'));
     };
 }
 
 if (typeof openLinkManagerForElement === 'undefined') {
     window.openLinkManagerForElement = function (id) {
         console.warn("openLinkManagerForElement non implémenté.");
-        alert("Cette fonctionnalité n'est pas encore disponible. Veuillez utiliser le panneau 'Liens' depuis une scène.");
+        alert(Localization.t('codex.info.not_available'));
     };
 }
 

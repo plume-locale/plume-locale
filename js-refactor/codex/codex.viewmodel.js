@@ -19,7 +19,7 @@ const CodexViewModel = {
      */
     addEntry(title, category, summary) {
         if (!title || !title.trim()) {
-            return { success: false, error: "Le titre est obligatoire." };
+            return { success: false, error: Localization.t('codex.error.title_required') };
         }
 
         const entryData = {
