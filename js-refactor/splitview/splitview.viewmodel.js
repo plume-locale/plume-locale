@@ -31,7 +31,7 @@ function activateSplitView() {
 
     renderSplitView();
     updateSplitToggleButton();
-    showNotification('Mode split activé - Cliquez sur un panneau pour le sélectionner');
+    showNotification(Localization.t('split.notify_activated'));
 }
 
 /** [MVVM : ViewModel] - Réinitialise l'état et restaure la vue standard */
@@ -72,7 +72,7 @@ function closeSplitView() {
 
     updateSplitToggleButton();
     saveSplitViewState();
-    showNotification('Mode split désactivé');
+    showNotification(Localization.t('split.notify_disabled'));
 }
 
 /** [MVVM : ViewModel] - Gère le changement de panneau actif et met à jour les indicateurs visuels */
@@ -244,6 +244,6 @@ function openCharacterBeside(charId) {
 
     renderSplitView();
     if (typeof showNotification === 'function') {
-        showNotification('Personnage ouvert dans le panneau droit');
+        showNotification(Localization.t('split.notify_char_opened'));
     }
 }

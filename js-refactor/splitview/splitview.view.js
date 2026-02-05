@@ -8,10 +8,10 @@ function updateSplitToggleButton() {
     if (btn) {
         if (splitViewActive) {
             btn.classList.add('active');
-            btn.innerHTML = '<i data-lucide="columns-2" style="width:14px;height:14px;"></i> <span>Split actif</span>';
+            btn.innerHTML = `<i data-lucide="columns-2" style="width:14px;height:14px;"></i> <span>${Localization.t('split.toggle_active')}</span>`;
         } else {
             btn.classList.remove('active');
-            btn.innerHTML = '<i data-lucide="columns-2" style="width:14px;height:14px;"></i> <span>Split</span>';
+            btn.innerHTML = `<i data-lucide="columns-2" style="width:14px;height:14px;"></i> <span>${Localization.t('split.toggle')}</span>`;
         }
         if (typeof lucide !== 'undefined') lucide.createIcons();
     }
@@ -26,8 +26,8 @@ function renderSplitView() {
 
     const ratio = splitViewState.ratio || 60;
 
-    const leftLabel = splitViewState.left.view ? viewLabels[splitViewState.left.view] || 'Vue' : 'Vide';
-    const rightLabel = splitViewState.right.view ? viewLabels[splitViewState.right.view] || 'Vue' : 'Vide';
+    const leftLabel = splitViewState.left.view ? viewLabels[splitViewState.left.view] || Localization.t('split.view_label') : Localization.t('split.empty_label');
+    const rightLabel = splitViewState.right.view ? viewLabels[splitViewState.right.view] || Localization.t('split.view_label') : Localization.t('split.empty_label');
     const leftIcon = splitViewState.left.view ? viewIcons[splitViewState.left.view] || 'file' : 'plus-circle';
     const rightIcon = splitViewState.right.view ? viewIcons[splitViewState.right.view] || 'file' : 'plus-circle';
 
@@ -44,7 +44,7 @@ function renderSplitView() {
                         <i data-lucide="chevron-down" style="width:12px;height:12px;opacity:0.5;margin-left:4px;"></i>
                     </div>
                     <div class="split-panel-actions" onclick="event.stopPropagation();">
-                        <span class="split-panel-indicator ${splitActivePanel === 'left' ? 'active' : ''}" title="Panneau actif">
+                        <span class="split-panel-indicator ${splitActivePanel === 'left' ? 'active' : ''}" title="${Localization.t('split.active_panel_title')}">
                             <i data-lucide="circle" style="width:8px;height:8px;fill:currentColor;"></i>
                         </span>
                     </div>
@@ -69,10 +69,10 @@ function renderSplitView() {
                         <i data-lucide="chevron-down" style="width:12px;height:12px;opacity:0.5;margin-left:4px;"></i>
                     </div>
                     <div class="split-panel-actions" onclick="event.stopPropagation();">
-                        <span class="split-panel-indicator ${splitActivePanel === 'right' ? 'active' : ''}" title="Panneau actif">
+                        <span class="split-panel-indicator ${splitActivePanel === 'right' ? 'active' : ''}" title="${Localization.t('split.active_panel_title')}">
                             <i data-lucide="circle" style="width:8px;height:8px;fill:currentColor;"></i>
                         </span>
-                        <button class="split-panel-btn" onclick="closeSplitView(); event.stopPropagation();" title="Fermer le split">
+                        <button class="split-panel-btn" onclick="closeSplitView(); event.stopPropagation();" title="${Localization.t('split.close_title')}">
                             <i data-lucide="x" style="width:12px;height:12px;"></i>
                         </button>
                     </div>
@@ -118,15 +118,15 @@ function updateSidebarForSplitPanel(panel) {
 
     // Labels for views without sidebar
     const viewLabelsNoSidebar = {
-        'stats': 'Statistiques',
-        'analysis': 'Analyse',
-        'versions': 'Versions',
-        'todos': 'TODOs',
-        'timeline': 'Timeline',
-        'corkboard': 'Tableau',
-        'plot': 'Intrigue',
-        'relations': 'Relations',
-        'map': 'Carte'
+        'stats': Localization.t('nav.stats'),
+        'analysis': Localization.t('nav.analysis'),
+        'versions': Localization.t('nav.snapshots'),
+        'todos': Localization.t('nav.todos'),
+        'timeline': Localization.t('nav.timeline'),
+        'corkboard': Localization.t('nav.corkboard'),
+        'plot': Localization.t('nav.plot'),
+        'relations': Localization.t('nav.relations'),
+        'map': Localization.t('nav.map')
     };
 
     // Hide all sidebar lists including noSidebarMessage
@@ -174,15 +174,15 @@ function updateSidebarForSplitPanel(panel) {
         // Show message for views without sidebar
         const noSidebarEl = document.getElementById('noSidebarMessage');
         if (noSidebarEl) {
-            const viewLabel = viewLabelsNoSidebar[view] || 'Cette vue';
+            const viewLabel = viewLabelsNoSidebar[view] || Localization.t('split.view_label');
             noSidebarEl.innerHTML = `
                 <div style="padding: 2rem 1rem; text-align: center; color: var(--text-muted);">
                     <i data-lucide="layout-dashboard" style="width: 48px; height: 48px; opacity: 0.3; margin-bottom: 1rem;"></i>
                     <div style="font-size: 0.9rem; line-height: 1.6;">
-                        <strong>${viewLabel}</strong> utilise tout l'espace disponible.
+                        <strong>${viewLabel}</strong> ${Localization.t('split.no_sidebar_view', [viewLabel])}
                     </div>
                     <div style="font-size: 0.85rem; margin-top: 0.5rem; opacity: 0.8;">
-                        La barre latérale n'est pas utilisée dans cette vue.
+                        ${Localization.t('split.no_sidebar_msg')}
                     </div>
                 </div>
             `;
@@ -197,12 +197,12 @@ function updateSidebarForSplitPanel(panel) {
 
     // Update sidebar actions
     const actionsHTML = {
-        editor: '<button class="btn btn-primary" onclick="openAddActModal()">+ Acte</button><button class="btn btn-primary" onclick="openAddChapterModal()">+ Chapitre</button><button class="btn btn-primary" onclick="openAddSceneModalQuick()">+ Scène</button>',
-        characters: '<button class="btn btn-primary" onclick="openAddCharacterModal()">+ Personnage</button>',
-        world: '<button class="btn btn-primary" onclick="openAddWorldModal()">+ Élément</button>',
-        notes: '<button class="btn btn-primary" onclick="openAddNoteModal()">+ Note</button>',
-        codex: '<button class="btn btn-primary" onclick="openAddCodexModal()">+ Entrée</button>',
-        arcs: '<button class="btn btn-primary" onclick="createNewArc()">+ Arc narratif</button>'
+        editor: `<button class="btn btn-primary" onclick="openAddActModal()">${Localization.t('btn.add_act')}</button><button class="btn btn-primary" onclick="openAddChapterModal()">${Localization.t('btn.add_chapter')}</button><button class="btn btn-primary" onclick="openAddSceneModalQuick()">${Localization.t('btn.add_scene')}</button>`,
+        characters: `<button class="btn btn-primary" onclick="openAddCharacterModal()">${Localization.t('btn.add_character')}</button>`,
+        world: `<button class="btn btn-primary" onclick="openAddWorldModal()">${Localization.t('btn.add_world')}</button>`,
+        notes: `<button class="btn btn-primary" onclick="openAddNoteModal()">${Localization.t('btn.add_note')}</button>`,
+        codex: `<button class="btn btn-primary" onclick="openAddCodexModal()">${Localization.t('btn.add_codex')}</button>`,
+        arcs: `<button class="btn btn-primary" onclick="createNewArc()">${Localization.t('btn.add_arc')}</button>`
     };
     const sidebarActions = document.getElementById('sidebarActions');
     if (sidebarActions) {
@@ -233,7 +233,7 @@ function updateSplitPanelHeader(panel) {
     const titleEl = document.getElementById(panel === 'left' ? 'splitLeftTitle' : 'splitRightTitle');
 
     if (titleEl) {
-        const label = state.view ? viewLabels[state.view] || 'Vue' : 'Vide';
+        const label = state.view ? viewLabels[state.view] || Localization.t('split.view_label') : Localization.t('split.empty_label');
         const icon = state.view ? viewIcons[state.view] || 'file' : 'plus-circle';
         titleEl.innerHTML = `
             <i data-lucide="${icon}" style="width:14px;height:14px;"></i>
@@ -256,8 +256,8 @@ function renderSplitPanelViewContent(panel) {
         container.innerHTML = `
             <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--text-muted); text-align: center; padding: 2rem;">
                 <i data-lucide="plus-circle" style="width:48px;height:48px;stroke-width:1;margin-bottom:1rem;opacity:0.5;"></i>
-                <div style="font-size: 1rem; margin-bottom: 0.5rem;">Panneau vide</div>
-                <div style="font-size: 0.85rem; margin-bottom: 1rem;">Cliquez sur l'en-tête pour choisir une vue</div>
+                <div style="font-size: 1rem; margin-bottom: 0.5rem;">${Localization.t('split.empty_panel_title')}</div>
+                <div style="font-size: 0.85rem; margin-bottom: 1rem;">${Localization.t('split.empty_panel_desc')}</div>
             </div>
         `;
         if (typeof lucide !== 'undefined') lucide.createIcons();
@@ -284,7 +284,7 @@ function renderEditorInContainer(act, chapter, scene, container, panel) {
     const hasFinalVersion = scene.versions && scene.versions.some(v => v.isFinal === true);
     const finalVersion = hasFinalVersion ? scene.versions.find(v => v.isFinal === true) : null;
     const finalVersionBadge = hasFinalVersion
-        ? `<span style="display: inline-flex; align-items: center; gap: 0.25rem; background: var(--accent-gold); color: var(--bg-accent); font-size: 0.7rem; font-weight: 600; padding: 0.2rem 0.5rem; border-radius: 10px; margin-left: 0.5rem;" title="Version finale : ${finalVersion.number}"><i data-lucide="star" style="width:10px;height:10px;fill:currentColor;"></i> ${finalVersion.number}</span>`
+        ? `<span style="display: inline-flex; align-items: center; gap: 0.25rem; background: var(--accent-gold); color: var(--bg-accent); font-size: 0.7rem; font-weight: 600; padding: 0.2rem 0.5rem; border-radius: 10px; margin-left: 0.5rem;" title="${Localization.t('editor.final_version_title', [finalVersion.number])}"><i data-lucide="star" style="width:10px;height:10px;fill:currentColor;"></i> ${finalVersion.number}</span>`
         : '';
 
     const toolbarHTML = typeof getEditorToolbarHTML === 'function' ? getEditorToolbarHTML(panel) : '';
@@ -297,12 +297,12 @@ function renderEditorInContainer(act, chapter, scene, container, panel) {
                     <div class="editor-title" style="flex: 1;">${scene.title}${finalVersionBadge}</div>
                 </div>
                 <div class="editor-meta">
-                    <span class="split-word-count-${panel}">${wordCount} mots</span>
-                    <span>Dernière modification : ${new Date().toLocaleDateString('fr-FR')}</span>
+                    <span class="split-word-count-${panel}">${Localization.t('editor.word_count', [wordCount])}</span>
+                    <span>${Localization.t('editor.last_modified', [new Date().toLocaleDateString(Localization.getLocale() === 'fr' ? 'fr-FR' : 'en-US')])}</span>
                 </div>
             </div>
             <button class="toolbar-mobile-toggle" onclick="toggleSplitEditorToolbar('${panel}')">
-                <span><i data-lucide="pen-line" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Outils de formatage</span>
+                <span><i data-lucide="pen-line" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>${Localization.t('split.toolbar_formatting')}</span>
             </button>
             <div class="editor-toolbar" id="editorToolbar-${panel}">
                 ${toolbarHTML}
@@ -310,15 +310,15 @@ function renderEditorInContainer(act, chapter, scene, container, panel) {
             <div class="links-panel-sticky" id="linksPanel-${panel}">
                 <div style="display: flex; gap: 2rem; align-items: start;">
                     <div style="flex: 1;">
-                        <div style="font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-muted);"><i data-lucide="users" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Personnages</div>
+                        <div style="font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-muted);"><i data-lucide="users" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>${Localization.t('split.links_characters')}</div>
                         <div class="quick-links"></div>
                     </div>
                     <div style="flex: 1;">
-                        <div style="font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-muted);"><i data-lucide="globe" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Lieux/Éléments</div>
+                        <div style="font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-muted);"><i data-lucide="globe" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>${Localization.t('split.links_world')}</div>
                         <div class="quick-links"></div>
                     </div>
                     <div style="flex: 1;">
-                        <div style="font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-muted);"><i data-lucide="train-track" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Timeline</div>
+                        <div style="font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-muted);"><i data-lucide="train-track" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>${Localization.t('split.links_timeline')}</div>
                         <div class="quick-links"></div>
                     </div>
                 </div>
@@ -335,7 +335,7 @@ function renderEditorInContainer(act, chapter, scene, container, panel) {
                     data-scene-id="${scene.id}"
                     data-chapter-id="${chapter.id}"
                     data-act-id="${act.id}"
-                    data-placeholder="Commencez à écrire votre scène..."
+                    data-placeholder="${Localization.t('split.placeholder_start')}"
                     oninput="updateSplitSceneContent(this)"
                     onkeydown="typeof handleEditorKeydown === 'function' ? handleEditorKeydown(event) : null"
                 >${scene.content || ''}</div>
@@ -386,22 +386,22 @@ function openSplitViewSelector(panel) {
     const currentView = currentPanelState.view;
 
     const views = [
-        { id: 'editor', label: 'Structure', icon: 'pen-line', desc: 'Écrire vos scènes' },
-        { id: 'characters', label: 'Personnages', icon: 'users', desc: 'Fiches personnages' },
-        { id: 'world', label: 'Univers', icon: 'globe', desc: 'Lieux et éléments' },
-        { id: 'notes', label: 'Notes', icon: 'sticky-note', desc: 'Vos notes' },
-        { id: 'codex', label: 'Codex', icon: 'book-open', desc: 'Encyclopédie' },
-        { id: 'corkboard', label: 'Tableau', icon: 'layout-grid', desc: 'Vue tableau liège' },
-        { id: 'mindmap', label: 'Mindmap', icon: 'git-branch', desc: 'Carte mentale' },
-        { id: 'plot', label: 'Intrigue', icon: 'trending-up', desc: 'Arcs narratifs' },
-        { id: 'relations', label: 'Relations', icon: 'heart-handshake', desc: 'Liens entre personnages' },
-        { id: 'map', label: 'Carte', icon: 'map', desc: 'Carte du monde' },
-        { id: 'timelineviz', label: 'Timeline Métro', icon: 'train-track', desc: 'Timeline visuelle' },
-        { id: 'timeline', label: 'Timeline', icon: 'calendar-range', desc: 'Timeline classique' },
-        { id: 'stats', label: 'Statistiques', icon: 'bar-chart-3', desc: 'Stats du projet' },
-        { id: 'analysis', label: 'Analyse', icon: 'trending-up', desc: 'Analyse du texte' },
-        { id: 'versions', label: 'Versions', icon: 'file-clock', desc: 'Versions des scènes' },
-        { id: 'todos', label: 'TODOs', icon: 'list-todo', desc: 'Liste des tâches' }
+        { id: 'editor', label: Localization.t('split.view_structure_label'), icon: 'pen-line', desc: Localization.t('split.view_structure_desc') },
+        { id: 'characters', label: Localization.t('split.view_characters_label'), icon: 'users', desc: Localization.t('split.view_characters_desc') },
+        { id: 'world', label: Localization.t('split.view_world_label'), icon: 'globe', desc: Localization.t('split.view_world_desc') },
+        { id: 'notes', label: Localization.t('split.view_notes_label'), icon: 'sticky-note', desc: Localization.t('split.view_notes_desc') },
+        { id: 'codex', label: Localization.t('split.view_codex_label'), icon: 'book-open', desc: Localization.t('split.view_codex_desc') },
+        { id: 'corkboard', label: Localization.t('split.view_corkboard_label'), icon: 'layout-grid', desc: Localization.t('split.view_corkboard_desc') },
+        { id: 'mindmap', label: Localization.t('split.view_mindmap_label'), icon: 'git-branch', desc: Localization.t('split.view_mindmap_desc') },
+        { id: 'plot', label: Localization.t('split.view_plot_label'), icon: 'trending-up', desc: Localization.t('split.view_plot_desc') },
+        { id: 'relations', label: Localization.t('split.view_relations_label'), icon: 'heart-handshake', desc: Localization.t('split.view_relations_desc') },
+        { id: 'map', label: Localization.t('split.view_map_label'), icon: 'map', desc: Localization.t('split.view_map_desc') },
+        { id: 'timelineviz', label: Localization.t('split.view_timelineviz_label'), icon: 'train-track', desc: Localization.t('split.view_timelineviz_desc') },
+        { id: 'timeline', label: Localization.t('split.view_timeline_label'), icon: 'calendar-range', desc: Localization.t('split.view_timeline_desc') },
+        { id: 'stats', label: Localization.t('split.view_stats_label'), icon: 'bar-chart-3', desc: Localization.t('split.view_stats_desc') },
+        { id: 'analysis', label: Localization.t('split.view_analysis_label'), icon: 'trending-up', desc: Localization.t('split.view_analysis_desc') },
+        { id: 'versions', label: Localization.t('split.view_versions_label'), icon: 'file-clock', desc: Localization.t('split.view_versions_desc') },
+        { id: 'todos', label: Localization.t('split.view_todos_label'), icon: 'list-todo', desc: Localization.t('split.view_todos_desc') }
     ];
 
     content.innerHTML = `
@@ -485,3 +485,19 @@ function stopSplitResize() {
 
     saveSplitViewState();
 }
+
+// Refresh split view when language changes
+window.addEventListener('localeChanged', () => {
+    if (splitViewActive) {
+        renderSplitView();
+        updateSplitToggleButton();
+        if (splitActivePanel) {
+            const panelState = splitViewState[splitActivePanel];
+            if (panelState && panelState.view) {
+                updateSidebarForSplitPanel(panelState.view);
+            }
+        }
+    } else {
+        updateSplitToggleButton();
+    }
+});

@@ -3,21 +3,21 @@
 // ==========================================
 
 const viewLabels = {
-    'editor': 'Structure',
-    'characters': 'Personnages',
-    'world': 'Univers',
-    'notes': 'Notes',
-    'codex': 'Codex',
-    'stats': 'Statistiques',
-    'analysis': 'Analyse',
-    'versions': 'Snapshots',
-    'todos': 'TODOs',
-    'corkboard': 'Tableau',
-    'mindmap': 'Mindmap',
-    'plot': 'Intrigue',
-    'relations': 'Relations',
-    'map': 'Carte',
-    'timelineviz': 'Timeline'
+    get editor() { return Localization.t('nav.editor'); },
+    get characters() { return Localization.t('nav.characters'); },
+    get world() { return Localization.t('nav.world'); },
+    get notes() { return Localization.t('nav.notes'); },
+    get codex() { return Localization.t('nav.codex'); },
+    get stats() { return Localization.t('nav.stats'); },
+    get analysis() { return Localization.t('nav.analysis'); },
+    get versions() { return Localization.t('nav.snapshots'); },
+    get todos() { return Localization.t('nav.todos'); },
+    get corkboard() { return Localization.t('nav.corkboard'); },
+    get mindmap() { return Localization.t('nav.mindmap'); },
+    get plot() { return Localization.t('nav.plot'); },
+    get relations() { return Localization.t('nav.relations'); },
+    get map() { return Localization.t('nav.map'); },
+    get timelineviz() { return Localization.t('nav.timeline'); }
 };
 
 const viewIcons = {

@@ -22,7 +22,7 @@ function updateSplitSceneContent(editor) {
 
     // Update word count display
     const wcDisplay = document.querySelector(`.split-word-count-${panel}`);
-    if (wcDisplay) wcDisplay.textContent = wordCount;
+    if (wcDisplay) wcDisplay.textContent = Localization.t('editor.word_count', [wordCount]);
 
     if (typeof saveProject === 'function') {
         saveProject();
