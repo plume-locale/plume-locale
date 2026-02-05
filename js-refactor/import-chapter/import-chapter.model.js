@@ -74,7 +74,7 @@ const ImportChapterModel = {
             case '.pages':
                 return this.convertPagesToHtml(file);
             default:
-                throw new Error(`Format non supporté: ${file.name}`);
+                throw new Error(Localization.t('import.error.unsupported_format').replace('{0}', file.name));
         }
     },
 
@@ -110,7 +110,7 @@ const ImportChapterModel = {
                     reject(error);
                 }
             };
-            reader.onerror = () => reject(new Error('Erreur de lecture du fichier'));
+            reader.onerror = () => reject(new Error(Localization.t('import.error.read_error')));
             reader.readAsArrayBuffer(file);
         });
     },
@@ -132,7 +132,7 @@ const ImportChapterModel = {
                     reject(error);
                 }
             };
-            reader.onerror = () => reject(new Error('Erreur de lecture du fichier'));
+            reader.onerror = () => reject(new Error(Localization.t('import.error.read_error')));
             reader.readAsText(file, 'UTF-8');
         });
     },
@@ -209,7 +209,7 @@ const ImportChapterModel = {
                     reject(error);
                 }
             };
-            reader.onerror = () => reject(new Error('Erreur de lecture du fichier'));
+            reader.onerror = () => reject(new Error(Localization.t('import.error.read_error')));
             reader.readAsText(file, 'UTF-8');
         });
     },
@@ -348,15 +348,15 @@ const ImportChapterModel = {
                     });
 
                     if (!combinedHtml.trim()) {
-                        throw new Error('Aucun contenu trouvé dans l\'EPUB');
+                        throw new Error(Localization.t('import.error.epub_empty'));
                     }
 
                     resolve({ html: combinedHtml, messages });
                 } catch (error) {
-                    reject(new Error('Erreur lors de la lecture de l\'EPUB: ' + error.message));
+                    reject(new Error(Localization.t('import.error.epub_read_error').replace('{0}', error.message)));
                 }
             };
-            reader.onerror = () => reject(new Error('Erreur de lecture du fichier'));
+            reader.onerror = () => reject(new Error(Localization.t('import.error.read_error')));
             reader.readAsArrayBuffer(file);
         });
     },
@@ -375,7 +375,7 @@ const ImportChapterModel = {
                     const zip = await JSZip.loadAsync(arrayBuffer);
 
                     let textContent = '';
-                    const messages = [{ type: 'warning', message: 'Le format .pages peut perdre une partie du formatage' }];
+                    const messages = [{ type: 'warning', message: Localization.t('import.warning.pages_format') }];
 
                     // Pages utilise un format protobuf dans index.zip ou Document.iwa
                     // On va essayer d'extraire le texte du preview ou des fichiers texte
@@ -434,7 +434,7 @@ const ImportChapterModel = {
                     }
 
                     if (!textContent.trim()) {
-                        throw new Error('Impossible d\'extraire le texte du fichier .pages. Essayez d\'exporter en .docx depuis Pages.');
+                        throw new Error(Localization.t('import.error.pages_extract_error'));
                     }
 
                     // Convertir le texte extrait en HTML
@@ -442,10 +442,10 @@ const ImportChapterModel = {
                     resolve({ html, messages });
 
                 } catch (error) {
-                    reject(new Error('Erreur lors de la lecture du fichier .pages: ' + error.message + '. Essayez d\'exporter en .docx depuis Pages.'));
+                    reject(new Error(Localization.t('import.error.pages_read_error').replace('{0}', error.message)));
                 }
             };
-            reader.onerror = () => reject(new Error('Erreur de lecture du fichier'));
+            reader.onerror = () => reject(new Error(Localization.t('import.error.read_error')));
             reader.readAsArrayBuffer(file);
         });
     },
@@ -488,7 +488,7 @@ const ImportChapterModel = {
         const fullContent = doc.body.innerHTML;
         if (fullContent.trim()) {
             chapters.push({
-                title: 'Chapitre 1',
+                title: Localization.t('import.default.chapter').replace('{0}', '1'),
                 content: this.cleanHtml(fullContent)
             });
         }
@@ -523,7 +523,7 @@ const ImportChapterModel = {
             const cleanTitle = this.cleanChapterTitle(title);
 
             chapters.push({
-                title: cleanTitle || `Chapitre ${index + 1}`,
+                title: cleanTitle || Localization.t('import.default.chapter').replace('{0}', index + 1),
                 content: this.cleanHtml(content)
             });
         });
@@ -542,7 +542,7 @@ const ImportChapterModel = {
 
         if (prologueContent.trim()) {
             chapters.unshift({
-                title: 'Prologue',
+                title: Localization.t('import.default.prologue'),
                 content: this.cleanHtml(prologueContent)
             });
         }
@@ -571,7 +571,7 @@ const ImportChapterModel = {
                 } else if (prologueContent.trim()) {
                     // Contenu avant le premier chapitre = prologue
                     chapters.push({
-                        title: 'Prologue',
+                        title: Localization.t('import.default.prologue'),
                         content: this.cleanHtml(prologueContent)
                     });
                 }
@@ -622,9 +622,9 @@ const ImportChapterModel = {
                 if (subtitle) {
                     title = subtitle;
                 } else if (/^\d+$/.test(number)) {
-                    title = `Chapitre ${number}`;
+                    title = Localization.t('import.default.chapter').replace('{0}', number);
                 } else {
-                    title = `Chapitre ${this.romanToArabic(number) || number}`;
+                    title = Localization.t('import.default.chapter').replace('{0}', this.romanToArabic(number) || number);
                 }
 
                 return { title, number };
@@ -725,24 +725,19 @@ const ImportChapterModel = {
         return temp.innerHTML;
     },
 
-    /**
-     * Crée la structure Plume à partir des chapitres détectés
-     * @param {Array} chapters - Chapitres détectés
-     * @param {string} actTitle - Titre de l'acte à créer
-     * @returns {Object} - Structure d'acte Plume
-     */
-    createPlumeStructure(chapters, actTitle = 'Import') {
+    createPlumeStructure(chapters, actTitle = null) {
         const now = new Date().toISOString();
+        if (!actTitle) actTitle = Localization.t('import.default.act');
 
         const act = createAct(actTitle, {
-            description: `Importé le ${new Date().toLocaleDateString('fr-FR')}`
+            description: Localization.t('import.info.imported_on').replace('{0}', new Date().toLocaleDateString(Localization.current === 'fr' ? 'fr-FR' : 'en-US'))
         });
 
         chapters.forEach((chapter, index) => {
-            const plumeChapter = createChapter(chapter.title || `Chapitre ${index + 1}`);
+            const plumeChapter = createChapter(chapter.title || Localization.t('import.default.chapter').replace('{0}', index + 1));
 
             // Créer une scène avec le contenu du chapitre
-            const scene = createScene('Contenu', {
+            const scene = createScene(Localization.t('import.default.scene'), {
                 content: chapter.content,
                 wordCount: this.countWords(chapter.content)
             });

@@ -42,36 +42,36 @@ const ImportChapterViewModel = {
             const format = ImportChapterModel.getFileFormat(file);
             if (!format) {
                 const supported = ImportChapterModel.supportedFormats.join(', ');
-                throw new Error(`Format non supporté. Formats acceptés : ${supported}`);
+                throw new Error(Localization.t('import.error.unsupported_format').replace('{0}', supported));
             }
 
             // Validation de la taille
             if (file.size > 50 * 1024 * 1024) { // 50MB max
-                throw new Error('Le fichier est trop volumineux (max 50MB)');
+                throw new Error(Localization.t('import.error.file_too_large'));
             }
 
             // Vérification des dépendances pour DOCX
             if (format === '.docx' && !this.isMammothAvailable()) {
-                throw new Error('La bibliothèque de lecture DOCX n\'est pas chargée. Rafraîchissez la page.');
+                throw new Error(Localization.t('import.error.mammoth_missing'));
             }
 
             // Vérification des dépendances pour EPUB et PAGES
             if ((format === '.epub' || format === '.pages') && typeof JSZip === 'undefined') {
-                throw new Error('La bibliothèque de lecture des archives n\'est pas chargée. Rafraîchissez la page.');
+                throw new Error(Localization.t('import.error.jszip_missing'));
             }
 
             // Conversion vers HTML (méthode unifiée)
             const result = await ImportChapterModel.convertToHtml(file);
 
             if (!result.html || result.html.trim().length === 0) {
-                throw new Error('Le document semble vide');
+                throw new Error(Localization.t('import.error.document_empty'));
             }
 
             // Parsing des chapitres
             const chapters = ImportChapterModel.parseChaptersFromHtml(result.html);
 
             if (chapters.length === 0) {
-                throw new Error('Aucun chapitre détecté dans le document');
+                throw new Error(Localization.t('import.error.no_chapters'));
             }
 
             // Calculer les statistiques
@@ -137,7 +137,7 @@ const ImportChapterViewModel = {
         if (!this.state.previewData) {
             return {
                 success: false,
-                error: 'Aucune donnée à importer'
+                error: Localization.t('import.error.no_data')
             };
         }
 
@@ -151,7 +151,7 @@ const ImportChapterViewModel = {
                     .replace(/\.(docx|txt|md|epub|pages)$/i, '')
                     .replace(/[-_]/g, ' ');
             }
-            finalActTitle = finalActTitle || 'Import';
+            finalActTitle = finalActTitle || Localization.t('import.default.act');
 
             // Créer la structure Plume
             const newAct = ImportChapterModel.createPlumeStructure(chapters, finalActTitle);
