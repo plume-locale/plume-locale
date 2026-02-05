@@ -12,7 +12,7 @@
  * Coordination pour ajouter un personnage.
  */
 function addCharacterViewModel(name, role, description) {
-    if (!name) return { success: false, message: 'Le nom est obligatoire' };
+    if (!name) return { success: false, message: Localization.t('char.error.name_required') };
 
     const characterData = {
         name: name,
@@ -58,22 +58,22 @@ function getGroupedCharactersViewModel() {
 
     const byRace = {};
     races.forEach(race => byRace[race] = []);
-    byRace['Race non classée'] = [];
+    byRace[Localization.t('char.list.no_race')] = [];
 
     const byGroup = {};
     customGroups.forEach(g => byGroup[g] = []);
-    byGroup['Sans groupe'] = [];
+    byGroup[Localization.t('char.list.no_group')] = [];
 
     characters.forEach(char => {
         const migrated = CharacterModel.migrate(char);
 
         // Groupement par race
-        const raceKey = (migrated.race && races.includes(migrated.race)) ? migrated.race : 'Race non classée';
+        const raceKey = (migrated.race && races.includes(migrated.race)) ? migrated.race : Localization.t('char.list.no_race');
         if (!byRace[raceKey]) byRace[raceKey] = [];
         byRace[raceKey].push(migrated);
 
         // Groupement par groupe perso
-        const groupKey = (migrated.group && customGroups.includes(migrated.group)) ? migrated.group : 'Sans groupe';
+        const groupKey = (migrated.group && customGroups.includes(migrated.group)) ? migrated.group : Localization.t('char.list.no_group');
         if (!byGroup[groupKey]) byGroup[groupKey] = [];
         byGroup[groupKey].push(migrated);
     });
@@ -157,7 +157,7 @@ function updateCharacterFieldViewModel(id, field, value) {
     else if (field === 'firstName' || field === 'lastName') {
         const fName = field === 'firstName' ? value : char.firstName;
         const lName = field === 'lastName' ? value : char.lastName;
-        updates.name = `${fName || ''} ${lName || ''}`.trim() || 'Sans nom';
+        updates.name = `${fName || ''} ${lName || ''}`.trim() || Localization.t('char.list.no_name');
     }
 
     const nextValue = CharacterRepository.update(id, updates);
@@ -198,7 +198,7 @@ function addGroupViewModel(groupName, charIdToAssign) {
  */
 function toggleCharacterTraitViewModel(id, trait) {
     const char = CharacterRepository.getById(id);
-    if (!char) return { success: false, message: 'Personnage introuvable' };
+    if (!char) return { success: false, message: Localization.t('char.error.not_found') };
 
     const currentTraits = char.traits || [];
     let newTraits;
@@ -249,7 +249,7 @@ function addRaceViewModel(raceName, charIdToAssign) {
  */
 function addInventoryItemViewModel(id, listType) {
     const char = CharacterRepository.getById(id);
-    if (!char) return { success: false, message: 'Personnage introuvable' };
+    if (!char) return { success: false, message: Localization.t('char.error.not_found') };
 
     const currentList = char[listType] || [];
     const newList = [...currentList, {
@@ -272,7 +272,7 @@ function addInventoryItemViewModel(id, listType) {
 
 function removeInventoryItemViewModel(id, listType, index) {
     const char = CharacterRepository.getById(id);
-    if (!char || !char[listType]) return { success: false, message: 'Personnage ou liste introuvable' };
+    if (!char || !char[listType]) return { success: false, message: Localization.t('char.error.list_not_found') };
 
     const newList = char[listType].filter((_, i) => i !== index);
     const updatedChar = CharacterRepository.update(id, { [listType]: newList });
