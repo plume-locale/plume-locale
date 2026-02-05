@@ -75,14 +75,14 @@ class PlotViewModel {
      * Réinitialise et recalcule les points.
      */
     resetPoints() {
-        if (confirm('Recalculer tous les points d\'intrigue ?\n\nLa tension sera recalculée automatiquement pour toutes les scènes.')) {
+        if (confirm(Localization.t('plot.messages.recalculateConfirm'))) {
             if (typeof project !== 'undefined') {
                 this.repository.generateFromProject(project);
                 this.analysisData = null; // Reset cached analysis
                 this.suggestionsData = null; // Reset cached suggestions
                 this._refreshView();
                 if (typeof showNotification === 'function') {
-                    showNotification('✓ Points recalculés automatiquement');
+                    showNotification(Localization.t('plot.messages.recalculateSuccess'));
                 }
             }
         }
@@ -102,7 +102,7 @@ class PlotViewModel {
     analyzeCurve() {
         const points = this.repository.getAll();
         if (points.length === 0) {
-            alert('Aucun point à analyser. Créez d\'abord des scènes.');
+            alert(Localization.t('plot.messages.noPointsAnalyze'));
             return;
         }
 
@@ -118,7 +118,7 @@ class PlotViewModel {
     showSuggestions() {
         const points = this.repository.getAll();
         if (points.length === 0) {
-            alert('Créez d\'abord des scènes pour obtenir des suggestions.');
+            alert(Localization.t('plot.messages.noPointsSuggest'));
             return;
         }
 
@@ -136,7 +136,7 @@ class PlotViewModel {
         // Mais on permet l'export depuis n'importe quel onglet si on peut grabber les données
         // Ici on suppose qu'on doit être sur l'onglet graph pour grabber le SVG du DOM
         if (this.currentTab !== 'overview') {
-            if (confirm("L'export nécessite d'afficher le graphique. Basculer vers la vue d'ensemble ?")) {
+            if (confirm(Localization.t('plot.messages.exportConfirm'))) {
                 this.showOverview();
                 // Petit délai pour laisser le DOM se mettre à jour
                 setTimeout(() => this.exportPlot(), 100);
