@@ -405,6 +405,25 @@ const LOCALE_FR = {
     "arc.unassigned.empty": "Toutes les scènes sont organisées",
     "arc.unassigned.scene_no_title": "Scène sans titre",
     "arc.unassigned.act_label": "Acte",
-    "arc.unassigned.chapter_label": "Chapitre"
+    "arc.unassigned.chapter_label": "Chapitre",
+
+    // --- Auto-Detect / Links Panel ---
+    "autodetect.chars.confirmed_present": "Confirmés Présents",
+    "autodetect.chars.remove_title": "Retirer (Marquer absent)",
+    "autodetect.chars.none_present": "Aucun personnage confirmé présent.",
+    "autodetect.chars.suggestions": "Suggestions",
+    "autodetect.chars.ignore_title": "Ignorer",
+    "autodetect.chars.validate_title": "Valider",
+    "autodetect.chars.none_suggested": "Aucune suggestion.",
+    "autodetect.chars.confirmed_absent": "Confirmés Absents",
+    "autodetect.chars.restore_title": "Rétablir",
+    "autodetect.chars.none_absent": "Aucun personnage ignoré manuellement.",
+    "autodetect.chars.none_ignored": "Aucun personnage ignoré.",
+    "autodetect.btn.link_manual": "Lier manuellement",
+    "autodetect.elements.title": "Éléments Liés",
+    "autodetect.elements.unlink_title": "Délier",
+    "autodetect.elements.none_linked": "Aucun lieu ou élément lié.",
+    "autodetect.elements.none_locations": "Aucun lieu.",
+    "autodetect.timeline.none_events": "Aucun événement."
 
 };

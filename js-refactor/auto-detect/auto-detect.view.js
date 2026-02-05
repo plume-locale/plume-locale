@@ -54,7 +54,7 @@ const AutoDetectView = {
         let html = '';
 
         // ZONE 1 : PRÉSENTS
-        html += '<h4 style="margin: 0 0 8px 0; font-size: 0.8rem; opacity: 0.8; text-align: left;"><i data-lucide="check-circle" style="width: 14px; height: 14px; vertical-align: -2px; margin-right: 4px;"></i> Confirmés Présents</h4>';
+        html += `<h4 style="margin: 0 0 8px 0; font-size: 0.8rem; opacity: 0.8; text-align: left;"><i data-lucide="check-circle" style="width: 14px; height: 14px; vertical-align: -2px; margin-right: 4px;"></i> ${Localization.t('autodetect.chars.confirmed_present')}</h4>`;
         if (presentList.length > 0) {
             html += presentList.map(char => `
                 <div class="link-item present" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
@@ -62,17 +62,17 @@ const AutoDetectView = {
                         ${this.getAvatarHTML(char)}
                         <span>${char.name}</span>
                     </div>
-                    <button onclick="AutoDetectViewModel.confirmAbsence(${char.id})" title="Retirer (Marquer absent)" class="btn-icon">
+                    <button onclick="AutoDetectViewModel.confirmAbsence(${char.id})" title="${Localization.t('autodetect.chars.remove_title')}" class="btn-icon">
                         <i data-lucide="x" style="width: 16px; height: 16px;"></i>
                     </button>
                 </div>
             `).join('');
         } else {
-            html += '<p class="text-muted small" style="font-size: 0.75rem; margin-bottom: 12px; opacity: 0.7;">Aucun personnage confirmé présent.</p>';
+            html += `<p class="text-muted small" style="font-size: 0.75rem; margin-bottom: 12px; opacity: 0.7;">${Localization.t('autodetect.chars.none_present')}</p>`;
         }
 
         // ZONE 2 : SUGGÉRÉS
-        html += '<h4 style="margin: 12px 0 8px 0; font-size: 0.8rem; opacity: 0.8; color: var(--accent-color); text-align: left;"><i data-lucide="help-circle" style="width: 14px; height: 14px; vertical-align: -2px; margin-right: 4px;"></i> Suggestions</h4>';
+        html += `<h4 style="margin: 12px 0 8px 0; font-size: 0.8rem; opacity: 0.8; color: var(--accent-color); text-align: left;"><i data-lucide="help-circle" style="width: 14px; height: 14px; vertical-align: -2px; margin-right: 4px;"></i> ${Localization.t('autodetect.chars.suggestions')}</h4>`;
         if (suggestedList.length > 0) {
             html += suggestedList.map(char => `
                 <div class="link-item suggested" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
@@ -81,21 +81,21 @@ const AutoDetectView = {
                         <span>${char.name}</span>
                     </div>
                     <div style="display: flex; gap: 4px;">
-                        <button onclick="AutoDetectViewModel.confirmAbsence(${char.id})" title="Ignorer" class="btn-icon">
+                        <button onclick="AutoDetectViewModel.confirmAbsence(${char.id})" title="${Localization.t('autodetect.chars.ignore_title')}" class="btn-icon">
                             <i data-lucide="x" style="width: 16px; height: 16px;"></i>
                         </button>
-                        <button onclick="AutoDetectViewModel.confirmPresence(${char.id})" title="Valider" class="btn-icon">
+                        <button onclick="AutoDetectViewModel.confirmPresence(${char.id})" title="${Localization.t('autodetect.chars.validate_title')}" class="btn-icon">
                             <i data-lucide="check" style="width: 16px; height: 16px;"></i>
                         </button>
                     </div>
                 </div>
             `).join('');
         } else {
-            html += '<p class="text-muted small" style="font-size: 0.75rem; margin-bottom: 12px; opacity: 0.7;">Aucune suggestion.</p>';
+            html += `<p class="text-muted small" style="font-size: 0.75rem; margin-bottom: 12px; opacity: 0.7;">${Localization.t('autodetect.chars.none_suggested')}</p>`;
         }
 
         // ZONE 3 : ABSENTS
-        html += '<h4 style="margin: 12px 0 8px 0; font-size: 0.8rem; opacity: 0.8; text-align: left;"><i data-lucide="x-circle" style="width: 14px; height: 14px; vertical-align: -2px; margin-right: 4px;"></i> Confirmés Absents</h4>';
+        html += `<h4 style="margin: 12px 0 8px 0; font-size: 0.8rem; opacity: 0.8; text-align: left;"><i data-lucide="x-circle" style="width: 14px; height: 14px; vertical-align: -2px; margin-right: 4px;"></i> ${Localization.t('autodetect.chars.confirmed_absent')}</h4>`;
         if (absentList.length > 0) {
             html += absentList.map(char => `
                 <div class="link-item absent" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
@@ -103,20 +103,20 @@ const AutoDetectView = {
                         ${this.getAvatarHTML(char)}
                         <span style="text-decoration: line-through;">${char.name}</span>
                     </div>
-                    <button onclick="AutoDetectViewModel.confirmPresence(${char.id})" title="Rétablir" class="btn-icon">
+                    <button onclick="AutoDetectViewModel.confirmPresence(${char.id})" title="${Localization.t('autodetect.chars.restore_title')}" class="btn-icon">
                         <i data-lucide="rotate-ccw" style="width: 16px; height: 16px;"></i>
                     </button>
                 </div>
             `).join('');
         } else {
-            html += '<p class="text-muted small" style="font-size: 0.75rem; margin-bottom: 12px; opacity: 0.7;">Aucun personnage ignoré manuellement.</p>';
+            html += `<p class="text-muted small" style="font-size: 0.75rem; margin-bottom: 12px; opacity: 0.7;">${Localization.t('autodetect.chars.none_absent')}</p>`;
         }
 
         // Bouton d'ajout manuel
         html += `
             <div style="margin-top: 10px; text-align: center;">
                 <button class="btn btn-small" onclick="openCharacterLinker(currentActId, currentChapterId, currentSceneId)" style="font-size: 0.75rem; padding: 4px 8px; width: 100%;">
-                    <i data-lucide="plus" style="width: 12px; height: 12px; vertical-align: middle; margin-right: 4px;"></i> Lier manuellement
+                    <i data-lucide="plus" style="width: 12px; height: 12px; vertical-align: middle; margin-right: 4px;"></i> ${Localization.t('autodetect.btn.link_manual')}
                 </button>
             </div>
         `;
@@ -135,7 +135,7 @@ const AutoDetectView = {
         const allElements = AutoDetectRepository.getWorldElements();
         const linkedElements = allElements.filter(e => linkedIds.includes(e.id));
 
-        let html = '<h4 style="margin: 0 0 8px 0; font-size: 0.8rem; opacity: 0.8; text-align: left;"><i data-lucide="globe" style="width:14px;height:14px;vertical-align:-2px;margin-right:4px;"></i> Éléments Liés</h4>';
+        let html = `<h4 style="margin: 0 0 8px 0; font-size: 0.8rem; opacity: 0.8; text-align: left;"><i data-lucide="globe" style="width:14px;height:14px;vertical-align:-2px;margin-right:4px;"></i> ${Localization.t('autodetect.elements.title')}</h4>`;
 
         if (linkedElements.length > 0) {
             html += linkedElements.map(elem => {
@@ -146,20 +146,20 @@ const AutoDetectView = {
                             <i data-lucide="${iconName}" style="width: 20px; height: 20px;"></i>
                             <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${elem.name} (${elem.type})">${elem.name}</span>
                         </div>
-                        <button onclick="toggleElementInScene(currentActId, currentChapterId, currentSceneId, ${elem.id}); openScene(currentActId, currentChapterId, currentSceneId);" title="Délier" class="btn-icon">
+                        <button onclick="toggleElementInScene(currentActId, currentChapterId, currentSceneId, ${elem.id}); openScene(currentActId, currentChapterId, currentSceneId);" title="${Localization.t('autodetect.elements.unlink_title')}" class="btn-icon">
                             <i data-lucide="x" style="width: 16px; height: 16px;"></i>
                         </button>
                     </div>
                 `;
             }).join('');
         } else {
-            html += '<p class="text-muted small" style="font-size: 0.75rem; margin-bottom: 12px; opacity: 0.7;">Aucun lieu ou élément lié.</p>';
+            html += `<p class="text-muted small" style="font-size: 0.75rem; margin-bottom: 12px; opacity: 0.7;">${Localization.t('autodetect.elements.none_linked')}</p>`;
         }
 
         html += `
             <div style="margin-top: 10px; text-align: center;">
                 <button class="btn btn-small" onclick="openElementLinker(currentActId, currentChapterId, currentSceneId)" style="font-size: 0.75rem; padding: 4px 8px; width: 100%;">
-                    <i data-lucide="plus" style="width: 12px; height: 12px; vertical-align: middle; margin-right: 4px;"></i> Lier manuellement
+                    <i data-lucide="plus" style="width: 12px; height: 12px; vertical-align: middle; margin-right: 4px;"></i> ${Localization.t('autodetect.btn.link_manual')}
                 </button>
             </div>
         `;
@@ -176,7 +176,7 @@ const AutoDetectView = {
 
         const scene = AutoDetectRepository.getCurrentScene();
         if (!scene) {
-            content.innerHTML = '<p style="text-align: center; color: var(--text-muted); padding: 2rem;">Sélectionnez une scène</p>';
+            content.innerHTML = `<p style="text-align: center; color: var(--text-muted); padding: 2rem;">${Localization.t('empty.select_scene')}</p>`;
             return;
         }
 
@@ -184,7 +184,7 @@ const AutoDetectView = {
 
         // Section Personnages
         html += '<div style="margin-bottom: 1.5rem;">';
-        html += '<div class="quick-links-title" style="font-size: 0.85rem; font-weight: 600; margin-bottom: 0.75rem; color: var(--text-muted);"><i data-lucide="users" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> Personnages</div>';
+        html += `<div class="quick-links-title" style="font-size: 0.85rem; font-weight: 600; margin-bottom: 0.75rem; color: var(--text-muted);"><i data-lucide="users" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> ${Localization.t('nav.characters')}</div>`;
 
         const allCharacters = AutoDetectRepository.getCharacters();
         const confirmedIds = scene.confirmedPresentCharacters || [];
@@ -196,7 +196,7 @@ const AutoDetectView = {
         const absentList = allCharacters.filter(c => absentIds.includes(c.id));
 
         // Confirmés
-        html += '<h4 style="margin: 0 0 8px 0; font-size: 0.8rem; opacity: 0.8;"><i data-lucide="check-circle" style="width: 14px; height: 14px; vertical-align: -2px; margin-right: 4px;"></i> Confirmés Présents</h4>';
+        html += `<h4 style="margin: 0 0 8px 0; font-size: 0.8rem; opacity: 0.8;"><i data-lucide="check-circle" style="width: 14px; height: 14px; vertical-align: -2px; margin-right: 4px;"></i> ${Localization.t('autodetect.chars.confirmed_present')}</h4>`;
         if (presentList.length > 0) {
             html += presentList.map(char => `
                 <div class="link-item present" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
@@ -204,17 +204,17 @@ const AutoDetectView = {
                         ${this.getAvatarHTML(char)}
                         <span>${char.name}</span>
                     </div>
-                    <button onclick="AutoDetectViewModel.confirmAbsence(${char.id})" title="Retirer" class="btn-icon">
+                    <button onclick="AutoDetectViewModel.confirmAbsence(${char.id})" title="${Localization.t('autodetect.chars.remove_title')}" class="btn-icon">
                         <i data-lucide="x" style="width: 16px; height: 16px;"></i>
                     </button>
                 </div>
             `).join('');
         } else {
-            html += '<p class="text-muted small" style="font-size: 0.75rem; margin-bottom: 12px; opacity: 0.7;">Aucun personnage confirmé présent.</p>';
+            html += `<p class="text-muted small" style="font-size: 0.75rem; margin-bottom: 12px; opacity: 0.7;">${Localization.t('autodetect.chars.none_present')}</p>`;
         }
 
         // Suggestions
-        html += '<h4 style="margin: 12px 0 8px 0; font-size: 0.8rem; opacity: 0.8; color: var(--accent-color);"><i data-lucide="help-circle" style="width: 14px; height: 14px; vertical-align: -2px; margin-right: 4px;"></i> Suggestions</h4>';
+        html += `<h4 style="margin: 12px 0 8px 0; font-size: 0.8rem; opacity: 0.8; color: var(--accent-color);"><i data-lucide="help-circle" style="width: 14px; height: 14px; vertical-align: -2px; margin-right: 4px;"></i> ${Localization.t('autodetect.chars.suggestions')}</h4>`;
         if (suggestedList.length > 0) {
             html += suggestedList.map(char => `
                 <div class="link-item suggested" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
@@ -223,21 +223,21 @@ const AutoDetectView = {
                         <span>${char.name}</span>
                     </div>
                     <div style="display: flex; gap: 4px;">
-                        <button onclick="AutoDetectViewModel.confirmAbsence(${char.id})" title="Ignorer" class="btn-icon">
+                        <button onclick="AutoDetectViewModel.confirmAbsence(${char.id})" title="${Localization.t('autodetect.chars.ignore_title')}" class="btn-icon">
                             <i data-lucide="x" style="width: 16px; height: 16px;"></i>
                         </button>
-                        <button onclick="AutoDetectViewModel.confirmPresence(${char.id})" title="Valider" class="btn-icon">
+                        <button onclick="AutoDetectViewModel.confirmPresence(${char.id})" title="${Localization.t('autodetect.chars.validate_title')}" class="btn-icon">
                             <i data-lucide="check" style="width: 16px; height: 16px;"></i>
                         </button>
                     </div>
                 </div>
             `).join('');
         } else {
-            html += '<p class="text-muted small" style="font-size: 0.75rem; margin-bottom: 12px; opacity: 0.7;">Aucune suggestion.</p>';
+            html += `<p class="text-muted small" style="font-size: 0.75rem; margin-bottom: 12px; opacity: 0.7;">${Localization.t('autodetect.chars.none_suggested')}</p>`;
         }
 
         // Absents
-        html += '<h4 style="margin: 12px 0 8px 0; font-size: 0.8rem; opacity: 0.8;"><i data-lucide="x-circle" style="width: 14px; height: 14px; vertical-align: -2px; margin-right: 4px;"></i> Confirmés Absents</h4>';
+        html += `<h4 style="margin: 12px 0 8px 0; font-size: 0.8rem; opacity: 0.8;"><i data-lucide="x-circle" style="width: 14px; height: 14px; vertical-align: -2px; margin-right: 4px;"></i> ${Localization.t('autodetect.chars.confirmed_absent')}</h4>`;
         if (absentList.length > 0) {
             html += absentList.map(char => `
                 <div class="link-item absent" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
@@ -245,34 +245,34 @@ const AutoDetectView = {
                         ${this.getAvatarHTML(char)}
                         <span style="text-decoration: line-through;">${char.name}</span>
                     </div>
-                    <button onclick="AutoDetectViewModel.confirmPresence(${char.id})" title="Rétablir" class="btn-icon">
+                    <button onclick="AutoDetectViewModel.confirmPresence(${char.id})" title="${Localization.t('autodetect.chars.restore_title')}" class="btn-icon">
                         <i data-lucide="rotate-ccw" style="width: 16px; height: 16px;"></i>
                     </button>
                 </div>
             `).join('');
         } else {
-            html += '<p class="text-muted small" style="font-size: 0.75rem; margin-bottom: 12px; opacity: 0.7;">Aucun personnage ignoré.</p>';
+            html += `<p class="text-muted small" style="font-size: 0.75rem; margin-bottom: 12px; opacity: 0.7;">${Localization.t('autodetect.chars.none_ignored')}</p>`;
         }
         html += '</div>';
 
         // SECTION 2 : UNIVERS (Simplifiée pour sidebar)
         html += '<div style="margin-bottom: 1.5rem;">';
-        html += '<div class="quick-links-title" style="font-size: 0.85rem; font-weight: 600; margin-bottom: 0.75rem; color: var(--text-muted);"><i data-lucide="globe" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> Univers</div>';
+        html += `<div class="quick-links-title" style="font-size: 0.85rem; font-weight: 600; margin-bottom: 0.75rem; color: var(--text-muted);"><i data-lucide="globe" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> ${Localization.t('nav.world')}</div>`;
         const locationLinks = (scene.locations || []).map(loc => {
             const locData = project.locations ? project.locations.find(l => l.id === loc.id) : null;
             return locData ? `<div class="link-item" style="margin-bottom: 4px;"><i data-lucide="map-pin" style="width:12px;height:12px;vertical-align:middle;margin-right:4px;"></i>${locData.name}</div>` : '';
         }).join('');
-        html += locationLinks || '<p class="text-muted small" style="font-size: 0.75rem; opacity: 0.7;">Aucun lieu.</p>';
+        html += locationLinks || `<p class="text-muted small" style="font-size: 0.75rem; opacity: 0.7;">${Localization.t('autodetect.elements.none_locations')}</p>`;
         html += '</div>';
 
         // SECTION 3 : TIMELINE
         html += '<div>';
-        html += '<div class="quick-links-title" style="font-size: 0.85rem; font-weight: 600; margin-bottom: 0.75rem; color: var(--text-muted);"><i data-lucide="train-track" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> Timeline</div>';
+        html += `<div class="quick-links-title" style="font-size: 0.85rem; font-weight: 600; margin-bottom: 0.75rem; color: var(--text-muted);"><i data-lucide="train-track" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> ${Localization.t('nav.timeline')}</div>`;
         const eventLinks = (scene.events || []).map(ev => {
             const evData = project.events ? project.events.find(e => e.id === ev.id) : null;
             return evData ? `<div class="link-item" style="margin-bottom: 4px;"><i data-lucide="calendar" style="width:12px;height:12px;vertical-align:middle;margin-right:4px;"></i>${evData.title}</div>` : '';
         }).join('');
-        html += eventLinks || '<p class="text-muted small" style="font-size: 0.75rem; opacity: 0.7;">Aucun événement.</p>';
+        html += eventLinks || `<p class="text-muted small" style="font-size: 0.75rem; opacity: 0.7;">${Localization.t('autodetect.timeline.none_events')}</p>`;
         html += '</div>';
 
         content.innerHTML = html;

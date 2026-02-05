@@ -405,6 +405,25 @@ const LOCALE_EN = {
     "arc.unassigned.empty": "All scenes are organized",
     "arc.unassigned.scene_no_title": "Untitled scene",
     "arc.unassigned.act_label": "Act",
-    "arc.unassigned.chapter_label": "Chapter"
+    "arc.unassigned.chapter_label": "Chapter",
+
+    // --- Auto-Detect / Links Panel ---
+    "autodetect.chars.confirmed_present": "Confirmed Present",
+    "autodetect.chars.remove_title": "Remove (Mark as absent)",
+    "autodetect.chars.none_present": "No characters confirmed present.",
+    "autodetect.chars.suggestions": "Suggestions",
+    "autodetect.chars.ignore_title": "Ignore",
+    "autodetect.chars.validate_title": "Validate",
+    "autodetect.chars.none_suggested": "No suggestions.",
+    "autodetect.chars.confirmed_absent": "Confirmed Absent",
+    "autodetect.chars.restore_title": "Restore",
+    "autodetect.chars.none_absent": "No characters manually ignored.",
+    "autodetect.chars.none_ignored": "No characters ignored.",
+    "autodetect.btn.link_manual": "Link manually",
+    "autodetect.elements.title": "Linked Elements",
+    "autodetect.elements.unlink_title": "Unlink",
+    "autodetect.elements.none_linked": "No linked locations or elements.",
+    "autodetect.elements.none_locations": "No locations.",
+    "autodetect.timeline.none_events": "No events."
 
 };
