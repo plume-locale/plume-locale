@@ -19,16 +19,18 @@ class RelationMapModel {
      * @property {number} y - Y coordinate on the graph
      */
 
-    static RELATION_TYPES = {
-        'amour': { color: '#e91e63', label: 'Amour', icon: 'heart' },
-        'amitie': { color: '#4caf50', label: 'Amitié', icon: 'handshake' },
-        'rivalite': { color: '#f44336', label: 'Rivalité', icon: 'swords' },
-        'famille': { color: '#2196f3', label: 'Famille', icon: 'house' },
-        'mentor': { color: '#ff9800', label: 'Mentor', icon: 'graduation-cap' },
-        'ennemi': { color: '#9c27b0', label: 'Ennemi', icon: 'skull' },
-        'alliance': { color: '#00bcd4', label: 'Alliance', icon: 'shield' },
-        'neutre': { color: '#757575', label: 'Neutre', icon: 'meh' }
-    };
+    static get RELATION_TYPES() {
+        return {
+            'amour': { color: '#e91e63', label: Localization.t('relations.type.love'), icon: 'heart' },
+            'amitie': { color: '#4caf50', label: Localization.t('relations.type.friendship'), icon: 'handshake' },
+            'rivalite': { color: '#f44336', label: Localization.t('relations.type.rivalry'), icon: 'swords' },
+            'famille': { color: '#2196f3', label: Localization.t('relations.type.family'), icon: 'house' },
+            'mentor': { color: '#ff9800', label: Localization.t('relations.type.mentor'), icon: 'graduation-cap' },
+            'ennemi': { color: '#9c27b0', label: Localization.t('relations.type.enemy'), icon: 'skull' },
+            'alliance': { color: '#00bcd4', label: Localization.t('relations.type.alliance'), icon: 'shield' },
+            'neutre': { color: '#757575', label: Localization.t('relations.type.neutral'), icon: 'meh' }
+        };
+    }
 
     /**
      * Creates a new relation object.

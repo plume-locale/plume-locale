@@ -9,17 +9,17 @@ class RelationMapHandlers {
     }
 
     static handleResetPositions() {
-        if (confirm('Réinitialiser toutes les positions des personnages ?')) {
+        if (confirm(Localization.t('relations.confirm.reset_positions'))) {
             this.viewModel.resetPositions();
             this.view.render();
-            if (typeof showNotification === 'function') showNotification('🔄 Positions réinitialisées');
+            if (typeof showNotification === 'function') showNotification(Localization.t('relations.notify.positions_reset'));
         }
     }
 
     static handleAutoArrange() {
         this.viewModel.autoArrange();
         this.view.render();
-        if (typeof showNotification === 'function') showNotification('✨ Personnages arrangés automatiquement');
+        if (typeof showNotification === 'function') showNotification(Localization.t('relations.notify.auto_arranged'));
     }
 
     static handleCharacterClick(event, charId) {
@@ -95,7 +95,7 @@ class RelationMapHandlers {
         const wasMoved = this.viewModel.stopDrag(finalX, finalY);
 
         if (wasMoved && typeof showNotification === 'function') {
-            showNotification('📍 Position sauvegardée');
+            showNotification(Localization.t('relations.notify.position_saved'));
         }
     }
 
@@ -111,7 +111,7 @@ class RelationMapHandlers {
         this.view.closeModal();
         this.view.render();
         if (typeof showNotification === 'function') {
-            showNotification(isEditing ? '✏️ Relation modifiée' : '🔗 Relation créée');
+            showNotification(isEditing ? Localization.t('relations.notify.relation_updated') : Localization.t('relations.notify.relation_created'));
         }
     }
 
@@ -130,10 +130,10 @@ class RelationMapHandlers {
     }
 
     static handleDeleteRelation(relId) {
-        if (confirm('Supprimer cette relation ?')) {
+        if (confirm(Localization.t('relations.confirm.delete_relation'))) {
             this.viewModel.deleteRelation(relId);
             this.view.render();
-            if (typeof showNotification === 'function') showNotification('Relation supprimée');
+            if (typeof showNotification === 'function') showNotification(Localization.t('relations.notify.relation_deleted'));
         }
     }
 }

@@ -22,7 +22,7 @@ class MetroTimelineViewModel {
 
         // Scene selector
         const sceneSelect = document.getElementById('metroEventScene');
-        let sceneOptions = '<option value="">Aucune scène</option>';
+        let sceneOptions = `<option value="">${Localization.t('metro.modal.event.no_scene')}</option>`;
         project.acts.forEach(act => {
             act.chapters.forEach(chapter => {
                 chapter.scenes.forEach(scene => {
@@ -37,10 +37,10 @@ class MetroTimelineViewModel {
         const positionSelect = document.getElementById('metroEventPosition');
         const sortedEvents = MetroTimelineRepository.getAll();
 
-        let positionOptions = '<option value="0">🔼 Au début de la timeline</option>';
+        let positionOptions = `<option value="0">${Localization.t('metro.modal.event.start_timeline')}</option>`;
         sortedEvents.forEach((evt, idx) => {
             if (!eventId || evt.id !== eventId) {
-                positionOptions += `<option value="${evt.order || idx + 1}">↳ Après: ${evt.title}${evt.date ? ' (' + evt.date + ')' : ''}</option>`;
+                positionOptions += `<option value="${evt.order || idx + 1}">${Localization.t('metro.modal.event.after', `${evt.title}${evt.date ? ' (' + evt.date + ')' : ''}`)}</option>`;
             }
         });
         positionSelect.innerHTML = positionOptions;
@@ -59,7 +59,7 @@ class MetroTimelineViewModel {
             const event = MetroTimelineRepository.getById(eventId);
             if (!event) return;
 
-            titleEl.textContent = 'Modifier l\'évènement';
+            titleEl.textContent = Localization.t('metro.modal.event.title_edit');
             deleteBtn.style.display = '';
 
             document.getElementById('metroEventId').value = event.id;
@@ -85,7 +85,7 @@ class MetroTimelineViewModel {
                 }
             });
         } else {
-            titleEl.textContent = 'Nouvel évènement';
+            titleEl.textContent = Localization.t('metro.modal.event.title_new');
             deleteBtn.style.display = 'none';
 
             if (sortedEvents.length > 0) {
@@ -145,7 +145,7 @@ class MetroTimelineViewModel {
         const sceneId = sceneIdValue ? parseInt(sceneIdValue) : null;
 
         if (!title) {
-            alert('Le titre est obligatoire');
+            alert(Localization.t('metro.modal.event.alert_title'));
             return;
         }
 
@@ -168,7 +168,7 @@ class MetroTimelineViewModel {
 
         saveProject();
         closeModal('metroEventModal');
-        showNotification(eventId ? '✓ évènement mis à jour' : '✓ évènement créé');
+        showNotification(eventId ? Localization.t('metro.notify.updated') : Localization.t('metro.notify.created'));
 
         this.refreshAll();
     }
@@ -180,12 +180,12 @@ class MetroTimelineViewModel {
         const eventId = document.getElementById('metroEventId').value;
         if (!eventId) return;
 
-        if (!confirm('Supprimer cet évènement ?')) return;
+        if (!confirm(Localization.t('metro.confirm.delete'))) return;
 
         MetroTimelineRepository.delete(parseInt(eventId));
         saveProject();
         closeModal('metroEventModal');
-        showNotification('✓ évènement supprimé');
+        showNotification(Localization.t('metro.notify.deleted'));
 
         this.refreshAll();
     }
@@ -222,7 +222,7 @@ class MetroTimelineViewModel {
     static sortByDate() {
         const events = MetroTimelineRepository.getAll();
         if (events.length === 0) {
-            showNotification('Aucun évènement à trier');
+            showNotification(Localization.t('metro.notify.no_events'));
             return;
         }
 
@@ -257,7 +257,7 @@ class MetroTimelineViewModel {
         });
 
         saveProject();
-        showNotification('✓ Timeline triée par date');
+        showNotification(Localization.t('metro.notify.sorted'));
         this.refreshAll();
     }
 
@@ -267,14 +267,14 @@ class MetroTimelineViewModel {
     static clearAll() {
         const events = MetroTimelineRepository.getAll();
         if (events.length === 0) {
-            showNotification('La timeline est déjà vide');
+            showNotification(Localization.t('metro.notify.already_empty'));
             return;
         }
 
-        if (confirm(`Effacer les ${events.length} évènement(s) de la timeline ?`)) {
+        if (confirm(Localization.t('metro.confirm.clear', events.length))) {
             MetroTimelineRepository.clear();
             saveProject();
-            showNotification('✓ Timeline effacée');
+            showNotification(Localization.t('metro.notify.cleared'));
             this.refreshAll();
         }
     }
@@ -285,7 +285,7 @@ class MetroTimelineViewModel {
     static exportCSV() {
         const events = MetroTimelineRepository.getAll();
         if (events.length === 0) {
-            alert('Aucun évènement à exporter');
+            alert(Localization.t('metro.notify.export_error'));
             return;
         }
 
@@ -307,7 +307,7 @@ class MetroTimelineViewModel {
         a.click();
         URL.revokeObjectURL(url);
 
-        showNotification(`✓ ${events.length} évènement(s) exporté(s)`);
+        showNotification(Localization.t('metro.notify.exported', events.length));
     }
 
     /**
@@ -318,7 +318,7 @@ class MetroTimelineViewModel {
         if (!char) return;
 
         document.getElementById('metroColorCharId').value = charId;
-        document.getElementById('metroColorCharName').textContent = char.name;
+        document.getElementById('metroColorCharName').textContent = Localization.t('metro.modal.color.title', char.name);
 
         const currentColor = MetroTimelineRepository.getCharacterColor(charId);
         document.getElementById('metroCustomColor').value = currentColor;
@@ -340,7 +340,7 @@ class MetroTimelineViewModel {
         MetroTimelineRepository.setCharacterColor(charId, color);
         saveProject();
         closeModal('metroColorModal');
-        showNotification('✓ Couleur mise à jour');
+        showNotification(Localization.t('metro.notify.color_updated'));
         this.refreshAll();
     }
 
@@ -384,14 +384,14 @@ class MetroTimelineViewModel {
         }
 
         if (!found) {
-            showNotification('❌ Scène introuvable', 'error');
+            showNotification(Localization.t('metro.notify.scene_not_found'), 'error');
             return;
         }
 
         switchView('editor');
         setTimeout(() => {
             openScene(found.act.id, found.chapter.id, found.scene.id);
-            showNotification(`📄 Scène ouverte : ${found.scene.title}`);
+            showNotification(Localization.t('metro.notify.scene_opened', found.scene.title));
         }, 100);
     }
 }

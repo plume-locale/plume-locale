@@ -403,6 +403,7 @@ function refreshAllViews() {
         case 'corkboard': if (typeof openCorkBoardView === 'function') openCorkBoardView(); break;
         case 'mindmap': if (typeof renderMindmapView === 'function') renderMindmapView(); break;
         case 'plot': if (typeof renderPlotView === 'function') renderPlotView(); break;
+        case 'plotgrid': if (typeof renderViewContent === 'function') renderViewContent('plotgrid', 'editorView'); break;
         case 'relations': if (typeof renderRelationsView === 'function') renderRelationsView(); break;
         case 'map': if (typeof renderMapView === 'function') renderMapView(); break;
         case 'timelineviz': if (typeof renderTimelineVizView === 'function') renderTimelineVizView(); break;

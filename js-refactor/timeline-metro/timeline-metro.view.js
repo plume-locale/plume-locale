@@ -18,28 +18,28 @@ class MetroTimelineView {
             <div class="metro-sidebar-content" style="padding: 1.25rem;">
                 <h3 style="margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.75rem; font-family: 'Noto Serif JP', serif;">
                     <i data-lucide="train-track" style="width: 22px; height: 22px; color: var(--accent-gold);"></i>
-                    Timeline Métro
+                    ${Localization.t('metro.title')}
                 </h3>
                 
                 <div class="metro-stats" style="font-size: 0.85rem; color: var(--text-secondary); background: var(--bg-secondary); padding: 0.75rem; border-radius: 8px; margin-bottom: 1.25rem;">
                     <div style="margin-bottom: 0.4rem; display: flex; justify-content: space-between;">
-                        <span><i data-lucide="calendar" style="width:14px;height:14px;vertical-align:middle;margin-right:6px; opacity: 0.7;"></i> Évènements:</span>
+                        <span><i data-lucide="calendar" style="width:14px;height:14px;vertical-align:middle;margin-right:6px; opacity: 0.7;"></i> ${Localization.t('metro.stats.events')}</span>
                         <strong style="color: var(--text-primary);">${eventCount}</strong>
                     </div>
                     <div style="display: flex; justify-content: space-between;">
-                        <span><i data-lucide="users" style="width:14px;height:14px;vertical-align:middle;margin-right:6px; opacity: 0.7;"></i> Personnages:</span>
+                        <span><i data-lucide="users" style="width:14px;height:14px;vertical-align:middle;margin-right:6px; opacity: 0.7;"></i> ${Localization.t('metro.stats.chars')}</span>
                         <strong style="color: var(--text-primary);">${charCount}</strong>
                     </div>
                 </div>
 
                 <button class="btn btn-primary" id="btn-new-metro-event-sidebar" style="width: 100%; margin-bottom: 1.5rem; justify-content: center;">
-                    <i data-lucide="plus-circle" style="width: 16px; height: 16px; margin-right: 6px;"></i> Nouvel évènement
+                    <i data-lucide="plus-circle" style="width: 16px; height: 16px; margin-right: 6px;"></i> ${Localization.t('metro.btn.new_event')}
                 </button>
 
                 ${eventCount > 0 ? `
                     <div style="margin-top: 1rem; padding-top: 1.25rem; border-top: 1px solid var(--border-color);">
                         <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem;">
-                            Liste des évènements
+                            ${Localization.t('metro.list.title')}
                         </div>
                         <div id="metroEventsList" class="metro-events-sortable">
                             ${events.map((event, i, arr) => `
@@ -52,9 +52,9 @@ class MetroTimelineView {
                                         <div style="flex: 1;">
                                             <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 2px;">
                                                 <div class="metro-event-item-title" style="flex: 1;">${event.title}</div>
-                                                ${event.sceneId ? `<i data-lucide="file-text" class="btn-open-linked-scene" data-scene-id="${event.sceneId}" style="width: 14px; height: 14px; color: var(--accent-blue); cursor: pointer;" title="Scène liée"></i>` : ''}
+                                                ${event.sceneId ? `<i data-lucide="file-text" class="btn-open-linked-scene" data-scene-id="${event.sceneId}" style="width: 14px; height: 14px; color: var(--accent-blue); cursor: pointer;" title="${Localization.t('metro.event.linked_scene')}"></i>` : ''}
                                             </div>
-                                            <div class="metro-event-item-date">${event.date || 'Sans date'}</div>
+                                            <div class="metro-event-item-date">${event.date || Localization.t('metro.event.no_date')}</div>
                                             <div style="display: flex; gap: 4px; margin-top: 6px;">
                                                 ${(event.characters || []).map(charId => {
             const char = project.characters.find(c => c.id === charId);
@@ -90,9 +90,9 @@ class MetroTimelineView {
             editorView.innerHTML = `
                 <div class="metro-empty-state">
                     <i data-lucide="users" style="width: 64px; height: 64px; opacity: 0.3;"></i>
-                    <h3 style="margin: 1rem 0 0.5rem;">Aucun personnage</h3>
-                    <p style="margin-bottom: 1.5rem;">Créez d'abord des personnages dans l'onglet "Personnages" pour pouvoir les lier aux évènements de votre timeline.</p>
-                    <button class="btn btn-primary" onclick="switchView('characters')">Créer des personnages</button>
+                    <h3 style="margin: 1rem 0 0.5rem;">${Localization.t('metro.empty.chars.title')}</h3>
+                    <p style="margin-bottom: 1.5rem;">${Localization.t('metro.empty.chars.desc')}</p>
+                    <button class="btn btn-primary" onclick="switchView('characters')">${Localization.t('metro.empty.chars.btn')}</button>
                 </div>
             `;
             if (typeof lucide !== 'undefined') lucide.createIcons();
@@ -104,19 +104,19 @@ class MetroTimelineView {
                 <div class="metro-toolbar">
                     <button class="btn btn-primary" id="btn-new-metro-event-main">
                         <i data-lucide="plus" style="width: 16px; height: 16px;"></i>
-                        Nouvel évènement
+                        ${Localization.t('metro.btn.new_event')}
                     </button>
                     <button class="btn" id="btn-sort-metro-date">
                         <i data-lucide="calendar" style="width: 16px; height: 16px;"></i>
-                        Trier par date
+                        ${Localization.t('metro.toolbar.sort_date')}
                     </button>
                     <button class="btn" id="btn-export-metro-csv">
                         <i data-lucide="download" style="width: 16px; height: 16px;"></i>
-                        Exporter CSV
+                        ${Localization.t('metro.toolbar.export_csv')}
                     </button>
                     <button class="btn" id="btn-clear-metro-timeline" style="margin-left: auto;">
                         <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i>
-                        Tout effacer
+                        ${Localization.t('metro.toolbar.clear_all')}
                     </button>
                 </div>
                 
@@ -128,7 +128,7 @@ class MetroTimelineView {
                     ${characters.map(char => {
             const color = MetroTimelineRepository.getCharacterColor(char.id);
             return `
-                            <div class="metro-legend-item btn-color-picker" data-id="${char.id}" style="cursor: pointer;" title="Cliquer pour changer la couleur">
+                            <div class="metro-legend-item btn-color-picker" data-id="${char.id}" style="cursor: pointer;" title="${Localization.t('metro.legend.color_help')}">
                                 <div class="metro-legend-line" style="background: ${color};"></div>
                                 <span>${char.name}</span>
                             </div>
@@ -139,7 +139,8 @@ class MetroTimelineView {
                 <div class="metro-help-box" style="margin-top: 2rem; padding: 1.25rem; background: var(--bg-secondary); border-radius: 12px; border-left: 4px solid var(--accent-gold); box-shadow: 0 4px 12px var(--shadow);">
                     <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6; margin: 0;">
                         <i data-lucide="info" style="width: 18px; height: 18px; vertical-align: middle; margin-right: 8px; color: var(--accent-gold);"></i>
-                        <strong>Astuces:</strong> Cliquez sur les cercles pour éditer les évènements. Les icônes 📄 ouvrent la scène liée. Personnalisez les couleurs en cliquant sur la légende. Les lignes se rejoignent pour les scènes collectives.
+                        <strong>${Localization.t('metro.tips.title')}</strong>
+                        ${Localization.t('metro.tips.desc')}
                     </p>
                 </div>
             </div>
@@ -160,9 +161,9 @@ class MetroTimelineView {
             return `
                 <div class="metro-empty-state">
                     <i data-lucide="train-track" style="width: 64px; height: 64px; opacity: 0.3;"></i>
-                    <h3 style="margin: 1rem 0 0.5rem;">Aucun évènement</h3>
-                    <p style="margin-bottom: 1.5rem;">Créez votre premier évènement pour commencer à visualiser les interactions entre personnages.</p>
-                    <button class="btn btn-primary" id="btn-create-first-event">+ Créer un évènement</button>
+                    <h3 style="margin: 1rem 0 0.5rem;">${Localization.t('metro.empty.events.title')}</h3>
+                    <p style="margin-bottom: 1.5rem;">${Localization.t('metro.empty.events.desc')}</p>
+                    <button class="btn btn-primary" id="btn-create-first-event">${Localization.t('metro.empty.events.btn')}</button>
                 </div>
             `;
         }
@@ -186,7 +187,7 @@ class MetroTimelineView {
             const color = MetroTimelineRepository.getCharacterColor(char.id);
 
             characterLabelsHTML += `
-                <g class="metro-char-label btn-color-picker" data-id="${char.id}" style="cursor: pointer;">
+                <g class="metro-char-label btn-color-picker" data-id="${char.id}" style="cursor: pointer;" title="${Localization.t('metro.legend.color_help')}">
                     <rect x="5" y="${y - 15}" width="160" height="30" fill="transparent"/>
                     <circle cx="25" cy="${y}" r="10" fill="${color}" stroke="white" stroke-width="2"/>
                     <text x="42" y="${y + 5}" font-size="13" fill="var(--text-primary)" font-weight="500">${char.name.substring(0, 18)}${char.name.length > 18 ? '...' : ''}</text>
@@ -266,7 +267,7 @@ class MetroTimelineView {
                         <circle cx="${eventX}" cy="${avgY}" r="${nodeRadius - 2}" fill="var(--text-primary)"/>
                     </g>
                     ${event.sceneId ? `
-                        <g class="btn-open-linked-scene" data-scene-id="${event.sceneId}" style="cursor: pointer;" title="Ouvrir la scène">
+                        <g class="btn-open-linked-scene" data-scene-id="${event.sceneId}" style="cursor: pointer;" title="${Localization.t('metro.svg.open_scene')}">
                             <circle cx="${eventX + nodeRadius + 8}" cy="${avgY - nodeRadius - 8}" r="8" fill="var(--accent-blue)" stroke="white" stroke-width="1.5"/>
                             <foreignObject x="${eventX + nodeRadius + 1}" y="${avgY - nodeRadius - 15}" width="14" height="14">
                                 <div xmlns="http://www.w3.org/1999/xhtml" style="color:white; display:flex; align-items:center; justify-content:center;">

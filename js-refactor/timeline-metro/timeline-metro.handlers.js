@@ -1,7 +1,3 @@
-/**
- * @class MetroTimelineHandlers
- * @description Gère les événements DOM.
- */
 class MetroTimelineHandlers {
     /**
      * Bind les événements de la sidebar.
@@ -149,6 +145,20 @@ class MetroTimelineHandlers {
         window.openMetroEventFromScene = (eventId) => {
             document.getElementById('metroViewChoiceEventId').value = eventId;
             document.getElementById('metroViewChoiceModal').classList.add('active');
+
+            // Internationalize modal choice buttons
+            const modal = document.getElementById('metroViewChoiceModal');
+            if (modal) {
+                const title = modal.querySelector('h3');
+                if (title) title.textContent = Localization.t('metro.modal.choice.title');
+
+                const btnFull = modal.querySelector('#btn-choice-full-view');
+                if (btnFull) btnFull.innerHTML = `<i data-lucide="maximize" style="width: 16px; height: 16px;"></i> ${Localization.t('metro.modal.choice.full')}`;
+
+                const btnSplit = modal.querySelector('#btn-choice-split-view');
+                if (btnSplit) btnSplit.innerHTML = `<i data-lucide="columns" style="width: 16px; height: 16px;"></i> ${Localization.t('metro.modal.choice.split')}`;
+            }
+
             if (typeof lucide !== 'undefined') lucide.createIcons();
         };
 

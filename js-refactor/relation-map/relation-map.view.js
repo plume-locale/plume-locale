@@ -30,38 +30,38 @@ class RelationMapView {
         if (!container) {
             editorView.innerHTML = `
                 <div class="relation-map-container" id="relationMapScrollContainer" style="height: 100%; overflow-y: auto; padding: 2rem 3rem;">
-                    <h2 style="margin-bottom: 2rem; color: var(--accent-gold);">
+                    <h2 style="margin-bottom: 2rem; color: var(--accent-gold);" id="rel-map-title">
                         <i data-lucide="network" style="width:24px;height:24px;vertical-align:middle;margin-right:8px;"></i>
-                        Carte des Relations
+                        ${Localization.t('relations.title')}
                     </h2>
                     
                     <div id="selectionModeBanner"></div>
 
-                    <div style="margin-bottom: 2rem; margin-top: 1rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <div style="margin-bottom: 2rem; margin-top: 1rem; display: flex; gap: 1rem; flex-wrap: wrap;" id="rel-map-instructions">
                         <div style="flex: 1; min-width: 300px; padding: 1.5rem; background: var(--bg-secondary); border-radius: 8px; border-left: 4px solid var(--accent-gold);">
-                            <div style="font-weight: 600; margin-bottom: 0.5rem;"><i data-lucide="pen-line" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Créer une relation:</div>
+                            <div style="font-weight: 600; margin-bottom: 0.5rem;"><i data-lucide="pen-line" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>${Localization.t('relations.create_label')}</div>
                             <div style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6;">
-                                1. Cliquez sur un premier personnage<br>
-                                2. Cliquez sur un second personnage<br>
-                                3. Choisissez le type de relation
+                                ${Localization.t('relations.instruction_1')}<br>
+                                ${Localization.t('relations.instruction_2')}<br>
+                                ${Localization.t('relations.instruction_3')}
                             </div>
                         </div>
                     </div>
 
-                    <div style="margin-bottom: 1rem; display: flex; gap: 0.5rem; justify-content: space-between; align-items: center;">
+                    <div style="margin-bottom: 1rem; display: flex; gap: 0.5rem; justify-content: space-between; align-items: center;" id="rel-map-toolbar">
                         <div style="display: flex; gap: 0.5rem;">
                             <button class="btn btn-small" id="reset-positions-btn">
                                 <i data-lucide="refresh-cw" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> 
-                                Réinitialiser positions
+                                ${Localization.t('relations.btn.reset_positions')}
                             </button>
                             <button class="btn btn-small" id="auto-arrange-btn">
                                 <i data-lucide="sparkles" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>
-                                Arranger automatiquement
+                                ${Localization.t('relations.btn.auto_arrange')}
                             </button>
                         </div>
                         <button class="btn btn-small" id="manage-types-btn" style="background: var(--bg-secondary) !important; color: var(--text-primary) !important; border: 1px solid var(--border-color);">
                             <i data-lucide="settings-2" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>
-                            Personnaliser les types
+                            ${Localization.t('relations.btn.manage_types')}
                         </button>
                     </div>
                     
@@ -73,6 +73,41 @@ class RelationMapView {
                 </div>
             `;
             container = document.getElementById('relationMapScrollContainer');
+        } else {
+            // Update localized labels if container already exists
+            const titleEl = document.getElementById('rel-map-title');
+            if (titleEl) {
+                titleEl.innerHTML = `<i data-lucide="network" style="width:24px;height:24px;vertical-align:middle;margin-right:8px;"></i> ${Localization.t('relations.title')}`;
+            }
+
+            const instructionsEl = document.getElementById('rel-map-instructions');
+            if (instructionsEl) {
+                instructionsEl.innerHTML = `
+                    <div style="flex: 1; min-width: 300px; padding: 1.5rem; background: var(--bg-secondary); border-radius: 8px; border-left: 4px solid var(--accent-gold);">
+                        <div style="font-weight: 600; margin-bottom: 0.5rem;"><i data-lucide="pen-line" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>${Localization.t('relations.create_label')}</div>
+                        <div style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6;">
+                            ${Localization.t('relations.instruction_1')}<br>
+                            ${Localization.t('relations.instruction_2')}<br>
+                            ${Localization.t('relations.instruction_3')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            const resetBtn = document.getElementById('reset-positions-btn');
+            if (resetBtn) {
+                resetBtn.innerHTML = `<i data-lucide="refresh-cw" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> ${Localization.t('relations.btn.reset_positions')}`;
+            }
+
+            const autoBtn = document.getElementById('auto-arrange-btn');
+            if (autoBtn) {
+                autoBtn.innerHTML = `<i data-lucide="sparkles" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> ${Localization.t('relations.btn.auto_arrange')}`;
+            }
+
+            const manageBtn = document.getElementById('manage-types-btn');
+            if (manageBtn) {
+                manageBtn.innerHTML = `<i data-lucide="settings-2" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> ${Localization.t('relations.btn.manage_types')}`;
+            }
         }
 
         // Update parts selectively to preserve scroll
@@ -86,7 +121,7 @@ class RelationMapView {
                     <div style="font-size: 1.5rem; color: ${rel.color};"><i data-lucide="${rel.icon}" style="width:24px;height:24px;"></i></div>
                     <div style="flex: 1;">
                         <div style="font-weight: 600; font-size: 0.95rem;">${rel.label}</div>
-                        <div style="font-size: 0.75rem; color: var(--text-muted);">${this.viewModel.getRelationCount(key)} relation(s)</div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">${Localization.t('relations.stats.count', [this.viewModel.getRelationCount(key)])}</div>
                     </div>
                 </div>
             `).join('');
@@ -104,9 +139,9 @@ class RelationMapView {
         container.innerHTML = `
             <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
                 <div style="font-size: 4rem; margin-bottom: 1rem;"><i data-lucide="users" style="width:64px;height:64px;"></i></div>
-                <div style="font-size: 1.3rem; font-weight: 600; margin-bottom: 0.5rem;">Aucune relation à afficher</div>
-                <div style="color: var(--text-muted); margin-bottom: 1rem;">Créez au moins 2 personnages pour visualiser leurs relations</div>
-                <button class="btn btn-primary" id="go-to-characters-btn">+ Créer des personnages</button>
+                <div style="font-size: 1.3rem; font-weight: 600; margin-bottom: 0.5rem;">${Localization.t('relations.empty.title')}</div>
+                <div style="color: var(--text-muted); margin-bottom: 1rem;">${Localization.t('relations.empty.desc')}</div>
+                <button class="btn btn-primary" id="go-to-characters-btn">${Localization.t('relations.btn.go_to_characters')}</button>
             </div>
         `;
         if (typeof lucide !== 'undefined') lucide.createIcons();
@@ -205,8 +240,8 @@ class RelationMapView {
                 if (char) {
                     banner.innerHTML = `
                         <div class="selection-mode-banner">
-                            <span><i data-lucide="mouse-pointer" style="width:16px;height:16px;vertical-align:middle;margin-right:8px;"></i>Sélectionnez un deuxième personnage pour créer une relation avec <strong>${char.name}</strong></span>
-                            <button class="btn btn-small" style="background:rgba(255,255,255,0.2); border:none; color:white;" id="cancelSelectionBtn">Annuler</button>
+                            <span><i data-lucide="mouse-pointer" style="width:16px;height:16px;vertical-align:middle;margin-right:8px;"></i>${Localization.t('relations.selection.instruction', [char.name])}</span>
+                            <button class="btn btn-small" style="background:rgba(255,255,255,0.2); border:none; color:white;" id="cancelSelectionBtn">${Localization.t('btn.cancel')}</button>
                         </div>
                     `;
                     const cancelBtn = document.getElementById('cancelSelectionBtn');
@@ -228,13 +263,13 @@ class RelationMapView {
             <div style="background: var(--bg-secondary); padding: 1.5rem; border-radius: 8px;">
                 <h3 style="margin-bottom: 1rem; color: var(--text-primary);">
                     <i data-lucide="list" style="width:18px;height:18px;vertical-align:middle;margin-right:6px;"></i>
-                    Liste des relations (${relations.length})
+                    ${Localization.t('relations.list.title', [relations.length])}
                 </h3>
                 <div style="display: flex; flex-direction: column; gap: 0.75rem;">
                     ${relations.map(rel => {
             const char1 = characters.find(c => c.id == rel.char1Id);
             const char2 = characters.find(c => c.id == rel.char2Id);
-            const relType = relationTypes[rel.type] || relationTypes['neutre'] || { label: 'Inconnu', color: '#757575', icon: 'meh' };
+            const relType = relationTypes[rel.type] || relationTypes['neutre'] || { label: Localization.t('relations.type.unknown'), color: '#757575', icon: 'meh' };
             if (!char1 || !char2) return '';
 
             return `
@@ -370,7 +405,7 @@ class RelationMapView {
         const modalHTML = `
             <div class="modal active" id="relationModal" onclick="if(event.target===this) RelationMapHandlers.handleCloseModal()">
                 <div class="modal-content" style="max-width: 500px;">
-                    <h2 style="margin-bottom: 1.5rem;"><i data-lucide="link" style="width:20px;height:20px;vertical-align:middle;margin-right:6px;"></i>${relation ? 'Modifier la' : 'Créer une'} relation</h2>
+                    <h2 style="margin-bottom: 1.5rem;"><i data-lucide="link" style="width:20px;height:20px;vertical-align:middle;margin-right:6px;"></i>${relation ? Localization.t('relations.modal.title_edit') : Localization.t('relations.modal.title_create')}</h2>
                     
                     <div style="margin-bottom: 1.5rem; padding: 1rem; background: var(--bg-secondary); border-radius: 8px; text-align: center;">
                         <span style="font-weight: 600; font-size: 1.1rem;">${char1.name}</span>
@@ -379,7 +414,7 @@ class RelationMapView {
                     </div>
                     
                     <div style="margin-bottom: 1.5rem;">
-                        <label style="display: block; font-weight: 600; margin-bottom: 0.75rem;">Type de relation:</label>
+                        <label style="display: block; font-weight: 600; margin-bottom: 0.75rem;">${Localization.t('relations.modal.type_label')}</label>
                         <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; max-height: 250px; overflow-y: auto; padding-right: 5px;">
                             ${Object.entries(relationTypes).map(([key, rel]) => `
                                 <button class="btn rel-type-btn ${relation && relation.type === key ? 'btn-primary' : ''}" data-type="${key}" id="relType-${key}"
@@ -393,14 +428,14 @@ class RelationMapView {
                     </div>
                     
                     <div style="margin-bottom: 1.5rem;">
-                        <label style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Description (optionnel):</label>
-                        <input type="text" class="form-input" id="relationDescription" value="${relation ? (relation.description || '') : ''}" placeholder="Ex: Frère et sœur, alliés depuis l'enfance...">
+                        <label style="display: block; font-weight: 600; margin-bottom: 0.5rem;">${Localization.t('relations.modal.desc_label')}</label>
+                        <input type="text" class="form-input" id="relationDescription" value="${relation ? (relation.description || '') : ''}" placeholder="${Localization.t('relations.modal.desc_placeholder')}">
                     </div>
                     
                     <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
-                        <button class="btn" onclick="RelationMapHandlers.handleCloseModal()">Annuler</button>
+                        <button class="btn" onclick="RelationMapHandlers.handleCloseModal()">${Localization.t('btn.cancel')}</button>
                         <button class="btn btn-primary" id="saveRelationBtn" ${!relation && !this.viewModel.selectedRelationType ? 'disabled' : ''}>
-                            ${relation ? 'Enregistrer les modifications' : 'Créer la relation'}
+                            ${relation ? Localization.t('relations.modal.btn_save_changes') : Localization.t('relations.modal.btn_create')}
                         </button>
                     </div>
                 </div>
@@ -437,29 +472,29 @@ class RelationMapView {
             <div class="modal active" id="manageTypesModal" onclick="if(event.target===this) this.remove()">
                 <div class="modal-content" style="max-width: 650px; background: var(--bg-primary); border: 1px solid var(--border-color); color: var(--text-primary);">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                        <h2 style="margin: 0; color: var(--accent-gold);"><i data-lucide="settings-2" style="width:20px;height:20px;vertical-align:middle;margin-right:6px;"></i>Personnaliser les types</h2>
+                        <h2 style="margin: 0; color: var(--accent-gold);"><i data-lucide="settings-2" style="width:20px;height:20px;vertical-align:middle;margin-right:6px;"></i>${Localization.t('relations.btn.manage_types')}</h2>
                         <button class="btn btn-small" onclick="document.getElementById('manageTypesModal').remove()"><i data-lucide="x" style="width:16px;height:16px; color: var(--text-primary);"></i></button>
                     </div>
 
                     <div style="margin-bottom: 2rem; padding: 1.5rem; background: var(--bg-secondary); border-radius: 12px; border: 1px solid var(--border-color);">
-                        <h3 style="font-size: 1rem; margin-bottom: 1.25rem; font-weight: 600; color: var(--text-primary);">Ajouter un nouveau type</h3>
+                        <h3 style="font-size: 1rem; margin-bottom: 1.25rem; font-weight: 600; color: var(--text-primary);">${Localization.t('relations.manage.add_title')}</h3>
                         <div style="display: flex; flex-direction: column; gap: 1rem;">
                             <div style="display: flex; gap: 0.75rem; align-items: flex-end;">
                                 <div style="flex: 2;">
-                                    <label style="display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.4rem;">Libellé</label>
+                                    <label style="display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.4rem;">${Localization.t('relations.manage.label_field')}</label>
                                     <input type="text" id="newTypeLabel" class="form-input" placeholder="Ex: Mariage..." style="width: 100%; background: var(--bg-primary); color: var(--text-primary); border: 1px solid var(--border-color);">
                                 </div>
                                 <div style="flex: 0 0 70px;">
-                                    <label style="display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.4rem;">Couleur</label>
+                                    <label style="display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.4rem;">${Localization.t('relations.manage.color_field')}</label>
                                     <input type="color" id="newTypeColor" value="#ff9800" style="width: 100%; height: 38px; padding: 2px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--bg-primary); cursor: pointer;">
                                 </div>
                                 <div style="flex: 1;">
-                                    <button class="btn btn-primary" id="addNewTypeBtn" style="width: 100%; height: 38px;">Ajouter</button>
+                                    <button class="btn btn-primary" id="addNewTypeBtn" style="width: 100%; height: 38px;">${Localization.t('relations.manage.btn_add')}</button>
                                 </div>
                             </div>
                             
                             <div>
-                                <label style="display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.6rem;">Choisir une icône</label>
+                                <label style="display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.6rem;">${Localization.t('relations.manage.icon_label')}</label>
                                 <div id="iconSelectorGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(40px, 1fr)); gap: 0.5rem; background: var(--bg-primary); padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border-color);">
                                     ${availableIcons.map(icon => `
                                         <div class="icon-option ${icon === 'tag' ? 'active' : ''}" data-icon="${icon}" 
@@ -473,7 +508,7 @@ class RelationMapView {
                         </div>
                     </div>
 
-                    <h3 style="font-size: 1rem; margin-bottom: 1rem; font-weight: 600; color: var(--text-primary);">Types actuels</h3>
+                    <h3 style="font-size: 1rem; margin-bottom: 1rem; font-weight: 600; color: var(--text-primary);">${Localization.t('relations.manage.current_types')}</h3>
                     <div style="max-height: 250px; overflow-y: auto; padding-right: 5px;">
                         <div style="display: flex; flex-direction: column; gap: 0.5rem;">
                             <!-- Customs (Editable) -->
@@ -496,7 +531,7 @@ class RelationMapView {
                                         <i data-lucide="${rel.icon}" style="width:16px;height:16px;color:${rel.color};"></i>
                                     </div>
                                     <span style="flex: 1; font-weight: 500;">${rel.label}</span>
-                                    <span style="font-size: 0.7rem; color: var(--text-muted); font-style: italic;">Système</span>
+                                    <span style="font-size: 0.7rem; color: var(--text-muted); font-style: italic;">${Localization.t('relations.manage.system_label')}</span>
                                 </div>
                             `).join('')}
                         </div>
@@ -534,7 +569,7 @@ class RelationMapView {
                     this.viewModel.addRelationType(label, color, icon);
                     document.getElementById('manageTypesModal').remove();
                     this.render();
-                    if (typeof showNotification === 'function') showNotification('✨ Nouveau type de relation ajouté');
+                    if (typeof showNotification === 'function') showNotification(Localization.t('relations.notify.type_added'));
                 }
             };
         }
@@ -543,7 +578,7 @@ class RelationMapView {
             btn.onclick = (e) => {
                 e.stopPropagation();
                 const key = btn.dataset.typeKey;
-                if (confirm('Supprimer ce type de relation ?')) {
+                if (confirm(Localization.t('relations.confirm.delete_type'))) {
                     this.viewModel.deleteRelationType(key);
                     document.getElementById('manageTypesModal').remove();
                     this.render();
