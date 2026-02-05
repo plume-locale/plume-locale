@@ -173,6 +173,20 @@ const LOCALE_FR = {
     "editor.show_tools": "Afficher les outils",
     "editor.final_version_title": "Version finale : {0}",
 
+    // --- Scene Navigation ---
+    "sceneNav.prevBtnTitle": "Déplacer vers la scène précédente (tout le texte avant le curseur)",
+    "sceneNav.nextBtnTitle": "Déplacer vers la scène suivante (tout le texte après le curseur)",
+    "sceneNav.wordsBeforeTitle": "Mots avant le curseur",
+    "sceneNav.wordsAfterTitle": "Mots après le curseur",
+    "sceneNav.wordCount": "{0} mots",
+    "sceneNav.movePrevWithTitle": "Déplacer vers \"{0}\" (texte avant le curseur)",
+    "sceneNav.moveNextWithTitle": "Déplacer vers \"{0}\" (texte après le curseur)",
+    "sceneNav.textMovedTo": "Texte déplacé vers \"{0}\"",
+    "sceneNav.noPrevScene": "Aucune scène précédente disponible",
+    "sceneNav.noNextScene": "Aucune scène suivante disponible",
+    "sceneNav.noTextBefore": "Aucun texte à déplacer avant le curseur",
+    "sceneNav.noTextAfter": "Aucun texte à déplacer après le curseur",
+
     // --- Modals ---
     "modal.act.title": "Nouvel Acte",
     "modal.act.label": "Titre de l'acte",

@@ -43,6 +43,13 @@ function initSceneNavigation() {
             nextBtn.addEventListener('mousedown', (e) => window.sceneNavigationHandlers.handleMoveNext(e));
         }
     }
+
+    // Réagir au changement de langue
+    window.addEventListener('localeChanged', () => {
+        if (window.sceneNavigationView && typeof window.sceneNavigationView.render === 'function') {
+            window.sceneNavigationView.render();
+        }
+    });
 }
 
 /**

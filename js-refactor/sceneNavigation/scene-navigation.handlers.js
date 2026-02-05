@@ -42,7 +42,7 @@ const sceneNavigationHandlers = {
 
         const result = window.sceneNavigationViewModel.moveTextToPrevious(editor, range);
         if (result.success) {
-            window.sceneNavigationView.showNotification(`Texte déplacé vers "${result.sceneTitle}"`, 'success');
+            window.sceneNavigationView.showNotification(Localization.t('sceneNav.textMovedTo', [result.sceneTitle]), 'success');
             window.sceneNavigationView.focusEditorStart(editor);
             window.sceneNavigationView.hide();
         } else {
@@ -67,7 +67,7 @@ const sceneNavigationHandlers = {
 
         const result = window.sceneNavigationViewModel.moveTextToNext(editor, range);
         if (result.success) {
-            window.sceneNavigationView.showNotification(`Texte déplacé vers "${result.sceneTitle}"`, 'success');
+            window.sceneNavigationView.showNotification(Localization.t('sceneNav.textMovedTo', [result.sceneTitle]), 'success');
             window.sceneNavigationView.hide();
         } else {
             window.sceneNavigationView.showNotification(result.message, 'warning');

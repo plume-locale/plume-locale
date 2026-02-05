@@ -19,17 +19,17 @@ const sceneNavigationView = {
             toolbar.style.zIndex = '10005';
             toolbar.innerHTML = `
                 <div class="scene-nav-buttons">
-                    <button class="scene-nav-btn scene-nav-prev" title="Déplacer vers la scène précédente (tout le texte avant le curseur)">
+                    <button class="scene-nav-btn scene-nav-prev" title="${Localization.t('sceneNav.prevBtnTitle')}">
                         <i data-lucide="chevron-left" style="width:16;height:16;"></i>
                     </button>
-                    <button class="scene-nav-btn scene-nav-next" title="Déplacer vers la scène suivante (tout le texte après le curseur)">
+                    <button class="scene-nav-btn scene-nav-next" title="${Localization.t('sceneNav.nextBtnTitle')}">
                         <i data-lucide="chevron-right" style="width:16;height:16;"></i>
                     </button>
                 </div>
                 <div class="scene-nav-line"></div>
                 <div class="scene-nav-word-counts">
-                    <span class="scene-nav-words-before" title="Mots avant le curseur">0 mots</span>
-                    <span class="scene-nav-words-after" title="Mots après le curseur">0 mots</span>
+                    <span class="scene-nav-words-before" title="${Localization.t('sceneNav.wordsBeforeTitle')}">${Localization.t('sceneNav.wordCount', [0])}</span>
+                    <span class="scene-nav-words-after" title="${Localization.t('sceneNav.wordsAfterTitle')}">${Localization.t('sceneNav.wordCount', [0])}</span>
                 </div>
             `;
 
@@ -173,13 +173,13 @@ const sceneNavigationView = {
         if (prevBtn) {
             prevBtn.style.display = adjacent.previous ? '' : 'none';
             if (adjacent.previous) {
-                prevBtn.title = `Déplacer vers "${adjacent.previous.title}" (texte avant le curseur)`;
+                prevBtn.title = Localization.t('sceneNav.movePrevWithTitle', [adjacent.previous.title]);
             }
         }
         if (nextBtn) {
             nextBtn.style.display = adjacent.next ? '' : 'none';
             if (adjacent.next) {
-                nextBtn.title = `Déplacer vers "${adjacent.next.title}" (texte après le curseur)`;
+                nextBtn.title = Localization.t('sceneNav.moveNextWithTitle', [adjacent.next.title]);
             }
         }
     },
@@ -197,8 +197,30 @@ const sceneNavigationView = {
         const before = window.sceneNavigationViewModel.extractTextAtCursor(editor, range, 'before');
         const after = window.sceneNavigationViewModel.extractTextAtCursor(editor, range, 'after');
 
-        beforeEl.textContent = `${window.sceneNavigationViewModel.countWords(before ? before.text : '')} mots`;
-        afterEl.textContent = `${window.sceneNavigationViewModel.countWords(after ? after.text : '')} mots`;
+        beforeEl.textContent = Localization.t('sceneNav.wordCount', [window.sceneNavigationViewModel.countWords(before ? before.text : '')]);
+        afterEl.textContent = Localization.t('sceneNav.wordCount', [window.sceneNavigationViewModel.countWords(after ? after.text : '')]);
+    },
+
+    /**
+     * Rafraîchit l'interface pour le changement de langue.
+     */
+    render() {
+        const toolbar = document.getElementById('sceneNavToolbar');
+        if (!toolbar) return;
+
+        // On recrée les titres statiques
+        const prevBtn = toolbar.querySelector('.scene-nav-prev');
+        const nextBtn = toolbar.querySelector('.scene-nav-next');
+        const beforeEl = toolbar.querySelector('.scene-nav-words-before');
+        const afterEl = toolbar.querySelector('.scene-nav-words-after');
+
+        if (prevBtn) prevBtn.title = Localization.t('sceneNav.prevBtnTitle');
+        if (nextBtn) nextBtn.title = Localization.t('sceneNav.nextBtnTitle');
+        if (beforeEl) beforeEl.title = Localization.t('sceneNav.wordsBeforeTitle');
+        if (afterEl) afterEl.title = Localization.t('sceneNav.wordsAfterTitle');
+
+        // On force une mise à jour de la position pour rafraîchir les titres dynamiques et les compteurs
+        this.updatePosition();
     },
 
     /**

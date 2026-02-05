@@ -173,6 +173,20 @@ const LOCALE_EN = {
     "editor.show_tools": "Show Tools",
     "editor.final_version_title": "Final version: {0}",
 
+    // --- Scene Navigation ---
+    "sceneNav.prevBtnTitle": "Move to previous scene (all text before cursor)",
+    "sceneNav.nextBtnTitle": "Move to next scene (all text after cursor)",
+    "sceneNav.wordsBeforeTitle": "Words before cursor",
+    "sceneNav.wordsAfterTitle": "Words after cursor",
+    "sceneNav.wordCount": "{0} words",
+    "sceneNav.movePrevWithTitle": "Move to \"{0}\" (text before cursor)",
+    "sceneNav.moveNextWithTitle": "Move to \"{0}\" (text after cursor)",
+    "sceneNav.textMovedTo": "Text moved to \"{0}\"",
+    "sceneNav.noPrevScene": "No previous scene available",
+    "sceneNav.noNextScene": "No next scene available",
+    "sceneNav.noTextBefore": "No text to move before cursor",
+    "sceneNav.noTextAfter": "No text to move after cursor",
+
     // --- Modals ---
     "modal.act.title": "New Act",
     "modal.act.label": "Act Title",

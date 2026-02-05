@@ -144,11 +144,11 @@ const sceneNavigationViewModel = {
     moveTextToPrevious(editor, range) {
         const ctx = window.sceneNavigationModel.activeSceneContext;
         const adjacent = this.getAdjacentScenes(ctx);
-        if (!adjacent.previous) return { success: false, message: 'Aucune scène précédente disponible' };
+        if (!adjacent.previous) return { success: false, message: Localization.t('sceneNav.noPrevScene') };
 
         const extraction = this.extractTextAtCursor(editor, range, 'before');
         if (!extraction || !extraction.html.trim() || extraction.html.trim() === '<br>') {
-            return { success: false, message: 'Aucun texte à déplacer avant le curseur' };
+            return { success: false, message: Localization.t('sceneNav.noTextBefore') };
         }
 
         window.sceneNavigationRepository.saveToHistory();
@@ -181,11 +181,11 @@ const sceneNavigationViewModel = {
     moveTextToNext(editor, range) {
         const ctx = window.sceneNavigationModel.activeSceneContext;
         const adjacent = this.getAdjacentScenes(ctx);
-        if (!adjacent.next) return { success: false, message: 'Aucune scène suivante disponible' };
+        if (!adjacent.next) return { success: false, message: Localization.t('sceneNav.noNextScene') };
 
         const extraction = this.extractTextAtCursor(editor, range, 'after');
         if (!extraction || !extraction.html.trim() || extraction.html.trim() === '<br>') {
-            return { success: false, message: 'Aucun texte à déplacer après le curseur' };
+            return { success: false, message: Localization.t('sceneNav.noTextAfter') };
         }
 
         window.sceneNavigationRepository.saveToHistory();
