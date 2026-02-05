@@ -58,12 +58,12 @@ const ProductTourStateModel = {
      */
     migrate: function (raw) {
         if (!raw) return this.createInitial();
-        
+
         // Migration v1.0 -> v1.1 (exemple pour futures versions)
         if (raw.version === '1.0') {
             return this.validate(raw);
         }
-        
+
         return this.validate(raw);
     }
 };
@@ -127,12 +127,12 @@ const ProductTourConfigModel = {
             padding: 10,
             allowClose: true,
             overlayClickNext: false,
-            doneBtnText: 'Terminer',
-            closeBtnText: 'Fermer',
-            nextBtnText: 'Suivant',
-            prevBtnText: 'Précédent',
+            doneBtnText: Localization.t('tour.driver.done'),
+            closeBtnText: Localization.t('tour.driver.close'),
+            nextBtnText: Localization.t('tour.driver.next'),
+            prevBtnText: Localization.t('tour.driver.prev'),
             showProgress: true,
-            progressText: 'Étape {{current}} sur {{total}}',
+            progressText: Localization.t('tour.driver.progress').replace('{0}', '{{current}}').replace('{1}', '{{total}}'),
             showButtons: ['next', 'previous', 'close'],
             disableActiveInteraction: false,
             onDestroyStarted: () => {
@@ -161,7 +161,7 @@ const ProductTourConfigModel = {
         return {
             ...config,
             padding: 5,
-            progressText: '{{current}}/{{total}}'
+            progressText: '{{current}}/{{total}}' // Keep simple format for mobile
         };
     }
 };
@@ -190,12 +190,8 @@ const ProductTourStepsModel = {
             {
                 element: '#headerProjectTitle',
                 popover: {
-                    title: '🪶 Bienvenue dans Plume',
-                    description: `
-                        <p>Plume est votre espace d'écriture complet pour créer des histoires captivantes.</p>
-                        <p>Cette visite guidée vous présentera les fonctionnalités principales en quelques minutes.</p>
-                        <p><strong>Vous pouvez quitter à tout moment en appuyant sur Échap.</strong></p>
-                    `,
+                    title: Localization.t('tour.step.welcome.title'),
+                    description: Localization.t('tour.step.welcome.desc'),
                     side: 'bottom',
                     align: 'start'
                 },
@@ -211,11 +207,8 @@ const ProductTourStepsModel = {
             {
                 element: '#headerProjectTitle',
                 popover: {
-                    title: 'Titre du Projet',
-                    description: `
-                        <p>Cliquez sur le titre pour renommer votre projet.</p>
-                        <p>Chaque projet est sauvegardé automatiquement dans votre navigateur.</p>
-                    `,
+                    title: Localization.t('tour.step.project_title.title'),
+                    description: Localization.t('tour.step.project_title.desc'),
                     side: 'bottom',
                     align: 'start'
                 }
@@ -224,16 +217,8 @@ const ProductTourStepsModel = {
             {
                 element: '.header-nav .nav-group:nth-child(1)',
                 popover: {
-                    title: '📝 Outils d\'Écriture',
-                    description: `
-                        <p>Organisez et visualisez votre histoire de différentes manières :</p>
-                        <ul>
-                            <li><strong>Structure</strong> : Vue hiérarchique (Actes → Chapitres → Scènes)</li>
-                            <li><strong>Tableau</strong> : Vue en cartes (Corkboard)</li>
-                            <li><strong>Intrigue</strong> : Graphique de tension narrative</li>
-                            <li><strong>Arcs</strong> : Suivi des arcs narratifs</li>
-                        </ul>
-                    `,
+                    title: Localization.t('tour.step.writing_tools.title'),
+                    description: Localization.t('tour.step.writing_tools.desc'),
                     side: 'bottom',
                     align: 'start'
                 }
@@ -242,16 +227,8 @@ const ProductTourStepsModel = {
             {
                 element: '.header-nav .nav-group:nth-child(2)',
                 popover: {
-                    title: '📚 Base de Données',
-                    description: `
-                        <p>Gérez tous les éléments de votre univers :</p>
-                        <ul>
-                            <li><strong>Personnages</strong> : Fiches détaillées avec relations</li>
-                            <li><strong>Univers</strong> : Lieux, objets, concepts</li>
-                            <li><strong>Codex</strong> : Encyclopédie de votre monde</li>
-                            <li><strong>Notes</strong> : Notes libres et idées</li>
-                        </ul>
-                    `,
+                    title: Localization.t('tour.step.database.title'),
+                    description: Localization.t('tour.step.database.desc'),
                     side: 'bottom',
                     align: 'start'
                 }
@@ -260,16 +237,8 @@ const ProductTourStepsModel = {
             {
                 element: '.header-nav .nav-group:nth-child(3)',
                 popover: {
-                    title: '🗺️ Visualisations',
-                    description: `
-                        <p>Explorez votre histoire visuellement :</p>
-                        <ul>
-                            <li><strong>Mindmap</strong> : Carte mentale de votre histoire</li>
-                            <li><strong>Relations</strong> : Graphe des relations entre personnages</li>
-                            <li><strong>Carte</strong> : Carte géographique de votre monde</li>
-                            <li><strong>Timeline</strong> : Chronologie des événements</li>
-                        </ul>
-                    `,
+                    title: Localization.t('tour.step.viz.title'),
+                    description: Localization.t('tour.step.viz.desc'),
                     side: 'bottom',
                     align: 'center'
                 }
@@ -278,14 +247,8 @@ const ProductTourStepsModel = {
             {
                 element: '.header-nav .nav-group:nth-child(4)',
                 popover: {
-                    title: '📊 Analyse & Statistiques',
-                    description: `
-                        <p>Analysez votre texte en profondeur :</p>
-                        <ul>
-                            <li><strong>Stats</strong> : Nombre de mots, chapitres, scènes</li>
-                            <li><strong>Analyse</strong> : Répétitions, lisibilité, style</li>
-                        </ul>
-                    `,
+                    title: Localization.t('tour.step.analysis.title'),
+                    description: Localization.t('tour.step.analysis.desc'),
                     side: 'bottom',
                     align: 'center'
                 }
@@ -294,33 +257,19 @@ const ProductTourStepsModel = {
             {
                 element: '.header-nav .nav-group:nth-child(5)',
                 popover: {
-                    title: '💾 Snapshots',
-                    description: `
-                        <p>Sauvegardez des versions de votre travail :</p>
-                        <ul>
-                            <li>Créez des snapshots à tout moment</li>
-                            <li>Comparez différentes versions</li>
-                            <li>Restaurez une version antérieure</li>
-                        </ul>
-                    `,
+                    title: Localization.t('tour.step.snapshots.title'),
+                    description: Localization.t('tour.step.snapshots.desc'),
                     side: 'bottom',
                     align: 'center'
                 }
             },
-            
+
             // Actions Header - Stats
             {
                 element: '#headerStatsContainer',
                 popover: {
-                    title: '📈 Statistiques Rapides',
-                    description: `
-                        <p>Suivez votre progression en temps réel :</p>
-                        <ul>
-                            <li>Nombre total de mots</li>
-                            <li>Nombre de chapitres</li>
-                            <li>Mise à jour automatique</li>
-                        </ul>
-                    `,
+                    title: Localization.t('tour.step.quick_stats.title'),
+                    description: Localization.t('tour.step.quick_stats.desc'),
                     side: 'bottom',
                     align: 'end'
                 }
@@ -329,15 +278,8 @@ const ProductTourStepsModel = {
             {
                 element: '#splitModeToggle',
                 popover: {
-                    title: '⚡ Mode Split',
-                    description: `
-                        <p>Travaillez sur deux scènes simultanément :</p>
-                        <ul>
-                            <li>Vue côte à côte</li>
-                            <li>Parfait pour comparer ou référencer</li>
-                            <li>Synchronisation du scroll optionnelle</li>
-                        </ul>
-                    `,
+                    title: Localization.t('tour.step.split_mode.title'),
+                    description: Localization.t('tour.step.split_mode.desc'),
                     side: 'bottom',
                     align: 'end'
                 }
@@ -346,15 +288,8 @@ const ProductTourStepsModel = {
             {
                 element: '#storage-badge',
                 popover: {
-                    title: '💾 Espace de Stockage',
-                    description: `
-                        <p>Surveillez l'utilisation de votre stockage local :</p>
-                        <ul>
-                            <li>Indicateur visuel (vert/orange/rouge)</li>
-                            <li>Cliquez pour voir les détails</li>
-                            <li>Gérez vos projets pour libérer de l'espace</li>
-                        </ul>
-                    `,
+                    title: Localization.t('tour.step.storage.title'),
+                    description: Localization.t('tour.step.storage.desc'),
                     side: 'bottom',
                     align: 'end'
                 }
@@ -363,15 +298,8 @@ const ProductTourStepsModel = {
             {
                 element: '#headerUndoBtn',
                 popover: {
-                    title: '↩️ Annuler / Rétablir',
-                    description: `
-                        <p>Historique complet de vos modifications :</p>
-                        <ul>
-                            <li><strong>Annuler</strong> : Ctrl+Z</li>
-                            <li><strong>Rétablir</strong> : Ctrl+Y</li>
-                            <li>Historique illimité pendant la session</li>
-                        </ul>
-                    `,
+                    title: Localization.t('tour.step.undo_redo.title'),
+                    description: Localization.t('tour.step.undo_redo.desc'),
                     side: 'bottom',
                     align: 'end'
                 }
@@ -380,15 +308,8 @@ const ProductTourStepsModel = {
             {
                 element: '#pomodoroHeaderBtn',
                 popover: {
-                    title: '⏱️ Timer Pomodoro',
-                    description: `
-                        <p>Gérez votre temps d'écriture efficacement :</p>
-                        <ul>
-                            <li>Sessions de 25 minutes</li>
-                            <li>Pauses de 5 minutes</li>
-                            <li>Notifications sonores</li>
-                        </ul>
-                    `,
+                    title: Localization.t('tour.step.pomodoro.title'),
+                    description: Localization.t('tour.step.pomodoro.desc'),
                     side: 'bottom',
                     align: 'end'
                 }
@@ -397,15 +318,8 @@ const ProductTourStepsModel = {
             {
                 element: '.header-action-btn[onclick="openImportChapterModal()"]',
                 popover: {
-                    title: '📥 Importer du Texte',
-                    description: `
-                        <p>Importez vos textes existants :</p>
-                        <ul>
-                            <li>Formats : .docx, .txt, .md, .epub</li>
-                            <li>Détection automatique de la structure</li>
-                            <li>Préservation de la mise en forme</li>
-                        </ul>
-                    `,
+                    title: Localization.t('tour.step.import.title'),
+                    description: Localization.t('tour.step.import.desc'),
                     side: 'bottom',
                     align: 'end'
                 }
@@ -414,16 +328,8 @@ const ProductTourStepsModel = {
             {
                 element: '.header-action-btn[onclick="showBackupMenu()"]',
                 popover: {
-                    title: '📤 Sauvegardes & Exports',
-                    description: `
-                        <p>Exportez votre travail dans différents formats :</p>
-                        <ul>
-                            <li><strong>DOCX</strong> : Microsoft Word</li>
-                            <li><strong>PDF</strong> : Document portable</li>
-                            <li><strong>JSON</strong> : Sauvegarde complète</li>
-                            <li><strong>TXT</strong> : Texte brut</li>
-                        </ul>
-                    `,
+                    title: Localization.t('tour.step.export.title'),
+                    description: Localization.t('tour.step.export.desc'),
                     side: 'bottom',
                     align: 'end'
                 }
@@ -432,16 +338,8 @@ const ProductTourStepsModel = {
             {
                 element: '.header-action-btn[onclick="openThemeManager()"]',
                 popover: {
-                    title: '🎨 Gestionnaire de Thèmes',
-                    description: `
-                        <p>Personnalisez l'apparence de Plume :</p>
-                        <ul>
-                            <li>Thèmes clairs et sombres</li>
-                            <li>Couleurs personnalisables</li>
-                            <li>Polices d'écriture variées</li>
-                            <li>Sauvegarde de vos préférences</li>
-                        </ul>
-                    `,
+                    title: Localization.t('tour.step.themes.title'),
+                    description: Localization.t('tour.step.themes.desc'),
                     side: 'bottom',
                     align: 'end'
                 }
@@ -450,16 +348,8 @@ const ProductTourStepsModel = {
             {
                 element: '.header-action-btn[onclick="openProjectsModal()"]',
                 popover: {
-                    title: '📁 Gestionnaire de Projets',
-                    description: `
-                        <p>Gérez tous vos projets d'écriture :</p>
-                        <ul>
-                            <li>Créer de nouveaux projets</li>
-                            <li>Basculer entre projets</li>
-                            <li>Dupliquer ou supprimer</li>
-                            <li>Stockage local sécurisé</li>
-                        </ul>
-                    `,
+                    title: Localization.t('tour.step.projects.title'),
+                    description: Localization.t('tour.step.projects.desc'),
                     side: 'bottom',
                     align: 'end'
                 }
@@ -469,16 +359,8 @@ const ProductTourStepsModel = {
             {
                 element: '.sidebar',
                 popover: {
-                    title: 'Structure du Projet',
-                    description: `
-                        <p>La barre latérale affiche la structure de votre histoire :</p>
-                        <ul>
-                            <li><strong>Actes</strong> : Grandes parties de votre récit</li>
-                            <li><strong>Chapitres</strong> : Subdivisions des actes</li>
-                            <li><strong>Scènes</strong> : Unités d'écriture individuelles</li>
-                        </ul>
-                        <p>Cliquez sur une scène pour l'éditer.</p>
-                    `,
+                    title: Localization.t('tour.step.structure.title'),
+                    description: Localization.t('tour.step.structure.desc'),
                     side: 'right',
                     align: 'start'
                 }
@@ -486,17 +368,8 @@ const ProductTourStepsModel = {
             {
                 element: '#sceneEditor',
                 popover: {
-                    title: 'Éditeur de Scène',
-                    description: `
-                        <p>L'éditeur principal pour écrire vos scènes.</p>
-                        <p>Fonctionnalités disponibles :</p>
-                        <ul>
-                            <li>Formatage de texte riche</li>
-                            <li>Détection automatique des personnages</li>
-                            <li>Compteur de mots en temps réel</li>
-                            <li>Sauvegarde automatique</li>
-                        </ul>
-                    `,
+                    title: Localization.t('tour.step.editor.title'),
+                    description: Localization.t('tour.step.editor.desc'),
                     side: 'left',
                     align: 'start'
                 }
@@ -506,17 +379,8 @@ const ProductTourStepsModel = {
             {
                 element: '#headerProjectTitle',
                 popover: {
-                    title: '🎉 Visite Terminée !',
-                    description: `
-                        <p>Vous connaissez maintenant les bases de Plume !</p>
-                        <p>Explorez les autres sections pour découvrir encore plus de fonctionnalités :</p>
-                        <ul>
-                            <li>Personnages et Univers</li>
-                            <li>Visualisations et graphiques</li>
-                            <li>Outils d'analyse et statistiques</li>
-                        </ul>
-                        <p><strong>Bon courage pour votre écriture ! ✍️</strong></p>
-                    `,
+                    title: Localization.t('tour.step.finish.title'),
+                    description: Localization.t('tour.step.finish.desc'),
                     side: 'bottom',
                     align: 'start'
                 }
@@ -533,11 +397,8 @@ const ProductTourStepsModel = {
             {
                 element: '#headerProjectTitle',
                 popover: {
-                    title: '🪶 Bienvenue',
-                    description: `
-                        <p>Plume est votre espace d'écriture complet.</p>
-                        <p>Découvrez les fonctionnalités principales.</p>
-                    `,
+                    title: Localization.t('tour.mobile.welcome.title'),
+                    description: Localization.t('tour.mobile.welcome.desc'),
                     side: 'bottom',
                     align: 'start'
                 }
@@ -545,10 +406,8 @@ const ProductTourStepsModel = {
             {
                 element: '.sidebar',
                 popover: {
-                    title: 'Structure',
-                    description: `
-                        <p>Organisez votre histoire en actes, chapitres et scènes.</p>
-                    `,
+                    title: Localization.t('tour.mobile.structure.title'),
+                    description: Localization.t('tour.mobile.structure.desc'),
                     side: 'right',
                     align: 'start'
                 }
@@ -556,10 +415,8 @@ const ProductTourStepsModel = {
             {
                 element: '#sceneEditor',
                 popover: {
-                    title: 'Éditeur',
-                    description: `
-                        <p>Écrivez vos scènes avec sauvegarde automatique.</p>
-                    `,
+                    title: Localization.t('tour.mobile.editor.title'),
+                    description: Localization.t('tour.mobile.editor.desc'),
                     side: 'left',
                     align: 'start'
                 }
@@ -567,10 +424,8 @@ const ProductTourStepsModel = {
             {
                 element: '#headerProjectTitle',
                 popover: {
-                    title: '🎉 C\'est parti !',
-                    description: `
-                        <p>Vous êtes prêt à écrire votre histoire !</p>
-                    `,
+                    title: Localization.t('tour.mobile.finish.title'),
+                    description: Localization.t('tour.mobile.finish.desc'),
                     side: 'bottom',
                     align: 'start'
                 }

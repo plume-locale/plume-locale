@@ -29,25 +29,25 @@ const ProductTourWelcomeView = {
         modal.innerHTML = `
             <div class="tour-welcome-header">
                 <div class="tour-welcome-icon">🪶</div>
-                <h2 class="tour-welcome-title">Bienvenue dans Plume</h2>
-                <p class="tour-welcome-subtitle">Votre compagnon d'écriture</p>
+                <h2 class="tour-welcome-title">${Localization.t('tour.welcome.title')}</h2>
+                <p class="tour-welcome-subtitle">${Localization.t('tour.welcome.subtitle')}</p>
             </div>
             <div class="tour-welcome-content">
-                <p>Plume est un outil complet pour organiser et écrire vos histoires.</p>
-                <p>Voulez-vous découvrir les fonctionnalités principales en quelques minutes ?</p>
+                <p>${Localization.t('tour.welcome.content.intro')}</p>
+                <p>${Localization.t('tour.welcome.content.question')}</p>
             </div>
             <div class="tour-welcome-actions">
                 <button class="tour-welcome-btn tour-welcome-btn-secondary" id="tourSkipBtn">
-                    Plus tard
+                    ${Localization.t('tour.welcome.btn.later')}
                 </button>
                 <button class="tour-welcome-btn tour-welcome-btn-primary" id="tourStartBtn">
-                    Commencer la visite
+                    ${Localization.t('tour.welcome.btn.start')}
                 </button>
             </div>
             <div class="tour-welcome-checkbox">
                 <label>
                     <input type="checkbox" id="tourDontShowAgain">
-                    Ne plus afficher ce message
+                    ${Localization.t('tour.welcome.dont_show')}
                 </label>
             </div>
         `;
@@ -147,8 +147,8 @@ const ProductTourButtonView = {
         const button = document.createElement('button');
         button.id = 'tourTriggerBtn';
         button.className = 'header-action-btn tour-trigger-btn';
-        button.title = 'Démarrer la visite guidée';
-        button.setAttribute('aria-label', 'Démarrer la visite guidée');
+        button.title = Localization.t('tour.btn.trigger.title');
+        button.setAttribute('aria-label', Localization.t('tour.btn.trigger.title'));
         button.innerHTML = '<i data-lucide="help-circle"></i>';
 
         // Attacher l'événement
@@ -307,11 +307,11 @@ const ProductTourDriverView = {
      */
     cleanup: function () {
         console.log('🧹 Cleaning up tour elements...');
-        
+
         // Supprimer les éléments temporaires
         const tempElements = document.querySelectorAll('[data-tour-temp]');
         tempElements.forEach(el => el.remove());
-        
+
         // Supprimer tous les éléments Driver.js qui pourraient rester
         const driverElements = [
             '.driver-overlay',
@@ -321,7 +321,7 @@ const ProductTourDriverView = {
             '.driver-no-interaction',
             '#driver-dummy-element'
         ];
-        
+
         driverElements.forEach(selector => {
             const elements = document.querySelectorAll(selector);
             elements.forEach(el => {
@@ -329,17 +329,17 @@ const ProductTourDriverView = {
                 el.remove();
             });
         });
-        
+
         // Retirer les classes Driver.js du body
         document.body.classList.remove('driver-active', 'driver-fade', 'driver-simple');
-        
+
         // Retirer les attributs aria ajoutés par Driver.js
         document.querySelectorAll('[aria-haspopup="dialog"]').forEach(el => {
             el.removeAttribute('aria-haspopup');
             el.removeAttribute('aria-expanded');
             el.removeAttribute('aria-controls');
         });
-        
+
         console.log('✅ Tour cleanup complete');
     }
 };

@@ -41,7 +41,7 @@ async function initProductTourVM() {
                     });
                 }
             };
-            
+
             waitForPageLoad();
         }
 
@@ -76,7 +76,7 @@ function showWelcomeModalVM() {
             // onSkip
             async () => {
                 await ProductTourStateRepository.markSkipped();
-                ProductTourNotificationView.showInfo('Vous pouvez démarrer la visite à tout moment depuis le bouton d\'aide');
+                ProductTourNotificationView.showInfo(Localization.t('tour.notification.start_anytime'));
             },
             // onDontShowAgain
             async () => {
@@ -139,7 +139,7 @@ async function startProductTourVM() {
         // Récupérer les steps
         const steps = ProductTourStepsRepository.getAllSteps();
         if (steps.length === 0) {
-            ProductTourNotificationView.showError('Aucune étape de visite disponible');
+            ProductTourNotificationView.showError(Localization.t('tour.notification.no_steps'));
             return {
                 success: false,
                 error: 'No tour steps available'
@@ -155,7 +155,7 @@ async function startProductTourVM() {
         // Créer l'instance Driver.js (async)
         const driverInstance = await ProductTourDriverRepository.createDriver(config, steps);
         if (!driverInstance) {
-            ProductTourNotificationView.showError('Impossible de démarrer la visite');
+            ProductTourNotificationView.showError(Localization.t('tour.notification.start_error'));
             return {
                 success: false,
                 error: 'Failed to create driver instance'
@@ -165,7 +165,7 @@ async function startProductTourVM() {
         // Démarrer le tour
         const started = ProductTourDriverRepository.startTour();
         if (!started) {
-            ProductTourNotificationView.showError('Erreur lors du démarrage de la visite');
+            ProductTourNotificationView.showError(Localization.t('tour.notification.start_error'));
             return {
                 success: false,
                 error: 'Failed to start tour'
@@ -179,7 +179,7 @@ async function startProductTourVM() {
         };
     } catch (error) {
         console.error('Error starting tour:', error);
-        ProductTourNotificationView.showError('Erreur lors du démarrage de la visite');
+        ProductTourNotificationView.showError(Localization.t('tour.notification.start_error'));
         return {
             success: false,
             error: error.message
@@ -223,7 +223,7 @@ async function resetProductTourVM() {
         // Réinitialiser l'état
         await ProductTourStateRepository.reset();
 
-        ProductTourNotificationView.showSuccess('La visite guidée a été réinitialisée');
+        ProductTourNotificationView.showSuccess(Localization.t('tour.notification.reset_success'));
 
         return {
             success: true,
@@ -231,7 +231,7 @@ async function resetProductTourVM() {
         };
     } catch (error) {
         console.error('Error resetting tour:', error);
-        ProductTourNotificationView.showError('Erreur lors de la réinitialisation');
+        ProductTourNotificationView.showError(Localization.t('tour.notification.reset_error'));
         return {
             success: false,
             error: error.message
@@ -255,7 +255,7 @@ async function onTourCompleteVM() {
         await ProductTourStateRepository.markCompleted();
 
         // Afficher un message de succès
-        ProductTourNotificationView.showSuccess('🎉 Visite terminée ! Bon courage pour votre écriture !');
+        ProductTourNotificationView.showSuccess(Localization.t('tour.notification.complete'));
 
         // Nettoyer
         ProductTourDriverView.cleanup();
