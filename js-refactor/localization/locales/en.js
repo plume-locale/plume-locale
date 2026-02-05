@@ -34,6 +34,10 @@ const LOCALE_EN = {
     "mobile.action.undo": "Undo",
     "mobile.action.redo": "Redo",
     "mobile.action.backup": "Backup/Export",
+    "mobile.toolbar.hide": "Hide formatting tools",
+    "mobile.toolbar.show": "Show formatting tools",
+    "mobile.links.hide": "Hide linked characters & locations",
+    "mobile.links.show": "Show linked characters & locations",
 
     // --- Sidebar Headers ---
     "sidebar.search.placeholder": "Search entire project...",

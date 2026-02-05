@@ -134,11 +134,11 @@ const MobileMenuView = {
 
         if (isExpanded) {
             if (toolbar) toolbar.classList.add('expanded');
-            if (toggleText) toggleText.innerHTML = '<i data-lucide="x" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Masquer les outils de formatage';
+            if (toggleText) toggleText.innerHTML = '<i data-lucide="x" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>' + Localization.t('mobile.toolbar.hide');
             if (toggleBtn) toggleBtn.classList.add('expanded');
         } else {
             if (toolbar) toolbar.classList.remove('expanded');
-            if (toggleText) toggleText.innerHTML = '<i data-lucide="pen-line" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Afficher les outils de formatage';
+            if (toggleText) toggleText.innerHTML = '<i data-lucide="pen-line" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>' + Localization.t('mobile.toolbar.show');
             if (toggleBtn) toggleBtn.classList.remove('expanded');
         }
 
@@ -156,11 +156,11 @@ const MobileMenuView = {
 
         if (isExpanded) {
             if (panel) panel.classList.add('expanded');
-            if (toggleText) toggleText.innerHTML = '<i data-lucide="chevron-down" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Masquer personnages & lieux liés';
+            if (toggleText) toggleText.innerHTML = '<i data-lucide="chevron-down" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>' + Localization.t('mobile.links.hide');
             if (toggleBtn) toggleBtn.classList.add('expanded');
         } else {
             if (panel) panel.classList.remove('expanded');
-            if (toggleText) toggleText.innerHTML = '<i data-lucide="chevron-right" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Afficher personnages & lieux liés';
+            if (toggleText) toggleText.innerHTML = '<i data-lucide="chevron-right" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>' + Localization.t('mobile.links.show');
             if (toggleBtn) toggleBtn.classList.remove('expanded');
         }
 

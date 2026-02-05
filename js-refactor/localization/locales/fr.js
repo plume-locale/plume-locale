@@ -34,6 +34,10 @@ const LOCALE_FR = {
     "mobile.action.undo": "Annuler",
     "mobile.action.redo": "Rétablir",
     "mobile.action.backup": "Sauvegarde/Export",
+    "mobile.toolbar.hide": "Masquer les outils de formatage",
+    "mobile.toolbar.show": "Afficher les outils de formatage",
+    "mobile.links.hide": "Masquer personnages & lieux liés",
+    "mobile.links.show": "Afficher personnages & lieux liés",
 
     // --- Sidebar Headers ---
     "sidebar.search.placeholder": "Rechercher dans tout le projet...",
