@@ -2021,21 +2021,21 @@
             <div class="shortcuts-modal-header">
                 <div class="shortcuts-modal-title">
                     <i data-lucide="keyboard"></i>
-                    <span data-i18n="header.shortcuts">Raccourcis clavier</span>
+                    <span data-i18n="shortcuts.title">Raccourcis clavier</span>
                 </div>
                 <button class="shortcuts-modal-close" onclick="KeyboardShortcutsHandlers.closeShortcutsModal()"
-                    title="Fermer">
+                    title="Fermer" data-i18n-title="btn.close">
                     <i data-lucide="x" style="width: 20px; height: 20px"></i>
                 </button>
             </div>
             <div class="shortcuts-tabs">
                 <div class="shortcuts-tab active" id="tabKeyboardShortcuts"
-                    onclick="KeyboardShortcutsHandlers.switchTab('keyboard')">
+                    onclick="KeyboardShortcutsHandlers.switchTab('keyboard')" data-i18n="shortcuts.tab.keyboard">
                     <i data-lucide="keyboard" style="width: 16px; height: 16px"></i>
                     Clavier
                 </div>
                 <div class="shortcuts-tab" id="tabMobileShortcuts"
-                    onclick="KeyboardShortcutsHandlers.switchTab('mobile')">
+                    onclick="KeyboardShortcutsHandlers.switchTab('mobile')" data-i18n="shortcuts.tab.mobile">
                     <i data-lucide="smartphone" style="width: 16px; height: 16px"></i>
                     Tactile (Mobile)
                 </div>
@@ -2043,19 +2043,21 @@
             <div class="shortcuts-modal-body active" id="bodyKeyboardShortcuts">
                 <!-- Section : Général -->
                 <div class="shortcut-category">
-                    <div class="shortcut-category-title">
+                    <div class="shortcut-category-title" data-i18n="shortcuts.cat.general">
                         <i data-lucide="command" style="width: 14px; height: 14px"></i>
                         Général
                     </div>
                     <div class="shortcut-list">
                         <div class="shortcut-item">
-                            <span class="shortcut-description">Ouvrir ce résumé</span>
+                            <span class="shortcut-description" data-i18n="shortcuts.desc.open_summary">Ouvrir ce
+                                résumé</span>
                             <div class="shortcut-keys">
                                 <span class="shortcut-key">?</span>
                             </div>
                         </div>
                         <div class="shortcut-item">
-                            <span class="shortcut-description">Recherche globale</span>
+                            <span class="shortcut-description" data-i18n="shortcuts.desc.global_search">Recherche
+                                globale</span>
                             <div class="shortcut-keys">
                                 <span class="shortcut-key">Ctrl</span>
                                 <span class="shortcut-plus">+</span>
@@ -2063,7 +2065,8 @@
                             </div>
                         </div>
                         <div class="shortcut-item">
-                            <span class="shortcut-description">Sauvegarder le projet</span>
+                            <span class="shortcut-description" data-i18n="shortcuts.desc.save_project">Sauvegarder le
+                                projet</span>
                             <div class="shortcut-keys">
                                 <span class="shortcut-key">Ctrl</span>
                                 <span class="shortcut-plus">+</span>
@@ -2071,13 +2074,15 @@
                             </div>
                         </div>
                         <div class="shortcut-item">
-                            <span class="shortcut-description">Mode Focus (Plein écran)</span>
+                            <span class="shortcut-description" data-i18n="shortcuts.desc.focus_mode">Mode Focus (Plein
+                                écran)</span>
                             <div class="shortcut-keys">
                                 <span class="shortcut-key">F11</span>
                             </div>
                         </div>
                         <div class="shortcut-item">
-                            <span class="shortcut-description">Mode Révision</span>
+                            <span class="shortcut-description" data-i18n="shortcuts.desc.revision_mode">Mode
+                                Révision</span>
                             <div class="shortcut-keys">
                                 <span class="shortcut-key">Ctrl</span>
                                 <span class="shortcut-plus">+</span>
@@ -2089,19 +2094,21 @@
 
                 <!-- Section : Écriture -->
                 <div class="shortcut-category">
-                    <div class="shortcut-category-title">
+                    <div class="shortcut-category-title" data-i18n="shortcuts.cat.writing">
                         <i data-lucide="pen-tool" style="width: 14px; height: 14px"></i>
                         Écriture
                     </div>
                     <div class="shortcut-list">
                         <div class="shortcut-item">
-                            <span class="shortcut-description">Nouveau paragraphe</span>
+                            <span class="shortcut-description" data-i18n="shortcuts.desc.new_paragraph">Nouveau
+                                paragraphe</span>
                             <div class="shortcut-keys">
                                 <span class="shortcut-key">Entrée</span>
                             </div>
                         </div>
                         <div class="shortcut-item">
-                            <span class="shortcut-description">Saut de ligne</span>
+                            <span class="shortcut-description" data-i18n="shortcuts.desc.line_break">Saut de
+                                ligne</span>
                             <div class="shortcut-keys">
                                 <span class="shortcut-key">Maj</span>
                                 <span class="shortcut-plus">+</span>
@@ -2109,7 +2116,8 @@
                             </div>
                         </div>
                         <div class="shortcut-item">
-                            <span class="shortcut-description">Espace insécable</span>
+                            <span class="shortcut-description" data-i18n="shortcuts.desc.non_breaking_space">Espace
+                                insécable</span>
                             <div class="shortcut-keys">
                                 <span class="shortcut-key">Ctrl</span>
                                 <span class="shortcut-plus">+</span>
@@ -2119,7 +2127,8 @@
                             </div>
                         </div>
                         <div class="shortcut-item">
-                            <span class="shortcut-description">Guillemet français ouvert ( « )</span>
+                            <span class="shortcut-description" data-i18n="shortcuts.desc.french_quote_open">Guillemet
+                                français ouvert ( « )</span>
                             <div class="shortcut-keys">
                                 <span class="shortcut-key">Alt</span>
                                 <span class="shortcut-plus">+</span>
@@ -2127,7 +2136,8 @@
                             </div>
                         </div>
                         <div class="shortcut-item">
-                            <span class="shortcut-description">Guillemet français fermé ( » )</span>
+                            <span class="shortcut-description" data-i18n="shortcuts.desc.french_quote_close">Guillemet
+                                français fermé ( » )</span>
                             <div class="shortcut-keys">
                                 <span class="shortcut-key">Alt</span>
                                 <span class="shortcut-plus">+</span>
@@ -2135,7 +2145,8 @@
                             </div>
                         </div>
                         <div class="shortcut-item">
-                            <span class="shortcut-description">Tiret cadratin ( — )</span>
+                            <span class="shortcut-description" data-i18n="shortcuts.desc.em_dash">Tiret cadratin ( —
+                                )</span>
                             <div class="shortcut-keys">
                                 <span class="shortcut-key">Ctrl</span>
                                 <span class="shortcut-plus">+</span>
@@ -2149,11 +2160,12 @@
 
                 <!-- Section : Style du texte -->
                 <div class="shortcut-category">
-                    <div class="shortcut-category-title"><i data-lucide="type" style="width: 14px; height: 14px"></i>
+                    <div class="shortcut-category-title" data-i18n="shortcuts.cat.text_style"><i data-lucide="type"
+                            style="width: 14px; height: 14px"></i>
                         Style du texte</div>
                     <div class="shortcut-list">
                         <div class="shortcut-item">
-                            <span class="shortcut-description">Mettre en gras</span>
+                            <span class="shortcut-description" data-i18n="shortcuts.desc.bold">Mettre en gras</span>
                             <div class="shortcut-keys">
                                 <span class="shortcut-key">Ctrl</span>
                                 <span class="shortcut-plus">+</span>
@@ -2161,7 +2173,8 @@
                             </div>
                         </div>
                         <div class="shortcut-item">
-                            <span class="shortcut-description">Mettre en italique</span>
+                            <span class="shortcut-description" data-i18n="shortcuts.desc.italic">Mettre en
+                                italique</span>
                             <div class="shortcut-keys">
                                 <span class="shortcut-key">Ctrl</span>
                                 <span class="shortcut-plus">+</span>
@@ -2169,7 +2182,7 @@
                             </div>
                         </div>
                         <div class="shortcut-item">
-                            <span class="shortcut-description">Souligner</span>
+                            <span class="shortcut-description" data-i18n="shortcuts.desc.underline">Souligner</span>
                             <div class="shortcut-keys">
                                 <span class="shortcut-key">Ctrl</span>
                                 <span class="shortcut-plus">+</span>
@@ -2181,13 +2194,13 @@
 
                 <!-- Section : Presse-papier -->
                 <div class="shortcut-category">
-                    <div class="shortcut-category-title">
+                    <div class="shortcut-category-title" data-i18n="shortcuts.cat.editing">
                         <i data-lucide="clipboard" style="width: 14px; height: 14px"></i>
                         Édition
                     </div>
                     <div class="shortcut-list">
                         <div class="shortcut-item">
-                            <span class="shortcut-description">Annuler</span>
+                            <span class="shortcut-description" data-i18n="shortcuts.desc.undo">Annuler</span>
                             <div class="shortcut-keys">
                                 <span class="shortcut-key">Ctrl</span>
                                 <span class="shortcut-plus">+</span>
@@ -2195,7 +2208,7 @@
                             </div>
                         </div>
                         <div class="shortcut-item">
-                            <span class="shortcut-description">Rétablir</span>
+                            <span class="shortcut-description" data-i18n="shortcuts.desc.redo">Rétablir</span>
                             <div class="shortcut-keys">
                                 <span class="shortcut-key">Ctrl</span>
                                 <span class="shortcut-plus">+</span>
@@ -2203,7 +2216,7 @@
                             </div>
                         </div>
                         <div class="shortcut-item">
-                            <span class="shortcut-description">Couper</span>
+                            <span class="shortcut-description" data-i18n="shortcuts.desc.cut">Couper</span>
                             <div class="shortcut-keys">
                                 <span class="shortcut-key">Ctrl</span>
                                 <span class="shortcut-plus">+</span>
@@ -2211,7 +2224,7 @@
                             </div>
                         </div>
                         <div class="shortcut-item">
-                            <span class="shortcut-description">Copier</span>
+                            <span class="shortcut-description" data-i18n="shortcuts.desc.copy">Copier</span>
                             <div class="shortcut-keys">
                                 <span class="shortcut-key">Ctrl</span>
                                 <span class="shortcut-plus">+</span>
@@ -2219,7 +2232,7 @@
                             </div>
                         </div>
                         <div class="shortcut-item">
-                            <span class="shortcut-description">Coller</span>
+                            <span class="shortcut-description" data-i18n="shortcuts.desc.paste">Coller</span>
                             <div class="shortcut-keys">
                                 <span class="shortcut-key">Ctrl</span>
                                 <span class="shortcut-plus">+</span>
@@ -2227,7 +2240,8 @@
                             </div>
                         </div>
                         <div class="shortcut-item">
-                            <span class="shortcut-description">Coller sans mise en forme</span>
+                            <span class="shortcut-description" data-i18n="shortcuts.desc.paste_no_format">Coller sans
+                                mise en forme</span>
                             <div class="shortcut-keys">
                                 <span class="shortcut-key">Maj</span>
                                 <span class="shortcut-plus">+</span>
@@ -2241,25 +2255,28 @@
 
                 <!-- Section : Navigation & Menus -->
                 <div class="shortcut-category">
-                    <div class="shortcut-category-title">
+                    <div class="shortcut-category-title" data-i18n="shortcuts.cat.navigation">
                         <i data-lucide="move" style="width: 14px; height: 14px"></i>
                         Navigation & Menus
                     </div>
                     <div class="shortcut-list">
                         <div class="shortcut-item">
-                            <span class="shortcut-description">Fermer la fenêtre / Annuler</span>
+                            <span class="shortcut-description" data-i18n="shortcuts.desc.close_cancel">Fermer la fenêtre
+                                / Annuler</span>
                             <div class="shortcut-keys">
                                 <span class="shortcut-key">Échap</span>
                             </div>
                         </div>
                         <div class="shortcut-item">
-                            <span class="shortcut-description">Valider / OK</span>
+                            <span class="shortcut-description" data-i18n="shortcuts.desc.validate_ok">Valider /
+                                OK</span>
                             <div class="shortcut-keys">
                                 <span class="shortcut-key">Entrée</span>
                             </div>
                         </div>
                         <div class="shortcut-item">
-                            <span class="shortcut-description">Début / Fin de ligne</span>
+                            <span class="shortcut-description" data-i18n="shortcuts.desc.line_start_end">Début / Fin de
+                                ligne</span>
                             <div class="shortcut-keys">
                                 <span class="shortcut-key">Origine</span>
                                 <span class="shortcut-plus">/</span>
@@ -2267,7 +2284,8 @@
                             </div>
                         </div>
                         <div class="shortcut-item">
-                            <span class="shortcut-description">Début / Fin du document</span>
+                            <span class="shortcut-description" data-i18n="shortcuts.desc.doc_start_end">Début / Fin du
+                                document</span>
                             <div class="shortcut-keys">
                                 <span class="shortcut-key">Ctrl</span>
                                 <span class="shortcut-plus">+</span>
@@ -2283,7 +2301,8 @@
             <!-- TAB : Mobile Swipe Gestures -->
             <div class="shortcuts-modal-body" id="bodyMobileShortcuts">
                 <div class="shortcut-category">
-                    <div class="shortcut-category-title"><i data-lucide="hand" style="width: 14px; height: 14px"></i>
+                    <div class="shortcut-category-title" data-i18n="shortcuts.cat.gestures"><i data-lucide="hand"
+                            style="width: 14px; height: 14px"></i>
                         Gestes Tactiles</div>
                     <div class="shortcut-list" id="mobileGestureList">
                         <div class="gesture-item">
@@ -2291,8 +2310,10 @@
                                 <i data-lucide="arrow-right-to-line"></i>
                             </div>
                             <div class="gesture-info">
-                                <span class="gesture-name">Ouvrir la barre latérale</span>
-                                <span class="gesture-description">Glisser depuis le bord gauche vers la droite</span>
+                                <span class="gesture-name" data-i18n="shortcuts.desc.open_sidebar">Ouvrir la barre
+                                    latérale</span>
+                                <span class="gesture-description" data-i18n="shortcuts.desc.open_sidebar_detail">Glisser
+                                    depuis le bord gauche vers la droite</span>
                             </div>
                         </div>
                         <div class="gesture-item">
@@ -2300,15 +2321,19 @@
                                 <i data-lucide="arrow-left-to-line"></i>
                             </div>
                             <div class="gesture-info">
-                                <span class="gesture-name">Fermer la barre latérale</span>
-                                <span class="gesture-description">Glisser vers la gauche n'importe où</span>
+                                <span class="gesture-name" data-i18n="shortcuts.desc.close_sidebar">Fermer la barre
+                                    latérale</span>
+                                <span class="gesture-description"
+                                    data-i18n="shortcuts.desc.close_sidebar_detail">Glisser vers la gauche n'importe
+                                    où</span>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="shortcuts-modal-footer"
-                style="padding: 1rem 2rem; border-top: 1px solid var(--border-color); text-align: center; color: var(--text-muted); font-size: 0.8rem">
+                style="padding: 1rem 2rem; border-top: 1px solid var(--border-color); text-align: center; color: var(--text-muted); font-size: 0.8rem"
+                data-i18n="shortcuts.footer">
                 Certains raccourcis peuvent varier selon votre système d'exploitation.</div>
         </div>
     </div>

@@ -4,12 +4,12 @@
 class KeyboardShortcutsRepository {
     constructor() {
         this.shortcuts = [
-            { id: 'closeModals', key: 'Escape', ctrl: false, meta: false, description: 'Close all modals' },
-            { id: 'focusSearch', key: 'f', ctrl: true, meta: true, description: 'Focus global search' },
-            { id: 'saveProject', key: 's', ctrl: true, meta: true, description: 'Save current project' },
-            { id: 'toggleFocusMode', key: 'F11', ctrl: false, meta: false, description: 'Toggle focus mode' },
-            { id: 'toggleRevision', key: 'r', ctrl: true, meta: true, description: 'Toggle revision mode' },
-            { id: 'openShortcutsModal', key: '?', ctrl: false, meta: false, description: 'Show keyboard shortcuts summary' }
+            { id: 'closeModals', key: 'Escape', ctrl: false, meta: false, description: Localization.t('shortcuts.desc.close_cancel') },
+            { id: 'focusSearch', key: 'f', ctrl: true, meta: true, description: Localization.t('shortcuts.desc.global_search') },
+            { id: 'saveProject', key: 's', ctrl: true, meta: true, description: Localization.t('shortcuts.desc.save_project') },
+            { id: 'toggleFocusMode', key: 'F11', ctrl: false, meta: false, description: Localization.t('shortcuts.desc.focus_mode') },
+            { id: 'toggleRevision', key: 'r', ctrl: true, meta: true, description: Localization.t('shortcuts.desc.revision_mode') },
+            { id: 'openShortcutsModal', key: '?', ctrl: false, meta: false, description: Localization.t('shortcuts.desc.open_summary') }
         ].map(s => {
             const kb = new KeyboardShortcut(s.key, s.ctrl, s.meta, s.shift || false, s.alt || false, s.description);
             kb.id = s.id;
