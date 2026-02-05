@@ -9,7 +9,7 @@ class MindmapViewModel {
     }
 
     createMindmap() {
-        const title = prompt('Nom de la mindmap:', 'Nouvelle mindmap');
+        const title = prompt(Localization.t('mindmap.prompt.title'), Localization.t('mindmap.prompt.default_title'));
         if (!title) return;
 
         const newMindmap = this.repository.add(title);
@@ -24,7 +24,7 @@ class MindmapViewModel {
     }
 
     deleteMindmap(id) {
-        if (!confirm('Supprimer cette mindmap ?')) return;
+        if (!confirm(Localization.t('mindmap.confirm.delete'))) return;
 
         if (this.repository.delete(id)) {
             if (this.model.currentMindmapId === id) {
@@ -69,7 +69,7 @@ class MindmapViewModel {
         const mindmap = this.model.currentMindmap;
         if (!mindmap) return;
 
-        const newTitle = prompt('Nouveau nom:', mindmap.title);
+        const newTitle = prompt(Localization.t('mindmap.prompt.rename'), mindmap.title);
         if (newTitle && newTitle.trim()) {
             this.repository.update(mindmap.id, { title: newTitle.trim() });
             this.refresh();
@@ -80,12 +80,12 @@ class MindmapViewModel {
         const mindmap = this.model.currentMindmap;
         if (!mindmap) return;
 
-        const content = prompt('Contenu de la note:');
+        const content = prompt(Localization.t('mindmap.prompt.note_content'));
         if (!content) return;
 
         this.repository.addNode(mindmap.id, {
             type: 'note',
-            title: 'Note',
+            title: Localization.t('mindmap.node.note_title'),
             content: content,
             x: 100 + Math.random() * 200,
             y: 100 + Math.random() * 200
@@ -97,7 +97,7 @@ class MindmapViewModel {
         const mindmap = this.model.currentMindmap;
         if (!mindmap) return;
 
-        if (!confirm('Supprimer ce nœud ?')) return;
+        if (!confirm(Localization.t('mindmap.confirm.delete_node'))) return;
 
         if (this.repository.deleteNode(mindmap.id, nodeId)) {
             this.refresh();

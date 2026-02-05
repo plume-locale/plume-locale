@@ -397,14 +397,14 @@ class MindmapHandlers {
         if (!link) return;
 
         const colors = [
-            { name: 'Or', value: '#d4af37' },
-            { name: 'Rouge', value: '#c44536' },
-            { name: 'Bleu', value: '#2196f3' },
-            { name: 'Vert', value: '#4caf50' },
-            { name: 'Violet', value: '#9c27b0' },
-            { name: 'Orange', value: '#ff9800' },
-            { name: 'Rose', value: '#e91e63' },
-            { name: 'Gris', value: '#757575' }
+            { name: Localization.t('color.gold'), value: '#d4af37' },
+            { name: Localization.t('color.red'), value: '#c44536' },
+            { name: Localization.t('color.blue'), value: '#2196f3' },
+            { name: Localization.t('color.green'), value: '#4caf50' },
+            { name: Localization.t('color.purple'), value: '#9c27b0' },
+            { name: Localization.t('color.orange'), value: '#ff9800' },
+            { name: Localization.t('color.pink'), value: '#e91e63' },
+            { name: Localization.t('color.gray'), value: '#757575' }
         ];
 
         let selectedColor = link.color || '#d4af37';
@@ -413,15 +413,15 @@ class MindmapHandlers {
         overlay.className = 'link-editor-overlay';
         overlay.innerHTML = `
             <div class="link-editor-modal">
-                <div class="link-editor-header"><i data-lucide="pencil" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;"></i> Éditer le lien</div>
+                <div class="link-editor-header"><i data-lucide="pencil" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;"></i> ${Localization.t('mindmap.link_editor.title')}</div>
                 <div class="link-editor-field">
-                    <label class="link-editor-label">Étiquette</label>
+                    <label class="link-editor-label">${Localization.t('mindmap.link_editor.label')}</label>
                     <input type="text" class="link-editor-input" id="linkLabelInput" 
                             value="${(link.label || '').replace(/"/g, '&quot;')}" 
-                            placeholder="Ex: ennemi de, père de, aime...">
+                            placeholder="${Localization.t('mindmap.link_editor.placeholder')}">
                 </div>
                 <div class="link-editor-field">
-                    <label class="link-editor-label">Couleur</label>
+                    <label class="link-editor-label">${Localization.t('mindmap.link_editor.color')}</label>
                     <div class="link-editor-colors" id="linkColorPicker">
                         ${colors.map(c => `
                             <div class="link-color-option ${c.value === selectedColor ? 'selected' : ''}" 
@@ -432,9 +432,9 @@ class MindmapHandlers {
                     </div>
                 </div>
                 <div class="link-editor-buttons">
-                    <button class="btn" id="saveLinkBtn" style="flex: 1;"><i data-lucide="save" style="width:14px;height:14px;margin-right:4px;"></i> Enregistrer</button>
-                    <button class="btn" id="deleteLinkBtn" style="background: var(--accent-red); color: white;"><i data-lucide="trash-2" style="width:14px;height:14px;margin-right:4px;"></i> Supprimer</button>
-                    <button class="btn" id="cancelLinkBtn" style="background: var(--bg-secondary);"><i data-lucide="x" style="width:14px;height:14px;margin-right:4px;"></i> Annuler</button>
+                    <button class="btn" id="saveLinkBtn" style="flex: 1;"><i data-lucide="save" style="width:14px;height:14px;margin-right:4px;"></i> ${Localization.t('mindmap.link_editor.save')}</button>
+                    <button class="btn" id="deleteLinkBtn" style="background: var(--accent-red); color: white;"><i data-lucide="trash-2" style="width:14px;height:14px;margin-right:4px;"></i> ${Localization.t('mindmap.link_editor.delete')}</button>
+                    <button class="btn" id="cancelLinkBtn" style="background: var(--bg-secondary);"><i data-lucide="x" style="width:14px;height:14px;margin-right:4px;"></i> ${Localization.t('mindmap.link_editor.cancel')}</button>
                 </div>
             </div>
         `;
@@ -460,7 +460,7 @@ class MindmapHandlers {
         };
 
         overlay.querySelector('#deleteLinkBtn').onclick = () => {
-            if (!confirm('Supprimer ce lien ?')) return;
+            if (!confirm(Localization.t('mindmap.confirm.delete_link'))) return;
             this.repository.deleteLink(mindmap.id, link.id);
             overlay.remove();
             this.viewModel.refresh();
