@@ -95,7 +95,7 @@ const StatsViewModel = {
 
             history.push({
                 date: date,
-                label: date.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' }),
+                label: date.toLocaleDateString(typeof Localization !== 'undefined' && Localization.getLocale() === 'fr' ? 'fr-FR' : 'en-US', { weekday: 'short', day: 'numeric', month: 'short' }),
                 words: words,
                 progress: Math.min((words / dailyGoal) * 100, 100),
                 goalReached: words >= dailyGoal
@@ -109,7 +109,9 @@ const StatsViewModel = {
      */
     formatWordCount(count) {
         if (count >= 1000) {
-            return (count / 1000).toFixed(1).replace('.0', '') + 'k';
+            const locale = typeof Localization !== 'undefined' ? Localization.getLocale() : 'fr';
+            const separator = locale === 'fr' ? ',' : '.';
+            return (count / 1000).toFixed(1).replace('.', separator).replace(separator + '0', '') + 'k';
         }
         return count.toString();
     },

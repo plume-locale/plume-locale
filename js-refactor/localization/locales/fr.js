@@ -1645,4 +1645,18 @@ const LOCALE_FR = {
     "versions.notify.marked_final": "Version \"{0}\" marquée comme finale",
     "split.char_fallback": "Personnage {0}",
     "split.relation_fallback": "Relation",
+
+    // --- Stats ---
+    "stats.title": "Statistiques",
+    "stats.header.words": "{0} mots",
+    "stats.header.chapters": "{0} chapitres",
+    "stats.total_words": "Total de mots",
+    "stats.goal_text": "sur {0} mots",
+    "stats.placeholder_total_goal": "Objectif total",
+    "stats.btn_update": "Mettre à jour",
+    "stats.today": "Aujourd'hui",
+    "stats.placeholder_daily_goal": "Objectif quotidien",
+    "stats.by_act": "Répartition par acte",
+    "stats.history_7days": "Historique (7 jours)",
+    "stats.history_label": "{0}",
 };

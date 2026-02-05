@@ -1902,4 +1902,18 @@ const LOCALE_EN = {
     "versions.notify.marked_final": "Version \"{0}\" marked as final",
     "split.char_fallback": "Character {0}",
     "split.relation_fallback": "Relation",
+
+    // --- Stats ---
+    "stats.title": "Statistics",
+    "stats.header.words": "{0} words",
+    "stats.header.chapters": "{0} chapters",
+    "stats.total_words": "Total Words",
+    "stats.goal_text": "of {0} words",
+    "stats.placeholder_total_goal": "Total goal",
+    "stats.btn_update": "Update",
+    "stats.today": "Today",
+    "stats.placeholder_daily_goal": "Daily goal",
+    "stats.by_act": "Breakdown by Act",
+    "stats.history_7days": "History (7 days)",
+    "stats.history_label": "{0}",
 };

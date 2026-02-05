@@ -21,6 +21,14 @@
             }
         });
 
+        // Rafraîchir lors du changement de langue
+        window.addEventListener('localeChanged', () => {
+            StatsView.updateHeaderStats();
+            if (document.querySelector('.stats-container')) {
+                StatsView.renderStatsPage();
+            }
+        });
+
         // Appeler updateStats une première fois au chargement
         setTimeout(() => StatsView.updateHeaderStats(), 100);
     }
