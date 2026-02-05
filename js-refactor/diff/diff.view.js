@@ -41,8 +41,9 @@ const DiffView = {
         if (!selectOld || !selectNew) return;
 
         const optionsHtml = versions.map(v => {
-            const label = v.label || `Version ${v.number}`;
-            const date = new Date(v.createdAt).toLocaleDateString('fr-FR');
+            const label = v.label || Localization.t('diff.version_fallback', [v.number]);
+            const dateLocale = Localization.getLocale() === 'fr' ? 'fr-FR' : 'en-US';
+            const date = new Date(v.createdAt).toLocaleDateString(dateLocale);
             return `<option value="${v.id}">${label} (${date})</option>`;
         }).join('');
 
@@ -73,9 +74,12 @@ const DiffView = {
 
         const { added, removed } = DiffViewModel.getStats(diff);
 
+        const sAdded = added > 1 ? 's' : '';
+        const sRemoved = removed > 1 ? 's' : '';
+
         statsContainer.innerHTML = `
-            <span class="diff-stat added">+${added} mot${added > 1 ? 's' : ''} ajouté${added > 1 ? 's' : ''}</span>
-            <span class="diff-stat removed">−${removed} mot${removed > 1 ? 's' : ''} supprimé${removed > 1 ? 's' : ''}</span>
+            <span class="diff-stat added">${Localization.t('diff.stats.added', [added, sAdded])}</span>
+            <span class="diff-stat removed">${Localization.t('diff.stats.removed', [removed, sRemoved])}</span>
         `;
     },
 
@@ -142,10 +146,12 @@ const DiffView = {
         const container = document.getElementById('diffContent');
         if (!container) return;
 
-        const oldLabel = oldVersion.label || `Version ${oldVersion.number}`;
-        const newLabel = newVersion.label || `Version ${newVersion.number}`;
-        const oldDate = new Date(oldVersion.createdAt).toLocaleDateString('fr-FR');
-        const newDate = new Date(newVersion.createdAt).toLocaleDateString('fr-FR');
+        const oldLabel = oldVersion.label || Localization.t('diff.version_fallback', [oldVersion.number]);
+        const newLabel = newVersion.label || Localization.t('diff.version_fallback', [newVersion.number]);
+
+        const dateLocale = Localization.getLocale() === 'fr' ? 'fr-FR' : 'en-US';
+        const oldDate = new Date(oldVersion.createdAt).toLocaleDateString(dateLocale);
+        const newDate = new Date(newVersion.createdAt).toLocaleDateString(dateLocale);
 
         let oldHtml = '';
         let newHtml = '';
@@ -235,14 +241,14 @@ const DiffView = {
                 <div class="diff-side">
                     <div class="diff-side-header old">
                         <span>${oldLabel}</span>
-                        <span style="font-weight: normal; font-size: 0.75rem;">${oldDate} • ${oldVersion.wordCount || 0} mots</span>
+                        <span style="font-weight: normal; font-size: 0.75rem;">${oldDate} • ${Localization.t('diff.word_count', [oldVersion.wordCount || 0])}</span>
                     </div>
                     <div class="diff-side-content">${oldHtml}</div>
                 </div>
                 <div class="diff-side">
                     <div class="diff-side-header new">
                         <span>${newLabel}</span>
-                        <span style="font-weight: normal; font-size: 0.75rem;">${newDate} • ${newVersion.wordCount || 0} mots</span>
+                        <span style="font-weight: normal; font-size: 0.75rem;">${newDate} • ${Localization.t('diff.word_count', [newVersion.wordCount || 0])}</span>
                     </div>
                     <div class="diff-side-content">${newHtml}</div>
                 </div>
@@ -259,7 +265,7 @@ const DiffView = {
         container.innerHTML = `
             <div class="diff-empty-state">
                 <div class="diff-empty-state-icon"><i data-lucide="check" style="width:48px;height:48px;"></i></div>
-                <div>Les deux versions sont identiques</div>
+                <div>${Localization.t('diff.empty_state')}</div>
             </div>
         `;
         if (typeof lucide !== 'undefined') lucide.createIcons();

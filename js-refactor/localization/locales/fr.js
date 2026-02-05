@@ -710,4 +710,12 @@ const LOCALE_FR = {
     "corkboard.status.progress": "En cours",
     "corkboard.status.complete": "Terminé",
     "corkboard.status.review": "À réviser",
+
+    // --- Diff Module ---
+    "diff.stats.added": "+{0} mot{1} ajouté{1}",
+    "diff.stats.removed": "−{0} mot{1} supprimé{1}",
+    "diff.version_fallback": "Version {0}",
+    "diff.word_count": "{0} mots",
+    "diff.empty_state": "Les deux versions sont identiques",
+    "diff.error.two_versions_required": "Il faut au moins 2 versions pour comparer.",
 };

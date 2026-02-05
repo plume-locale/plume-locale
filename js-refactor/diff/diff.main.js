@@ -16,7 +16,7 @@ const DiffApp = {
     open(versionId) {
         const versions = DiffRepository.getVersions();
         if (!versions || versions.length < 2) {
-            alert('Il faut au moins 2 versions pour comparer.');
+            alert(Localization.t('diff.error.two_versions_required'));
             return;
         }
 
