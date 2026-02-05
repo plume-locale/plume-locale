@@ -62,7 +62,7 @@ const ImportExportModel = {
             if (!this.selectionState[`act-${act.id}`]) return;
 
             let exportAct = {
-                title: act.title || `Acte ${actIndex + 1}`,
+                title: act.title || Localization.t('export.tree.act', actIndex + 1),
                 chapters: []
             };
 
@@ -70,7 +70,7 @@ const ImportExportModel = {
                 if (!this.selectionState[`chapter-${chapter.id}`]) return;
 
                 let exportChapter = {
-                    title: chapter.title || `Chapitre ${chapIndex + 1}`,
+                    title: chapter.title || Localization.t('export.tree.chapter', chapIndex + 1),
                     scenes: []
                 };
 
@@ -85,7 +85,7 @@ const ImportExportModel = {
                     }
 
                     let exportScene = {
-                        title: scene.title || `Scène ${sceneIndex + 1}`,
+                        title: scene.title || Localization.t('export.tree.scene', sceneIndex + 1),
                         summary: scene.summary || '',
                         content: sceneContent
                     };

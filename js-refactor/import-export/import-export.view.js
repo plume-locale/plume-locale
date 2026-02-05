@@ -44,7 +44,7 @@ const ImportExportView = {
         if (!container) return;
 
         if (!project.acts || project.acts.length === 0) {
-            container.innerHTML = '<p style="color: var(--text-muted); text-align: center;">Aucun acte à exporter</p>';
+            container.innerHTML = `<p style="color: var(--text-muted); text-align: center;">${Localization.t('export.tree.empty')}</p>`;
             return;
         }
 
@@ -55,7 +55,7 @@ const ImportExportView = {
                 <div style="margin-bottom: 1rem;">
                     <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-weight: 600; font-size: 1rem; margin-bottom: 0.5rem;">
                         <input type="checkbox" ${actChecked} onchange="ImportExportViewModel.toggleAct(${act.id})" id="export-act-${act.id}" style="cursor: pointer;">
-                        <span>Acte ${actIndex + 1}</span>
+                        <span>${Localization.t('export.tree.act', actIndex + 1)}</span>
                     </label>
                     <div style="margin-left: 1.5rem;">
             `;
@@ -66,7 +66,7 @@ const ImportExportView = {
                     <div style="margin-bottom: 0.75rem;">
                         <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-weight: 500; font-size: 0.95rem; margin-bottom: 0.25rem;">
                             <input type="checkbox" ${chapterChecked} onchange="ImportExportViewModel.toggleChapter(${act.id}, ${chapter.id})" id="export-chapter-${chapter.id}" style="cursor: pointer;">
-                            <span>Chapitre ${chapIndex + 1}</span>
+                            <span>${Localization.t('export.tree.chapter', chapIndex + 1)}</span>
                         </label>
                         <div style="margin-left: 1.5rem;">
                 `;
@@ -76,7 +76,7 @@ const ImportExportView = {
                     html += `
                         <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.25rem;">
                             <input type="checkbox" ${sceneChecked} onchange="ImportExportViewModel.toggleScene(${act.id}, ${chapter.id}, ${scene.id})" id="export-scene-${scene.id}" style="cursor: pointer;">
-                            <span>Scène ${sceneIndex + 1}</span>
+                            <span>${Localization.t('export.tree.scene', sceneIndex + 1)}</span>
                         </label>
                     `;
                 });
@@ -94,11 +94,11 @@ const ImportExportView = {
 
         const format = formatSelect.value;
         const messages = {
-            docx: '<strong style="color: var(--text-primary);">ℹ️ Note :</strong> Toutes les fonctionnalités ne sont pas supportées en format DOCX. (Bêta)',
-            markdown: '<strong style="color: var(--text-primary);">✅ Format Markdown :</strong> Excellent pour la portabilité et les éditeurs de texte.',
-            txt: '<strong style="color: var(--text-primary);">📋 Texte brut :</strong> Format universel sans formatage.',
-            html: '<strong style="color: var(--text-primary);">🌐 HTML :</strong> Préservation complète du formatage pour le web.',
-            epub: '<strong style="color: var(--text-primary);">📚 EPUB :</strong> Format e-book standard (Liseuses, Apple Books).'
+            docx: Localization.t('export.info.docx'),
+            markdown: Localization.t('export.info.markdown'),
+            txt: Localization.t('export.info.txt'),
+            html: Localization.t('export.info.html'),
+            epub: Localization.t('export.info.epub')
         };
         infoBox.innerHTML = messages[format] || messages.docx;
     },

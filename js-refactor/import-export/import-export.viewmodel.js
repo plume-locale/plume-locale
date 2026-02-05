@@ -15,12 +15,12 @@ const ImportExportViewModel = {
     exportToJSON: function () {
         if (!window.project) return;
         const dataStr = JSON.stringify(window.project, null, 2);
-        const filename = `${(window.project.title || 'projet').replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.json`;
+        const filename = `${(window.project.title || Localization.t('export.json.default_filename')).replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.json`;
 
         ImportExportRepository.downloadFile(dataStr, filename, 'application/json');
 
         // Notify user (View responsibility really, but alert is quick)
-        alert(`💾 Fichier JSON téléchargé !\n\nNom : ${filename}\n\nTu peux maintenant l'uploader sur Google Drive, Dropbox, ou tout autre service cloud.`);
+        alert(Localization.t('export.json.success_msg', filename));
     },
 
     importFromFile: function () {
@@ -30,11 +30,11 @@ const ImportExportViewModel = {
     handleFileImport: async function (file) {
         if (!file) return;
         if (!file.name.endsWith('.json')) {
-            alert('⚠️ Erreur : Le fichier doit être au format JSON');
+            alert(Localization.t('import.json.error_format'));
             return;
         }
 
-        if (!confirm('⚠️ ATTENTION : L\'import va remplacer toutes vos données actuelles.\n\nVoulez-vous créer une sauvegarde avant de continuer ?')) {
+        if (!confirm(Localization.t('import.json.confirm_backup'))) {
             ImportExportView.resetFileInput();
             return;
         }
@@ -48,12 +48,12 @@ const ImportExportViewModel = {
 
             // Basic validation
             if (!importedData.acts || !Array.isArray(importedData.acts)) {
-                throw new Error('Format de fichier invalide');
+                throw new Error(Localization.t('import.json.error_invalid'));
             }
 
             // Secure merge/update
             window.project = Object.assign({
-                title: "Mon Roman",
+                title: Localization.t('import.json.default_project_title'),
                 acts: [],
                 characters: [],
                 world: [],
@@ -72,10 +72,10 @@ const ImportExportViewModel = {
             if (typeof switchView === 'function') switchView('editor');
 
             ImportExportView.closeBackupModal();
-            alert('✅ Import réussi !\n\nToutes vos données ont été restaurées.');
+            alert(Localization.t('import.json.success'));
 
         } catch (error) {
-            alert('❌ Erreur lors de l\'import : ' + error.message);
+            alert(Localization.t('import.json.error', error.message));
         }
 
     },
@@ -101,7 +101,7 @@ const ImportExportViewModel = {
         GoogleDriveService.handleAuthClick((user) => {
             if (user) {
                 ImportExportView.updateGDriveUI(user, true);
-                ImportExportView.updateGDriveStatus('Connecté', 'success');
+                ImportExportView.updateGDriveStatus(Localization.t('gdrive.status.connected'), 'success');
                 // Check preferences for auto-save?
             }
         });
@@ -111,7 +111,7 @@ const ImportExportViewModel = {
         if (typeof GoogleDriveService === 'undefined') return;
         GoogleDriveService.handleSignoutClick(() => {
             ImportExportView.updateGDriveUI(null, false);
-            ImportExportView.updateGDriveStatus('Déconnecté', 'normal');
+            ImportExportView.updateGDriveStatus(Localization.t('gdrive.status.disconnected'), 'normal');
         });
     },
 
@@ -130,33 +130,32 @@ const ImportExportViewModel = {
             return;
         }
 
-        ImportExportView.updateGDriveStatus('Sauvegarde...', 'sync');
+        ImportExportView.updateGDriveStatus(Localization.t('gdrive.status.saving'), 'sync');
 
         try {
             const dataStr = JSON.stringify(window.project, null, 2);
-            const filename = `backup_plume_${(window.project.title || 'projet').replace(/\s+/g, '_')}.json`;
+            const filename = `backup_plume_${(window.project.title || Localization.t('export.json.default_filename')).replace(/\s+/g, '_')}.json`;
 
             await GoogleDriveService.saveFile(dataStr, filename);
-            ImportExportView.updateGDriveStatus('Synchronisé', 'success');
-            ImportExportView.showNotification(`☁️ Sauvegarde Cloud réussie !`);
+            ImportExportView.updateGDriveStatus(Localization.t('gdrive.status.synced'), 'success');
+            ImportExportView.showNotification(Localization.t('gdrive.success.sync'));
         } catch (err) {
             console.error(err);
-            ImportExportView.updateGDriveStatus('Erreur sync', 'error');
-            alert("Erreur lors de la sauvegarde Drive: " + err.message);
+            alert(Localization.t('gdrive.error.sync', err.message));
         }
     },
 
     restoreFromGDrive: async function () {
         if (typeof GoogleDriveService === 'undefined' || !GoogleDriveService.accessToken) {
-            alert("Veuillez d'abord vous connecter à Google Drive.");
+            alert(Localization.t('gdrive.error.not_connected'));
             return;
         }
 
-        const filename = `backup_plume_${(window.project.title || 'projet').replace(/\s+/g, '_')}.json`;
+        const filename = `backup_plume_${(window.project.title || Localization.t('export.json.default_filename')).replace(/\s+/g, '_')}.json`;
 
-        if (!confirm(`Voulez-vous écraser le projet actuel avec la sauvegarde Cloud '${filename}' ?`)) return;
+        if (!confirm(Localization.t('gdrive.confirm.overwrite', filename))) return;
 
-        ImportExportView.updateGDriveStatus('Téléchargement...', 'sync');
+        ImportExportView.updateGDriveStatus(Localization.t('gdrive.status.downloading'), 'sync');
 
         try {
             const result = await GoogleDriveService.loadFile(filename);
@@ -173,21 +172,21 @@ const ImportExportViewModel = {
             }
 
             // Validation & Merge reuse handleFileImport logic concept
-            if (!importedData.acts) throw new Error("Format invalide");
+            if (!importedData.acts) throw new Error(Localization.t('gdrive.error.invalid_format'));
 
             window.project = importedData;
             if (typeof saveProject === 'function') saveProject();
             if (typeof renderActsList === 'function') renderActsList();
             if (typeof switchView === 'function') switchView('editor');
 
-            ImportExportView.updateGDriveStatus('Restauré', 'success');
-            alert("✅ Projet restauré depuis le Cloud !");
+            ImportExportView.updateGDriveStatus(Localization.t('gdrive.status.restored'), 'success');
+            alert(Localization.t('gdrive.success.restored'));
             ImportExportView.closeBackupModal();
 
         } catch (err) {
             console.error(err);
-            ImportExportView.updateGDriveStatus('Erreur restauration', 'error');
-            alert("Erreur restauration: " + (err.message || "Fichier non trouvé ou erreur réseau"));
+            ImportExportView.updateGDriveStatus(Localization.t('gdrive.error.restore_title'), 'error');
+            alert(Localization.t('gdrive.error.restore_msg', err.message || Localization.t('gdrive.error.file_not_found')));
         }
     },
 
@@ -272,7 +271,7 @@ const ImportExportViewModel = {
         const format = options.format; // docx, markdown, txt, html, epub
 
         const content = ImportExportModel.getSelectedContent();
-        const title = window.project.title || 'Sans Titre';
+        const title = window.project.title || Localization.t('export.novel.default_title');
 
         try {
             switch (format) {
@@ -297,11 +296,11 @@ const ImportExportViewModel = {
                     ImportExportRepository.downloadFile(docxBlob, `${title}.docx`, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
                     break;
             }
-            ImportExportView.showNotification(`✓ Export ${format.toUpperCase()} terminé`);
+            ImportExportView.showNotification(Localization.t('export.novel.success', format.toUpperCase()));
             ImportExportView.closeExportNovelModal();
         } catch (e) {
             console.error(e);
-            alert("Erreur export: " + e.message);
+            alert(Localization.t('export.novel.error', e.message));
         }
     }
 };

@@ -94,7 +94,7 @@ const ImportExportRepository = {
                     }
 
                     if (options.exportSummaries && scene.summary) {
-                        text += `[Résumé: ${scene.summary}]\n\n`;
+                        text += `[${Localization.t('export.novel.summary_prefix')}: ${scene.summary}]\n\n`;
                     }
 
                     if (options.exportProse && scene.content) {
@@ -120,7 +120,7 @@ const ImportExportRepository = {
         const divider = this.getSceneDivider(options.sceneDivider).replace(/\n/g, '<br>');
 
         let html = `<!DOCTYPE html>
-<html lang="fr">
+<html lang="${Localization.getLocale()}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -264,7 +264,7 @@ const ImportExportRepository = {
     <metadata xmlns:dc="http://purl.org/dc/elements/1.1/">
         <dc:identifier id="BookId">${bookId}</dc:identifier>
         <dc:title>${escapeXML(projectTitle)}</dc:title>
-        <dc:language>fr</dc:language>
+        <dc:language>${Localization.getLocale()}</dc:language>
         <meta property="dcterms:modified">${timestamp}</meta>
     </metadata>
     <manifest>
