@@ -421,6 +421,13 @@ function refreshAllViews() {
             if (typeof updateWordCount === 'function') updateWordCount();
         }
     }
+
+    // 6. Rafraîchir la sidebar mobile si on est sur mobile
+    const isMobile = window.innerWidth <= 900;
+    const sidebarViewsWithConfig = ['editor', 'characters', 'world', 'notes', 'codex'];
+    if (isMobile && sidebarViewsWithConfig.includes(currentView) && typeof renderMobileSidebarView === 'function') {
+        renderMobileSidebarView(currentView);
+    }
 }
 
 // --- GOOGLE FONTS SUPPORT ---

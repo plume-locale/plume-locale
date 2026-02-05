@@ -8,48 +8,48 @@ const SidebarViewModelData = {
     VIEW_CONFIG: {
         editor: {
             icon: '📝',
-            title: 'Structure de votre roman',
-            description: 'Organisez votre roman en actes, chapitres et scènes',
-            emptyMessage: 'Aucun acte créé',
-            emptySubMessage: 'Commencez par créer votre premier acte pour structurer votre histoire',
-            actionButton: '<button class="btn btn-primary" style="font-size: 1.2rem; padding: 1rem 2rem;" onclick="openAddActModal()">+ Créer un acte</button>',
-            sidebarHint: 'Utilisez la poignée dorée sur le bord gauche pour naviguer dans votre structure'
+            titleKey: 'sidebar_view.editor.title',
+            descriptionKey: 'sidebar_view.editor.description',
+            emptyMessageKey: 'sidebar_view.editor.empty_message',
+            emptySubMessageKey: 'sidebar_view.editor.empty_sub_message',
+            actionButton: '<button class="btn btn-primary" style="font-size: 1.2rem; padding: 1rem 2rem;" onclick="openAddActModal()">${Localization.t("sidebar_view.editor.action_btn")}</button>',
+            sidebarHintKey: 'sidebar_view.editor.hint'
         },
         characters: {
             icon: '👥',
-            title: 'Personnages',
-            description: 'Gérez vos personnages et leurs caractéristiques',
-            emptyMessage: 'Aucun personnage créé',
-            emptySubMessage: 'Créez votre premier personnage pour donner vie à votre histoire',
-            actionButton: '<button class="btn btn-primary" style="font-size: 1.2rem; padding: 1rem 2rem;" onclick="openAddCharacterModal()">+ Créer un personnage</button>',
-            sidebarHint: 'Utilisez la poignée dorée sur le bord gauche pour voir la liste complète'
+            titleKey: 'sidebar_view.characters.title',
+            descriptionKey: 'sidebar_view.characters.description',
+            emptyMessageKey: 'sidebar_view.characters.empty_message',
+            emptySubMessageKey: 'sidebar_view.characters.empty_sub_message',
+            actionButton: '<button class="btn btn-primary" style="font-size: 1.2rem; padding: 1rem 2rem;" onclick="openAddCharacterModal()">${Localization.t("sidebar_view.characters.action_btn")}</button>',
+            sidebarHintKey: 'sidebar_view.characters.hint'
         },
         world: {
             icon: '🌍',
-            title: 'Univers',
-            description: 'Créez les éléments de votre monde (lieux, objets, concepts)',
-            emptyMessage: 'Aucun élément créé',
-            emptySubMessage: 'Ajoutez des lieux, objets ou concepts pour enrichir votre univers',
-            actionButton: '<button class="btn btn-primary" style="font-size: 1.2rem; padding: 1rem 2rem;" onclick="openAddWorldModal()">+ Créer un élément</button>',
-            sidebarHint: 'Utilisez la poignée dorée sur le bord gauche pour voir tous vos éléments'
+            titleKey: 'sidebar_view.world.title',
+            descriptionKey: 'sidebar_view.world.description',
+            emptyMessageKey: 'sidebar_view.world.empty_message',
+            emptySubMessageKey: 'sidebar_view.world.empty_sub_message',
+            actionButton: '<button class="btn btn-primary" style="font-size: 1.2rem; padding: 1rem 2rem;" onclick="openAddWorldModal()">${Localization.t("sidebar_view.world.action_btn")}</button>',
+            sidebarHintKey: 'sidebar_view.world.hint'
         },
         notes: {
             icon: '📋',
-            title: 'Notes',
-            description: 'Prenez des notes et organisez vos recherches',
-            emptyMessage: 'Aucune note créée',
-            emptySubMessage: 'Créez des notes pour garder vos idées et recherches organisées',
-            actionButton: '<button class="btn btn-primary" style="font-size: 1.2rem; padding: 1rem 2rem;" onclick="openAddNoteModal()">+ Créer une note</button>',
-            sidebarHint: 'Utilisez la poignée dorée sur le bord gauche pour voir toutes vos notes'
+            titleKey: 'sidebar_view.notes.title',
+            descriptionKey: 'sidebar_view.notes.description',
+            emptyMessageKey: 'sidebar_view.notes.empty_message',
+            emptySubMessageKey: 'sidebar_view.notes.empty_sub_message',
+            actionButton: '<button class="btn btn-primary" style="font-size: 1.2rem; padding: 1rem 2rem;" onclick="openAddNoteModal()">${Localization.t("sidebar_view.notes.action_btn")}</button>',
+            sidebarHintKey: 'sidebar_view.notes.hint'
         },
         codex: {
             icon: '📖',
-            title: 'Codex',
-            description: 'Wiki de votre univers - glossaire et encyclopédie',
-            emptyMessage: 'Aucune entrée dans le codex',
-            emptySubMessage: 'Créez des entrées pour documenter votre univers',
-            actionButton: '<button class="btn btn-primary" style="font-size: 1.2rem; padding: 1rem 2rem;" onclick="openAddCodexModal()">+ Créer une entrée</button>',
-            sidebarHint: 'Utilisez la poignée dorée sur le bord gauche pour parcourir le codex'
+            titleKey: 'sidebar_view.codex.title',
+            descriptionKey: 'sidebar_view.codex.description',
+            emptyMessageKey: 'sidebar_view.codex.empty_message',
+            emptySubMessageKey: 'sidebar_view.codex.empty_sub_message',
+            actionButton: '<button class="btn btn-primary" style="font-size: 1.2rem; padding: 1rem 2rem;" onclick="openAddCodexModal()">${Localization.t("sidebar_view.codex.action_btn")}</button>',
+            sidebarHintKey: 'sidebar_view.codex.hint'
         }
     }
 };

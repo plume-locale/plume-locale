@@ -26,6 +26,13 @@ class SidebarViewViewModel {
 
         return {
             ...config,
+            title: Localization.t(config.titleKey),
+            description: Localization.t(config.descriptionKey),
+            emptyMessage: Localization.t(config.emptyMessageKey),
+            emptySubMessage: Localization.t(config.emptySubMessageKey),
+            sidebarHint: Localization.t(config.sidebarHintKey),
+            // On traite le actionButton qui peut contenir du code template
+            actionButton: config.actionButton.includes('${') ? eval('`' + config.actionButton + '`') : config.actionButton,
             count: count,
             isEmpty: isEmpty,
             viewType: viewType // Utile pour debugging ou styling spécifique

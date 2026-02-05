@@ -51,7 +51,7 @@ class SidebarView {
                         ${data.count}
                     </div>
                     <div style="color: var(--text-secondary);">
-                        ${data.count === 1 ? 'élément' : 'éléments'}
+                        ${data.count === 1 ? Localization.t('sidebar_view.items.single') : Localization.t('sidebar_view.items.plural')}
                     </div>
                 </div>
                 ${data.actionButton}
