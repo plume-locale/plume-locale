@@ -5,7 +5,7 @@
 class SnapshotModel {
     constructor(data = {}) {
         this.id = data.id || Date.now();
-        this.label = data.label || 'Sans titre';
+        this.label = data.label || Localization.t('snapshots.no_title');
         this.timestamp = data.timestamp || new Date().toISOString();
         this.wordCount = data.wordCount || 0;
         this.snapshot = data.snapshot || {}; // The actual project data

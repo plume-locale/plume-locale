@@ -25,7 +25,7 @@ class SnapshotsViewModel {
         // though strictly it should be a service or View callback. 
         // We'll stick to the original behavior but wrapped properly.
 
-        const label = prompt('Nom de la version (ex: "Version 1.0", "Avant révision", etc.)');
+        const label = prompt(Localization.t('snapshots.prompt_name'));
         if (!label || !label.trim()) return false;
 
         const currentWordCount = this.repository.getCurrentWordCount();
@@ -36,14 +36,14 @@ class SnapshotsViewModel {
     }
 
     deleteVersion(id) {
-        if (!confirm('Êtes-vous sûr de vouloir supprimer cette version ?')) return false;
+        if (!confirm(Localization.t('snapshots.confirm_delete'))) return false;
         this.repository.remove(id);
         return true;
     }
 
     restoreVersion(id) {
         // Confirmation is UI logic, but can be here for simplicity/parity with old code
-        if (!confirm('⚠️ ATTENTION: Restaurer cette version va remplacer votre travail actuel. Voulez-vous créer une sauvegarde avant de continuer ?')) {
+        if (!confirm(Localization.t('snapshots.confirm_restore'))) {
             return false;
         }
 
@@ -73,16 +73,16 @@ class SnapshotsViewModel {
             versionLabel: version.label,
             versionDate: version.timestamp,
             stats: [
-                { label: 'Mots', key: 'words', current: currentStats.words, version: versionStats.words },
-                { label: 'Actes', key: 'acts', current: currentStats.acts, version: versionStats.acts },
-                { label: 'Chapitres', key: 'chapters', current: currentStats.chapters, version: versionStats.chapters },
-                { label: 'Scènes', key: 'scenes', current: currentStats.scenes, version: versionStats.scenes },
-                { label: 'Personnages', key: 'characters', current: currentStats.characters, version: versionStats.characters },
-                { label: 'Lieux', key: 'locations', current: currentStats.locations, version: versionStats.locations },
-                { label: 'Notes', key: 'notes', current: currentStats.notes, version: versionStats.notes },
-                { label: 'Codex', key: 'codex', current: currentStats.codex, version: versionStats.codex },
-                { label: 'Timeline', key: 'timeline', current: currentStats.timeline, version: versionStats.timeline },
-                { label: 'Todos', key: 'todos', current: currentStats.todos, version: versionStats.todos }
+                { label: Localization.t('snapshots.stats.words'), key: 'words', current: currentStats.words, version: versionStats.words },
+                { label: Localization.t('snapshots.stats.acts'), key: 'acts', current: currentStats.acts, version: versionStats.acts },
+                { label: Localization.t('snapshots.stats.chapters'), key: 'chapters', current: currentStats.chapters, version: versionStats.chapters },
+                { label: Localization.t('snapshots.stats.scenes'), key: 'scenes', current: currentStats.scenes, version: versionStats.scenes },
+                { label: Localization.t('snapshots.stats.characters'), key: 'characters', current: currentStats.characters, version: versionStats.characters },
+                { label: Localization.t('snapshots.stats.locations'), key: 'locations', current: currentStats.locations, version: versionStats.locations },
+                { label: Localization.t('snapshots.stats.notes'), key: 'notes', current: currentStats.notes, version: versionStats.notes },
+                { label: Localization.t('snapshots.stats.codex'), key: 'codex', current: currentStats.codex, version: versionStats.codex },
+                { label: Localization.t('snapshots.stats.timeline'), key: 'timeline', current: currentStats.timeline, version: versionStats.timeline },
+                { label: Localization.t('snapshots.stats.todos'), key: 'todos', current: currentStats.todos, version: versionStats.todos }
             ]
         };
     }

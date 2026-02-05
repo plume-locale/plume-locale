@@ -23,9 +23,9 @@ class SnapshotsView {
         container.innerHTML = `
             <div class="snapshots-container" style="height: 100%; overflow-y: auto; padding: 2rem 3rem;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-                    <h2 style="color: var(--accent-gold);"><i data-lucide="history" style="width:24px;height:24px;vertical-align:middle;margin-right:8px;"></i>Gestion des Versions</h2>
+                    <h2 style="color: var(--accent-gold);"><i data-lucide="history" style="width:24px;height:24px;vertical-align:middle;margin-right:8px;"></i>${Localization.t('snapshots.title')}</h2>
                     <button class="btn btn-primary" id="btn-create-version">
-                        + Créer une version
+                        ${Localization.t('snapshots.create')}
                     </button>
                 </div>
                 
@@ -45,13 +45,12 @@ class SnapshotsView {
         return `
             <div style="text-align: center; padding: 4rem 2rem; color: var(--text-muted);">
                 <div style="font-size: 3rem; margin-bottom: 1rem;">🕰️</div>
-                <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">Aucune version sauvegardée</div>
+                <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">${Localization.t('snapshots.empty_state')}</div>
                 <div style="font-size: 0.9rem; margin-bottom: 2rem;">
-                    Les versions vous permettent de créer des snapshots de votre projet<br>
-                    pour revenir à un état antérieur si nécessaire.
+                    ${Localization.t('snapshots.description')}
                 </div>
                 <button class="btn btn-primary" id="btn-create-version-empty">
-                    Créer votre première version
+                    ${Localization.t('snapshots.create_first')}
                 </button>
             </div>
         `;
@@ -68,7 +67,7 @@ class SnapshotsView {
                                     ${version.label}
                                 </div>
                                 <div style="font-size: 0.85rem; color: var(--text-muted);">
-                                    ${new Date(version.timestamp).toLocaleString('fr-FR', {
+                                    ${new Date(version.timestamp).toLocaleString(Localization.currentLocale === 'fr' ? 'fr-FR' : 'en-US', {
             dateStyle: 'long',
             timeStyle: 'short'
         })}
@@ -76,10 +75,10 @@ class SnapshotsView {
                             </div>
                             <div style="text-align: right;">
                                 <div style="font-size: 1.5rem; font-weight: 700; color: var(--accent-gold);">
-                                    ${(version.wordCount || 0).toLocaleString('fr-FR')}
+                                    ${(version.wordCount || 0).toLocaleString(Localization.currentLocale === 'fr' ? 'fr-FR' : 'en-US')}
                                 </div>
                                 <div style="font-size: 0.75rem; color: var(--text-muted);">
-                                    mots
+                                    ${Localization.t('snapshots.words')}
                                 </div>
                             </div>
                         </div>
@@ -88,16 +87,16 @@ class SnapshotsView {
                             <button class="btn btn-small btn-restore-version" data-id="${version.id}"
                                     style="background: var(--accent-gold); color: white; border: none;">
                                 <i data-lucide="undo" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> 
-                                Restaurer
+                                ${Localization.t('snapshots.restore')}
                             </button>
                             <button class="btn btn-small btn-compare-version" data-id="${version.id}">
                                 <i data-lucide="git-compare" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>
-                                Comparer
+                                ${Localization.t('snapshots.compare')}
                             </button>
                             <button class="btn btn-small btn-delete-version" data-id="${version.id}"
                                     style="background: var(--accent-red); color: white; border: none;">
                                 <i data-lucide="trash-2" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> 
-                                Supprimer
+                                ${Localization.t('snapshots.delete')}
                             </button>
                         </div>
                     </div>
@@ -142,7 +141,7 @@ class SnapshotsView {
     handleCreate() {
         if (this.viewModel.createVersion()) {
             this.render(); // Re-render logic
-            alert('Version créée avec succès !');
+            alert(Localization.t('snapshots.success_create'));
         }
     }
 
@@ -158,11 +157,12 @@ class SnapshotsView {
             // The original code does: switchView('editor'); renderActsList();
             if (typeof switchView === 'function') switchView('editor');
             if (typeof renderActsList === 'function') renderActsList();
-            alert('Version restaurée avec succès !');
+            alert(Localization.t('snapshots.success_restore'));
         }
     }
 
     handleCompare(id) {
+        this.lastComparedId = id;
         const result = this.viewModel.compareVersion(id);
         if (result) {
             this._renderComparisonModal(result);
@@ -204,8 +204,8 @@ class SnapshotsView {
             return `
                 <tr style="border-bottom: 1px solid var(--border-color, #333);">
                     <td style="padding: 10px; font-weight: 500;">${stat.label}</td>
-                    <td style="padding: 10px; text-align: center;">${stat.version.toLocaleString('fr-FR')}</td>
-                    <td style="padding: 10px; text-align: center;">${stat.current.toLocaleString('fr-FR')}</td>
+                    <td style="padding: 10px; text-align: center;">${stat.version.toLocaleString(Localization.currentLocale === 'fr' ? 'fr-FR' : 'en-US')}</td>
+                    <td style="padding: 10px; text-align: center;">${stat.current.toLocaleString(Localization.currentLocale === 'fr' ? 'fr-FR' : 'en-US')}</td>
                     <td style="padding: 10px; text-align: right; font-weight: bold; ${diffStyle}">${diffText}</td>
                 </tr>
             `;
@@ -223,9 +223,9 @@ class SnapshotsView {
             ">
                 <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1.5rem;">
                     <div>
-                        <h2 style="margin: 0; color: var(--accent-gold, #cba135);">Comparaison de Version</h2>
+                        <h2 style="margin: 0; color: var(--accent-gold, #cba135);">${Localization.t('snapshots.compare_title')}</h2>
                         <div style="margin-top: 5px; color: var(--text-muted, #aaa); font-size: 0.9rem;">
-                            ${result.versionLabel} vs Actuel
+                            ${result.versionLabel} ${Localization.t('snapshots.vs_current')}
                         </div>
                     </div>
                     <button id="close-compare-modal" style="
@@ -242,10 +242,10 @@ class SnapshotsView {
                 <table style="width: 100%; border-collapse: collapse; color: var(--text-primary, #fff);">
                     <thead>
                         <tr style="border-bottom: 2px solid var(--border-color, #444); color: var(--text-muted, #aaa); font-size: 0.85rem;">
-                            <th style="padding: 8px; text-align: left;">Élément</th>
-                            <th style="padding: 8px; text-align: center;">Sauvegarde</th>
-                            <th style="padding: 8px; text-align: center;">Actuel</th>
-                            <th style="padding: 8px; text-align: right;">Diff.</th>
+                            <th style="padding: 8px; text-align: left;">${Localization.t('snapshots.element')}</th>
+                            <th style="padding: 8px; text-align: center;">${Localization.t('snapshots.backup')}</th>
+                            <th style="padding: 8px; text-align: center;">${Localization.t('snapshots.current')}</th>
+                            <th style="padding: 8px; text-align: right;">${Localization.t('snapshots.diff')}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -261,7 +261,7 @@ class SnapshotsView {
                         padding: 8px 16px; 
                         border-radius: 4px; 
                         cursor: pointer;
-                    ">Fermer</button>
+                    ">${Localization.t('snapshots.close')}</button>
                 </div>
             </div>
         `;
