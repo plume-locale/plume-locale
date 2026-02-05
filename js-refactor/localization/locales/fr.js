@@ -718,4 +718,20 @@ const LOCALE_FR = {
     "diff.word_count": "{0} mots",
     "diff.empty_state": "Les deux versions sont identiques",
     "diff.error.two_versions_required": "Il faut au moins 2 versions pour comparer.",
+
+    // --- Drag and Drop ---
+    "dragndrop.handle.act": "Déplacer l'acte",
+    "dragndrop.handle.chapter": "Déplacer le chapitre",
+    "dragndrop.handle.scene": "Déplacer la scène",
+    "dragndrop.notification.reorder_success": "✓ Ordre mis à jour",
+    "dragndrop.organizer.title": "Réorganisation de la Structure",
+    "dragndrop.organizer.expand_all": "Tout déplier",
+    "dragndrop.organizer.collapse_all": "Tout replier",
+    "dragndrop.organizer.finish": "Terminer",
+    "dragndrop.organizer.empty": "Aucune structure.",
+    "dragndrop.organizer.count_chapters": "{0} chapitres",
+    "dragndrop.organizer.count_scenes": "{0} scènes",
+    "dragndrop.organizer.count_words": "{0} mots",
+    "dragndrop.organizer.placeholder_chapter": "Déposer un chapitre ici",
+    "dragndrop.organizer.placeholder_scene": "Déposer une scène ici",
 };

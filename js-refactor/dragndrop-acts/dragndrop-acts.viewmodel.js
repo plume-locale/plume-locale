@@ -23,6 +23,9 @@ class DragNDropActsViewModel {
         if (draggedActId !== null && draggedActId !== targetActId) {
             this.repository.reorderActs(draggedActId, targetActId);
             this.refreshUI();
+            if (typeof showNotification === 'function') {
+                showNotification(Localization.t('dragndrop.notification.reorder_success'), 'success');
+            }
         }
     }
 
@@ -53,6 +56,9 @@ class DragNDropActsViewModel {
                 targetActId
             );
             this.refreshUI();
+            if (typeof showNotification === 'function') {
+                showNotification(Localization.t('dragndrop.notification.reorder_success'), 'success');
+            }
         } else if (draggedScene.sceneId !== null && draggedScene.chapterId !== targetChapterId) {
             this.repository.moveSceneToChapter(
                 draggedScene.sceneId,
@@ -63,6 +69,9 @@ class DragNDropActsViewModel {
             );
             this.refreshUI();
             this.expandChapter(targetChapterId);
+            if (typeof showNotification === 'function') {
+                showNotification(Localization.t('dragndrop.notification.reorder_success'), 'success');
+            }
         }
     }
 
@@ -101,6 +110,9 @@ class DragNDropActsViewModel {
                 targetChapterId
             );
             this.refreshUI();
+            if (typeof showNotification === 'function') {
+                showNotification(Localization.t('dragndrop.notification.reorder_success'), 'success');
+            }
         }
     }
 

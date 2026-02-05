@@ -26,6 +26,8 @@ class DragNDropActsView {
             const dragHandle = header.querySelector('.drag-handle');
             if (!dragHandle) return;
 
+            dragHandle.title = Localization.t('dragndrop.handle.act');
+
             dragHandle.addEventListener('dragstart', (e) => {
                 const actId = parseInt(header.dataset.actId);
                 this.viewModel.startDragAct(actId);
@@ -74,6 +76,8 @@ class DragNDropActsView {
             const dragHandle = header.querySelector('.drag-handle');
             if (!dragHandle) return;
 
+            dragHandle.title = Localization.t('dragndrop.handle.chapter');
+
             dragHandle.addEventListener('dragstart', (e) => {
                 const chapterId = parseInt(header.dataset.chapterId);
                 const actId = parseInt(header.dataset.actId);
@@ -121,6 +125,10 @@ class DragNDropActsView {
         const sceneItems = document.querySelectorAll('.scene-item.draggable');
 
         sceneItems.forEach(item => {
+            const dragHandle = item.querySelector('.drag-handle');
+            if (dragHandle) {
+                dragHandle.title = Localization.t('dragndrop.handle.scene');
+            }
             item.addEventListener('dragstart', (e) => {
                 const sceneId = parseInt(item.dataset.sceneId);
                 const chapterId = parseInt(item.dataset.chapterId);

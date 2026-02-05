@@ -975,4 +975,20 @@ const LOCALE_EN = {
     "diff.word_count": "{0} words",
     "diff.empty_state": "The two versions are identical",
     "diff.error.two_versions_required": "At least 2 versions are required to compare.",
+
+    // --- Drag and Drop ---
+    "dragndrop.handle.act": "Move act",
+    "dragndrop.handle.chapter": "Move chapter",
+    "dragndrop.handle.scene": "Move scene",
+    "dragndrop.notification.reorder_success": "✓ Order updated",
+    "dragndrop.organizer.title": "Structure Reorganization",
+    "dragndrop.organizer.expand_all": "Expand All",
+    "dragndrop.organizer.collapse_all": "Collapse All",
+    "dragndrop.organizer.finish": "Finish",
+    "dragndrop.organizer.empty": "No structure.",
+    "dragndrop.organizer.count_chapters": "{0} chapters",
+    "dragndrop.organizer.count_scenes": "{0} scenes",
+    "dragndrop.organizer.count_words": "{0} words",
+    "dragndrop.organizer.placeholder_chapter": "Drop a chapter here",
+    "dragndrop.organizer.placeholder_scene": "Drop a scene here",
 };

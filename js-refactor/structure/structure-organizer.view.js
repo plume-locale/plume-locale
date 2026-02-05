@@ -225,11 +225,11 @@ function ensureOrganizerStyles() {
         modal.innerHTML = `
             <div class="organizer-content">
                 <div class="organizer-header">
-                    <h2><i data-lucide="layout-list"></i> Réorganisation de la Structure</h2>
+                    <h2><i data-lucide="layout-list"></i> ${Localization.t('dragndrop.organizer.title')}</h2>
                     <div style="display:flex; gap:10px;">
-                        <button class="btn btn-secondary" onclick="expandAllOrganizer()">Tout déplier</button>
-                        <button class="btn btn-secondary" onclick="collapseAllOrganizer()">Tout replier</button>
-                        <button class="btn btn-primary" onclick="closeOrganizer()">Terminer</button>
+                        <button class="btn btn-secondary" onclick="expandAllOrganizer()">${Localization.t('dragndrop.organizer.expand_all')}</button>
+                        <button class="btn btn-secondary" onclick="collapseAllOrganizer()">${Localization.t('dragndrop.organizer.collapse_all')}</button>
+                        <button class="btn btn-primary" onclick="closeOrganizer()">${Localization.t('dragndrop.organizer.finish')}</button>
                     </div>
                 </div>
                 <div id="organizerBody" class="organizer-body">
@@ -261,7 +261,7 @@ function renderOrganizer() {
     if (!container) return;
 
     if (!project.acts || project.acts.length === 0) {
-        container.innerHTML = '<div style="padding:2rem; text-align:center;">Aucune structure.</div>';
+        container.innerHTML = `<div style="padding:2rem; text-align:center;">${Localization.t('dragndrop.organizer.empty')}</div>`;
         return;
     }
 
@@ -296,14 +296,14 @@ function renderOrganizerAct(act, index) {
                     <i data-lucide="chevron-down" class="toggle-icon"></i>
                 </div>
                 <span style="font-weight:bold;">${act.title}</span>
-                <span class="org-count">${act.chapters.length} chapitres</span>
-                <span class="org-stats">${wordCount} mots</span>
+                <span class="org-count">${Localization.t('dragndrop.organizer.count_chapters', [act.chapters.length])}</span>
+                <span class="org-stats">${Localization.t('dragndrop.organizer.count_words', [wordCount])}</span>
             </div>
             <div class="org-content" data-parent-type="act" data-parent-id="${act.id}">
     `;
 
     if (act.chapters.length === 0) {
-        html += `<div class="org-drop-zone empty-placeholder" data-type="chapter-drop" data-parent-id="${act.id}" data-index="0" style="height:30px; border:1px dashed #555; display:flex; align-items:center; justify-content:center; color:#777;">Déposer un chapitre ici</div>`;
+        html += `<div class="org-drop-zone empty-placeholder" data-type="chapter-drop" data-parent-id="${act.id}" data-index="0" style="height:30px; border:1px dashed #555; display:flex; align-items:center; justify-content:center; color:#777;">${Localization.t('dragndrop.organizer.placeholder_chapter')}</div>`;
     } else {
         act.chapters.forEach((chapter, chIndex) => {
             html += renderOrganizerChapter(chapter, chIndex, act.id);
@@ -333,14 +333,14 @@ function renderOrganizerChapter(chapter, index, actId) {
                     <i data-lucide="chevron-down" class="toggle-icon"></i>
                 </div>
                 <span>${chapter.title}</span>
-                <span class="org-count">${chapter.scenes.length} scènes</span>
-                <span class="org-stats">${wordCount} mots</span>
+                <span class="org-count">${Localization.t('dragndrop.organizer.count_scenes', [chapter.scenes.length])}</span>
+                <span class="org-stats">${Localization.t('dragndrop.organizer.count_words', [wordCount])}</span>
             </div>
             <div class="org-content" data-parent-type="chapter" data-parent-id="${chapter.id}">
     `;
 
     if (chapter.scenes.length === 0) {
-        html += `<div class="org-drop-zone empty-placeholder" data-type="scene-drop" data-parent-id="${chapter.id}" data-index="0" style="height:30px; border:1px dashed #555; display:flex; align-items:center; justify-content:center; color:#777;">Déposer une scène ici</div>`;
+        html += `<div class="org-drop-zone empty-placeholder" data-type="scene-drop" data-parent-id="${chapter.id}" data-index="0" style="height:30px; border:1px dashed #555; display:flex; align-items:center; justify-content:center; color:#777;">${Localization.t('dragndrop.organizer.placeholder_scene')}</div>`;
     } else {
         chapter.scenes.forEach((scene, scIndex) => {
             html += renderOrganizerScene(scene, scIndex, actId, chapter.id);
@@ -364,7 +364,7 @@ function renderOrganizerScene(scene, index, actId, chapterId) {
             <div class="org-header ${isSelected ? 'selected' : ''}" onclick="handleOrganizerClick(event, 'scene', ${scene.id})">
                 <i data-lucide="grip-vertical" class="drag-handle" style="cursor: grab;"></i>
                 <span>${scene.title}</span>
-                <span class="org-stats">${scene.wordCount || 0} mots</span>
+                <span class="org-stats">${Localization.t('dragndrop.organizer.count_words', [scene.wordCount || 0])}</span>
             </div>
         </div>
     `;
