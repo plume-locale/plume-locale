@@ -27,7 +27,7 @@ class NotesViewModel {
      * @param {number} id 
      */
     deleteNote(id) {
-        if (!confirm('Êtes-vous sûr de vouloir supprimer cette note ?')) return;
+        if (!confirm(Localization.t('notes.confirm.delete'))) return;
 
         if (NotesRepository.delete(id)) {
             if (typeof window.saveProject === 'function') window.saveProject();
@@ -111,7 +111,7 @@ class NotesViewModel {
      * @param {number} mediaIndex 
      */
     deleteMedia(noteId, mediaIndex) {
-        if (!confirm('Supprimer ce média ?')) return;
+        if (!confirm(Localization.t('notes.confirm.delete_media'))) return;
 
         if (NotesRepository.deleteMedia(noteId, mediaIndex)) {
             if (typeof window.saveProject === 'function') window.saveProject();

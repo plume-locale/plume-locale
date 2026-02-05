@@ -55,32 +55,32 @@ class NotesHandlers {
         modal.innerHTML = `
             <div class="modal-content" style="max-width: 500px;">
                 <div class="modal-header">
-                    <h3>Ajouter un média</h3>
+                    <h3>${Localization.t('notes.modal.media.title')}</h3>
                     <button class="modal-close" onclick="closeModal('addMediaModal')">×</button>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label class="form-label">Type de média</label>
+                        <label class="form-label">${Localization.t('notes.modal.media.type')}</label>
                         <select id="mediaTypeInput" class="form-input" onchange="NotesHandlers.updateMediaInputPlaceholder()">
-                            <option value="url">Lien URL</option>
-                            <option value="image">Image (URL)</option>
-                            <option value="audio">Audio (URL)</option>
-                            <option value="youtube">Vidéo YouTube</option>
+                            <option value="url">${Localization.t('notes.modal.media.type.url')}</option>
+                            <option value="image">${Localization.t('notes.modal.media.type.image')}</option>
+                            <option value="audio">${Localization.t('notes.modal.media.type.audio')}</option>
+                            <option value="youtube">${Localization.t('notes.modal.media.type.youtube')}</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Titre (optionnel)</label>
-                        <input type="text" id="mediaTitleInput" class="form-input" placeholder="Titre du média">
+                        <label class="form-label">${Localization.t('notes.modal.media.title_label')}</label>
+                        <input type="text" id="mediaTitleInput" class="form-input" placeholder="${Localization.t('notes.modal.media.title_placeholder')}">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">URL</label>
+                        <label class="form-label">${Localization.t('notes.modal.media.url_label')}</label>
                         <input type="text" id="mediaUrlInput" class="form-input" placeholder="https://...">
                     </div>
                     <div id="mediaPreview" style="margin-top: 1rem;"></div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn" onclick="closeModal('addMediaModal')">Annuler</button>
-                    <button class="btn btn-primary" onclick="NotesHandlers.onAddMedia(${noteId})">Ajouter</button>
+                    <button class="btn" onclick="closeModal('addMediaModal')">${Localization.t('notes.modal.media.cancel')}</button>
+                    <button class="btn btn-primary" onclick="NotesHandlers.onAddMedia(${noteId})">${Localization.t('notes.modal.media.add')}</button>
                 </div>
             </div>
         `;
@@ -106,7 +106,7 @@ class NotesHandlers {
         const urlInput = document.getElementById('mediaUrlInput');
 
         if (!urlInput.value.trim()) {
-            alert('Veuillez entrer une URL');
+            alert(Localization.t('notes.error.url_required'));
             return;
         }
 
@@ -145,10 +145,10 @@ window.renderNoteDetailInContainer = (note, container) => {
                     <input type="text" class="form-input" value="${note.title || ''}" 
                            style="font-size: 1.3rem; font-weight: 600; flex: 1; border: none; background: transparent;"
                            onchange="notesViewModel.updateField(${note.id}, 'title', this.value)"
-                           placeholder="Titre de la note">
+                           placeholder="${Localization.t('notes.detail.title_placeholder')}">
                     <select class="form-input" onchange="notesViewModel.updateField(${note.id}, 'category', this.value)" style="width: auto;">
                         ${NotesModel.CATEGORY_ORDER.map(cat => `
-                            <option value="${cat}" ${note.category === cat ? 'selected' : ''}>${cat}</option>
+                            <option value="${cat}" ${note.category === cat ? 'selected' : ''}>${NotesView.getCategoryLabel(cat)}</option>
                         `).join('')}
                     </select>
                 </div>
@@ -156,18 +156,18 @@ window.renderNoteDetailInContainer = (note, container) => {
                     <input type="text" class="form-input" value="${(note.tags || []).join(', ')}" 
                            style="font-size: 0.85rem; width: 100%;"
                            onchange="notesViewModel.updateTags(${note.id}, this.value)"
-                           placeholder="Tags (séparés par des virgules)">
+                           placeholder="${Localization.t('notes.detail.tags_placeholder')}">
                 </div>
             </div>
             <div style="flex: 1; padding: 1rem; overflow: hidden;">
                 <textarea class="form-input" 
                           style="width: 100%; height: 100%; resize: none; font-size: 1rem; line-height: 1.7; border: none; background: var(--bg-primary);"
                           oninput="notesViewModel.updateField(${note.id}, 'content', this.value)"
-                          placeholder="Contenu de la note...">${note.content || ''}</textarea>
+                          placeholder="${Localization.t('notes.detail.content_placeholder')}">${note.content || ''}</textarea>
             </div>
             <div style="padding: 0.5rem 1rem; font-size: 0.75rem; color: var(--text-muted); background: var(--bg-secondary); border-top: 1px solid var(--border-color);">
-                Créée le ${new Date(note.createdAt).toLocaleDateString('fr-FR')} • 
-                Modifiée le ${new Date(note.updatedAt).toLocaleDateString('fr-FR')}
+                ${Localization.t('notes.detail.created', new Date(note.createdAt).toLocaleDateString())} • 
+                ${Localization.t('notes.detail.updated', new Date(note.updatedAt).toLocaleDateString())}
             </div>
         </div>
     `;

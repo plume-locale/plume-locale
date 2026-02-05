@@ -12,7 +12,7 @@ class NotesView {
         if (!container) return;
 
         if (notes.length === 0) {
-            container.innerHTML = '<div style="padding: 1rem; text-align: center; color: var(--text-muted); font-size: 0.85rem;">Aucune note</div>';
+            container.innerHTML = `<div style="padding: 1rem; text-align: center; color: var(--text-muted); font-size: 0.85rem;">${Localization.t('notes.list.empty')}</div>`;
             return;
         }
 
@@ -48,7 +48,7 @@ class NotesView {
                         <span class="treeview-category-icon">
                             <i data-lucide="${icon}" style="width:16px; height:16px;"></i>
                         </span>
-                        <span class="treeview-title">${cat}</span>
+                        <span class="treeview-title">${NotesView.getCategoryLabel(cat)}</span>
                         <span class="treeview-count">${categories[cat].length}</span>
                     </div>
                     <div class="treeview-children ${isExpanded ? '' : 'collapsed'}">
@@ -59,7 +59,7 @@ class NotesView {
                                 <div class="treeview-item" onclick="notesViewModel.openDetail(${note.id})">
                                     <span class="treeview-item-title">${note.title}</span>
                                     ${mediaIcon ? `<span class="treeview-media-icon"><i data-lucide="${mediaIcon}" style="width:14px; height:14px;"></i></span>` : ''}
-                                    <button class="btn btn-icon btn-small delete-btn" onclick="event.stopPropagation(); notesViewModel.deleteNote(${note.id})" title="Supprimer">×</button>
+                                    <button class="btn btn-icon btn-small delete-btn" onclick="event.stopPropagation(); notesViewModel.deleteNote(${note.id})" title="${Localization.t('btn.delete')}">×</button>
                                 </div>
                             `;
             }).join('')}
@@ -87,39 +87,39 @@ class NotesView {
                         <input type="text" class="form-input" value="${note.title}" 
                                style="font-size: 1.8rem; font-weight: 600; font-family: 'Noto Serif JP', serif; padding: 0.5rem;"
                                onchange="notesViewModel.updateField(${note.id}, 'title', this.value)"
-                               placeholder="Titre de la note">
-                        <span style="font-size: 0.8rem; padding: 0.4rem 0.8rem; background: var(--accent-gold); color: var(--bg-primary); border-radius: 2px;">${note.category}</span>
+                               placeholder="${Localization.t('notes.detail.title_placeholder')}">
+                        <span style="font-size: 0.8rem; padding: 0.4rem 0.8rem; background: var(--accent-gold); color: var(--bg-primary); border-radius: 2px;">${NotesView.getCategoryLabel(note.category)}</span>
                     </div>
-                    <button class="btn" onclick="switchView('editor')">← Retour à l'éditeur</button>
+                    <button class="btn" onclick="switchView('editor')">${Localization.t('notes.detail.back')}</button>
                 </div>
                 
                 <div class="detail-section">
-                    <div class="detail-section-title">Catégorie</div>
+                    <div class="detail-section-title">${Localization.t('notes.detail.category')}</div>
                     <select class="form-input" onchange="notesViewModel.updateField(${note.id}, 'category', this.value)">
                         ${NotesModel.CATEGORY_ORDER.map(cat => `
-                            <option value="${cat}" ${note.category === cat ? 'selected' : ''}>${cat}</option>
+                            <option value="${cat}" ${note.category === cat ? 'selected' : ''}>${NotesView.getCategoryLabel(cat)}</option>
                         `).join('')}
                     </select>
                 </div>
 
                 <div class="detail-section">
-                    <div class="detail-section-title">Tags</div>
+                    <div class="detail-section-title">${Localization.t('notes.detail.tags')}</div>
                     <input type="text" class="form-input" value="${(note.tags || []).join(', ')}" 
                            onchange="notesViewModel.updateTags(${note.id}, this.value)">
-                    <small style="color: var(--text-muted); font-style: italic;">Séparez les tags par des virgules</small>
+                    <small style="color: var(--text-muted); font-style: italic;">${Localization.t('notes.detail.tags_help')}</small>
                 </div>
 
                 <div class="detail-section">
-                    <div class="detail-section-title">Contenu</div>
+                    <div class="detail-section-title">${Localization.t('notes.detail.content')}</div>
                     <textarea class="form-input" rows="12" 
                               oninput="notesViewModel.updateField(${note.id}, 'content', this.value)">${note.content || ''}</textarea>
                 </div>
 
                 <div class="detail-section">
                     <div class="detail-section-title">
-                        Médias
+                        ${Localization.t('notes.detail.media')}
                         <button class="btn btn-small" onclick="NotesHandlers.openAddMediaModal(${note.id})" style="margin-left: 1rem;">
-                            <i data-lucide="plus" style="width:14px;height:14px;margin-right:0.3rem;"></i>Ajouter
+                            <i data-lucide="plus" style="width:14px;height:14px;margin-right:0.3rem;"></i>${Localization.t('notes.detail.add_media_btn')}
                         </button>
                     </div>
                     <div class="note-medias-container" id="noteMedias-${note.id}">
@@ -128,8 +128,8 @@ class NotesView {
                 </div>
 
                 <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2rem; font-family: 'Source Code Pro', monospace;">
-                    Créée le ${new Date(note.createdAt).toLocaleDateString('fr-FR')} • 
-                    Modifiée le ${new Date(note.updatedAt).toLocaleDateString('fr-FR')}
+                    ${Localization.t('notes.detail.created', new Date(note.createdAt).toLocaleDateString())} • 
+                    ${Localization.t('notes.detail.updated', new Date(note.updatedAt).toLocaleDateString())}
                 </div>
             </div>
         `;
@@ -143,16 +143,16 @@ class NotesView {
      */
     static renderMedias(note) {
         if (!note.medias || note.medias.length === 0) {
-            return '<div style="color: var(--text-muted); font-style: italic; padding: 1rem; text-align: center; border: 1px dashed var(--border-color); border-radius: 8px;">Aucun média ajouté</div>';
+            return `<div style="color: var(--text-muted); font-style: italic; padding: 1rem; text-align: center; border: 1px dashed var(--border-color); border-radius: 8px;">${Localization.t('notes.media.empty')}</div>`;
         }
 
         return `<div class="note-medias-grid">${note.medias.map((media, index) => {
             if (media.type === 'image') {
                 return `
                     <div class="note-media-item note-media-image">
-                        <img src="${media.url}" alt="${media.title || 'Image'}" onclick="window.open('${media.url}', '_blank')">
+                        <img src="${media.url}" alt="${media.title || Localization.t('notes.media.image_default')}" onclick="window.open('${media.url}', '_blank')">
                         <div class="note-media-overlay">
-                            <span class="note-media-title">${media.title || 'Image'}</span>
+                            <span class="note-media-title">${media.title || Localization.t('notes.media.image_default')}</span>
                             <button class="note-media-delete" onclick="notesViewModel.deleteMedia(${note.id}, ${index})">×</button>
                         </div>
                     </div>
@@ -162,7 +162,7 @@ class NotesView {
                     <div class="note-media-item note-media-audio">
                         <div class="note-media-audio-icon"><i data-lucide="volume-2" style="width:24px; height:24px;"></i></div>
                         <div class="note-media-audio-info">
-                            <span class="note-media-title">${media.title || 'Audio'}</span>
+                            <span class="note-media-title">${media.title || Localization.t('notes.media.audio_default')}</span>
                             <audio controls src="${media.url}" style="width: 100%; margin-top: 0.5rem;"></audio>
                         </div>
                         <button class="note-media-delete" onclick="notesViewModel.deleteMedia(${note.id}, ${index})">×</button>
@@ -189,7 +189,7 @@ class NotesView {
                             <div class="note-media-youtube-play"><i data-lucide="play" style="width:32px; height:32px; fill: white; stroke: white;"></i></div>
                         </div>
                         <div class="note-media-overlay">
-                            <span class="note-media-title">${media.title || 'Vidéo YouTube'}</span>
+                            <span class="note-media-title">${media.title || Localization.t('notes.media.video_default')}</span>
                             <button class="note-media-delete" onclick="notesViewModel.deleteMedia(${note.id}, ${index})">×</button>
                         </div>
                     </div>
@@ -211,6 +211,17 @@ class NotesView {
     static extractYoutubeId(url) {
         const match = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([^&\s?]+)/);
         return match ? match[1] : '';
+    }
+    static getCategoryLabel(category) {
+        switch (category) {
+            case 'Idée': return Localization.t('notes.category.idea');
+            case 'Recherche': return Localization.t('notes.category.research');
+            case 'Référence': return Localization.t('notes.category.reference');
+            case 'A faire': return Localization.t('notes.category.todo');
+            case 'Question': return Localization.t('notes.category.question');
+            case 'Autre': return Localization.t('notes.category.other');
+            default: return category;
+        }
     }
 }
 
