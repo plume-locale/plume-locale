@@ -44,11 +44,19 @@ class LocalizationManager {
 
     /**
      * Translate a key.
+     * Supports both t(key, [p1, p2]) and t(key, p1, p2)
      * @param {string} key 
-     * @param {Array} params 
+     * @param {...any} args - Variable arguments or a single array
      * @returns {string}
      */
-    t(key, params = []) {
+    t(key, ...args) {
+        let params;
+        // Check if the first argument is an array and it's the only argument
+        if (args.length === 1 && Array.isArray(args[0])) {
+            params = args[0];
+        } else {
+            params = args;
+        }
         return this.model.translate(key, params);
     }
 

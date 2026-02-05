@@ -389,22 +389,22 @@ const PlotGridUI = {
                 </style>
 
                 <div class="plot-grid-toolbar">
-                    <h2 style="margin: 0; font-size: 1.2rem; color: var(--text-primary); flex: 1;">Grille d'intrigue pour ${project.title || 'Livre sans titre'}</h2>
+                    <h2 style="margin: 0; font-size: 1.2rem; color: var(--text-primary); flex: 1;">${Localization.t('plotgrid.header.title', [project.title || Localization.t('plotgrid.header.untitled_book')])}</h2>
                     
-                    <button class="btn btn-secondary" onclick="renderPlotGridView()"><i data-lucide="refresh-cw" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Rafraîchir</button>
+                    <button class="btn btn-secondary" onclick="renderPlotGridView()"><i data-lucide="refresh-cw" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>${Localization.t('plotgrid.btn.refresh')}</button>
                     
                     <div style="display: flex; gap: 5px; border-left: 1px solid var(--border-color); padding-left: 15px; margin-left: 5px;">
-                        <button class="btn btn-secondary" onclick="PlotGridImportExport.exportToExcel()" title="Exporter vers Excel">
-                            <i data-lucide="download" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Exporter
+                        <button class="btn btn-secondary" onclick="PlotGridImportExport.exportToExcel()" title="${Localization.t('plotgrid.btn.export_title')}">
+                            <i data-lucide="download" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>${Localization.t('plotgrid.btn.export')}
                         </button>
                         
-                        <button class="btn btn-secondary" onclick="document.getElementById('pgImportFile').click()" title="Importer depuis Excel">
-                            <i data-lucide="upload" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Importer
+                        <button class="btn btn-secondary" onclick="document.getElementById('pgImportFile').click()" title="${Localization.t('plotgrid.btn.import_title')}">
+                            <i data-lucide="upload" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>${Localization.t('plotgrid.btn.import')}
                         </button>
                         <input type="file" id="pgImportFile" style="display: none;" accept=".xlsx, .xls" onchange="PlotGridImportExport.importFromExcel(this.files[0])">
                     </div>
 
-                    ${typeof lucide !== 'undefined' ? '<i data-lucide="help-circle" title="Faites glisser les cartes (col 2+); Cliquez pour éditer; Les scènes éditent le résumé."></i>' : ''}
+                    ${typeof lucide !== 'undefined' ? `<i data-lucide="help-circle" title="${Localization.t('plotgrid.help.tooltip')}"></i>` : ''}
                 </div>
 
                 <div class="plot-grid-wrapper" id="pgWrapper">
@@ -414,11 +414,11 @@ const PlotGridUI = {
                 <div id="pgModalOverlay" onclick="PlotGridUI.closeCardModal(event)">
                     <div id="pgModal" onclick="event.stopPropagation()">
                         <span class="pg-modal-close" onclick="PlotGridUI.closeCardModal()"><i data-lucide="x" style="width:20px;height:20px;"></i></span>
-                        <input type="text" id="pgModalTitleInput" class="pg-modal-title" placeholder="Titre">
-                        <textarea id="pgModalContentInput" class="pg-modal-content" placeholder="Zone d'écriture..."></textarea>
+                        <input type="text" id="pgModalTitleInput" class="pg-modal-title" placeholder="${Localization.t('plotgrid.modal.placeholder_title')}">
+                        <textarea id="pgModalContentInput" class="pg-modal-content" placeholder="${Localization.t('plotgrid.modal.placeholder_content')}"></textarea>
                         <div class="pg-modal-footer">
-                            <button id="pgModalDeleteBtn" class="btn btn-danger btn-sm" style="display:none;" onclick="PlotGridUI.deleteActiveCard()">Supprimer la Carte</button>
-                            <button class="btn btn-primary btn-sm" onclick="PlotGridUI.closeCardModal(null, true)">Enregistrer & Fermer</button>
+                            <button id="pgModalDeleteBtn" class="btn btn-danger btn-sm" style="display:none;" onclick="PlotGridUI.deleteActiveCard()">${Localization.t('plotgrid.modal.btn_delete')}</button>
+                            <button class="btn btn-primary btn-sm" onclick="PlotGridUI.closeCardModal(null, true)">${Localization.t('plotgrid.modal.btn_save')}</button>
                         </div>
                     </div>
                 </div>
@@ -439,11 +439,11 @@ const PlotGridUI = {
             <div id="pgModalOverlay" onclick="PlotGridUI.closeCardModal(event)">
                 <div id="pgModal" onclick="event.stopPropagation()">
                     <span class="pg-modal-close" onclick="PlotGridUI.closeCardModal()"><i data-lucide="x" style="width:20px;height:20px;"></i></span>
-                    <input type="text" id="pgModalTitleInput" class="pg-modal-title" placeholder="Titre">
-                    <textarea id="pgModalContentInput" class="pg-modal-content" placeholder="Zone d'écriture..."></textarea>
+                    <input type="text" id="pgModalTitleInput" class="pg-modal-title" placeholder="${Localization.t('plotgrid.modal.placeholder_title')}">
+                    <textarea id="pgModalContentInput" class="pg-modal-content" placeholder="${Localization.t('plotgrid.modal.placeholder_content')}"></textarea>
                     <div class="pg-modal-footer">
-                        <button id="pgModalDeleteBtn" class="btn btn-danger btn-sm" style="display:none;" onclick="PlotGridUI.deleteActiveCard()">Supprimer la Carte</button>
-                        <button class="btn btn-primary btn-sm" onclick="PlotGridUI.closeCardModal(null, true)">Enregistrer & Fermer</button>
+                        <button id="pgModalDeleteBtn" class="btn btn-danger btn-sm" style="display:none;" onclick="PlotGridUI.deleteActiveCard()">${Localization.t('plotgrid.modal.btn_delete')}</button>
+                        <button class="btn btn-primary btn-sm" onclick="PlotGridUI.closeCardModal(null, true)">${Localization.t('plotgrid.modal.btn_save')}</button>
                     </div>
                 </div>
             </div>
@@ -535,12 +535,12 @@ const PlotGridUI = {
             const col = data.columns[i];
             let content = '';
             if (col) {
-                const title = col.type === 'structure' ? 'Scènes' : col.title;
+                const title = col.type === 'structure' ? Localization.t('plotgrid.col.scenes') : col.title;
                 const editable = col.type !== 'structure';
                 content = `
                     <div class="pg-col-header-container">
                         ${editable ? `<input class="pg-header-input" value="${title}" onblur="PlotGridUI.updateColTitle('${col.id}', this.value)">` : `<span>${title}</span>`}
-                        ${editable ? `<span class="pg-col-delete-btn" onclick="PlotGridUI.deleteColumn('${col.id}')" title="Supprimer la ligne d'intrigue"><i data-lucide="trash-2"></i></span>` : ''}
+                        ${editable ? `<span class="pg-col-delete-btn" onclick="PlotGridUI.deleteColumn('${col.id}')" title="${Localization.t('plotgrid.col.delete_tooltip')}"><i data-lucide="trash-2"></i></span>` : ''}
                     </div>
                 `;
             } else {
@@ -549,7 +549,7 @@ const PlotGridUI = {
                     <div class="pg-col-header-container">
                         <input class="pg-header-input pg-ghost-header"
                                value=""
-                               placeholder="Ligne sans titre"
+                               placeholder="${Localization.t('plotgrid.ghost.header_placeholder')}"
                                onfocus="this.classList.add('editing')"
                                onblur="PlotGridUI.createColumnFromGhost(${i}, this.value); this.classList.remove('editing')">
                     </div>
@@ -563,8 +563,8 @@ const PlotGridUI = {
             // Column 0 : Gutter
             html += `
                 <div class="pg-gutter-cell">
-                    <div class="pg-row-insert-btn" style="position: absolute; top: -10px;" onclick="PlotGridUI.insertRowBefore('${row.id}')" title="Insérer une ligne au-dessus">+</div>
-                    ${rIdx === data.rows.length - 1 ? `<div class="pg-row-insert-btn" style="position: absolute; bottom: -10px;" onclick="PlotGridUI.insertRowAfter('${row.id}')" title="Insérer une ligne en dessous">+</div>` : ''}
+                    <div class="pg-row-insert-btn" style="position: absolute; top: -10px;" onclick="PlotGridUI.insertRowBefore('${row.id}')" title="${Localization.t('plotgrid.row.insert_above')}">+</div>
+                    ${rIdx === data.rows.length - 1 ? `<div class="pg-row-insert-btn" style="position: absolute; bottom: -10px;" onclick="PlotGridUI.insertRowAfter('${row.id}')" title="${Localization.t('plotgrid.row.insert_below')}">+</div>` : ''}
                 </div>
             `;
 
@@ -579,7 +579,7 @@ const PlotGridUI = {
                                 ${row.isFirstInChapter ? `<div class="dabble-chapter-label">${row.parentChapterTitle}</div>` : ''}
                                 <div class="pg-card structure-card" onclick="PlotGridUI.openSceneModal('${row.structureId}', this)">
                                     <div class="pg-card-title">${row.title}</div>
-                                    <div class="pg-card-content">${row.synopsis || "Pas de résumé."}</div>
+                                    <div class="pg-card-content">${row.synopsis || Localization.t('plotgrid.card.no_synopsis')}</div>
                                 </div>
                             </div>
                         `;
@@ -588,9 +588,9 @@ const PlotGridUI = {
                         html += `
                             <div class="pg-cell">
                                 <div class="pg-card structure-card pg-scene-ghost" onclick="PlotGridUI.createSceneFromRow('${row.id}')">
-                                    <span class="pg-card-delete" onclick="event.stopPropagation(); PlotGridUI.deleteCustomRow('${row.id}')" title="Supprimer la ligne"><i data-lucide="x" style="width:12px;height:12px;"></i></span>
+                                    <span class="pg-card-delete" onclick="event.stopPropagation(); PlotGridUI.deleteCustomRow('${row.id}')" title="${Localization.t('plotgrid.row.delete_tooltip')}"><i data-lucide="x" style="width:12px;height:12px;"></i></span>
                                     <div style="font-size: 18px; margin-bottom: 5px;">+</div>
-                                    <div style="font-size: 0.8rem;">Scène sans titre</div>
+                                    <div style="font-size: 0.8rem;">${Localization.t('plotgrid.ghost.scene_untitled')}</div>
                                 </div>
                             </div>
                         `;
@@ -608,7 +608,7 @@ const PlotGridUI = {
                                     draggable="true" 
                                     ondragstart="PlotGridUI.handleDragStart(event, '${card.id}')"
                                     onclick="PlotGridUI.openCardModal('${card.id}', this)">
-                                    <span class="pg-card-delete" onclick="event.stopPropagation(); PlotGridUI.deleteCardQuickly('${card.id}')" title="Supprimer la carte"><i data-lucide="x" style="width:12px;height:12px;"></i></span>
+                                    <span class="pg-card-delete" onclick="event.stopPropagation(); PlotGridUI.deleteCardQuickly('${card.id}')" title="${Localization.t('plotgrid.card.delete_tooltip')}"><i data-lucide="x" style="width:12px;height:12px;"></i></span>
                                     <div class="pg-card-title">${card.title}</div>
                                     <div class="pg-card-content">${card.content || ""}</div>
                                 </div>
@@ -658,7 +658,7 @@ const PlotGridUI = {
 
     addCardAt: function (rowId, colIndex) {
         // Will create columns if necessary thanks to ViewModel update
-        const title = "Sans titre";
+        const title = Localization.t('plotgrid.card.untitled');
         const card = PlotGridViewModel.addCard(rowId, colIndex, title, "");
         this.conditionalRender(); // Rerender
         // Optionnal: open modal immediately
@@ -678,7 +678,7 @@ const PlotGridUI = {
         }
 
         const newRow = PlotGridModel.createRow({
-            title: 'Nouvelle ligne',
+            title: Localization.t('plotgrid.new.row'),
             type: 'custom',
             order: newOrder
         });
@@ -1007,3 +1007,10 @@ if (typeof switchView === 'function') {
         }
     };
 }
+
+// Listen for locale changes to refresh the view
+window.addEventListener('localeChanged', () => {
+    if (typeof PlotGridUI !== 'undefined') {
+        PlotGridUI.conditionalRender();
+    }
+});

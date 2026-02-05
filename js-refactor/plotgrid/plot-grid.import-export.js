@@ -15,7 +15,7 @@ const PlotGridImportExport = {
 
         // 1. Prepare Headers
         // We'll have: Act, Chapter, Scene, Synopsis, then each custom column
-        const headers = ["Acte", "Chapitre", "Scène", "Résumé"];
+        const headers = [Localization.t('plotgrid.export.act'), Localization.t('plotgrid.export.chapter'), Localization.t('plotgrid.export.scene'), Localization.t('plotgrid.export.synopsis')];
         const customColumns = columns.filter(c => c.type !== 'structure');
         customColumns.forEach(col => headers.push(col.titulo || col.title));
 
@@ -33,7 +33,7 @@ const PlotGridImportExport = {
             } else {
                 excelRow.push("");
                 excelRow.push("");
-                excelRow.push(row.title || "Ligne personnalisée");
+                excelRow.push(row.title || Localization.t('plotgrid.export.custom_row'));
                 excelRow.push("");
             }
 
@@ -41,7 +41,7 @@ const PlotGridImportExport = {
             customColumns.forEach(col => {
                 const card = cards.find(c => c.rowId === row.id && c.colId === col.id);
                 if (card) {
-                    const cellTitle = card.title || "Sans titre";
+                    const cellTitle = card.title || Localization.t('plotgrid.export.untitled');
                     const cellContent = card.content || "";
                     excelRow.push(cellContent ? `${cellTitle}\n${cellContent}` : cellTitle);
                 } else {
@@ -56,14 +56,15 @@ const PlotGridImportExport = {
         const wb = XLSX.utils.book_new();
         const ws = XLSX.utils.aoa_to_sheet(excelData);
 
-        // Auto-width (simple)
+
+
         const wscols = headers.map(h => ({ wch: Math.max(h.length, 15) }));
         ws['!cols'] = wscols;
 
-        XLSX.utils.book_append_sheet(wb, ws, "Grille d'intrigue");
+        XLSX.utils.book_append_sheet(wb, ws, Localization.t('plotgrid.export.sheet_name'));
 
         // 4. Download
-        const fileName = `Grille_Intrigue_${project.title || 'Export'}_${new Date().toISOString().slice(0, 10)}.xlsx`;
+        const fileName = `${Localization.t('plotgrid.export.filename_prefix', [project.title || Localization.t('plotgrid.export.default_filename')])}_${new Date().toISOString().slice(0, 10)}.xlsx`;
         XLSX.writeFile(wb, fileName);
     },
 
@@ -80,7 +81,7 @@ const PlotGridImportExport = {
             const json = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
             if (json.length < 1) {
-                alert("Le fichier semble vide.");
+                alert(Localization.t('plotgrid.import.error_empty'));
                 return;
             }
 
@@ -98,18 +99,16 @@ const PlotGridImportExport = {
         const rowsData = data.slice(1);
 
         // Map standard columns
-        const actIdx = headers.indexOf("Acte");
-        const chapIdx = headers.indexOf("Chapitre");
-        const sceneIdx = headers.indexOf("Scène");
-        const synIdx = headers.indexOf("Résumé");
+        const sceneIdx = headers.indexOf(Localization.t('plotgrid.export.scene')) !== -1 ? headers.indexOf(Localization.t('plotgrid.export.scene')) : headers.indexOf("Scène");
+        const synIdx = headers.indexOf(Localization.t('plotgrid.export.synopsis')) !== -1 ? headers.indexOf(Localization.t('plotgrid.export.synopsis')) : headers.indexOf("Résumé");
 
         if (sceneIdx === -1) {
-            alert("Erreur : Impossible de trouver la colonne 'Scène' dans le fichier Excel.");
+            alert(Localization.t('plotgrid.import.error_no_scene_col'));
             return;
         }
 
         // Identify custom columns (starting from index 4 or based on headers not in standard list)
-        const standardHeaders = ["Acte", "Chapitre", "Scène", "Résumé"];
+        const standardHeaders = [Localization.t('plotgrid.export.act'), Localization.t('plotgrid.export.chapter'), Localization.t('plotgrid.export.scene'), Localization.t('plotgrid.export.synopsis'), "Acte", "Chapitre", "Scène", "Résumé"];
         const customColMappings = []; // { title, index, colId }
 
         headers.forEach((h, idx) => {
@@ -173,19 +172,19 @@ const PlotGridImportExport = {
                 if (existingCard) {
                     if (existingCard.content !== newContent || existingCard.title !== newTitle) {
                         PlotGridViewModel.updateCard(existingCard.id, {
-                            title: newTitle || "Note",
+                            title: newTitle || Localization.t('plotgrid.import.default_card_title'),
                             content: newContent
                         });
                         updatedCount++;
                     }
                 } else {
-                    PlotGridViewModel.addCard(targetRow.id, mapping.colId, newTitle || "Note", newContent);
+                    PlotGridViewModel.addCard(targetRow.id, mapping.colId, newTitle || Localization.t('plotgrid.import.default_card_title'), newContent);
                     createdCards++;
                 }
             });
         });
 
-        alert(`Importation terminée !\nCartes mises à jour : ${updatedCount}\nNouvelles cartes : ${createdCards}`);
+        alert(Localization.t('plotgrid.import.success', [updatedCount, createdCards]));
 
         // Refresh UI
         if (typeof PlotGridUI !== 'undefined') {

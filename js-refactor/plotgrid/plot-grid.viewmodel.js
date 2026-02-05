@@ -26,7 +26,7 @@ const PlotGridViewModel = {
 
     addNewColumn: function (title) {
         const col = PlotGridModel.createColumn({
-            title: title || 'Nouvelle colonne',
+            title: title || Localization.t('plotgrid.new.column'),
             order: PlotGridRepository.getColumns().length
         });
         PlotGridRepository.addColumn(col);
@@ -37,10 +37,10 @@ const PlotGridViewModel = {
         const col = PlotGridRepository.getColumns().find(c => c.id === colId);
         if (!col) return;
         if (col.type === 'structure') {
-            alert("Impossible de supprimer la colonne de structure.");
+            alert(Localization.t('plotgrid.error.delete_structure'));
             return;
         }
-        if (confirm(`Supprimer la colonne "${col.title}" et toutes ses cartes ?`)) {
+        if (confirm(Localization.t('plotgrid.confirm.delete_col', [col.title]))) {
             PlotGridRepository.removeColumn(colId);
             return true;
         }
@@ -53,7 +53,7 @@ const PlotGridViewModel = {
         const rows = PlotGridRepository.getRows();
         const maxOrder = rows.length > 0 ? Math.max(...rows.map(r => r.order)) : -10;
         const row = PlotGridModel.createRow({
-            title: 'Nouvelle ligne',
+            title: Localization.t('plotgrid.new.row'),
             type: 'custom',
             order: maxOrder + 10
         });
@@ -70,13 +70,13 @@ const PlotGridViewModel = {
 
         if (row.type === 'structure') {
             // Guard: Only clear cards, keep row (because it's tied to structure)
-            if (confirm(`Cette ligne est liée à la scène/chapitre "${row.title}".\n\nVoulez-vous effacer toutes les cartes de cette ligne ?\n(La scène ne sera pas supprimée du manuscrit)`)) {
+            if (confirm(Localization.t('plotgrid.confirm.clear_row', [row.title]))) {
                 PlotGridRepository.clearRowCards(rowId);
                 return { action: 'cleared' };
             }
         } else {
             // Custom row: Full delete
-            if (confirm(`Supprimer la ligne personnalisée "${row.title}" et ses cartes ?`)) {
+            if (confirm(Localization.t('plotgrid.confirm.delete_row', [row.title]))) {
                 PlotGridRepository.removeRow(rowId);
                 return { action: 'deleted' };
             }
@@ -100,7 +100,7 @@ const PlotGridViewModel = {
         const card = PlotGridModel.createCard({
             rowId,
             colId,
-            title: title || "Élément sans titre",
+            title: title || Localization.t('plotgrid.card.new_untitled'),
             content
         });
         PlotGridRepository.addCard(card);
@@ -143,7 +143,7 @@ const PlotGridViewModel = {
     },
 
     deleteCard: function (cardId) {
-        if (confirm("Supprimer cette carte ?")) {
+        if (confirm(Localization.t('plotgrid.confirm.delete_card'))) {
             PlotGridRepository.removeCard(cardId);
             return true;
         }
@@ -166,7 +166,7 @@ const PlotGridViewModel = {
         }
 
         const newRow = PlotGridModel.createRow({
-            title: 'Nouvelle ligne',
+            title: Localization.t('plotgrid.new.row'),
             type: 'custom',
             order: newOrder
         });
@@ -200,7 +200,7 @@ const PlotGridViewModel = {
             // No preceding scene? Add to first chapter of first act
             const firstChapter = project.acts[0]?.chapters[0];
             if (firstChapter) {
-                newScene = createScene('Scène sans titre');
+                newScene = createScene(Localization.t('plotgrid.scene.new_untitled'));
                 firstChapter.scenes.unshift(newScene);
             }
         } else {
@@ -209,7 +209,7 @@ const PlotGridViewModel = {
                 act.chapters.forEach(chapter => {
                     const sIdx = chapter.scenes.findIndex(s => s.id === precedingSceneId);
                     if (sIdx !== -1) {
-                        newScene = createScene('Scène sans titre');
+                        newScene = createScene(Localization.t('plotgrid.scene.new_untitled'));
                         chapter.scenes.splice(sIdx + 1, 0, newScene);
                     }
                 });
