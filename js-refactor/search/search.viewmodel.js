@@ -69,7 +69,7 @@ const SearchViewModel = {
         } catch (error) {
             console.error('Erreur lors de la recherche:', error);
             SearchViewModel.state.isLoading = false;
-            SearchView.showError('Une erreur est survenue lors de la recherche');
+            SearchView.showError(Localization.t('search.error'));
         }
     },
 
@@ -97,15 +97,17 @@ const SearchViewModel = {
 
             // Priorité 3: Type de résultat (Scènes en premier)
             const typeOrder = {
-                'Scène': 1,
-                'Personnage': 2,
-                'Univers': 3,
-                'Chronologie': 4,
-                'Note': 5,
-                'Codex': 6
+                'scene': 1,
+                'character': 2,
+                'world': 3,
+                'timeline': 4,
+                'note': 5,
+                'codex': 6,
+                'metro': 7,
+                'todo': 8
             };
-            const aTypeOrder = typeOrder[a.type] || 999;
-            const bTypeOrder = typeOrder[b.type] || 999;
+            const aTypeOrder = typeOrder[a.rawType] || 999;
+            const bTypeOrder = typeOrder[b.rawType] || 999;
             if (aTypeOrder !== bTypeOrder) return aTypeOrder - bTypeOrder;
 
             // Priorité 4: Alphabétique par titre

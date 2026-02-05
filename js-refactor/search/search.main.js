@@ -18,6 +18,14 @@ const GlobalSearch = {
             // Initialiser les gestionnaires d'événements
             SearchHandlers.init();
 
+            // Écouter le changement de langue pour rafraîchir les résultats si nécessaire
+            window.addEventListener('localeChanged', () => {
+                const state = SearchViewModel.getState();
+                if (state.query && state.query.length >= 2) {
+                    SearchViewModel.executeSearch(state.query);
+                }
+            });
+
             console.log('✓ Module de recherche globale initialisé');
         } catch (error) {
             console.error('Erreur lors de l\'initialisation de la recherche globale:', error);

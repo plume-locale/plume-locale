@@ -99,7 +99,7 @@ const SearchView = {
         const container = SearchView.elements.resultsContainer;
         if (!container) return;
 
-        container.innerHTML = '<div class="search-no-results">Aucun résultat trouvé</div>';
+        container.innerHTML = `<div class="search-no-results">${Localization.t('search.no_results')}</div>`;
         container.classList.add('active');
     },
 

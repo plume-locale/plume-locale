@@ -118,7 +118,7 @@ const SearchRepository = {
             ].join(' ').toLowerCase();
 
             if (searchText.includes(lowerQuery)) {
-                const preview = char.description || char.personality || 'Aucune description';
+                const preview = char.description || char.personality || Localization.t('search.default.nodesc');
                 results.push(
                     SearchResultModel.createCharacterResult(char, originalQuery, preview)
                 );
@@ -145,7 +145,7 @@ const SearchRepository = {
             ].join(' ').toLowerCase();
 
             if (searchText.includes(lowerQuery)) {
-                const preview = element.description || element.details || 'Aucune description';
+                const preview = element.description || element.details || Localization.t('search.default.nodesc');
                 results.push(
                     SearchResultModel.createWorldResult(element, originalQuery, preview)
                 );
@@ -176,7 +176,7 @@ const SearchRepository = {
             ].join(' ').toLowerCase();
 
             if (searchText.includes(lowerQuery)) {
-                const preview = event.description || 'Aucune description';
+                const preview = event.description || Localization.t('search.default.nodesc');
                 results.push(
                     SearchResultModel.createTimelineResult(event, originalQuery, preview)
                 );
@@ -202,7 +202,7 @@ const SearchRepository = {
             ].join(' ').toLowerCase();
 
             if (searchText.includes(lowerQuery)) {
-                const preview = event.description || 'Aucune description';
+                const preview = event.description || Localization.t('search.default.nodesc');
                 results.push(
                     SearchResultModel.createMetroTimelineResult(event, originalQuery, preview)
                 );

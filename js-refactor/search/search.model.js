@@ -22,7 +22,8 @@ const ensureString = (value, defaultValue = '') => {
 const SearchResultModel = {
     create: (params = {}) => ({
         id: params.id || generateId(),
-        type: ensureString(params.type, 'Unknown'),
+        type: ensureString(params.type, Localization.t('search.type.unknown')),
+        rawType: ensureString(params.rawType, 'unknown'),
         title: ensureString(params.title, ''),
         path: ensureString(params.path, ''),
         preview: ensureString(params.preview, ''),
@@ -38,9 +39,10 @@ const SearchResultModel = {
     createSceneResult: (scene, act, chapter, query, matchIndex, preview) => {
         return SearchResultModel.create({
             id: scene.id,
-            type: 'Scène',
-            title: ensureString(scene.title, 'Sans titre'),
-            path: `${ensureString(act.title, 'Acte')} > ${ensureString(chapter.title, 'Chapitre')}`,
+            type: Localization.t('search.type.scene'),
+            rawType: 'scene',
+            title: ensureString(scene.title, Localization.t('search.default.untitled')),
+            path: `${ensureString(act.title, Localization.t('search.default.act'))} > ${ensureString(chapter.title, Localization.t('search.default.chapter'))}`,
             preview: ensureString(preview, ''),
             matchIndex: matchIndex,
             action: () => openScene(act.id, chapter.id, scene.id),
@@ -58,10 +60,11 @@ const SearchResultModel = {
     createCharacterResult: (character, query, preview) => {
         return SearchResultModel.create({
             id: character.id,
-            type: 'Personnage',
-            title: ensureString(character.name, 'Sans nom'),
-            path: ensureString(character.role, 'Personnage'),
-            preview: ensureString(preview || character.description, 'Aucune description'),
+            type: Localization.t('search.type.character'),
+            rawType: 'character',
+            title: ensureString(character.name, Localization.t('search.default.unnamed')),
+            path: ensureString(character.role, Localization.t('search.type.character')),
+            preview: ensureString(preview || character.description, Localization.t('search.default.nodesc')),
             action: () => {
                 switchView('characters');
                 openCharacterDetail(character.id);
@@ -79,10 +82,11 @@ const SearchResultModel = {
     createWorldResult: (element, query, preview) => {
         return SearchResultModel.create({
             id: element.id,
-            type: 'Univers',
-            title: ensureString(element.name, 'Sans nom'),
-            path: ensureString(element.type, 'Élément'),
-            preview: ensureString(preview || element.description, 'Aucune description'),
+            type: Localization.t('search.type.world'),
+            rawType: 'world',
+            title: ensureString(element.name, Localization.t('search.default.unnamed')),
+            path: ensureString(element.type, Localization.t('search.default.element')),
+            preview: ensureString(preview || element.description, Localization.t('search.default.nodesc')),
             action: () => {
                 switchView('world');
                 openWorldDetail(element.id);
@@ -100,10 +104,11 @@ const SearchResultModel = {
     createTimelineResult: (event, query, preview) => {
         return SearchResultModel.create({
             id: event.id,
-            type: 'Chronologie',
-            title: ensureString(event.title, 'Sans titre'),
-            path: ensureString(event.date, 'Événement'),
-            preview: ensureString(preview || event.description, 'Aucune description'),
+            type: Localization.t('search.type.timeline'),
+            rawType: 'timeline',
+            title: ensureString(event.title, Localization.t('search.default.untitled')),
+            path: ensureString(event.date, Localization.t('search.default.event')),
+            preview: ensureString(preview || event.description, Localization.t('search.default.nodesc')),
             action: () => {
                 switchView('timeline');
                 openTimelineDetail(event.id);
@@ -121,10 +126,11 @@ const SearchResultModel = {
     createMetroTimelineResult: (event, query, preview) => {
         return SearchResultModel.create({
             id: event.id,
-            type: 'Métro',
-            title: ensureString(event.title, 'Sans titre'),
-            path: ensureString(event.date, 'Timeline Métro'),
-            preview: ensureString(preview || event.description, 'Aucune description'),
+            type: Localization.t('search.type.metro'),
+            rawType: 'metro',
+            title: ensureString(event.title, Localization.t('search.default.untitled')),
+            path: ensureString(event.date, Localization.t('search.default.metro_timeline')),
+            preview: ensureString(preview || event.description, Localization.t('search.default.nodesc')),
             action: () => {
                 if (typeof openMetroEventFullView === 'function') {
                     // Injecter l'ID dans le champ caché attendu par openMetroEventFullView
@@ -157,9 +163,10 @@ const SearchResultModel = {
     createNoteResult: (note, query, matchIndex, preview) => {
         return SearchResultModel.create({
             id: note.id,
-            type: 'Note',
-            title: ensureString(note.title, 'Sans titre'),
-            path: ensureString(note.category, 'Note'),
+            type: Localization.t('search.type.note'),
+            rawType: 'note',
+            title: ensureString(note.title, Localization.t('search.default.untitled')),
+            path: ensureString(note.category, Localization.t('search.type.note')),
             preview: ensureString(preview, ''),
             matchIndex: matchIndex,
             action: () => {
@@ -179,9 +186,10 @@ const SearchResultModel = {
     createCodexResult: (entry, query, matchIndex, preview) => {
         return SearchResultModel.create({
             id: entry.id,
-            type: 'Codex',
-            title: ensureString(entry.title, 'Sans titre'),
-            path: ensureString(entry.category, 'Codex'),
+            type: Localization.t('search.type.codex'),
+            rawType: 'codex',
+            title: ensureString(entry.title, Localization.t('search.default.untitled')),
+            path: ensureString(entry.category, Localization.t('search.type.codex')),
             preview: ensureString(preview, ''),
             matchIndex: matchIndex,
             action: () => {
@@ -201,9 +209,10 @@ const SearchResultModel = {
     createTodoResult: (todo, query, matchIndex, preview) => {
         return SearchResultModel.create({
             id: todo.id,
-            type: 'TODO',
-            title: ensureString(todo.text, 'Sans texte'),
-            path: `${ensureString(todo.actTitle, 'Acte')} > ${ensureString(todo.chapterTitle, 'Chapitre')} > ${ensureString(todo.sceneTitle, 'Scène')}`,
+            type: Localization.t('search.type.todo'),
+            rawType: 'todo',
+            title: ensureString(todo.text, Localization.t('search.default.notext')),
+            path: `${ensureString(todo.actTitle, Localization.t('search.default.act'))} > ${ensureString(todo.chapterTitle, Localization.t('search.default.chapter'))} > ${ensureString(todo.sceneTitle, Localization.t('search.default.scene'))}`,
             preview: ensureString(preview, ''),
             matchIndex: matchIndex,
             action: () => {
