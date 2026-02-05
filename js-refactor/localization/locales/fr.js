@@ -1002,4 +1002,9 @@ const LOCALE_FR = {
     "shortcuts.desc.close_sidebar": "Fermer la barre latérale",
     "shortcuts.desc.close_sidebar_detail": "Glisser vers la gauche n'importe où",
     "shortcuts.footer": "Certains raccourcis peuvent varier selon votre système d'exploitation.",
+    // --- Mobile Swipe ---
+    "mobile.swipe.gesture.open_sidebar.name": "Ouvrir la barre latérale",
+    "mobile.swipe.gesture.open_sidebar.desc": "Glisser depuis le bord gauche vers la droite",
+    "mobile.swipe.gesture.close_sidebar.name": "Fermer la barre latérale",
+    "mobile.swipe.gesture.close_sidebar.desc": "Glisser vers la gauche n\'importe où"
 };

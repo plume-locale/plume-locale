@@ -47,14 +47,14 @@ window.MobileSwipeRepository = {
         return [
             {
                 id: 'open-sidebar',
-                name: 'Ouvrir la barre latérale',
-                description: 'Glisser depuis le bord gauche vers la droite',
+                name: Localization.t('mobile.swipe.gesture.open_sidebar.name'),
+                description: Localization.t('mobile.swipe.gesture.open_sidebar.desc'),
                 icon: 'arrow-right-to-line'
             },
             {
                 id: 'close-sidebar',
-                name: 'Fermer la barre latérale',
-                description: 'Glisser vers la gauche n\'importe où',
+                name: Localization.t('mobile.swipe.gesture.close_sidebar.name'),
+                description: Localization.t('mobile.swipe.gesture.close_sidebar.desc'),
                 icon: 'arrow-left-to-line'
             }
         ];

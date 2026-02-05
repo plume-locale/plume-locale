@@ -1259,4 +1259,9 @@ const LOCALE_EN = {
     "shortcuts.desc.close_sidebar": "Close sidebar",
     "shortcuts.desc.close_sidebar_detail": "Swipe left anywhere",
     "shortcuts.footer": "Some shortcuts may vary depending on your operating system.",
+    // --- Mobile Swipe ---
+    "mobile.swipe.gesture.open_sidebar.name": "Open Sidebar",
+    "mobile.swipe.gesture.open_sidebar.desc": "Swipe right from the left edge",
+    "mobile.swipe.gesture.close_sidebar.name": "Close Sidebar",
+    "mobile.swipe.gesture.close_sidebar.desc": "Swipe left anywhere"
 };
