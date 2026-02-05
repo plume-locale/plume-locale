@@ -45,10 +45,10 @@ class MapViewModel {
 
         if (index !== null) {
             this.repository.updateLocation(this.activeMapId, index, data);
-            if (typeof showNotification === 'function') showNotification(`Lieu "${data.name}" mis à jour`);
+            if (typeof showNotification === 'function') showNotification(Localization.t('map.notify.location_updated', data.name));
         } else {
             this.repository.addLocation(this.activeMapId, data);
-            if (typeof showNotification === 'function') showNotification(`Lieu "${data.name}" ajouté`);
+            if (typeof showNotification === 'function') showNotification(Localization.t('map.notify.location_added', data.name));
         }
         return true;
     }
@@ -58,7 +58,7 @@ class MapViewModel {
         const map = this.repository.getMap(this.activeMapId);
         const loc = map.locations[index];
 
-        if (confirm(`Supprimer le lieu "${loc.name}" ?`)) {
+        if (confirm(Localization.t('map.confirm.delete_location', loc.name))) {
             this.repository.deleteLocation(this.activeMapId, index);
             return true;
         }
@@ -77,7 +77,7 @@ class MapViewModel {
 
     addCustomType(categoryId, name, icon, color) {
         this.repository.addType(categoryId, name, icon, color);
-        if (typeof showNotification === 'function') showNotification(`Type "${name}" créé`);
+        if (typeof showNotification === 'function') showNotification(Localization.t('map.notify.type_created', name));
         return true;
     }
 
@@ -87,7 +87,7 @@ class MapViewModel {
     }
 
     deleteCustomType(typeId) {
-        if (confirm('Supprimer ce type ? Les lieux l\'utilisant reviendront au type par défaut.')) {
+        if (confirm(Localization.t('map.confirm.delete_type'))) {
             // Optional: iterate all maps and locations to reset typeId if it matches typeId
             this.repository.deleteType(typeId);
             return true;
@@ -139,7 +139,7 @@ class MapViewModel {
     }
 
     createNewMap() {
-        const name = prompt('Nom du plan:', 'Nouveau Plan');
+        const name = prompt(Localization.t('map.prompt.map_name'), Localization.t('map.prompt.new_map'));
         if (name) {
             const map = this.repository.addMap(name);
             this.activeMapId = map.id;
@@ -151,7 +151,7 @@ class MapViewModel {
     renameActiveMap() {
         const currentMap = this.getActiveMap();
         if (!currentMap) return;
-        const newName = prompt('Renommer:', currentMap.name);
+        const newName = prompt(Localization.t('map.prompt.rename'), currentMap.name);
         if (newName && newName !== currentMap.name) {
             this.repository.updateMap(currentMap.id, { name: newName });
             return true;
@@ -162,7 +162,7 @@ class MapViewModel {
     deleteActiveMap() {
         const currentMap = this.getActiveMap();
         if (!currentMap) return false;
-        if (confirm(`Supprimer "${currentMap.name}" ?`)) {
+        if (confirm(Localization.t('map.confirm.delete_map', currentMap.name))) {
             this.repository.deleteMap(currentMap.id);
             this.activeMapId = null;
             return true;

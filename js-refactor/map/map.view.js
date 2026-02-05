@@ -37,9 +37,9 @@ class MapView {
         return `
             <div class="map-empty-state">
                 <div class="map-empty-icon"><i data-lucide="map" style="width: 64px; height: 64px;"></i></div>
-                <h2>Gérez votre univers géographique</h2>
-                <p style="margin-bottom: 2rem; color: var(--text-muted);">Créez des plans pour vos scènes de crime, vos manoirs ou vos mondes fantasy.</p>
-                <button class="btn btn-primary btn-create-map" style="padding: 1rem 2rem;"><i data-lucide="plus"></i> Créer ma première carte</button>
+                <h2>${Localization.t('map.empty.title')}</h2>
+                <p style="margin-bottom: 2rem; color: var(--text-muted);">${Localization.t('map.empty.desc')}</p>
+                <button class="btn btn-primary btn-create-map" style="padding: 1rem 2rem;"><i data-lucide="plus"></i> ${Localization.t('map.btn.create_first')}</button>
             </div>`;
     }
 
@@ -56,11 +56,11 @@ class MapView {
             </div>
 
             <div class="map-toolbar">
-                <button class="btn btn-primary btn-upload-map"><i data-lucide="image"></i> ${hasImage ? 'Changer l\'image' : 'Importer image'}</button>
-                <button class="btn btn-add-location" ${!hasImage ? 'disabled' : ''}><i data-lucide="plus"></i> Marquer un lieu</button>
-                <button class="btn btn-rename-map"><i data-lucide="edit"></i> Renommer</button>
-                <button class="btn btn-config-types"><i data-lucide="settings"></i> Types & Icônes</button>
-                <button class="btn btn-delete-map" style="color: var(--accent-red);"><i data-lucide="trash-2"></i> Supprimer</button>
+                <button class="btn btn-primary btn-upload-map"><i data-lucide="image"></i> ${hasImage ? Localization.t('map.btn.change_image') : Localization.t('map.btn.import_image')}</button>
+                <button class="btn btn-add-location" ${!hasImage ? 'disabled' : ''}><i data-lucide="plus"></i> ${Localization.t('map.btn.mark_location')}</button>
+                <button class="btn btn-rename-map"><i data-lucide="edit"></i> ${Localization.t('map.btn.rename')}</button>
+                <button class="btn btn-config-types"><i data-lucide="settings"></i> ${Localization.t('map.btn.config')}</button>
+                <button class="btn btn-delete-map" style="color: var(--accent-red);"><i data-lucide="trash-2"></i> ${Localization.t('map.btn.delete')}</button>
             </div>
             
             ${hasImage ? `
@@ -71,7 +71,6 @@ class MapView {
             return `
                             <div class="map-marker" 
                                  data-index="${i}"
-                                 data-type="${type.icon}"
                                  style="left: ${loc.x}%; top: ${loc.y}%; background-color: ${type.color};"
                                  title="${loc.name}">
                                 <i data-lucide="${type.icon}"></i>
@@ -80,9 +79,9 @@ class MapView {
         }).join('')}
                 </div>
                 <div class="map-help" style="margin-top: 1.5rem; opacity: 0.6; font-size: 0.8rem;">
-                    Glissez-déposez un marqueur pour le déplacer. Cliquez n'importe où pour ajouter.
+                    ${Localization.t('map.help_text')}
                 </div>
-            ` : `<div class="map-placeholder">Aucune image chargée. <button class="btn btn-upload-map">Charger un plan</button></div>`}
+            ` : `<div class="map-placeholder">${Localization.t('map.no_image')} <button class="btn btn-upload-map">${Localization.t('map.btn.load_plan')}</button></div>`}
         `;
     }
 
@@ -206,11 +205,11 @@ class MapView {
         select.innerHTML = '';
         config.categories.forEach(cat => {
             const group = document.createElement('optgroup');
-            group.label = cat.name;
+            group.label = Localization.t('map.category.' + cat.id) !== ('map.category.' + cat.id) ? Localization.t('map.category.' + cat.id) : cat.name;
             config.types.filter(t => t.categoryId === cat.id).forEach(type => {
                 const opt = document.createElement('option');
                 opt.value = type.id;
-                opt.textContent = type.name;
+                opt.textContent = Localization.t('map.type.' + type.id) !== ('map.type.' + type.id) ? Localization.t('map.type.' + type.id) : type.name;
                 group.appendChild(opt);
             });
             select.appendChild(group);
@@ -258,11 +257,11 @@ class MapView {
 
         saveBtn.onclick = () => {
             if (nameInputActual) data.name = nameInputActual.value.trim();
-            else data.name = prompt("Nom du lieu ?", data.name);
+            else data.name = prompt(Localization.t('modal.location.prompt_name'), data.name);
 
             data.typeId = select.value;
             data.description = descInput.value.trim();
-            if (!data.name) return alert('Nom requis');
+            if (!data.name) return alert(Localization.t('modal.location.error_name'));
             if (this.viewModel.saveLocation(data, index)) { closeModal('locationModal'); this.render(); }
         };
 
@@ -278,7 +277,7 @@ class MapView {
         const listContainer = document.getElementById('mapTypesListContainer');
 
         // Populate Category Select
-        catSelect.innerHTML = config.categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+        catSelect.innerHTML = config.categories.map(c => `<option value="${c.id}">${Localization.t('map.category.' + c.id) !== ('map.category.' + c.id) ? Localization.t('map.category.' + c.id) : c.name}</option>`).join('');
 
         // Populate Icon Grid
         const icons = this.viewModel.getAvailableIcons();
@@ -303,12 +302,12 @@ class MapView {
             if (catTypes.length === 0) return '';
             return `
                 <div style="margin-bottom: 1.5rem;">
-                    <h4 style="font-size: 0.9rem; margin-bottom: 0.5rem; color: var(--text-muted);">${cat.name}</h4>
+                    <h4 style="font-size: 0.9rem; margin-bottom: 0.5rem; color: var(--text-muted);">${Localization.t('map.category.' + cat.id) !== ('map.category.' + cat.id) ? Localization.t('map.category.' + cat.id) : cat.name}</h4>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
                         ${catTypes.map(t => `
                             <div style="display: flex; align-items: center; gap: 0.5rem; background: var(--bg-primary); padding: 0.5rem; border-radius: 4px; border: 1px solid var(--border-color);">
                                 <i data-lucide="${t.icon}" style="width: 14px; color: ${t.color};"></i>
-                                <span style="flex: 1; font-size: 0.85rem;">${t.name}</span>
+                                <span style="flex: 1; font-size: 0.85rem;">${Localization.t('map.type.' + t.id) !== ('map.type.' + t.id) ? Localization.t('map.type.' + t.id) : t.name}</span>
                                 <button class="btn-delete-type" data-id="${t.id}" style="background:transparent; border:none; color: var(--accent-red); cursor:pointer;"><i data-lucide="trash-2" style="width: 12px;"></i></button>
                             </div>
                         `).join('')}
