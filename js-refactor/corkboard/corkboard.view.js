@@ -215,7 +215,7 @@ const CorkBoardView = {
             html += `
                 <div class="kanban-column" style="background: var(--bg-secondary); border-radius: 8px; border: 1px solid var(--border-color); display: flex; flex-direction: column; min-height: 500px;">
                     <div class="kanban-column-header" style="padding: 1rem; border-bottom: 2px solid ${status.color}; display: flex; justify-content: space-between; align-items: center;">
-                        <span style="font-weight: 700; color: var(--text-primary);">${status.label}</span>
+                        <span style="font-weight: 700; color: var(--text-primary);">${Localization.t('corkboard.status.' + status.id)}</span>
                         <span style="background: ${status.color}; color: white; font-size: 0.75rem; padding: 2px 8px; border-radius: 10px;">${statusScenes.length}</span>
                     </div>
                     <div class="kanban-scenes-list" style="padding: 1rem; display: flex; flex-direction: column; gap: 1rem; flex: 1;">

@@ -133,7 +133,7 @@ class PlotView {
                             ${narrative.climaxGood ? '<i data-lucide="check-circle" style="color: #2ecc71;"></i>' : '<i data-lucide="alert-triangle" style="color: #e67e22;"></i>'}
                             <div>
                                 <strong>${Localization.t('plot.analysis.climaxPos')}</strong><br>
-                                ${narrative.climaxGood ? Localization.t('plot.analysis.climaxGood') : Localization.t('plot.analysis.climaxEarly', narrative.climaxPercent)}
+                                ${narrative.climaxGood ? Localization.t('plot.analysis.climaxGood') : Localization.t('plot.analysis.climaxEarly', [narrative.climaxPercent])}
                             </div>
                         </li>
                         <li style="padding: 1rem; border-bottom: 1px solid var(--border-color); display: flex; align-items: start; gap: 1rem;">
@@ -147,7 +147,7 @@ class PlotView {
                             ${!narrative.noPeaks && !narrative.tooManyPeaks ? '<i data-lucide="check-circle" style="color: #2ecc71;"></i>' : '<i data-lucide="alert-triangle" style="color: #e67e22;"></i>'}
                             <div>
                                 <strong>${Localization.t('plot.analysis.rhythmPeaks')}</strong><br>
-                                ${narrative.noPeaks ? Localization.t('plot.analysis.noPeaks') : narrative.tooManyPeaks ? Localization.t('plot.analysis.manyPeaks') : Localization.t('plot.analysis.appropriatePeaks', stats.peaks)}
+                                ${narrative.noPeaks ? Localization.t('plot.analysis.noPeaks') : narrative.tooManyPeaks ? Localization.t('plot.analysis.manyPeaks') : Localization.t('plot.analysis.appropriatePeaks', [stats.peaks])}
                             </div>
                         </li>
                     </ul>
@@ -171,7 +171,7 @@ class PlotView {
                         ${data.flatZonesCount > 0 ? `
                             <div class="suggestion-card" style="background: rgba(230, 126, 34, 0.1); border-left: 4px solid #e67e22; padding: 1rem; margin-bottom: 1rem;">
                                 <strong><i data-lucide="trending-down" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"></i>${Localization.t('plot.suggestions.flatZones')}</strong>
-                                <p>${Localization.t('plot.suggestions.flatZonesDesc', data.flatZonesCount)}</p>
+                                <p>${Localization.t('plot.suggestions.flatZonesDesc', [data.flatZonesCount])}</p>
                             </div>
                         ` : ''}
                         
@@ -298,7 +298,7 @@ class PlotView {
                     <g style="cursor: pointer;" onclick="window.plumePlot.openPoint('${point.actId}', '${point.chapterId}', '${point.sceneId}')" oncontextmenu="event.preventDefault(); window.plumePlot.openPoint('${point.actId}', '${point.chapterId}', '${point.sceneId}')">
                         <circle cx="${x}" cy="${y}" r="12" fill="transparent" />
                         <circle cx="${x}" cy="${y}" r="6" fill="var(--accent-gold)" stroke="white" stroke-width="2" class="plot-point-dot" />
-                        <title>${Localization.t('plot.point.tooltip', point.description, Math.round(point.intensity))}</title>
+                        <title>${Localization.t('plot.point.tooltip', [point.description, Math.round(point.intensity)])}</title>
                     </g>
                 `;
             });

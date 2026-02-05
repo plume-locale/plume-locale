@@ -4,6 +4,7 @@
 class NotesViewModel {
     constructor() {
         this.expandedCategories = new Set(NotesModel.CATEGORY_ORDER);
+        this.currentNoteId = null;
     }
 
     /**
@@ -125,6 +126,7 @@ class NotesViewModel {
      * @param {number} id 
      */
     openDetail(id) {
+        this.currentNoteId = id;
         const note = NotesRepository.getById(id);
         if (!note) return;
 
@@ -145,6 +147,12 @@ class NotesViewModel {
         }
 
         NotesView.renderDetail(note);
+    }
+
+    refreshCurrentDetail() {
+        if (this.currentNoteId) {
+            this.openDetail(this.currentNoteId);
+        }
     }
 
     // View specific triggers

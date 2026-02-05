@@ -274,6 +274,7 @@ function updateSidebarActions(view) {
 // Ensure sidebar actions are updated when locale changes
 window.addEventListener('localeChanged', () => {
     updateSidebarActions(currentView);
+    refreshAllViews();
 });
 
 /**
@@ -399,7 +400,7 @@ function refreshAllViews() {
         case 'analysis': if (typeof renderAnalysis === 'function') renderAnalysis(); break;
         case 'versions': if (typeof renderVersionsList === 'function') renderVersionsList(); break;
         case 'todos': if (typeof renderTodosList === 'function') renderTodosList(); break;
-        case 'corkboard': if (typeof renderCorkBoard === 'function') renderCorkBoard(); break;
+        case 'corkboard': if (typeof openCorkBoardView === 'function') openCorkBoardView(); break;
         case 'mindmap': if (typeof renderMindmapView === 'function') renderMindmapView(); break;
         case 'plot': if (typeof renderPlotView === 'function') renderPlotView(); break;
         case 'relations': if (typeof renderRelationsView === 'function') renderRelationsView(); break;
