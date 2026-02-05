@@ -25,7 +25,7 @@ class StorageViewModel {
         try {
             return await this.repository.saveProject(projectData);
         } catch (error) {
-            this.view.showError('Erreur lors de la sauvegarde. Veuillez exporter votre projet par sécurité.');
+            this.view.showError(Localization.t('storage.error.save'));
             return false;
         }
     }

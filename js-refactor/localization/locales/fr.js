@@ -227,6 +227,7 @@ const LOCALE_FR = {
     "modal.storage.used": "Utilisé",
     "modal.storage.available": "Disponible",
     "modal.storage.sufficient": "Espace suffisant",
+    "storage.error.save": "Erreur lors de la sauvegarde. Veuillez exporter votre projet par sécurité.",
     "modal.project.title": "Nouveau Projet",
     "modal.project.label_name": "Titre du projet",
     "modal.project.label_desc": "Description (optionnel)",
