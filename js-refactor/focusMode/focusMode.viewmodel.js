@@ -126,7 +126,7 @@ const FocusModeViewModel = {
         this.playNotificationSound();
 
         // Alert user
-        alert('Pomodoro terminé ! Temps de faire une pause de 5 minutes.');
+        alert(Localization.t('focus.pomodoro.completed_alert'));
 
         // Reset for next session
         FocusModeModel.pomodoro.time = 25 * 60;

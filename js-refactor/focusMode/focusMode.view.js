@@ -105,9 +105,12 @@ const FocusModeView = {
             progressFill.style.width = data.progressPercent + '%';
         }
 
-        const positionIndicator = document.getElementById('positionIndicator');
         if (positionIndicator) {
-            positionIndicator.textContent = `Mot ${data.currentWords.toLocaleString()} • Total: ${data.totalProjectWords.toLocaleString()} / ${data.projectWordGoal.toLocaleString()}`;
+            positionIndicator.textContent = Localization.t('focus.stats.position_indicator', [
+                data.currentWords.toLocaleString(),
+                data.totalProjectWords.toLocaleString(),
+                data.projectWordGoal.toLocaleString()
+            ]);
         }
     },
 

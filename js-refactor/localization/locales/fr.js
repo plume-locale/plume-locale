@@ -324,6 +324,8 @@ const LOCALE_FR = {
     "focus.stats.words": "Mots",
     "focus.option.toolbar": "Masquer la barre d'outils",
     "focus.option.links": "Masquer le panneau de liens",
+    "focus.pomodoro.completed_alert": "Pomodoro terminé ! Temps de faire une pause de 5 minutes.",
+    "focus.stats.position_indicator": "Mot {0} • Total : {1} / {2}",
 
     // --- Theme Manager ---
     "theme.modal.title": "Gestion des Thèmes",

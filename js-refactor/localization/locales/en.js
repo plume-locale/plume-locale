@@ -324,6 +324,8 @@ const LOCALE_EN = {
     "focus.stats.words": "Words",
     "focus.option.toolbar": "Hide Toolbar",
     "focus.option.links": "Hide Link Panel",
+    "focus.pomodoro.completed_alert": "Pomodoro completed! Time for a 5-minute break.",
+    "focus.stats.position_indicator": "Word {0} • Total: {1} / {2}",
 
     // --- Theme Manager ---
     "theme.modal.title": "Theme Manager",
