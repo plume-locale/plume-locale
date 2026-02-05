@@ -25,18 +25,18 @@ const CorkBoardView = {
         container.innerHTML = `
             <div style="padding: 1.5rem;">
                 <div style="margin-bottom: 1.5rem;">
-                    <h3 style="margin-bottom: 0.5rem;"><i data-lucide="layout-grid" style="width:18px;height:18px;vertical-align:middle;margin-right:6px;"></i>Tableau Cork Board</h3>
+                    <h3 style="margin-bottom: 0.5rem;"><i data-lucide="layout-grid" style="width:18px;height:18px;vertical-align:middle;margin-right:6px;"></i>${Localization.t('corkboard.sidebar.title')}</h3>
                     <p style="font-size: 0.85rem; color: var(--text-muted);">
-                        Organisez vos scènes visuellement
+                        ${Localization.t('corkboard.sidebar.desc')}
                     </p>
                 </div>
                 
                 <div style="margin-bottom: 1rem;">
                     <label style="font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 0.5rem;">
-                        Filtrer par acte :
+                        ${Localization.t('corkboard.filter.act')}
                     </label>
                     <select id="corkActFilter" class="form-input" onchange="CorkBoardHandlers.onActFilterChange(this.value)">
-                        <option value="all" ${filter.type === 'all' ? 'selected' : ''}>Tous les actes</option>
+                        <option value="all" ${filter.type === 'all' ? 'selected' : ''}>${Localization.t('corkboard.filter.act_all')}</option>
                         ${project.acts.map(act =>
             `<option value="${act.id}" ${filter.actId == act.id ? 'selected' : ''}>${act.title}</option>`
         ).join('')}
@@ -46,17 +46,17 @@ const CorkBoardView = {
                 ${filter.actId ? `
                     <div style="margin-bottom: 1rem;">
                         <label style="font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 0.5rem;">
-                            Filtrer par chapitre :
+                            ${Localization.t('corkboard.filter.chapter')}
                         </label>
                         <select id="corkChapterFilter" class="form-input" onchange="CorkBoardHandlers.onChapterFilterChange(this.value)">
-                            <option value="all">Tous les chapitres de cet acte</option>
+                            <option value="all">${Localization.t('corkboard.filter.chapter_all')}</option>
                             ${chaptersOptions}
                         </select>
                     </div>
                 ` : ''}
                 
                 <button class="btn btn-primary" style="width: 100%;" onclick="CorkBoardHandlers.onOpenFullView()">
-                    Ouvrir le tableau
+                    ${Localization.t('corkboard.btn.open')}
                 </button>
             </div>
         `;
@@ -91,14 +91,14 @@ const CorkBoardView = {
         return `
             <div class="cork-board-container">
                 <div class="cork-board-header">
-                    <div class="cork-board-title"><i data-lucide="layout-grid" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;"></i>Cork Board</div>
-                    <button class="btn btn-primary" onclick="CorkBoardHandlers.onClose()">← Retour</button>
+                    <div class="cork-board-title"><i data-lucide="layout-grid" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;"></i>${Localization.t('nav.corkboard')}</div>
+                    <button class="btn btn-primary" onclick="CorkBoardHandlers.onClose()">← ${Localization.t('btn.close')}</button>
                 </div>
                 <div class="cork-board-empty">
                     <div class="cork-board-empty-icon"><i data-lucide="layout-grid" style="width:48px;height:48px;"></i></div>
-                    <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">Aucun chapitre</div>
-                    <div style="margin-bottom: 1rem;">Créez votre premier chapitre pour commencer à structurer votre histoire</div>
-                    <button class="btn btn-primary" onclick="openAddChapterModal()">+ Créer un chapitre</button>
+                    <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">${Localization.t('corkboard.empty.title')}</div>
+                    <div style="margin-bottom: 1rem;">${Localization.t('corkboard.empty.desc')}</div>
+                    <button class="btn btn-primary" onclick="openAddChapterModal()">${Localization.t('corkboard.empty.btn')}</button>
                 </div>
             </div>
         `;
@@ -129,9 +129,9 @@ const CorkBoardView = {
                         <button class="structured-collapse-btn" onclick="CorkBoardHandlers.onToggleAct(${act.id})">
                             <span class="collapse-icon" id="collapse-icon-${act.id}"><i data-lucide="chevron-down" style="width:16px;height:16px;"></i></span>
                         </button>
-                        <span class="structured-act-title">${act.title}</span>
-                        <button class="btn btn-primary" onclick="CorkBoardHandlers.onCreateChapter(${act.id})">+ Nouveau Chapitre</button>
-                        <span class="structured-count">${act.chapters.length} chapitre${act.chapters.length > 1 ? 's' : ''}</span>
+                         <span class="structured-act-title">${act.title}</span>
+                        <button class="btn btn-primary" onclick="CorkBoardHandlers.onCreateChapter(${act.id})">${Localization.t('corkboard.btn.new_chapter')}</button>
+                        <span class="structured-count">${act.chapters.length} ${act.chapters.length > 1 ? Localization.t('corkboard.count.chapters') : Localization.t('corkboard.count.chapter')}</span>
                     </div>
                     
                     <div class="structured-chapters-grid" id="act-content-${act.id}">
@@ -161,7 +161,7 @@ const CorkBoardView = {
                 // Bouton + Nouvelle Scène
                 html += `
                             <button class="structured-add-scene-btn" onclick="CorkBoardHandlers.onCreateScene(${act.id}, ${chapter.id})">
-                                <span style="font-size: 1.2rem;">+</span> Nouvelle Scène
+                                <span style="font-size: 1.2rem;">+</span> ${Localization.t('corkboard.btn.new_scene')}
                             </button>
                         </div>
                     </div>
@@ -172,7 +172,7 @@ const CorkBoardView = {
             if (act.chapters.length === 0) {
                 html += `
                     <div style="padding: 2rem; text-align: center; color: var(--text-muted); opacity: 0.7; font-style: italic;">
-                        Cet acte est vide. Cliquez sur "+ Nouveau Chapitre" pour commencer.
+                        ${Localization.t('corkboard.act.empty')}
                     </div>
                 `;
             }
@@ -186,8 +186,8 @@ const CorkBoardView = {
         html += `
                 </div>
                 
-                <div class="structured-bottom-actions">
-                    <button class="btn btn-primary" onclick="CorkBoardHandlers.onCreateAct()">+ Ajouter un Acte</button>
+                 <div class="structured-bottom-actions">
+                    <button class="btn btn-primary" onclick="CorkBoardHandlers.onCreateAct()">${Localization.t('corkboard.btn.add_act')}</button>
                 </div>
             </div>
         `;
@@ -228,7 +228,7 @@ const CorkBoardView = {
             if (statusScenes.length === 0) {
                 html += `
                     <div style="padding: 2rem; text-align: center; color: var(--text-muted); font-size: 0.8rem; font-style: italic;">
-                        Aucune scène
+                        ${Localization.t('corkboard.kanban.empty')}
                     </div>
                 `;
             }
@@ -255,7 +255,7 @@ const CorkBoardView = {
     renderHeader(currentMode) {
         const isStructured = currentMode === 'structured';
         const titleIcon = isStructured ? 'list' : 'columns';
-        const titleText = isStructured ? 'Vue Structure' : 'Vue Kanban';
+        const titleText = isStructured ? Localization.t('corkboard.header.structured') : Localization.t('corkboard.header.kanban');
 
         return `
             <div class="cork-board-header" style="margin-bottom: 2rem;">
@@ -264,8 +264,8 @@ const CorkBoardView = {
                 </div>
 
                 <div style="display: flex; background: var(--bg-secondary); padding: 4px; border-radius: 8px;">
-                    <button class="btn ${isStructured ? 'btn-primary' : 'btn-small'}" onclick="CorkBoardHandlers.onSwitchMode('structured')">Structure</button>
-                    <button class="btn ${!isStructured ? 'btn-primary' : 'btn-small'}" onclick="CorkBoardHandlers.onSwitchMode('kanban')">Kanban</button>
+                    <button class="btn ${isStructured ? 'btn-primary' : 'btn-small'}" onclick="CorkBoardHandlers.onSwitchMode('structured')">${Localization.t('corkboard.mode.structured')}</button>
+                    <button class="btn ${!isStructured ? 'btn-primary' : 'btn-small'}" onclick="CorkBoardHandlers.onSwitchMode('kanban')">${Localization.t('corkboard.mode.kanban')}</button>
                 </div>
                 
                 <div style="display: flex; align-items: center; gap: 1rem; margin-left: auto; ${isStructured ? '' : 'visibility: hidden;'}">
@@ -278,7 +278,7 @@ const CorkBoardView = {
                                step="10"
                                style="width: 120px; cursor: pointer;"
                                oninput="CorkBoardHandlers.onUpdateGridSize(this.value)"
-                               title="Ajuster la largeur des colonnes">
+                               title="${Localization.t('corkboard.header.grid_size')}">
                     </label>
                 </div>
             </div>
@@ -308,9 +308,9 @@ const CorkBoardView = {
                      style="background: var(--bg-primary); border-radius: 6px; box-shadow: 0 2px 4px var(--shadow);">
                     <div style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.25rem;">${scene.actTitle} > ${scene.chapterTitle}</div>
                     <div style="font-weight: 600; font-size: 0.9rem; margin-bottom: 0.5rem;">${scene.title}</div>
-                    ${synopsis ? `<div style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">${synopsis}</div>` : ''}
+                     ${synopsis ? `<div style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">${synopsis}</div>` : ''}
                     <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.5rem; display: flex; justify-content: space-between;">
-                        <span>${wordCount} mots</span>
+                        <span>${Localization.t('corkboard.scene.word_count', wordCount)}</span>
                     </div>
                 </div>
             `;
@@ -329,14 +329,14 @@ const CorkBoardView = {
                     <span class="structured-scene-title">${scene.title}</span>
                 </div>
                 
-                <div class="structured-scene-synopsis" 
+                 <div class="structured-scene-synopsis" 
                      contenteditable="true"
                      onclick="event.stopPropagation()"
                      onblur="CorkBoardHandlers.onUpdateSynopsis(${scene.actId}, ${scene.chapterId}, ${scene.id}, this.innerText)"
-                     data-placeholder="Ajouter un résumé...">${synopsis}</div>
+                     data-placeholder="${Localization.t('corkboard.scene.synopsis_placeholder')}">${synopsis}</div>
                 
                 <div class="structured-scene-meta" style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">
-                    ${wordCount} mots
+                    ${Localization.t('corkboard.scene.word_count', wordCount)}
                 </div>
             </div>
         `;

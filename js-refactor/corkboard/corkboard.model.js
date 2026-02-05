@@ -46,10 +46,10 @@ const CorkBoardModel = {
      * Statuts Kanban disponibles
      */
     KANBAN_STATUSES: [
-        { id: 'draft', label: 'Brouillon', color: 'var(--accent-red)' },
-        { id: 'progress', label: 'En cours', color: 'var(--accent-gold)' },
-        { id: 'complete', label: 'Terminé', color: 'var(--accent-green)' },
-        { id: 'review', label: 'À réviser', color: 'var(--accent-blue)' }
+        { id: 'draft', label: Localization.t('corkboard.status.draft'), color: 'var(--accent-red)' },
+        { id: 'progress', label: Localization.t('corkboard.status.progress'), color: 'var(--accent-gold)' },
+        { id: 'complete', label: Localization.t('corkboard.status.complete'), color: 'var(--accent-green)' },
+        { id: 'review', label: Localization.t('corkboard.status.review'), color: 'var(--accent-blue)' }
     ],
 
     /**

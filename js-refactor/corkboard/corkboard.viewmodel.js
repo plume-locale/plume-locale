@@ -140,22 +140,22 @@ const CorkBoardViewModel = {
         if (draggedChapterId !== targetChapterId) {
             return {
                 success: false,
-                message: 'Vous ne pouvez déplacer des scènes que dans le même chapitre.\n\nPour déplacer entre chapitres, utilisez la vue Structure (sidebar).'
+                message: Localization.t('corkboard.error.reorder_chapter')
             };
         }
 
         // Trouver les index
         const act = CorkBoardRepository.getActById(draggedActId, project);
-        if (!act) return { success: false, message: 'Acte introuvable' };
+        if (!act) return { success: false, message: Localization.t('corkboard.error.not_found.act') };
 
         const chapter = CorkBoardRepository.getChapterById(draggedChapterId, act);
-        if (!chapter) return { success: false, message: 'Chapitre introuvable' };
+        if (!chapter) return { success: false, message: Localization.t('corkboard.error.not_found.chapter') };
 
         const draggedSceneIndex = chapter.scenes.findIndex(s => s.id === draggedSceneId);
         const targetSceneIndex = chapter.scenes.findIndex(s => s.id === targetSceneId);
 
         if (draggedSceneIndex === -1 || targetSceneIndex === -1) {
-            return { success: false, message: 'Scène introuvable' };
+            return { success: false, message: Localization.t('corkboard.error.not_found.scene') };
         }
 
         // Réorganiser
@@ -166,10 +166,10 @@ const CorkBoardViewModel = {
         if (success) {
             if (typeof saveProject === 'function') saveProject();
             if (typeof renderActsList === 'function') renderActsList();
-            return { success: true, message: '✓ Scènes réorganisées' };
+            return { success: true, message: Localization.t('corkboard.notification.reorder_success') };
         }
 
-        return { success: false, message: 'Erreur lors de la réorganisation' };
+        return { success: false, message: Localization.t('corkboard.error.reorder_failed') };
     },
 
     /**
@@ -179,7 +179,7 @@ const CorkBoardViewModel = {
      */
     createAct(title) {
         if (!title || title.trim() === '') {
-            return { success: false, act: null, message: 'Le titre ne peut pas être vide' };
+            return { success: false, act: null, message: Localization.t('corkboard.error.empty_title') };
         }
 
         const newAct = CorkBoardRepository.createAct(title, project);
@@ -187,10 +187,10 @@ const CorkBoardViewModel = {
         if (newAct) {
             if (typeof saveProject === 'function') saveProject();
             if (typeof renderActsList === 'function') renderActsList();
-            return { success: true, act: newAct, message: `✓ Acte "${title}" créé` };
+            return { success: true, act: newAct, message: Localization.t('corkboard.notification.act_created', title) };
         }
 
-        return { success: false, act: null, message: 'Erreur lors de la création de l\'acte' };
+        return { success: false, act: null, message: Localization.t('corkboard.error.create.act') };
     },
 
     /**
@@ -201,7 +201,7 @@ const CorkBoardViewModel = {
      */
     createChapter(actId, title) {
         if (!title || title.trim() === '') {
-            return { success: false, chapter: null, message: 'Le titre ne peut pas être vide' };
+            return { success: false, chapter: null, message: Localization.t('corkboard.error.empty_title') };
         }
 
         const newChapter = CorkBoardRepository.createChapter(actId, title, project);
@@ -209,10 +209,10 @@ const CorkBoardViewModel = {
         if (newChapter) {
             if (typeof saveProject === 'function') saveProject();
             if (typeof renderActsList === 'function') renderActsList();
-            return { success: true, chapter: newChapter, message: `✓ Chapitre "${title}" créé` };
+            return { success: true, chapter: newChapter, message: Localization.t('corkboard.notification.chapter_created', title) };
         }
 
-        return { success: false, chapter: null, message: 'Erreur lors de la création du chapitre' };
+        return { success: false, chapter: null, message: Localization.t('corkboard.error.create.chapter') };
     },
 
     /**
@@ -224,7 +224,7 @@ const CorkBoardViewModel = {
      */
     createScene(actId, chapterId, title) {
         if (!title || title.trim() === '') {
-            return { success: false, scene: null, message: 'Le titre ne peut pas être vide' };
+            return { success: false, scene: null, message: Localization.t('corkboard.error.empty_title') };
         }
 
         const newScene = CorkBoardRepository.createScene(actId, chapterId, title, project);
@@ -232,10 +232,10 @@ const CorkBoardViewModel = {
         if (newScene) {
             if (typeof saveProject === 'function') saveProject();
             if (typeof renderActsList === 'function') renderActsList();
-            return { success: true, scene: newScene, message: `✓ Scène "${title}" créée` };
+            return { success: true, scene: newScene, message: Localization.t('corkboard.notification.scene_created', title) };
         }
 
-        return { success: false, scene: null, message: 'Erreur lors de la création de la scène' };
+        return { success: false, scene: null, message: Localization.t('corkboard.error.create.scene') };
     },
 
     /**

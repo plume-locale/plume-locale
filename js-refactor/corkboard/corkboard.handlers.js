@@ -119,7 +119,7 @@ const CorkBoardHandlers = {
      * Gestionnaire: Création d'un nouvel acte
      */
     onCreateAct() {
-        const actTitle = prompt('Nom du nouvel acte:', `Acte ${project.acts.length + 1}`);
+        const actTitle = prompt(Localization.t('corkboard.prompt.act_title'), `Acte ${project.acts.length + 1}`);
         if (!actTitle || actTitle.trim() === '') return;
 
         const result = CorkBoardViewModel.createAct(actTitle);
@@ -139,7 +139,7 @@ const CorkBoardHandlers = {
         const act = CorkBoardRepository.getActById(actId, project);
         if (!act) return;
 
-        const chapterTitle = prompt('Nom du nouveau chapitre:', `Chapitre ${act.chapters.length + 1}`);
+        const chapterTitle = prompt(Localization.t('corkboard.prompt.chapter_title'), `Chapitre ${act.chapters.length + 1}`);
         if (!chapterTitle || chapterTitle.trim() === '') return;
 
         const result = CorkBoardViewModel.createChapter(actId, chapterTitle);
@@ -163,7 +163,7 @@ const CorkBoardHandlers = {
         const chapter = CorkBoardRepository.getChapterById(chapterId, act);
         if (!chapter) return;
 
-        const sceneTitle = prompt('Nom de la nouvelle scène:', `Scène ${chapter.scenes.length + 1}`);
+        const sceneTitle = prompt(Localization.t('corkboard.prompt.scene_title'), `Scène ${chapter.scenes.length + 1}`);
         if (!sceneTitle || sceneTitle.trim() === '') return;
 
         const result = CorkBoardViewModel.createScene(actId, chapterId, sceneTitle);
