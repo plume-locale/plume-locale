@@ -1659,4 +1659,49 @@ const LOCALE_FR = {
     "stats.by_act": "Répartition par acte",
     "stats.history_7days": "Historique (7 jours)",
     "stats.history_label": "{0}",
+
+    // --- Tension ---
+    "tension.tooltip.remove": "Supprimer ce mot",
+    "tension.modal.import_title": "📥 Import en masse - {0}",
+    "tension.modal.import_default": "Import en masse",
+    "tension.meter.title": "Tension dramatique en temps réel",
+    "tension.tooltip.direct_tension": "Tension Directe",
+    "tension.tooltip.intensity_index": "Indice d'intensité",
+    "tension.tooltip.strong_keywords": "Mots-clés forts",
+    "tension.tooltip.moderate_keywords": "Mots-clés modérés",
+    "tension.tooltip.analysis_note": "Analyse la scène active (sous le curseur ou visible à l'écran).",
+    "tension.notification.saved": "✓ Mots de tension enregistrés. Le graphique sera recalculé lors de la prochaine visualisation.",
+    "tension.confirm.reset": "Êtes-vous sûr de vouloir réinitialiser tous les mots de tension aux valeurs par défaut ? Cette action est irréversible.",
+    "tension.notification.exported": "✓ Dictionnaires exportés avec succès",
+    "tension.notification.read_error": "❌ Erreur lors de la lecture du fichier",
+    "tension.notification.empty_input": "⚠️ Veuillez coller du texte ou sélectionner un fichier",
+    "tension.alert.enter_word": "⚠️ Veuillez entrer un mot",
+    "tension.alert.word_exists_category": "⚠️ Ce mot existe déjà dans cette catégorie",
+    "tension.alert.word_exists_other": "⚠️ Ce mot existe déjà dans la catégorie \"{0}\"",
+    "tension.category.high": "haute tension",
+    "tension.category.medium": "moyenne tension",
+    "tension.category.low": "faible tension",
+    "tension.notification.word_added": "✓ Mot \"{0}\" ajouté",
+    "tension.alert.word_not_found": "Erreur: Mot introuvable",
+    "tension.notification.word_removed": "✓ Mot \"{0}\" supprimé",
+    "tension.notification.reset_success": "✓ Mots de tension réinitialisés aux valeurs par défaut",
+    "tension.export.title": "=== DICTIONNAIRES DE MOTS DE TENSION ===",
+    "tension.export.exported_on": "Exporté le {0}",
+    "tension.export.section_high": "=== HAUTE TENSION ({0} mots) ===",
+    "tension.export.section_medium": "=== TENSION MOYENNE ({0} mots) ===",
+    "tension.export.section_low": "=== FAIBLE TENSION ({0} mots) ===",
+    "tension.notification.no_valid_words": "⚠️ Aucun mot valide trouvé",
+    "tension.notification.import_replaced": "✓ {0} mots importés (remplacement)",
+    "tension.notification.import_added": "✓ {0} mot(s) ajouté(s)",
+    "tension.notification.import_ignored": " ({0} doublon(s) ignoré(s))",
+    "tension.notification.all_duplicates": "⚠️ Tous les mots existent déjà ({0} doublon(s))",
+    "tension.defaults.high": [
+        "assaillir", "étrangler", "bondir", "s'abattre", "déchiqueter", "hurler", "s'acharner", "se précipiter", "dévorer", "foudroyer", "s'écrouler", "sombrer", "désintégrer", "calciner", "carboniser", "massacrer", "supplicier", "tourmenter", "agoniser", "périr", "maudire", "jurer", "s'indigner", "déchaîner", "s'enflammer", "saigner", "cracher", "vomir", "suffoquer", "étouffer", "se cabrer", "s'insurger", "fracasser", "broyer", "déchiffrer", "s'alarmer", "s'épouvanter", "exploser", "anéantir", "s'effondrer", "fuir", "percuter", "détruire", "saccager", "s'enfuir", "combattre", "tirer", "poignarder", "déchirer", "marteler", "vibrer", "tremblement", "secouer", "s'envoler", "dérober", "usurper", "menacer", "envahir", "dévaster", "violer", "abuser", "terrasser", "décapiter", "immoler", "s'évanouir", "convulser", "défaillir", "apocalypse", "chaos", "désolation", "bourrasque", "éruption", "cataclysme", "tremblement de terre", "tornade", "foudre", "déluge", "carnage", "boucherie", "supplice", "exécution", "torture", "géhenne", "damnation", "enfer", "fureur", "hystérie", "démence", "folie", "rage", "haine", "vengeance", "trahison", "complot", "assassin", "victime", "prédateur", "bête", "monstre", "cauchemar", "abîme", "gouffre", "précipice", "guerre", "bataille", "siège", "escarmouche", "fusillade", "alarme", "urgence", "détresse", "crise", "panique", "explosion", "horreur", "désastre", "massacre", "terreur", "sang", "catastrophe", "effroi", "révolte", "insoumission", "émeute", "incendie", "étincelle", "flamme", "poison", "venin", "malédiction", "désespoir", "angoisse", "fulgurant", "dément", "sauvage", "brutal", "acharné", "vicieux", "impitoyable", "infernal", "apocalyptique", "sanglant", "écorché", "déchirant", "hurlant", "terrifiant", "désarmé", "critique", "dramatique", "vital", "absolument", "férocement", "brutalement", "violemment", "soudain", "subitement", "mortel", "imminent", "cruellement", "maintenant", "immédiatement", "à la gorge", "au bord", "vivement", "fébrilement", "frénétiquement"
+    ],
+    "tension.defaults.medium": [
+        "examiner", "sonder", "décrypter", "espionner", "filtrer", "soupeser", "confronter", "interroger", "dissimuler", "feindre", "biaiser", "tergiverser", "se méfier", "douter", "soupçonner", "pressentir", "s'interroger", "spéculer", "conjecturer", "anticiper", "presser", "enjoindre", "négocier", "marchander", "temporiser", "élaborer", "manigancer", "s'éloigner", "se rapprocher", "guetter", "rôder", "observer", "scruter", "attendre", "chercher", "suspecter", "se préparer", "comprendre", "hésiter", "progresser", "surveiller", "deviner", "chuchoter", "révéler", "retenir", "s'engager", "promettre", "découvrir", "s'aventurer", "traverser", "s'échapper", "ignorer", "mentir", "énigme", "indice", "piste", "alibi", "mobile", "leurre", "tromperie", "mystification", "ambiguïté", "dissonance", "malaise", "incertitude", "dilemme", "pacte", "accord", "chantage", "rançon", "filature", "écoute", "surveillance", "secret", "ombre", "soupçon", "murmure", "silhouette", "piège", "obstacle", "pression", "mystère", "menace", "doute", "réticence", "arrière-pensée", "préméditation", "allée", "couloir", "fenêtre", "porte", "chemin", "lueur", "miroir", "reflet", "rumeur", "confession", "aveu", "attente", "prémonition", "douteux", "louche", "ambigu", "sibyllin", "étrange", "suspect", "dissimulé", "voilé", "latent", "sournois", "menaçant", "précaire", "délicat", "tendu", "anxieux", "furtif", "discret", "lentement", "prudemment", "bizarrement", "peut-être", "possiblement", "cependant", "toutefois", "néanmoins", "malgré", "si", "étrangement", "secrètement", "inconnu", "probable", "vaguement", "incertain", "silencieusement", "chaleureusement", "prochainement", "longuement"
+    ],
+    "tension.defaults.low": [
+        "se promener", "flâner", "bavarder", "contempler", "s'allonger", "s'assoupir", "paresser", "s'ennuyer", "divaguer", "réfléchir", "méditer", "se rappeler", "apprendre", "étudier", "jardiner", "cuisiner", "écrire", "lire", "nettoyer", "ranger", "exister", "demeurer", "être", "sembler", "marcher", "penser", "se souvenir", "décrire", "s'asseoir", "dire", "déjeuner", "dormir", "expliquer", "noter", "résumer", "classer", "comparer", "détailler", "déduire", "affirmer", "convenir", "observer", "sentir", "goûter", "quotidien", "routine", "confort", "aise", "sérénité", "ennui", "réflexion", "souvenir", "théorie", "hypothèse", "concept", "bureau", "cuisine", "jardin", "cheminée", "oreiller", "fauteuil", "tasse", "journal", "livre", "stylo", "tableau", "nuage", "vent", "rivière", "colline", "champ", "saison", "heure", "minute", "jour", "semaine", "idée", "opinion", "justice", "temps", "matin", "maison", "rue", "arbre", "chaise", "normalité", "banalité", "platitude", "discussion", "dialogue", "introduction", "contexte", "généralité", "calme", "serein", "habituel", "confortable", "banal", "ordinaire", "insignifiant", "placide", "indolent", "théorique", "général", "simple", "évident", "raisonnable", "aisément", "tranquillement", "douceur", "naturellement", "régulièrement", "fréquemment", "souvent", "puis", "ensuite", "d'abord", "par ailleurs", "aussi", "en fait", "en général", "normalement", "bleu", "honnête", "long", "lent", "simplement", "paisiblement", "assurément", "collectivement"
+    ]
 };

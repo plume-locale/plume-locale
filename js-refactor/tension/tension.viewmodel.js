@@ -14,21 +14,23 @@ const TensionViewModel = {
         const word = rawWord.trim().toLowerCase();
 
         if (!word) {
-            return { success: false, message: '⚠️ Veuillez entrer un mot' };
+            return { success: false, message: Localization.t('tension.alert.enter_word') };
         }
 
         const words = TensionRepository.getTensionWords();
 
         // Vérifier si le mot existe déjà dans la catégorie
         if (words[type].includes(word)) {
-            return { success: false, message: '⚠️ Ce mot existe déjà dans cette catégorie' };
+            return { success: false, message: Localization.t('tension.alert.word_exists_category') };
         }
 
         // Vérifier si le mot existe dans une autre catégorie
+        // Vérifier si le mot existe dans une autre catégorie
         for (const category in words) {
             if (category !== type && words[category].includes(word)) {
-                const categoryName = category === 'high' ? 'haute' : category === 'medium' ? 'moyenne' : 'faible';
-                return { success: false, message: `⚠️ Ce mot existe déjà dans la catégorie "${categoryName} tension"` };
+                // category is 'high', 'medium', 'low'
+                const categoryName = Localization.t('tension.category.' + category);
+                return { success: false, message: Localization.t('tension.alert.word_exists_other', categoryName) };
             }
         }
 
@@ -36,7 +38,7 @@ const TensionViewModel = {
         words[type].push(word);
         TensionRepository.saveTensionWords(words);
 
-        return { success: true, message: `✓ Mot "${word}" ajouté` };
+        return { success: true, message: Localization.t('tension.notification.word_added', word) };
     },
 
     /**
@@ -48,14 +50,14 @@ const TensionViewModel = {
     removeWord: function (type, index) {
         const words = TensionRepository.getTensionWords();
         if (!words[type] || !words[type][index]) {
-            return { success: false, message: 'Erreur: Mot introuvable' };
+            return { success: false, message: Localization.t('tension.alert.word_not_found') };
         }
 
         const removedWord = words[type][index];
         words[type].splice(index, 1);
         TensionRepository.saveTensionWords(words);
 
-        return { success: true, message: `✓ Mot "${removedWord}" supprimé` };
+        return { success: true, message: Localization.t('tension.notification.word_removed', removedWord) };
     },
 
     /**
@@ -63,7 +65,7 @@ const TensionViewModel = {
      */
     resetToDefault: function () {
         TensionRepository.saveTensionWords(TensionModel.DEFAULT_TENSION_WORDS);
-        return { success: true, message: '✓ Mots de tension réinitialisés aux valeurs par défaut' };
+        return { success: true, message: Localization.t('tension.notification.reset_success') };
     },
 
     /**
@@ -75,16 +77,16 @@ const TensionViewModel = {
         const mediumWords = words.medium.join('\n');
         const lowWords = words.low.join('\n');
 
-        const content = `=== DICTIONNAIRES DE MOTS DE TENSION ===
-Exporté le ${new Date().toLocaleString('fr-FR')}
+        const content = `${Localization.t('tension.export.title')}
+${Localization.t('tension.export.exported_on', new Date().toLocaleString())}
 
-=== HAUTE TENSION (${words.high.length} mots) ===
+${Localization.t('tension.export.section_high', words.high.length)}
 ${highWords}
 
-=== TENSION MOYENNE (${words.medium.length} mots) ===
+${Localization.t('tension.export.section_medium', words.medium.length)}
 ${mediumWords}
 
-=== FAIBLE TENSION (${words.low.length} mots) ===
+${Localization.t('tension.export.section_low', words.low.length)}
 ${lowWords}
 `;
         const filename = `dictionnaires-tension-${new Date().toISOString().slice(0, 10)}.txt`;
@@ -117,7 +119,7 @@ ${lowWords}
         words = [...new Set(words)];
 
         if (words.length === 0) {
-            return { success: false, message: '⚠️ Aucun mot valide trouvé' };
+            return { success: false, message: Localization.t('tension.notification.no_valid_words') };
         }
 
         const tensionWords = TensionRepository.getTensionWords();
@@ -125,7 +127,7 @@ ${lowWords}
         if (mode === 'replace') {
             tensionWords[type] = words;
             TensionRepository.saveTensionWords(tensionWords);
-            return { success: true, message: `✓ ${words.length} mots importés (remplacement)` };
+            return { success: true, message: Localization.t('tension.notification.import_replaced', words.length) };
         } else {
             const existingWords = new Set(tensionWords[type]);
             let addedCount = 0;
@@ -141,9 +143,13 @@ ${lowWords}
 
             const skippedCount = words.length - addedCount;
             if (addedCount > 0) {
-                return { success: true, message: `✓ ${addedCount} mot(s) ajouté(s)${skippedCount > 0 ? ` (${skippedCount} doublon(s) ignoré(s))` : ''}` };
+                let msg = Localization.t('tension.notification.import_added', addedCount);
+                if (skippedCount > 0) {
+                    msg += Localization.t('tension.notification.import_ignored', skippedCount);
+                }
+                return { success: true, message: msg };
             } else {
-                return { success: false, message: `⚠️ Tous les mots existent déjà (${skippedCount} doublon(s))` };
+                return { success: false, message: Localization.t('tension.notification.all_duplicates', skippedCount) };
             }
         }
     },

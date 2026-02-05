@@ -12,6 +12,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (document.querySelector('.editor-textarea') || document.getElementById('app')) {
         TensionView.injectTensionMeter();
     }
+
+    // S'abonner aux changements de langue
+    if (typeof Localization !== 'undefined' && typeof Localization.subscribe === 'function') {
+        Localization.subscribe('tension', () => {
+            if (typeof TensionView !== 'undefined' && typeof TensionView.render === 'function') {
+                TensionView.render();
+            }
+        });
+    }
 });
 
 // --- EXPOSITION GLOBALE POUR COMPATIBILITÉ ---

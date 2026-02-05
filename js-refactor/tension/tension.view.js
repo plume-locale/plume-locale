@@ -56,7 +56,7 @@ const TensionView = {
                 <button onclick="TensionHandlers.onRemoveWord('${type}', ${index})" 
                         style="background: none; border: none; color: ${colors[type]}; cursor: pointer; font-size: 1rem; padding: 0 0.25rem; opacity: 0.7; transition: opacity 0.2s;"
                         onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'"
-                        title="Supprimer ce mot">
+                        title="${Localization.t('tension.tooltip.remove')}">
                     ×
                 </button>
             </div>
@@ -78,13 +78,15 @@ const TensionView = {
      * Ouvre le modal d'import en masse.
      */
     openBulkImport: function (type) {
+        const titleKey = type === 'high' ? 'High' : (type === 'medium' ? 'Medium' : 'Low'); // This logic was implicit in map, but map had French.
+        // Better: use the map but with translated values
         const titles = {
-            high: '📥 Import en masse - Haute tension',
-            medium: '📥 Import en masse - Tension moyenne',
-            low: '📥 Import en masse - Faible tension'
+            high: Localization.t('tension.modal.import_title', Localization.t('tension.category.high')),
+            medium: Localization.t('tension.modal.import_title', Localization.t('tension.category.medium')),
+            low: Localization.t('tension.modal.import_title', Localization.t('tension.category.low'))
         };
 
-        document.getElementById('bulkImportTitle').textContent = titles[type] || 'Import en masse';
+        document.getElementById('bulkImportTitle').textContent = titles[type] || Localization.t('tension.modal.import_default');
         document.getElementById('bulkImportText').value = '';
         document.getElementById('bulkImportFile').value = '';
 
@@ -114,7 +116,7 @@ const TensionView = {
         const div = document.createElement('div');
         div.id = 'liveTensionMeter';
         div.className = 'tension-meter-container';
-        div.setAttribute('title', 'Tension dramatique en temps réel');
+        div.setAttribute('title', Localization.t('tension.meter.title'));
 
         div.innerHTML = `
             <svg class="tension-meter-svg" viewBox="0 0 50 50">
@@ -169,18 +171,18 @@ const TensionView = {
 
         tooltip.innerHTML = `
             <div class="tension-tooltip-title">
-                <i data-lucide="zap" style="width:14px;height:14px;"></i> Tension Directe
+                <i data-lucide="zap" style="width:14px;height:14px;"></i> ${Localization.t('tension.tooltip.direct_tension')}
             </div>
             <div class="tension-tooltip-item">
-                <span>Indice d'intensité</span>
+                <span>${Localization.t('tension.tooltip.intensity_index')}</span>
                 <strong>${result.score}%</strong>
             </div>
             <div class="tension-tooltip-item">
-                <span>Mots-clés forts</span>
+                <span>${Localization.t('tension.tooltip.strong_keywords')}</span>
                 <span style="color: var(--accent-red)">${result.details.high}</span>
             </div>
             <div class="tension-tooltip-item">
-                <span>Mots-clés modérés</span>
+                <span>${Localization.t('tension.tooltip.moderate_keywords')}</span>
                 <span style="color: var(--accent-gold)">${result.details.medium}</span>
             </div>
             <div class="tension-tags-container">
@@ -188,7 +190,7 @@ const TensionView = {
                 ${mediumTags}
             </div>
             <div style="margin-top: 0.75rem; font-size: 0.65rem; color: var(--text-muted); font-style: italic;">
-                Analyse la scène active (sous le curseur ou visible à l'écran).
+                ${Localization.t('tension.tooltip.analysis_note')}
             </div>
         `;
 
@@ -208,5 +210,22 @@ const TensionView = {
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
+    },
+
+    /**
+     * Rafraîchit l'affichage lors du changement de langue.
+     */
+    render: function () {
+        // Recharger les listes de mots (met à jour les tooltips des boutons supprimer)
+        const modal = document.getElementById('tensionWordsModal');
+        if (modal && modal.classList.contains('active')) {
+            this.loadWords();
+        }
+
+        // Mettre à jour le titre du meter
+        const meter = document.getElementById('liveTensionMeter');
+        if (meter) {
+            meter.setAttribute('title', Localization.t('tension.meter.title'));
+        }
     }
 };

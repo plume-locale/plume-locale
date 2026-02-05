@@ -75,7 +75,7 @@ const TensionHandlers = {
     onSave: function () {
         TensionView.closeEditor();
         if (typeof showNotification === 'function') {
-            showNotification('✓ Mots de tension enregistrés. Le graphique sera recalculé lors de la prochaine visualisation.', 'success');
+            showNotification(Localization.t('tension.notification.saved'), 'success');
         }
         // Déclencher une mise à jour immédiate si possible
         // Note: updateLiveTensionMeter est appelé par l'éditeur principal (via des événements globaux ou timers)
@@ -85,7 +85,7 @@ const TensionHandlers = {
      * Réinitialise aux valeurs par défaut.
      */
     onReset: function () {
-        if (confirm('Êtes-vous sûr de vouloir réinitialiser tous les mots de tension aux valeurs par défaut ? Cette action est irréversible.')) {
+        if (confirm(Localization.t('tension.confirm.reset'))) {
             const result = TensionViewModel.resetToDefault();
             if (result.success) {
                 if (typeof showNotification === 'function') showNotification(result.message, 'success');
@@ -100,7 +100,7 @@ const TensionHandlers = {
     onExport: function () {
         const { content, filename } = TensionViewModel.prepareExport();
         TensionView.downloadFile(filename, content);
-        if (typeof showNotification === 'function') showNotification('✓ Dictionnaires exportés avec succès', 'success');
+        if (typeof showNotification === 'function') showNotification(Localization.t('tension.notification.exported'), 'success');
     },
 
     /**
@@ -132,14 +132,14 @@ const TensionHandlers = {
             };
 
             reader.onerror = () => {
-                if (typeof showNotification === 'function') showNotification('❌ Erreur lors de la lecture du fichier', 'error');
+                if (typeof showNotification === 'function') showNotification(Localization.t('tension.notification.read_error'), 'error');
             };
 
             reader.readAsText(file);
         } else if (textarea.value.trim()) {
             this._runImport(textarea.value, this.currentBulkImportType, mode);
         } else {
-            if (typeof showNotification === 'function') showNotification('⚠️ Veuillez coller du texte ou sélectionner un fichier', 'warning');
+            if (typeof showNotification === 'function') showNotification(Localization.t('tension.notification.empty_input'), 'warning');
         }
     },
 

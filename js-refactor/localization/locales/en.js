@@ -1916,4 +1916,49 @@ const LOCALE_EN = {
     "stats.by_act": "Breakdown by Act",
     "stats.history_7days": "History (7 days)",
     "stats.history_label": "{0}",
+
+    // --- Tension ---
+    "tension.tooltip.remove": "Remove this word",
+    "tension.modal.import_title": "Bulk Import - {0}",
+    "tension.modal.import_default": "Bulk Import",
+    "tension.meter.title": "Real-time dramatic tension",
+    "tension.tooltip.direct_tension": "Direct Tension",
+    "tension.tooltip.intensity_index": "Intensity Index",
+    "tension.tooltip.strong_keywords": "Strong Keywords",
+    "tension.tooltip.moderate_keywords": "Moderate Keywords",
+    "tension.tooltip.analysis_note": "Analyzes the active scene (under cursor or visible).",
+    "tension.notification.saved": "✓ Tension words saved. Graph will be recalculated on next view.",
+    "tension.confirm.reset": "Are you sure you want to reset all tension words to default? This action is irreversible.",
+    "tension.notification.exported": "✓ Dictionaries exported successfully",
+    "tension.notification.read_error": "❌ Error reading file",
+    "tension.notification.empty_input": "⚠️ Please paste text or select a file",
+    "tension.alert.enter_word": "⚠️ Please enter a word",
+    "tension.alert.word_exists_category": "⚠️ This word already exists in this category",
+    "tension.alert.word_exists_other": "⚠️ This word already exists in category \"{0}\"",
+    "tension.category.high": "high tension",
+    "tension.category.medium": "medium tension",
+    "tension.category.low": "low tension",
+    "tension.notification.word_added": "✓ Word \"{0}\" added",
+    "tension.alert.word_not_found": "Error: Word not found",
+    "tension.notification.word_removed": "✓ Word \"{0}\" removed",
+    "tension.notification.reset_success": "✓ Tension words reset to default",
+    "tension.export.title": "=== TENSION WORD DICTIONARIES ===",
+    "tension.export.exported_on": "Exported on {0}",
+    "tension.export.section_high": "=== HIGH TENSION ({0} words) ===",
+    "tension.export.section_medium": "=== MEDIUM TENSION ({0} words) ===",
+    "tension.export.section_low": "=== LOW TENSION ({0} words) ===",
+    "tension.notification.no_valid_words": "⚠️ No valid words found",
+    "tension.notification.import_replaced": "✓ {0} words imported (replace)",
+    "tension.notification.import_added": "✓ {0} word(s) added",
+    "tension.notification.import_ignored": " ({0} duplicate(s) ignored)",
+    "tension.notification.all_duplicates": "⚠️ All words already exist ({0} duplicate(s))",
+    "tension.defaults.high": [
+        "assail", "strangle", "leap", "fall upon", "shred", "scream", "hounded", "rush", "devour", "strike", "collapse", "sink", "disintegrate", "char", "scorch", "massacre", "torture", "torment", "agonize", "perish", "curse", "swear", "outraged", "unleash", "ignite", "bleed", "spit", "vomit", "suffocate", "choke", "rear", "revolt", "smash", "crush", "decipher", "alarmed", "terrified", "explode", "annihilate", "collapse", "flee", "crash", "destroy", "ransack", "escape", "fight", "shoot", "stab", "tear", "hammer", "vibrate", "tremor", "shake", "fly away", "steal", "usurp", "threaten", "invade", "devastate", "violate", "abuse", "strike down", "behead", "immolate", "faint", "convulse", "falter", "apocalypse", "chaos", "desolation", "squall", "eruption", "cataclysm", "earthquake", "tornado", "lightning", "deluge", "carnage", "butchery", "ordeal", "execution", "torture", "gehenna", "damnation", "hell", "fury", "hysteria", "dementia", "madness", "rage", "hate", "vengeance", "betrayal", "plot", "assassin", "victim", "predator", "beast", "monster", "nightmare", "abyss", "chasm", "precipice", "war", "battle", "siege", "skirmish", "shootout", "alarm", "emergency", "distress", "crisis", "panic", "explosion", "horror", "disaster", "massacre", "terror", "blood", "catastrophe", "dread", "revolt", "insubordination", "riot", "fire", "spark", "flame", "poison", "venom", "curse", "despair", "anguish", "searing", "insane", "savage", "brutal", "relentless", "vicious", "ruthless", "infernal", "apocalyptic", "bloody", "flayed", "heartrending", "screaming", "terrifying", "disarmed", "critical", "dramatic", "vital", "absolutely", "ferociously", "brutally", "violently", "sudden", "suddenly", "deadly", "imminent", "cruelly", "now", "immediately", "at the throat", "on the edge", "sharply", "feverishly", "frantically"
+    ],
+    "tension.defaults.medium": [
+        "examine", "probe", "decrypt", "spy", "filter", "weigh", "confront", "interrogate", "conceal", "feign", "skew", "prevaricate", "mistrust", "doubt", "suspect", "sense", "wonder", "speculate", "conjecture", "anticipate", "urge", "enjoin", "negotiate", "bargain", "stall", "elaborate", "scheme", "move away", "approach", "watch", "prowl", "observe", "scrutinize", "wait", "search", "suspect", "prepare", "understand", "hesitate", "progress", "surveil", "guess", "whisper", "reveal", "hold back", "commit", "promise", "discover", "venture", "cross", "escape", "ignore", "lie", "enigma", "clue", "track", "alibi", "motive", "decoy", "deception", "hoax", "ambiguity", "dissonance", "unease", "uncertainty", "dilemma", "pact", "agreement", "blackmail", "ransom", "tailing", "wiretap", "surveillance", "secret", "shadow", "suspicion", "murmur", "silhouette", "trap", "obstacle", "pressure", "mystery", "threat", "doubt", "reticence", "ulterior motive", "premeditation", "alley", "corridor", "window", "door", "path", "glow", "mirror", "reflection", "rumor", "confession", "avowal", "waiting", "premonition", "dubious", "shady", "ambiguous", "cryptic", "strange", "suspect", "hidden", "veiled", "latent", "sneaky", "threatening", "precarious", "delicate", "tense", "anxious", "furtive", "discreet", "slowly", "cautiously", "weirdly", "perhaps", "possibly", "however", "nevertheless", "nonetheless", "despite", "if", "strangely", "secretly", "unknown", "probable", "vaguely", "uncertain", "silently", "warmly", "soon", "lengthily"
+    ],
+    "tension.defaults.low": [
+        "stroll", "wander", "chat", "contemplate", "lie down", "doze", "laze", "get bored", "ramble", "reflect", "meditate", "recall", "learn", "study", "garden", "cook", "write", "read", "clean", "tidy", "exist", "remain", "be", "seem", "walk", "think", "remember", "describe", "sit", "say", "lunch", "sleep", "explain", "note", "summarize", "classify", "compare", "detail", "deduce", "affirm", "agree", "observe", "feel", "taste", "daily", "routine", "comfort", "ease", "serenity", "boredom", "reflection", "memory", "theory", "hypothesis", "concept", "office", "kitchen", "garden", "fireplace", "pillow", "armchair", "cup", "newspaper", "book", "pen", "board", "cloud", "wind", "river", "hill", "field", "season", "hour", "minute", "day", "week", "idea", "opinion", "justice", "time", "morning", "house", "street", "tree", "chair", "normality", "banality", "platitude", "discussion", "dialogue", "introduction", "context", "generality", "calm", "serene", "usual", "comfortable", "banal", "ordinary", "insignificant", "placid", "indolent", "theoretical", "general", "simple", "obvious", "reasonable", "easily", "quietly", "gentleness", "naturally", "regularly", "frequently", "often", "then", "next", "first", "moreover", "also", "actually", "generally", "normally", "blue", "honest", "long", "slow", "simply", "peacefully", "assuredly", "collectively"
+    ]
 };
