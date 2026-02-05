@@ -23,7 +23,7 @@ const ProjectView = {
         if (!container) return;
 
         if (!projects || projects.length === 0) {
-            container.innerHTML = '<div style="padding: 2rem; text-align: center; color: var(--text-muted);">Aucun projet</div>';
+            container.innerHTML = `<div style="padding: 2rem; text-align: center; color: var(--text-muted);">${Localization.t('project.view.no_project')}</div>`;
             return;
         }
 
@@ -67,44 +67,44 @@ const ProjectView = {
                             <div class="project-card-title">${proj.title}</div>
                             ${proj.genre ? `<span class="project-card-genre">${proj.genre}</span>` : ''}
                         </div>
-                        ${isActive ? '<span style="color: var(--accent-red); font-weight: 600;">● Actif</span>' : ''}
+                        ${isActive ? `<span style="color: var(--accent-red); font-weight: 600;">● ${Localization.t('project.view.active')}</span>` : ''}
                     </div>
                     ${proj.description ? `<div class="project-card-desc">${proj.description}</div>` : ''}
                     
                     <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 0.5rem; margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--border-color); font-size: 0.8rem; color: var(--text-muted);">
-                        <div style="display: flex; align-items: center; gap: 6px;" title="Nombre de mots total">
+                        <div style="display: flex; align-items: center; gap: 6px;" title="${Localization.t('project.view.total_word_count')}">
                             <i data-lucide="align-left" style="width: 14px; height: 14px; color: var(--accent-gold);"></i> 
-                            <span style="font-weight: 600;">${wordCount.toLocaleString('fr-FR')}</span> mots
+                            <span style="font-weight: 600;">${wordCount.toLocaleString(Localization.currentLang === 'fr' ? 'fr-FR' : 'en-US')}</span> ${Localization.t('project.view.words')}
                         </div>
-                        <div style="display: flex; align-items: center; gap: 6px;" title="Nombre d'actes">
+                        <div style="display: flex; align-items: center; gap: 6px;" title="${Localization.t('project.view.act_count')}">
                             <i data-lucide="book" style="width: 14px; height: 14px;"></i> 
-                            <span>${actCount} actes</span>
+                            <span>${actCount} ${Localization.t('project.view.acts')}</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 6px;" title="Nombre de chapitres">
+                        <div style="display: flex; align-items: center; gap: 6px;" title="${Localization.t('project.view.chapter_count')}">
                             <i data-lucide="bookmark" style="width: 14px; height: 14px;"></i> 
-                            <span>${chapterCount} chapitres</span>
+                            <span>${chapterCount} ${Localization.t('project.view.chapters')}</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 6px;" title="Nombre de scènes">
+                        <div style="display: flex; align-items: center; gap: 6px;" title="${Localization.t('project.view.scene_count')}">
                             <i data-lucide="file-text" style="width: 14px; height: 14px;"></i> 
-                            <span>${sceneCount} scènes</span>
+                            <span>${sceneCount} ${Localization.t('project.view.scenes')}</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 6px;" title="Personnages">
+                        <div style="display: flex; align-items: center; gap: 6px;" title="${Localization.t('project.view.characters')}">
                             <i data-lucide="users" style="width: 14px; height: 14px;"></i> 
-                            <span>${charCount} pers.</span>
+                            <span>${charCount} ${Localization.t('project.view.pers')}</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 6px;" title="Entrées Univers">
+                        <div style="display: flex; align-items: center; gap: 6px;" title="${Localization.t('project.view.world_entries')}">
                             <i data-lucide="globe" style="width: 14px; height: 14px;"></i> 
-                            <span>${worldCount} univ.</span>
+                            <span>${worldCount} ${Localization.t('project.view.univ')}</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 6px;" title="Entrées Codex">
+                        <div style="display: flex; align-items: center; gap: 6px;" title="${Localization.t('project.view.codex_entries')}">
                             <i data-lucide="book-open" style="width: 14px; height: 14px;"></i> 
-                            <span>${codexCount} codex</span>
+                            <span>${codexCount} ${Localization.t('project.view.codex')}</span>
                         </div>
                     </div>
 
                     <div class="project-card-actions">
-                        <button class="btn btn-small" onclick="event.stopPropagation(); ProjectViewModel.export(${proj.id})"><i data-lucide="upload" style="width:12px;height:12px;margin-right:4px;vertical-align:middle;"></i> Exporter</button>
-                        <button class="btn btn-small" onclick="event.stopPropagation(); ProjectViewModel.delete(${proj.id})"><i data-lucide="trash-2" style="width:12px;height:12px;margin-right:4px;vertical-align:middle;"></i> Supprimer</button>
+                        <button class="btn btn-small" onclick="event.stopPropagation(); ProjectViewModel.export(${proj.id})"><i data-lucide="upload" style="width:12px;height:12px;margin-right:4px;vertical-align:middle;"></i> ${Localization.t('project.view.btn_export')}</button>
+                        <button class="btn btn-small" onclick="event.stopPropagation(); ProjectViewModel.delete(${proj.id})"><i data-lucide="trash-2" style="width:12px;height:12px;margin-right:4px;vertical-align:middle;"></i> ${Localization.t('project.view.btn_delete')}</button>
                     </div>
                 </div>`;
         }).join('');
@@ -147,15 +147,15 @@ const ProjectView = {
         editorView.innerHTML = `
             <div style="height: 100%; overflow-y: auto; padding: 2rem 3rem;">
                 <h2 style="margin-bottom: 2rem; color: var(--accent-gold);">
-                    <i data-lucide="scan-search" style="width:24px;height:24px;vertical-align:middle;margin-right:8px;"></i>Analyse du texte
+                    <i data-lucide="scan-search" style="width:24px;height:24px;vertical-align:middle;margin-right:8px;"></i>${Localization.t('project.view.analysis_title')}
                 </h2>
                 <div style="background: var(--bg-secondary); padding: 2rem; border-radius: 8px; margin-bottom: 2rem;">
-                    <label style="display: block; font-weight: 600; margin-bottom: 1rem; font-size: 1rem;">Portée de l'analyse :</label>
+                    <label style="display: block; font-weight: 600; margin-bottom: 1rem; font-size: 1rem;">${Localization.t('project.view.analysis_scope_label')}</label>
                     <select id="analysisScope" class="form-input" style="width: 100%; max-width: 400px; font-size: 1rem;">
-                        <option value="current">Scène actuelle</option>
-                        <option value="chapter">Chapitre actuel</option>
-                        <option value="act">Acte actuel</option>
-                        <option value="all">Tout le projet</option>
+                        <option value="current">${Localization.t('project.view.analysis_scope_current')}</option>
+                        <option value="chapter">${Localization.t('project.view.analysis_scope_chapter')}</option>
+                        <option value="act">${Localization.t('project.view.analysis_scope_act')}</option>
+                        <option value="all">${Localization.t('project.view.analysis_scope_all')}</option>
                     </select>
                 </div>
                 <div id="analysisResults"></div>
@@ -175,7 +175,7 @@ const ProjectView = {
     renderAnalysisEmpty() {
         const container = document.getElementById('analysisResults');
         if (container) {
-            container.innerHTML = '<div style="padding: 2rem; text-align: center; color: var(--text-muted);">Aucun texte à analyser</div>';
+            container.innerHTML = `<div style="padding: 2rem; text-align: center; color: var(--text-muted);">${Localization.t('project.view.analysis_empty')}</div>`;
         }
     },
 
@@ -190,29 +190,29 @@ const ProjectView = {
             <div style="margin-top: 1rem;">
                 <!-- General Stats -->
                 <div style="background: var(--bg-primary); padding: 1rem; border-radius: 4px; border: 1px solid var(--border-color); margin-bottom: 1rem;">
-                    <div style="font-weight: 700; font-size: 1rem; margin-bottom: 0.75rem; color: var(--accent-gold);"><i data-lucide="bar-chart-3" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;"></i>Statistiques générales</div>
-                    <div style="font-size: 1.2rem; font-weight: 600;">${analysis.wordCount.toLocaleString('fr-FR')} mots</div>
+                    <div style="font-weight: 700; font-size: 1rem; margin-bottom: 0.75rem; color: var(--accent-gold);"><i data-lucide="bar-chart-3" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;"></i>${Localization.t('project.view.analysis_stats_general')}</div>
+                    <div style="font-size: 1.2rem; font-weight: 600;">${analysis.wordCount.toLocaleString(Localization.currentLang === 'fr' ? 'fr-FR' : 'en-US')} ${Localization.t('project.view.words')}</div>
                 </div>
 
                 <!-- Readability -->
                 <div style="background: var(--bg-primary); padding: 1rem; border-radius: 4px; border: 1px solid var(--border-color); margin-bottom: 1rem;">
-                    <div style="font-weight: 700; font-size: 1rem; margin-bottom: 0.75rem; color: var(--accent-gold);"><i data-lucide="book-open" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;"></i>Lisibilité (Flesch)</div>
-                    <div style="font-size: 1.1rem; margin-bottom: 0.25rem;">Score: <strong>${analysis.readability.score}</strong> / 100</div>
-                    <div style="color: var(--text-muted);">Niveau: ${analysis.readability.level}</div>
+                    <div style="font-weight: 700; font-size: 1rem; margin-bottom: 0.75rem; color: var(--accent-gold);"><i data-lucide="book-open" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;"></i>${Localization.t('project.view.analysis_readability')}</div>
+                    <div style="font-size: 1.1rem; margin-bottom: 0.25rem;">${Localization.t('project.view.analysis_score')} <strong>${analysis.readability.score}</strong> / 100</div>
+                    <div style="color: var(--text-muted);">${Localization.t('project.view.analysis_level')} ${analysis.readability.level}</div>
                     <div style="margin-top: 0.5rem; font-size: 0.75rem; color: var(--text-muted); line-height: 1.4;">
-                        Plus le score est élevé, plus le texte est facile à lire. 60-70 = Standard, 70-80 = Facile.
+                        ${Localization.t('project.view.analysis_readability_help')}
                     </div>
                 </div>
 
                 <!-- Sentence Length -->
                 <div style="background: var(--bg-primary); padding: 1rem; border-radius: 4px; border: 1px solid var(--border-color); margin-bottom: 1rem;">
-                    <div style="font-weight: 700; font-size: 1rem; margin-bottom: 0.75rem; color: var(--accent-gold);"><i data-lucide="ruler" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;"></i>Longueur des phrases</div>
+                    <div style="font-weight: 700; font-size: 1rem; margin-bottom: 0.75rem; color: var(--accent-gold);"><i data-lucide="ruler" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;"></i>${Localization.t('project.view.analysis_sentence_length')}</div>
                     <div style="display: flex; gap: 1rem; margin-bottom: 0.75rem;">
-                        <div><strong>Moyenne:</strong> ${analysis.sentenceLength.avg} mots</div>
-                        <div><strong>Min:</strong> ${analysis.sentenceLength.min}</div>
-                        <div><strong>Max:</strong> ${analysis.sentenceLength.max}</div>
+                        <div><strong>${Localization.t('project.view.analysis_avg')}</strong> ${analysis.sentenceLength.avg} ${Localization.t('project.view.words')}</div>
+                        <div><strong>${Localization.t('project.view.analysis_min')}</strong> ${analysis.sentenceLength.min}</div>
+                        <div><strong>${Localization.t('project.view.analysis_max')}</strong> ${analysis.sentenceLength.max}</div>
                     </div>
-                    <div style="font-size: 0.8rem; font-weight: 600; margin-bottom: 0.5rem;">Distribution:</div>
+                    <div style="font-size: 0.8rem; font-weight: 600; margin-bottom: 0.5rem;">${Localization.t('project.view.analysis_distribution')}</div>
                     ${analysis.sentenceLength.distribution.map(r => `
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
                             <span style="font-size: 0.75rem;">${r.label}</span>
@@ -226,23 +226,23 @@ const ProjectView = {
 
                 <!-- Narrative Distribution -->
                 <div style="background: var(--bg-primary); padding: 1rem; border-radius: 4px; border: 1px solid var(--border-color); margin-bottom: 1rem;">
-                    <div style="font-weight: 700; font-size: 1rem; margin-bottom: 0.75rem; color: var(--accent-gold);"><i data-lucide="message-circle" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;"></i>Distribution narrative</div>
+                    <div style="font-weight: 700; font-size: 1rem; margin-bottom: 0.75rem; color: var(--accent-gold);"><i data-lucide="message-circle" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;"></i>${Localization.t('project.view.analysis_narrative_distribution')}</div>
                     <div style="display: flex; gap: 1rem; margin-bottom: 0.75rem;">
-                        <div><strong>Dialogues:</strong> ${analysis.narrativeDistribution.dialogue}%</div>
-                        <div><strong>Narration:</strong> ${analysis.narrativeDistribution.narrative}%</div>
+                        <div><strong>${Localization.t('project.view.analysis_dialogues')}</strong> ${analysis.narrativeDistribution.dialogue}%</div>
+                        <div><strong>${Localization.t('project.view.analysis_narration')}</strong> ${analysis.narrativeDistribution.narrative}%</div>
                     </div>
                     <div style="height: 20px; background: var(--bg-secondary); border-radius: 4px; overflow: hidden; display: flex;">
                         <div style="height: 100%; width: ${analysis.narrativeDistribution.dialogue}%; background: #4CAF50;" title="Dialogues"></div>
                         <div style="height: 100%; width: ${analysis.narrativeDistribution.narrative}%; background: var(--accent-gold);" title="Narration"></div>
                     </div>
                     <div style="margin-top: 0.5rem; font-size: 0.75rem; color: var(--text-muted);">
-                        ${analysis.narrativeDistribution.dialogCount} segments de dialogue détectés
+                        ${analysis.narrativeDistribution.dialogCount} ${Localization.t('project.view.analysis_dialogue_segments')}
                     </div>
                 </div>
 
                 <!-- Word Frequency -->
                 <div style="background: var(--bg-primary); padding: 1rem; border-radius: 4px; border: 1px solid var(--border-color); margin-bottom: 1rem;">
-                    <div style="font-weight: 700; font-size: 1rem; margin-bottom: 0.75rem; color: var(--accent-gold);"><i data-lucide="type" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;"></i>Mots les plus fréquents</div>
+                    <div style="font-weight: 700; font-size: 1rem; margin-bottom: 0.75rem; color: var(--accent-gold);"><i data-lucide="type" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;"></i>${Localization.t('project.view.analysis_frequent_words')}</div>
                     <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 0.5rem;">
                         ${analysis.wordFrequency.map(([word, count]) => `
                             <div style="padding: 0.4rem 0.6rem; background: var(--bg-secondary); border-radius: 2px; font-size: 0.75rem;">
@@ -254,7 +254,7 @@ const ProjectView = {
 
                 <!-- Repetitions -->
                 <div style="background: var(--bg-primary); padding: 1rem; border-radius: 4px; border: 1px solid var(--border-color);">
-                    <div style="font-weight: 700; font-size: 1rem; margin-bottom: 0.75rem; color: var(--accent-red);"><i data-lucide="alert-triangle" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;"></i>Répétitions à surveiller (5+ occurrences)</div>
+                    <div style="font-weight: 700; font-size: 1rem; margin-bottom: 0.75rem; color: var(--accent-red);"><i data-lucide="alert-triangle" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;"></i>${Localization.t('project.view.analysis_repetitions')}</div>
                     ${analysis.repetitions.length > 0 ? `
                         <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 0.5rem;">
                             ${analysis.repetitions.map(([word, count]) => `
@@ -263,7 +263,7 @@ const ProjectView = {
                                 </div>
                             `).join('')}
                         </div>
-                    ` : '<div style="color: var(--text-muted); font-size: 0.85rem;">Aucune répétition excessive détectée</div>'}
+                    ` : `<div style="color: var(--text-muted); font-size: 0.85rem;">${Localization.t('project.view.analysis_no_repetitions')}</div>`}
                 </div>
             </div>
         `;
@@ -284,8 +284,8 @@ const ProjectView = {
             <div class="split-scene-view" style="height: 100%; display: flex; flex-direction: column;">
                 <div style="padding: 0.75rem 1rem; background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);">
                     <div style="font-size: 0.8rem; color: var(--text-muted);">${act.title} > ${chapter.title}</div>
-                    <div style="font-size: 1.1rem; font-weight: 600;">${scene.title || 'Sans titre'}</div>
-                    <div style="font-size: 0.75rem; color: var(--text-muted);">${wordCount} mots</div>
+                    <div style="font-size: 1.1rem; font-weight: 600;">${scene.title || Localization.t('project.view.untitled')}</div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted);">${wordCount} ${Localization.t('project.view.words')}</div>
                 </div>
                 <div class="editor-textarea" 
                      contenteditable="true" 

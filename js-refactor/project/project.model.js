@@ -11,7 +11,7 @@ const ProjectModel = {
     createDefault() {
         return {
             id: Date.now(),
-            title: "Mon Roman",
+            title: Localization.t('project.model.default_title'),
             description: "",
             genre: "",
             createdAt: new Date().toISOString(),
@@ -87,7 +87,7 @@ const ProjectModel = {
         const words = text.match(/[\p{L}]+/gu) || [];
         const syllables = words.reduce((sum, word) => sum + this.countSyllables(word), 0);
 
-        if (sentences.length === 0 || words.length === 0) return { score: 0, level: 'N/A' };
+        if (sentences.length === 0 || words.length === 0) return { score: 0, level: Localization.t('project.model.readability_na') };
 
         // Flesch Reading Ease
         const avgWordsPerSentence = words.length / sentences.length;
@@ -95,13 +95,13 @@ const ProjectModel = {
         const score = 206.835 - (1.015 * avgWordsPerSentence) - (84.6 * avgSyllablesPerWord);
 
         let level = '';
-        if (score >= 90) level = 'Très facile';
-        else if (score >= 80) level = 'Facile';
-        else if (score >= 70) level = 'Assez facile';
-        else if (score >= 60) level = 'Standard';
-        else if (score >= 50) level = 'Assez difficile';
-        else if (score >= 30) level = 'Difficile';
-        else level = 'Très difficile';
+        if (score >= 90) level = Localization.t('project.model.readability_very_easy');
+        else if (score >= 80) level = Localization.t('project.model.readability_easy');
+        else if (score >= 70) level = Localization.t('project.model.readability_fairly_easy');
+        else if (score >= 60) level = Localization.t('project.model.readability_standard');
+        else if (score >= 50) level = Localization.t('project.model.readability_fairly_difficult');
+        else if (score >= 30) level = Localization.t('project.model.readability_difficult');
+        else level = Localization.t('project.model.readability_very_difficult');
 
         return { score: Math.max(0, Math.min(100, score)).toFixed(1), level };
     },
@@ -160,11 +160,11 @@ const ProjectModel = {
         const max = Math.max(...lengths);
 
         const ranges = [
-            { label: '1-5 mots', count: lengths.filter(l => l >= 1 && l <= 5).length },
-            { label: '6-10 mots', count: lengths.filter(l => l >= 6 && l <= 10).length },
-            { label: '11-15 mots', count: lengths.filter(l => l >= 11 && l <= 15).length },
-            { label: '16-20 mots', count: lengths.filter(l => l >= 16 && l <= 20).length },
-            { label: '20+ mots', count: lengths.filter(l => l > 20).length }
+            { label: Localization.t('project.model.range_1_5'), count: lengths.filter(l => l >= 1 && l <= 5).length },
+            { label: Localization.t('project.model.range_6_10'), count: lengths.filter(l => l >= 6 && l <= 10).length },
+            { label: Localization.t('project.model.range_11_15'), count: lengths.filter(l => l >= 11 && l <= 15).length },
+            { label: Localization.t('project.model.range_16_20'), count: lengths.filter(l => l >= 16 && l <= 20).length },
+            { label: Localization.t('project.model.range_20_plus'), count: lengths.filter(l => l > 20).length }
         ];
 
         return { avg: avg.toFixed(1), min, max, distribution: ranges };

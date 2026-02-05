@@ -69,7 +69,7 @@ const ProjectViewModel = {
      */
     async create(data) {
         if (!data.title) {
-            alert('Veuillez entrer un titre pour le projet');
+            alert(Localization.t('project.viewmodel.alert_title_required'));
             return;
         }
 
@@ -81,15 +81,15 @@ const ProjectViewModel = {
         // Application du template
         if (data.template === 'fantasy') {
             newProject.acts = [
-                { id: Date.now(), title: "Acte I - Le Monde Ordinaire", chapters: [] },
-                { id: Date.now() + 1, title: "Acte II - L'Aventure", chapters: [] },
-                { id: Date.now() + 2, title: "Acte III - Le Retour", chapters: [] }
+                { id: Date.now(), title: Localization.t('project.viewmodel.template_fantasy_act1'), chapters: [] },
+                { id: Date.now() + 1, title: Localization.t('project.viewmodel.template_fantasy_act2'), chapters: [] },
+                { id: Date.now() + 2, title: Localization.t('project.viewmodel.template_fantasy_act3'), chapters: [] }
             ];
         } else if (data.template === 'thriller') {
             newProject.acts = [
-                { id: Date.now(), title: "Acte I - L'Incident", chapters: [] },
-                { id: Date.now() + 1, title: "Acte II - La Tension", chapters: [] },
-                { id: Date.now() + 2, title: "Acte III - Le Dénouement", chapters: [] }
+                { id: Date.now(), title: Localization.t('project.viewmodel.template_thriller_act1'), chapters: [] },
+                { id: Date.now() + 1, title: Localization.t('project.viewmodel.template_thriller_act2'), chapters: [] },
+                { id: Date.now() + 2, title: Localization.t('project.viewmodel.template_thriller_act3'), chapters: [] }
             ];
         }
 
@@ -132,7 +132,7 @@ const ProjectViewModel = {
         const proj = projects.find(p => p.id === projectId);
         if (!proj) return;
 
-        if (!confirm(`Supprimer "${proj.title}" ?\n\nIrréversible !`)) return;
+        if (!confirm(Localization.t('project.viewmodel.confirm_delete', [proj.title]))) return;
 
         projects = projects.filter(p => p.id !== projectId);
         await ProjectRepository.delete(projectId);
@@ -180,19 +180,19 @@ const ProjectViewModel = {
         reader.onload = async (e) => {
             try {
                 const imported = JSON.parse(e.target.result);
-                if (!imported.title) throw new Error('Format invalide');
+                if (!imported.title) throw new Error(Localization.t('project.viewmodel.import_invalid_format'));
 
                 imported.id = Date.now();
-                imported.title += " (Importé)";
+                imported.title += Localization.t('project.viewmodel.import_suffix');
                 imported.createdAt = new Date().toISOString();
                 imported.updatedAt = new Date().toISOString();
 
                 projects.push(imported);
                 await this.saveAll();
                 ProjectView.renderList(projects, currentProjectId);
-                alert(`✅ "${imported.title}" importé !`);
+                alert(Localization.t('project.viewmodel.import_success', [imported.title]));
             } catch (error) {
-                alert('❌ Erreur: ' + error.message);
+                alert(Localization.t('project.viewmodel.error_prefix') + error.message);
             }
         };
         reader.readAsText(file);
