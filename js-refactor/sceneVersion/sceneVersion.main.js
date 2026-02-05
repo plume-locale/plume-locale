@@ -7,6 +7,11 @@ const SceneVersionApp = {
     init() {
         SceneVersionViewModel.init();
         // Initial render if needed, though usually triggered by selection change
+
+        // Refresh view on language change
+        window.addEventListener('localeChanged', () => {
+            this.refreshList();
+        });
     },
 
     // Public API for HTML interactions

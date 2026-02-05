@@ -16,7 +16,7 @@ const RevisionViewModel = {
      */
     toggleRevisionMode() {
         if (!currentSceneId) {
-            alert('Veuillez d\'abord ouvrir une scène pour activer le mode révision.');
+            alert(Localization.t('revision.alert.open_scene'));
             return;
         }
 
@@ -42,7 +42,7 @@ const RevisionViewModel = {
         if (success) {
             this.updateSceneContent();
         } else {
-            alert('Impossible de surligner cette sélection (essayez une sélection plus simple)');
+            alert(Localization.t('revision.alert.highlight_error'));
         }
 
         const sel = window.getSelection();
@@ -57,7 +57,7 @@ const RevisionViewModel = {
         if (success) {
             this.updateSceneContent();
         } else {
-            alert('Sélectionnez un texte surligné');
+            alert(Localization.t('revision.alert.select_highlight'));
         }
 
         const sel = window.getSelection();
@@ -70,7 +70,7 @@ const RevisionViewModel = {
     openAnnotationPopup() {
         const sel = window.getSelection();
         if (!sel.rangeCount || sel.isCollapsed) {
-            alert('Sélectionnez du texte à annoter');
+            alert(Localization.t('revision.alert.select_text_to_annotate'));
             return;
         }
 
@@ -106,7 +106,7 @@ const RevisionViewModel = {
         const text = input ? input.value.trim() : '';
 
         if (!text) {
-            alert('Veuillez entrer une annotation');
+            alert(Localization.t('revision.alert.enter_annotation'));
             return;
         }
 
@@ -139,7 +139,7 @@ const RevisionViewModel = {
      * Deletes an annotation.
      */
     deleteAnnotation(annotationId) {
-        if (!confirm('Supprimer cette annotation ?')) return;
+        if (!confirm(Localization.t('revision.confirm.delete'))) return;
 
         const current = SceneVersionRepository.getCurrentScene();
         if (!current) return;
@@ -152,7 +152,7 @@ const RevisionViewModel = {
         this.renderAnnotationsPanel();
 
         if (typeof renderActsList === 'function') renderActsList();
-        if (typeof showNotification === 'function') showNotification('✓ Annotation supprimée');
+        if (typeof showNotification === 'function') showNotification(Localization.t('revision.notify.deleted'));
     },
 
     /**
@@ -268,7 +268,7 @@ const RevisionViewModel = {
             this.highlightAnnotation(annotationId);
         } else {
             console.warn(`Marker for annotation ${annotationId} not found`);
-            if (typeof showNotification === 'function') showNotification('Annotation non localisée dans le texte');
+            if (typeof showNotification === 'function') showNotification(Localization.t('revision.notify.not_found'));
         }
     },
 

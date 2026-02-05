@@ -23,10 +23,10 @@ const RevisionModel = {
      */
     getAnnotationTypeLabel(type) {
         const labels = {
-            comment: 'Commentaire',
-            todo: 'TODO',
-            note: 'Note',
-            question: 'Question'
+            comment: Localization.t('revision.type.comment'),
+            todo: Localization.t('revision.type.todo'),
+            note: Localization.t('revision.type.note'),
+            question: Localization.t('revision.type.question')
         };
         return labels[type] || type;
     }

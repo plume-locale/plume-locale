@@ -32,14 +32,14 @@ const SceneVersionView = {
             if (sidebar) sidebar.classList.remove('hidden');
             if (toggleBtn) {
                 toggleBtn.classList.add('active');
-                toggleBtn.title = 'Masquer les versions de scène';
+                toggleBtn.title = Localization.t('versions.toggle_hide');
             }
             if (toolBtn) toolBtn.classList.add('active');
         } else {
             if (sidebar) sidebar.classList.add('hidden');
             if (toggleBtn) {
                 toggleBtn.classList.remove('active');
-                toggleBtn.title = 'Afficher les versions de scène';
+                toggleBtn.title = Localization.t('versions.toggle_show');
             }
             if (toolBtn) toolBtn.classList.remove('active');
         }
@@ -58,13 +58,13 @@ const SceneVersionView = {
         const context = SceneVersionRepository.getCurrentScene();
 
         if (!context || !context.scene) {
-            if (sceneNameEl) sceneNameEl.textContent = 'Aucune scène sélectionnée';
+            if (sceneNameEl) sceneNameEl.textContent = Localization.t('versions.no_scene_selected');
             if (btnNewVersion) btnNewVersion.disabled = true;
             listContainer.innerHTML = `
                 <div class="versions-no-scene">
                     <div class="versions-no-scene-icon"><i data-lucide="file-text" style="width:48px;height:48px;opacity:0.3;"></i></div>
                     <div class="versions-no-scene-text">
-                        Sélectionnez une scène<br>dans la structure<br>pour voir ses versions
+                        ${Localization.t('empty.versions_no_scene').replace(/ /g, '<br>')}
                     </div>
                 </div>
             `;
@@ -83,8 +83,8 @@ const SceneVersionView = {
                 <div class="versions-empty">
                     <div class="versions-empty-icon"><i data-lucide="git-branch" style="width:48px;height:48px;"></i></div>
                     <div class="versions-empty-text">
-                        Aucune version<br>
-                        Créez votre première version pour tester différentes idées
+                        ${Localization.t('versions.empty_title')}<br>
+                        ${Localization.t('versions.empty_desc')}
                     </div>
                 </div>
             `;
@@ -98,8 +98,9 @@ const SceneVersionView = {
         let html = '';
         sorted.forEach(version => {
             const date = new Date(version.createdAt);
-            const dateStr = date.toLocaleDateString('fr-FR');
-            const timeStr = date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+            const locale = Localization.getLocale() === 'fr' ? 'fr-FR' : 'en-US';
+            const dateStr = date.toLocaleDateString(locale);
+            const timeStr = date.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
             const canCompare = versions.length >= 2;
             const isFinal = version.isFinal === true;
             const finalClass = isFinal ? 'final' : '';
@@ -112,21 +113,21 @@ const SceneVersionView = {
                     <div class="version-card-header">
                         <span class="version-card-number">
                             ${version.number}
-                            ${isFinal ? '<span class="version-card-final-badge">Finale</span>' : ''}
+                            ${isFinal ? `<span class="version-card-final-badge">${Localization.t('versions.final_badge')}</span>` : ''}
                         </span>
                         <div class="version-card-actions">
                             <button class="version-card-btn final ${isFinal ? 'is-final' : ''}" 
                                 onclick="event.stopPropagation(); window.SceneVersionApp.toggleFinal('${version.id}')" 
-                                title="${isFinal ? 'Retirer comme version finale' : 'Marquer comme version finale'}">
+                                title="${isFinal ? Localization.t('versions.btn.unmark_final') : Localization.t('versions.btn.mark_final')}">
                                 <i data-lucide="star" style="width:14px;height:14px;"></i>
                             </button>
-                            ${canCompare ? `<button class="version-card-btn compare" onclick="event.stopPropagation(); if(typeof openDiffModal === 'function') openDiffModal(${version.id}); else console.error('openDiffModal not found')" title="Comparer"><i data-lucide="git-compare" style="width:14px;height:14px;"></i></button>` : ''}
-                            <button class="version-card-btn" onclick="event.stopPropagation(); window.SceneVersionApp.rename('${version.id}')" title="Renommer"><i data-lucide="pencil" style="width:14px;height:14px;"></i></button>
-                            <button class="version-card-btn delete" onclick="event.stopPropagation(); window.SceneVersionApp.delete('${version.id}')" title="Supprimer"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
+                            ${canCompare ? `<button class="version-card-btn compare" onclick="event.stopPropagation(); if(typeof openDiffModal === 'function') openDiffModal(${version.id}); else console.error('openDiffModal not found')" title="${Localization.t('versions.btn.compare')}"><i data-lucide="git-compare" style="width:14px;height:14px;"></i></button>` : ''}
+                            <button class="version-card-btn" onclick="event.stopPropagation(); window.SceneVersionApp.rename('${version.id}')" title="${Localization.t('versions.btn.rename')}"><i data-lucide="pencil" style="width:14px;height:14px;"></i></button>
+                            <button class="version-card-btn delete" onclick="event.stopPropagation(); window.SceneVersionApp.delete('${version.id}')" title="${Localization.t('versions.btn.delete')}"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
                         </div>
                     </div>
                     <div class="version-card-date">${dateStr} ${timeStr}</div>
-                    <div class="version-card-stats">${(version.wordCount || 0).toLocaleString('fr-FR')} mots</div>
+                    <div class="version-card-stats">${Localization.t('versions.stats.words', [(version.wordCount || 0).toLocaleString(locale)])}</div>
                     ${version.label ? `<div class="version-card-label">${version.label}</div>` : ''}
                 </div>
             `;

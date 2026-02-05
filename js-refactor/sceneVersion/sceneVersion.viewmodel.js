@@ -35,7 +35,7 @@ const SceneVersionViewModel = {
     createVersion() {
         const current = SceneVersionRepository.getCurrentScene();
         if (!current) {
-            alert('Veuillez d\'abord sélectionner une scène.');
+            alert(Localization.t('versions.alert.select_scene'));
             return;
         }
         const { scene } = current;
@@ -77,7 +77,7 @@ const SceneVersionViewModel = {
         // Update other UI parts
         if (typeof renderAnnotationsPanel === 'function') renderAnnotationsPanel();
         if (typeof updateAnnotationsButton === 'function') updateAnnotationsButton(false);
-        if (typeof showNotification === 'function') showNotification(`Version ${newVersion.number} créée`);
+        if (typeof showNotification === 'function') showNotification(Localization.t('versions.notify.created', [newVersion.number]));
     },
 
     restoreVersion(versionId) {
@@ -127,14 +127,14 @@ const SceneVersionViewModel = {
         const { act, chapter, scene } = current;
 
         if (!scene.versions || scene.versions.length <= 1) {
-            alert('Impossible de supprimer la dernière version.');
+            alert(Localization.t('versions.alert.last_version'));
             return;
         }
 
         const version = scene.versions.find(v => v.id === versionId);
         if (!version) return;
 
-        if (!confirm(`Supprimer la version ${version.number} ?`)) return;
+        if (!confirm(Localization.t('versions.confirm.delete', [version.number]))) return;
 
         const wasActive = version.isActive;
         scene.versions = scene.versions.filter(v => v.id !== versionId);
@@ -165,7 +165,7 @@ const SceneVersionViewModel = {
         const version = scene.versions.find(v => v.id === versionId);
         if (!version) return;
 
-        const newLabel = prompt('Nom de la version (optionnel):', version.label || '');
+        const newLabel = prompt(Localization.t('versions.prompt.rename'), version.label || '');
         if (newLabel === null) return;
 
         version.label = newLabel.trim();
@@ -183,11 +183,11 @@ const SceneVersionViewModel = {
 
         if (version.isFinal) {
             version.isFinal = false;
-            if (typeof showNotification === 'function') showNotification('Version retirée comme finale');
+            if (typeof showNotification === 'function') showNotification(Localization.t('versions.notify.unmarked_final'));
         } else {
             scene.versions.forEach(v => v.isFinal = false);
             version.isFinal = true;
-            if (typeof showNotification === 'function') showNotification(`Version "${version.number}" marquée comme finale`);
+            if (typeof showNotification === 'function') showNotification(Localization.t('versions.notify.marked_final', [version.number]));
         }
 
         SceneVersionRepository.save();

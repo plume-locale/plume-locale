@@ -82,6 +82,9 @@ async function init() {
     }
 
     // Initialize scene versions sidebar
+    if (typeof SceneVersionApp !== 'undefined' && SceneVersionApp.init) {
+        SceneVersionApp.init();
+    }
     renderSceneVersionsList();
 
     // Initialize progress bar

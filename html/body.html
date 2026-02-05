@@ -1886,8 +1886,9 @@
     <!-- Annotation Popup -->
     <div class="annotation-popup" id="annotationPopup">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem">
-            <h3 style="margin: 0">Ajouter une annotation</h3>
-            <button class="btn-info-circle" onclick="RevisionView.toggleAnnotationGuide()" title="Aide sur les types">
+            <h3 style="margin: 0" data-i18n="revision.popup.title">Ajouter une annotation</h3>
+            <button class="btn-info-circle" onclick="RevisionView.toggleAnnotationGuide()" title="Aide sur les types"
+                data-i18n-title="revision.popup.help">
                 <i data-lucide="help-circle"></i>
             </button>
         </div>
@@ -1895,37 +1896,38 @@
         <!-- Annotation Guide (Hidden by default) -->
         <div id="annotationGuide" class="annotation-guide hidden">
             <div class="guide-item">
-                <span class="guide-tag comment">Commentaire</span>
-                <p>Impressions de lecture ou feedback général.</p>
+                <span class="guide-tag comment" data-i18n="revision.type.comment">Commentaire</span>
+                <p data-i18n="revision.guide.comment_desc">Impressions de lecture ou feedback général.</p>
             </div>
             <div class="guide-item">
-                <span class="guide-tag todo">TODO</span>
-                <p>Tâche concrète à réaliser (corriger, supprimer, réécrire).</p>
+                <span class="guide-tag todo" data-i18n="revision.type.todo">TODO</span>
+                <p data-i18n="revision.guide.todo_desc">Tâche concrète à réaliser (corriger, supprimer, réécrire).</p>
             </div>
             <div class="guide-item">
-                <span class="guide-tag note">Note</span>
-                <p>Remarque créative, idée de développement ou rappel.</p>
+                <span class="guide-tag note" data-i18n="revision.type.note">Note</span>
+                <p data-i18n="revision.guide.note_desc">Remarque créative, idée de développement ou rappel.</p>
             </div>
             <div class="guide-item">
-                <span class="guide-tag question">Question</span>
-                <p>Doute logique, incohérence ou point à vérifier.</p>
+                <span class="guide-tag question" data-i18n="revision.type.question">Question</span>
+                <p data-i18n="revision.guide.question_desc">Doute logique, incohérence ou point à vérifier.</p>
             </div>
         </div>
 
         <div class="annotation-type-selector">
             <div class="annotation-type-btn comment active" onclick="selectAnnotationType('comment')"><i
-                    data-lucide="message-circle"></i>Commentaire</div>
+                    data-lucide="message-circle"></i><span data-i18n="revision.type.comment">Commentaire</span></div>
             <div class="annotation-type-btn todo" onclick="selectAnnotationType('todo')"><i
-                    data-lucide="check-square"></i>TODO</div>
+                    data-lucide="check-square"></i><span data-i18n="revision.type.todo">TODO</span></div>
             <div class="annotation-type-btn note" onclick="selectAnnotationType('note')"><i
-                    data-lucide="sticky-note"></i>Note</div>
+                    data-lucide="sticky-note"></i><span data-i18n="revision.type.note">Note</span></div>
             <div class="annotation-type-btn question" onclick="selectAnnotationType('question')"><i
-                    data-lucide="help-circle"></i>Question</div>
+                    data-lucide="help-circle"></i><span data-i18n="revision.type.question">Question</span></div>
         </div>
-        <textarea id="annotationText" placeholder="Votre annotation..."></textarea>
+        <textarea id="annotationText" placeholder="Votre annotation..."
+            data-i18n-placeholder="revision.popup.placeholder"></textarea>
         <div class="modal-actions">
-            <button class="btn" onclick="closeAnnotationPopup()">Annuler</button>
-            <button class="btn btn-primary" onclick="saveAnnotation()">Enregistrer</button>
+            <button class="btn" onclick="closeAnnotationPopup()" data-i18n="btn.cancel">Annuler</button>
+            <button class="btn btn-primary" onclick="saveAnnotation()" data-i18n="btn.save">Enregistrer</button>
         </div>
     </div>
     <!-- Floating Editor Menu Toggle Button (Mobile) -->

@@ -10,6 +10,15 @@ const RevisionModule = {
         if (typeof project !== 'undefined') {
             RevisionViewModel.updateAnnotationsButton();
         }
+
+        // Handle language switch
+        window.addEventListener('localeChanged', () => {
+            if (RevisionViewModel.state.revisionMode) {
+                const toolbarHTML = typeof getEditorToolbarHTML === 'function' ? getEditorToolbarHTML() : '';
+                RevisionView.updateToolbar(true, RevisionViewModel.state.selectedHighlightColor, toolbarHTML);
+            }
+            RevisionViewModel.renderAnnotationsPanel();
+        });
     }
 };
 

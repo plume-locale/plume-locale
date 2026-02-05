@@ -23,22 +23,22 @@ const RevisionView = {
         if (isRevisionMode) {
             toolbar.className = 'editor-toolbar revision-toolbar';
             toolbar.innerHTML = `
-                <span class="revision-badge"><i data-lucide="pencil" style="width:14px;height:14px;vertical-align:middle;margin-right:6px;"></i>MODE RÉVISION</span>
+                <span class="revision-badge"><i data-lucide="pencil" style="width:14px;height:14px;vertical-align:middle;margin-right:6px;"></i>${Localization.t('revision.mode_badge')}</span>
                 <button class="highlight-btn yellow ${selectedColor === 'yellow' ? 'active' : ''}" 
-                        onclick="RevisionViewModel.selectHighlightColor('yellow')">Jaune</button>
+                        onclick="RevisionViewModel.selectHighlightColor('yellow')">${Localization.t('revision.color.yellow')}</button>
                 <button class="highlight-btn green ${selectedColor === 'green' ? 'active' : ''}" 
-                        onclick="RevisionViewModel.selectHighlightColor('green')">Vert</button>
+                        onclick="RevisionViewModel.selectHighlightColor('green')">${Localization.t('revision.color.green')}</button>
                 <button class="highlight-btn blue ${selectedColor === 'blue' ? 'active' : ''}" 
-                        onclick="RevisionViewModel.selectHighlightColor('blue')">Bleu</button>
+                        onclick="RevisionViewModel.selectHighlightColor('blue')">${Localization.t('revision.color.blue')}</button>
                 <button class="highlight-btn red ${selectedColor === 'red' ? 'active' : ''}" 
-                        onclick="RevisionViewModel.selectHighlightColor('red')">Rouge</button>
+                        onclick="RevisionViewModel.selectHighlightColor('red')">${Localization.t('revision.color.red')}</button>
                 <button class="highlight-btn purple ${selectedColor === 'purple' ? 'active' : ''}" 
-                        onclick="RevisionViewModel.selectHighlightColor('purple')">Violet</button>
-                <button class="btn" onclick="RevisionViewModel.applyHighlight()"><i data-lucide="highlighter" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Surligner</button>
-                <button class="btn" onclick="RevisionViewModel.removeHighlight()"><i data-lucide="trash-2" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Retirer</button>
-                <button class="btn" onclick="RevisionViewModel.openAnnotationPopup()"><i data-lucide="message-square" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Annoter</button>
+                        onclick="RevisionViewModel.selectHighlightColor('purple')">${Localization.t('revision.color.purple')}</button>
+                <button class="btn" onclick="RevisionViewModel.applyHighlight()"><i data-lucide="highlighter" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>${Localization.t('revision.btn.highlight')}</button>
+                <button class="btn" onclick="RevisionViewModel.removeHighlight()"><i data-lucide="trash-2" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>${Localization.t('revision.btn.remove')}</button>
+                <button class="btn" onclick="RevisionViewModel.openAnnotationPopup()"><i data-lucide="message-square" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>${Localization.t('revision.btn.annotate')}</button>
                 <div style="flex: 1;"></div>
-                <button class="btn btn-primary" onclick="RevisionViewModel.toggleRevisionMode()"><i data-lucide="check" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Quitter</button>
+                <button class="btn btn-primary" onclick="RevisionViewModel.toggleRevisionMode()"><i data-lucide="check" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>${Localization.t('revision.btn.quit')}</button>
             `;
             if (editor) editor.contentEditable = 'false';
         } else {
@@ -336,19 +336,19 @@ const RevisionView = {
 
         if (!panel || !parentPanel) return;
 
-        const versionLabel = activeVersion ? (activeVersion.label || `Version ${activeVersion.number}`) : '';
+        const versionLabel = activeVersion ? (activeVersion.label || `${Localization.t('revision.panel.version')} ${activeVersion.number}`) : '';
         const filteredAnnotations = annotations.filter(a => a.type !== 'todo');
 
         let html = `
             <div class="annotations-panel-header">
-                <h3 style="margin: 0;">Annotations (${filteredAnnotations.length})</h3>
-                <span class="annotations-panel-close" onclick="RevisionViewModel.toggleAnnotationsPanel()" title="Fermer"><i data-lucide="x" style="width:16px;height:16px;"></i></span>
+                <h3 style="margin: 0;">${Localization.t('revision.panel.title_count', [filteredAnnotations.length])}</h3>
+                <span class="annotations-panel-close" onclick="RevisionViewModel.toggleAnnotationsPanel()" title="${Localization.t('revision.panel.close')}"><i data-lucide="x" style="width:16px;height:16px;"></i></span>
             </div>
             ${versionLabel ? `<div style="font-size: 0.75rem; color: var(--text-muted); padding: 0.5rem 1rem; background: var(--bg-tertiary); border-bottom: 1px solid var(--border-color);"><i data-lucide="pin" style="width:12px;height:12px;vertical-align:middle;margin-right:6px;"></i> ${versionLabel}</div>` : ''}
         `;
 
         if (filteredAnnotations.length === 0) {
-            html += `<p style="text-align: center; color: var(--text-muted); padding: 2rem;">Aucune annotation pour cette version</p>`;
+            html += `<p style="text-align: center; color: var(--text-muted); padding: 2rem;">${Localization.t('revision.panel.empty_version')}</p>`;
         } else {
             html += filteredAnnotations.map(a => `
                 <div class="annotation-card ${a.type} ${a.completed ? 'completed' : ''}" onclick="RevisionViewModel.scrollToAnnotation(${a.id})">
@@ -357,7 +357,7 @@ const RevisionView = {
                     ${a.context ? `<div class="annotation-context">"${a.context}"</div>` : ''}
                     <div class="annotation-actions" style="margin-top: 0.5rem;">
                         <button class="btn btn-small" onclick="event.stopPropagation(); RevisionViewModel.deleteAnnotation(${a.id})">
-                            <i data-lucide="trash-2" style="width:12px;height:12px;vertical-align:middle;margin-right:4px;"></i>Supprimer
+                            <i data-lucide="trash-2" style="width:12px;height:12px;vertical-align:middle;margin-right:4px;"></i>${Localization.t('revision.btn.delete')}
                         </button>
                     </div>
                 </div>
@@ -377,10 +377,10 @@ const RevisionView = {
 
         panel.innerHTML = `
             <div class="annotations-panel-header">
-                <h3 style="margin: 0;">Annotations</h3>
-                <span class="annotations-panel-close" onclick="RevisionViewModel.toggleAnnotationsPanel()" title="Fermer"><i data-lucide="x" style="width:16px;height:16px;"></i></span>
+                <h3 style="margin: 0;">${Localization.t('revision.panel.title')}</h3>
+                <span class="annotations-panel-close" onclick="RevisionViewModel.toggleAnnotationsPanel()" title="${Localization.t('revision.panel.close')}"><i data-lucide="x" style="width:16px;height:16px;"></i></span>
             </div>
-            <p style="text-align: center; color: var(--text-muted); padding: 2rem;">Sélectionnez une scène pour voir ses annotations</p>
+            <p style="text-align: center; color: var(--text-muted); padding: 2rem;">${Localization.t('revision.panel.select_scene')}</p>
         `;
         if (typeof lucide !== 'undefined') lucide.createIcons();
     },
