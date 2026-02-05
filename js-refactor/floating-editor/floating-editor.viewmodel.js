@@ -112,13 +112,13 @@ const FloatingEditorViewModel = {
      * Special case for link insertion
      */
     insertLink() {
-        const url = prompt('URL du lien :');
+        const url = prompt(Localization.t('floating.prompt.link_url'));
         if (url) {
             const selection = window.getSelection();
             if (selection.toString()) {
                 this.executeCommand('createLink', url);
             } else {
-                const text = prompt('Texte du lien :');
+                const text = prompt(Localization.t('floating.prompt.link_text'));
                 if (text) {
                     const html = `<a href="${url}" target="_blank">${text}</a>`;
                     this.executeCommand('insertHTML', html);
@@ -131,7 +131,7 @@ const FloatingEditorViewModel = {
      * Special case for image insertion
      */
     insertImage() {
-        const url = prompt('URL de l\'image :');
+        const url = prompt(Localization.t('floating.prompt.image_url'));
         if (url) {
             this.executeCommand('insertImage', url);
         }
