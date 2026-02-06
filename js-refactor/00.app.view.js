@@ -380,6 +380,11 @@ function renderViewContent(view, containerId) {
  * Rafraîchit toutes les vues de l'application (utile après undo/redo ou import).
  */
 function refreshAllViews() {
+    // 0. Rafraîchir les données d'enquête si présentes
+    if (typeof InvestigationStore !== 'undefined') {
+        try { InvestigationStore.load(); } catch (e) { console.error('Error loading InvestigationStore:', e); }
+    }
+
     // 1. Rafraîchir la structure (sidebar editor)
     if (typeof renderActsList === 'function') renderActsList();
 
@@ -411,6 +416,7 @@ function refreshAllViews() {
         case 'map': if (typeof renderMapView === 'function') renderMapView(); break;
         case 'timelineviz': if (typeof renderTimelineVizView === 'function') renderTimelineVizView(); break;
         case 'arcs': if (typeof renderArcsList === 'function') renderArcsList(); break;
+        case 'investigation': if (typeof renderInvestigationBoard === 'function') renderInvestigationBoard(); break;
     }
 
     // 5. Rafraîchir l'éditeur si une scène est ouverte

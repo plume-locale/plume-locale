@@ -164,6 +164,10 @@ const UndoRedoViewModel = {
         if (typeof refreshAllViews === 'function') {
             try { refreshAllViews(); } catch (e) { console.error('[UndoRedo] Erreur refreshAllViews:', e); }
         } else {
+            // S'assurer que le store d'enquête est à jour avant le refresh legacy
+            if (typeof InvestigationStore !== 'undefined') {
+                try { InvestigationStore.load(); } catch (e) { console.error('[UndoRedo] Erreur InvestigationStore.load:', e); }
+            }
             this._legacyRefresh();
         }
 
@@ -205,6 +209,15 @@ const UndoRedoViewModel = {
         // Generic fallback
         if (typeof renderCurrentView === 'function') {
             try { renderCurrentView(); } catch (e) { }
+        }
+
+        // Investigation Board
+        if (typeof InvestigationView !== 'undefined' && typeof InvestigationView.render === 'function') {
+            try {
+                const container = document.getElementById('investigationContent');
+                if (container) InvestigationView.render(container);
+                if (typeof InvestigationView.renderSidebar === 'function') InvestigationView.renderSidebar();
+            } catch (e) { }
         }
     },
 

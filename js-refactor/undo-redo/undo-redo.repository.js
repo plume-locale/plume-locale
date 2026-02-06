@@ -184,6 +184,11 @@ const UndoRedoRepository = {
         integrate(window.ConnectionRepository, 'Connection');
         integrate(window.InterArcConnectionRepository, 'InterArcConnection');
 
+        integrate(window.InvestigationStore, 'Investigation', {
+            immediate: ['setActiveCase', 'createCase', 'updateCase', 'deleteCase', 'addFact', 'updateFact', 'deleteFact', 'setKnowledgeState', 'updateSuspectLink'],
+            debounced: []
+        });
+
         console.log('[UndoRedo] Integration avec tous les repositories effectuee');
     }
 };

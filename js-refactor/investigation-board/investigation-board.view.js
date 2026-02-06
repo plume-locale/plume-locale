@@ -212,16 +212,6 @@ const InvestigationView = {
     },
 
     renderToolbarActions: function (viewMode) {
-        const activeCase = InvestigationStore.getActiveCase();
-        if (!activeCase && viewMode !== 'dashboard') return '';
-
-        if (viewMode === 'registry') {
-            return `
-                <button class="btn btn-primary btn-sm" onclick="InvestigationRegistryView.openAddFactModal()">
-                    <i data-lucide="plus"></i> ${Localization.t('investigation.add_fact')}
-                </button>
-            `;
-        }
         return '';
     },
 

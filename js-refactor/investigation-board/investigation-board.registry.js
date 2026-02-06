@@ -5,67 +5,423 @@
 
 const InvestigationRegistryView = {
     render: function (container) {
-        const facts = InvestigationStore.getFacts();
+        const searchTerm = (this.state && this.state.search) || '';
+        const filterType = (this.state && this.state.filterType) || 'all';
 
         container.innerHTML = `
             <div class="investigation-registry">
-                <div class="registry-header">
-                    <div class="registry-title-group">
+                <div class="registry-header-premium">
+                    <div class="header-left">
                         <h3>${Localization.t('investigation.registry.title')}</h3>
                         <p>${Localization.t('investigation.registry.desc')}</p>
                     </div>
-                    <div class="quick-tip">
-                        <i data-lucide="info"></i>
-                        <span>${Localization.t('investigation.registry.tip')}</span>
-                    </div>
-                </div>
-                <div class="registry-list">
-                    ${facts.length === 0 ? `
-                        <div class="empty-state-card">
-                            <i data-lucide="search" size="48"></i>
-                            <h4>${Localization.t('investigation.registry.empty.title')}</h4>
-                            <p>${Localization.t('investigation.registry.empty.desc')}</p>
-                            <button class="btn btn-primary" onclick="InvestigationRegistryView.openAddFactModal()">
-                                <i data-lucide="plus"></i> ${Localization.t('investigation.registry.empty.action')}
+                    
+                    <div class="registry-toolbar">
+                        <div class="registry-search" style="display: ${this.state.displayMode === 'table' ? 'none' : 'flex'}">
+                            <i data-lucide="search"></i>
+                            <input type="text" id="registrySearchInput"
+                                   placeholder="${Localization.t('investigation.sidebar.search')}" 
+                                   value="${searchTerm}"
+                                   oninput="InvestigationRegistryView.handleSearch(this.value)">
+                        </div>
+                        
+                        <select class="btn-registry-filter" id="registryFilterSelect" 
+                                style="display: ${this.state.displayMode === 'table' ? 'none' : 'block'}"
+                                onchange="InvestigationRegistryView.handleFilter(this.value)">
+                            <option value="all">${Localization.t('investigation.dashboard.view_all')}</option>
+                            <option value="clue" ${filterType === 'clue' ? 'selected' : ''}>${Localization.t('investigation.type.clue')}</option>
+                            <option value="red_herring" ${filterType === 'red_herring' ? 'selected' : ''}>${Localization.t('investigation.type.red_herring')}</option>
+                            <option value="testimony" ${filterType === 'testimony' ? 'selected' : ''}>${Localization.t('investigation.type.testimony')}</option>
+                            <option value="object" ${filterType === 'object' ? 'selected' : ''}>${Localization.t('investigation.type.object')}</option>
+                            <option value="event" ${filterType === 'event' ? 'selected' : ''}>${Localization.t('investigation.type.event')}</option>
+                            <option value="rumor" ${filterType === 'rumor' ? 'selected' : ''}>${Localization.t('investigation.type.rumor')}</option>
+                            <option value="crime" ${filterType === 'crime' ? 'selected' : ''}>${Localization.t('investigation.type.crime')}</option>
+                            <option value="disappearance" ${filterType === 'disappearance' ? 'selected' : ''}>${Localization.t('investigation.type.disappearance')}</option>
+                            <option value="coma" ${filterType === 'coma' ? 'selected' : ''}>${Localization.t('investigation.type.coma')}</option>
+                        </select>
+
+                        <div class="registry-display-toggle">
+                            <button class="toggle-btn ${this.state.displayMode === 'cards' ? 'active' : ''}" 
+                                    onclick="InvestigationRegistryView.setDisplayMode('cards')"
+                                    title="${Localization.t('investigation.registry.display_cards')}">
+                                <i data-lucide="layout-grid"></i>
+                            </button>
+                            <button class="toggle-btn ${this.state.displayMode === 'table' ? 'active' : ''}" 
+                                    onclick="InvestigationRegistryView.setDisplayMode('table')"
+                                    title="${Localization.t('investigation.registry.display_table')}">
+                                <i data-lucide="list"></i>
                             </button>
                         </div>
-                    ` : ''}
-                    ${facts.map(fact => this.renderFactCard(fact)).join('')}
+                        
+                        <button class="btn btn-primary" onclick="InvestigationRegistryView.openAddFactModal()">
+                            <i data-lucide="plus"></i> ${Localization.t('investigation.registry.empty.action')}
+                        </button>
+                    </div>
                 </div>
+
+                <div class="registry-list-premium ${this.state.displayMode === 'table' ? 'mode-table' : 'mode-cards'}" id="registryItemsList">
+                    <!-- Dynamic content -->
+                </div>
+            </div>
+        `;
+
+        this.renderList();
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    },
+
+    renderList: function () {
+        const listContainer = document.getElementById('registryItemsList');
+        if (!listContainer) return;
+
+        const facts = InvestigationStore.getActiveCaseFacts();
+        const searchTerm = (this.state && this.state.search) || '';
+        const filterType = (this.state && this.state.filterType) || 'all';
+        const filterStatus = (this.state && this.state.filterStatus) || 'all';
+        const filterChar = (this.state && this.state.filterCharacterId) || 'all';
+        const filterEvolution = (this.state && this.state.filterHasEvolution) || 'all';
+
+        // Apply filters
+        let filteredFacts = facts.filter(f => {
+            const matchesSearch = f.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                (f.description && f.description.toLowerCase().includes(searchTerm.toLowerCase()));
+            const matchesType = filterType === 'all' || f.type === filterType;
+            const matchesStatus = filterStatus === 'all' || f.truthStatus === filterStatus;
+
+            let matchesChar = filterChar === 'all';
+            if (!matchesChar) {
+                matchesChar = f.relatedCharacterIds && f.relatedCharacterIds.some(id => id == filterChar);
+            }
+
+            let matchesEvolution = filterEvolution === 'all';
+            if (!matchesEvolution) {
+                const hasEvol = f.timeline && f.timeline.length > 0;
+                matchesEvolution = filterEvolution === 'yes' ? hasEvol : !hasEvol;
+            }
+
+            return matchesSearch && matchesType && matchesStatus && matchesChar && matchesEvolution;
+        });
+
+        if (this.state.displayMode === 'table' && facts.length > 0) {
+            // En mode tableau, si on a des données de base, on garde TOUJOURS le tableau visible
+            // pour permettre de modifier les filtres, même si le résultat filtré est vide.
+            const tableExists = listContainer.querySelector('.registry-table-premium');
+            if (!tableExists) {
+                listContainer.innerHTML = this.renderTableShell();
+            }
+            this.updateTableBody(filteredFacts);
+        } else if (filteredFacts.length === 0) {
+            listContainer.innerHTML = `
+                <div class="empty-state-card">
+                    <i data-lucide="search" size="48"></i>
+                    <h4>${facts.length === 0 ? Localization.t('investigation.registry.empty.title') : 'Aucun résultat'}</h4>
+                    <p>${facts.length === 0 ? Localization.t('investigation.registry.empty.desc') : 'Ajustez votre recherche ou vos filtres.'}</p>
+                    ${facts.length === 0 ? `
+                    <button class="btn btn-primary" onclick="InvestigationRegistryView.openAddFactModal()">
+                        <i data-lucide="plus"></i> ${Localization.t('investigation.registry.empty.action')}
+                    </button>` : ''}
+                </div>
+            `;
+        } else {
+            listContainer.innerHTML = filteredFacts.map(fact => this.renderFactCard(fact)).join('');
+        }
+
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    },
+
+    state: {
+        search: '',
+        filterType: 'all',
+        filterStatus: 'all',
+        filterCharacterId: 'all',
+        filterHasEvolution: 'all',
+        displayMode: 'cards'
+    },
+
+    setDisplayMode: function (mode) {
+        this.state.displayMode = mode;
+        this.render(document.getElementById('investigationContent'));
+    },
+
+    handleSearch: function (val) {
+        this.state.search = val;
+
+        // Synchroniser les deux champs de recherche s'ils existent
+        const globalSearch = document.getElementById('registrySearchInput');
+        if (globalSearch && globalSearch.value !== val) globalSearch.value = val;
+
+        const colSearch = document.querySelector('.col-filter-input input');
+        if (colSearch && colSearch.value !== val) colSearch.value = val;
+
+        this.renderList();
+    },
+
+    handleFilter: function (val) {
+        this.state.filterType = val;
+        // Mettre à jour les selects de colonne si en mode tableau
+        const colTypeSelect = document.getElementById('colFilterType');
+        if (colTypeSelect) colTypeSelect.value = val;
+
+        // Mettre à jour le select global si en mode tableau
+        const globalSelect = document.getElementById('registryFilterSelect');
+        if (globalSelect) globalSelect.value = val;
+
+        this.renderList();
+    },
+
+    handleStatusFilter: function (val) {
+        this.state.filterStatus = val;
+        this.renderList();
+    },
+
+    handleCharacterFilter: function (val) {
+        this.state.filterCharacterId = val;
+        this.renderList();
+    },
+
+    handleEvolutionFilter: function (val) {
+        this.state.filterHasEvolution = val;
+        this.renderList();
+    },
+
+    resetFilters: function () {
+        this.state.search = '';
+        this.state.filterType = 'all';
+        this.state.filterStatus = 'all';
+        this.state.filterCharacterId = 'all';
+        this.state.filterHasEvolution = 'all';
+        this.render(document.getElementById('investigationContent'));
+    },
+
+    renderTableShell: function () {
+        const charList = InvestigationStore.getCharacters();
+        const types = ['clue', 'red_herring', 'testimony', 'object', 'event', 'rumor', 'crime', 'disappearance', 'coma'];
+        const statuses = ['verified', 'disputed', 'false'];
+
+        return `
+            <div class="registry-table-container">
+                <table class="registry-table-premium">
+                    <thead>
+                        <tr>
+                            <th class="col-item">${Localization.t('investigation.registry.table.item')}</th>
+                            <th class="col-type">${Localization.t('investigation.registry.table.type')}</th>
+                            <th class="col-status">${Localization.t('investigation.registry.table.status')}</th>
+                            <th class="col-chars">${Localization.t('investigation.registry.table.characters')}</th>
+                            <th class="col-evolution">${Localization.t('investigation.registry.table.evolution')}</th>
+                            <th class="col-actions"></th>
+                        </tr>
+                        <tr class="table-filter-row">
+                            <th>
+                                <div class="col-filter-input">
+                                    <i data-lucide="search"></i>
+                                    <input type="text" placeholder="Filtrer..." value="${this.state.search}" oninput="InvestigationRegistryView.handleSearch(this.value)">
+                                </div>
+                            </th>
+                            <th>
+                                <select id="colFilterType" class="col-filter-select" onchange="InvestigationRegistryView.handleFilter(this.value)">
+                                    <option value="all">${Localization.t('investigation.dashboard.view_all')}</option>
+                                    ${types.map(t => `<option value="${t}" ${this.state.filterType === t ? 'selected' : ''}>${Localization.t('investigation.type.' + t)}</option>`).join('')}
+                                </select>
+                            </th>
+                            <th>
+                                <select class="col-filter-select" onchange="InvestigationRegistryView.handleStatusFilter(this.value)">
+                                    <option value="all">${Localization.t('investigation.dashboard.view_all')}</option>
+                                    ${statuses.map(s => `<option value="${s}" ${this.state.filterStatus === s ? 'selected' : ''}>${Localization.t('investigation.truth.' + s)}</option>`).join('')}
+                                </select>
+                            </th>
+                            <th>
+                                <select class="col-filter-select" onchange="InvestigationRegistryView.handleCharacterFilter(this.value)">
+                                    <option value="all">${Localization.t('investigation.dashboard.view_all')}</option>
+                                    ${charList.sort((a, b) => a.name.localeCompare(b.name)).map(c => `<option value="${c.id}" ${this.state.filterCharacterId == c.id ? 'selected' : ''}>${c.name}</option>`).join('')}
+                                </select>
+                            </th>
+                            <th>
+                                <select class="col-filter-select" onchange="InvestigationRegistryView.handleEvolutionFilter(this.value)">
+                                    <option value="all">${Localization.t('investigation.dashboard.view_all')}</option>
+                                    <option value="yes" ${this.state.filterHasEvolution === 'yes' ? 'selected' : ''}>Oui</option>
+                                    <option value="no" ${this.state.filterHasEvolution === 'no' ? 'selected' : ''}>Non</option>
+                                </select>
+                            </th>
+                            <th>
+                                <div class="row-actions visible">
+                                    <button class="btn-row-action" title="Réinitialiser les filtres" onclick="InvestigationRegistryView.resetFilters()">
+                                        <i data-lucide="rotate-ccw"></i>
+                                    </button>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="registryTableBody">
+                        <!-- Items dynamically updated -->
+                    </tbody>
+                </table>
             </div>
         `;
     },
 
-    renderFactCard: function (fact) {
+    updateTableBody: function (facts) {
+        const tbody = document.getElementById('registryTableBody');
+        if (!tbody) return;
+
+        if (facts.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="table-empty-row">
+                        <i data-lucide="search-x"></i>
+                        <span>Aucun résultat ne correspond à vos filtres.</span>
+                        <button class="btn-text-action" onclick="InvestigationRegistryView.resetFilters()">Voir tout</button>
+                    </td>
+                </tr>
+            `;
+        } else {
+            tbody.innerHTML = facts.map(fact => this.renderTableRow(fact)).join('');
+        }
+
+        if (typeof lucide !== 'undefined') lucide.createIcons({ root: tbody });
+    },
+
+    renderTableRow: function (fact) {
         const typeIcons = {
             clue: 'search',
+            red_herring: 'megaphone-off',
             event: 'calendar',
             testimony: 'message-square',
             object: 'package',
+            rumor: 'message-circle',
             crime: 'skull',
             disappearance: 'user-x',
             coma: 'activity'
         };
         const icon = typeIcons[fact.type] || 'file-text';
 
+        const characters = InvestigationStore.getCharacters();
+        const relatedChars = (fact.relatedCharacterIds || []).map(id => characters.find(c => c.id == id)).filter(Boolean);
+        const hasTimeline = fact.timeline && fact.timeline.length > 0;
+        const lastTimelineStep = hasTimeline ? fact.timeline[fact.timeline.length - 1] : null;
+
+        const truthLabels = {
+            verified: Localization.t('investigation.truth.verified'),
+            disputed: Localization.t('investigation.truth.disputed'),
+            false: Localization.t('investigation.truth.false')
+        };
+        const truthLabel = truthLabels[fact.truthStatus] || fact.truthStatus;
+
         return `
-            <div class="fact-card ${fact.isHidden ? 'is-secret' : ''}" onclick="InvestigationRegistryView.editFact('${fact.id}')">
-                <div class="fact-type-icon ${fact.type}">
-                    <i data-lucide="${icon}"></i>
-                </div>
-                <div class="fact-content">
-                    <div class="fact-header">
-                        <span class="fact-label">${fact.label}</span>
-                        ${fact.isHidden ? '<i data-lucide="eye-off" class="secret-hint"></i>' : ''}
+            <tr class="registry-row" onclick="InvestigationRegistryView.openAddFactModal('${fact.id}')">
+                <td class="col-item">
+                    <div class="item-cell">
+                        <div class="item-icon-mini"><i data-lucide="${icon}"></i></div>
+                        <div class="item-info">
+                            <span class="item-label">${fact.label}</span>
+                            ${fact.description ? `<span class="item-desc-compact">${fact.description.substring(0, 50)}${fact.description.length > 50 ? '...' : ''}</span>` : ''}
+                        </div>
                     </div>
-                    <p class="fact-description">${fact.description || Localization.t('investigation.case.placeholder.no_description') || '...'}</p>
+                </td>
+                <td class="col-type">
+                    <span class="type-pill-compact type-${fact.type}">${Localization.t('investigation.type.' + fact.type)}</span>
+                </td>
+                <td class="col-status">
+                    <span class="status-pill-compact status-${fact.truthStatus}">${truthLabel}</span>
+                </td>
+                <td class="col-chars">
+                    <div class="chars-list-compact">
+                        ${relatedChars.map(c => `
+                            <span class="char-tag-table" style="--char-color: ${c.color || 'var(--primary-color)'}">
+                                ${c.name}
+                            </span>
+                        `).join('')}
+                        ${relatedChars.length === 0 ? '<span class="no-chars-hint">-</span>' : ''}
+                    </div>
+                </td>
+                <td class="col-evolution">
+                    ${hasTimeline ? `
+                        <div class="evolution-cell" title="${lastTimelineStep.description || ''}">
+                            <i data-lucide="git-branch"></i>
+                            <span class="evolution-count">${fact.timeline.length}</span>
+                        </div>
+                    ` : '<span class="no-evolution-hint">-</span>'}
+                </td>
+                <td class="col-actions">
+                    <div class="row-actions">
+                        <button class="btn-row-action" title="Supprimer" onclick="event.stopPropagation(); if(confirm('Supprimer cet item ?')) InvestigationStore.deleteFact('${fact.id}')">
+                            <i data-lucide="trash-2"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    },
+
+    renderFactCard: function (fact) {
+        const typeIcons = {
+            clue: 'search',
+            red_herring: 'megaphone-off',
+            event: 'calendar',
+            testimony: 'message-square',
+            object: 'package',
+            rumor: 'message-circle',
+            crime: 'skull',
+            disappearance: 'user-x',
+            coma: 'activity'
+        };
+        const icon = typeIcons[fact.type] || 'file-text';
+
+        // Enrichment with linked characters
+        const characters = InvestigationStore.getCharacters();
+        const relatedChars = (fact.relatedCharacterIds || []).map(id => characters.find(c => c.id == id)).filter(Boolean);
+
+        // Status info
+        const statusLabel = Localization.t('investigation.truth.' + fact.truthStatus) || fact.truthStatus;
+        const typeLabel = Localization.t('investigation.type.' + fact.type) || fact.type;
+        const hasTimeline = fact.timeline && fact.timeline.length > 0;
+
+        return `
+            <div class="fact-card-premium ${fact.type} ${fact.isHidden ? 'is-secret' : ''}" onclick="InvestigationRegistryView.editFact('${fact.id}')">
+                <div class="card-left-bar status-${fact.truthStatus}"></div>
+                
+                <div class="card-icon-area">
+                    <div class="icon-circle">
+                        <i data-lucide="${icon}"></i>
+                    </div>
                 </div>
-                <div class="fact-actions" style="display: flex; align-items: center; padding-right: 10px;">
-                    <button class="btn-icon-danger" style="background:none; border:none; cursor:pointer;" onclick="event.stopPropagation(); InvestigationRegistryView.deleteFact('${fact.id}')" title="${Localization.t('investigation.dashboard.delete')}">
-                        <i data-lucide="trash-2" style="width:18px; height:18px; color:var(--text-secondary);"></i>
-                    </button>
+
+                <div class="card-main-content">
+                    <div class="card-header-top">
+                        <span class="fact-type-badge">${typeLabel}</span>
+                        <span class="fact-status-pill status-${fact.truthStatus}">${statusLabel}</span>
+                        <div class="card-top-actions">
+                             <button class="btn-icon-xs danger" onclick="event.stopPropagation(); InvestigationRegistryView.deleteFact('${fact.id}')">
+                                <i data-lucide="trash-2"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <h4 class="fact-title-premium">
+                        ${fact.label}
+                        ${fact.isHidden ? '<i data-lucide="eye-off" class="secret-icon-mini"></i>' : ''}
+                    </h4>
+                    
+                    <p class="fact-desc-premium">${fact.description || '...'}</p>
+                    
+                    <div class="card-footer-registry">
+                        <div class="linked-characters-mini">
+                            ${relatedChars.length > 0 ? `
+                                <div class="mini-avatar-stack">
+                                    ${relatedChars.slice(0, 3).map(c => `
+                                        <div class="mini-avatar-registry" title="${c.name}" style="background-color: ${c.color || 'var(--primary-color)'}">
+                                            ${c.name.charAt(0)}
+                                        </div>
+                                    `).join('')}
+                                    ${relatedChars.length > 3 ? `<div class="mini-avatar-more">+${relatedChars.length - 3}</div>` : ''}
+                                </div>
+                            ` : `<span class="no-links-hint">${Localization.t('investigation.registry.tip')}</span>`}
+                        </div>
+                        
+                        <div class="card-meta-indicators">
+                             ${relatedChars.length > 0 ? `<span class="meta-item" title="${Localization.t('investigation.registry.label.characters')}"><i data-lucide="users"></i> ${relatedChars.length}</span>` : ''}
+                             ${hasTimeline ? `<span class="meta-item" title="${Localization.t('investigation.evolution.title')}"><i data-lucide="git-branch"></i> ${fact.timeline.length}</span>` : ''}
+                        </div>
+                    </div>
                 </div>
-                <div class="fact-truth-sidebar status-${fact.truthStatus}"></div>
             </div>
         `;
     },
@@ -120,9 +476,11 @@ const InvestigationRegistryView = {
                                     <label>${Localization.t('investigation.registry.label.type')}</label>
                                     <select id="factType">
                                         <option value="clue" ${existingFact?.type === 'clue' ? 'selected' : ''}>${Localization.t('investigation.type.clue')}</option>
-                                        <option value="event" ${existingFact?.type === 'event' ? 'selected' : ''}>${Localization.t('investigation.type.event')}</option>
+                                        <option value="red_herring" ${existingFact?.type === 'red_herring' ? 'selected' : ''}>${Localization.t('investigation.type.red_herring')}</option>
                                         <option value="testimony" ${existingFact?.type === 'testimony' ? 'selected' : ''}>${Localization.t('investigation.type.testimony')}</option>
                                         <option value="object" ${existingFact?.type === 'object' ? 'selected' : ''}>${Localization.t('investigation.type.object')}</option>
+                                        <option value="event" ${existingFact?.type === 'event' ? 'selected' : ''}>${Localization.t('investigation.type.event')}</option>
+                                        <option value="rumor" ${existingFact?.type === 'rumor' ? 'selected' : ''}>${Localization.t('investigation.type.rumor')}</option>
                                         <option value="crime" ${existingFact?.type === 'crime' ? 'selected' : ''}>${Localization.t('investigation.type.crime')}</option>
                                         <option value="disappearance" ${existingFact?.type === 'disappearance' ? 'selected' : ''}>${Localization.t('investigation.type.disappearance')}</option>
                                         <option value="coma" ${existingFact?.type === 'coma' ? 'selected' : ''}>${Localization.t('investigation.type.coma')}</option>
