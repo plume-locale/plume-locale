@@ -37,9 +37,18 @@ let project = {
     characterColors: {}, // Colors for metro timeline lines
     mindmaps: [], // Custom mindmaps with nodes and links
     thrillerElements: [], // Thriller mystery elements (alibis, clues, secrets, etc.)
-    thrillerElements: [], // Thriller mystery elements (alibis, clues, secrets, etc.)
-    thrillerConnections: [] // Connections between thriller elements
+    thrillerConnections: [], // Connections between thriller elements
+    investigationBoard: { // New: Investigation board data
+        cases: [],
+        activeCaseId: null,
+        facts: [],
+        knowledge: [],
+        suspectLinks: []
+    }
 };
+
+// Global exposition for access from all modules
+window.project = project;
 
 // [MVVM : ViewModel]
 // État de la navigation (Pointeurs vers les données affichées)

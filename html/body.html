@@ -190,6 +190,10 @@
                         <span class="nav-btn-icon"><i data-lucide="grid-3x3"></i></span>
                         <span class="nav-btn-text" data-i18n="nav.storygrid">StoryGrid</span>
                     </button>
+                    <button class="nav-btn" onclick="switchView('investigation')" id="header-tab-investigation">
+                        <span class="nav-btn-icon"><i data-lucide="search"></i></span>
+                        <span class="nav-btn-text" data-i18n="nav.investigation">Enquête</span>
+                    </button>
                 </div>
                 <!-- Section 2 : Personnages, Univers, Codex, Notes -->
                 <div class="nav-group">
@@ -337,7 +341,7 @@
         <!-- Conteneur principal (sidebar + versions + éditeur) -->
         <div class="app-content">
             <!-- Sidebar Navigation -->
-            <div class="sidebar">
+            <div class="sidebar" id="sidebar">
                 <!-- Poignée de redimensionnement -->
                 <div class="sidebar-resize-handle" id="sidebarResizeHandle">
                     <div class="resize-handle-line"></div>
@@ -487,6 +491,9 @@
                 </div>
                 <div class="database-list" id="timelineVizList" style="display: none">
                     <!-- Visual timeline will be here -->
+                </div>
+                <div class="database-list" id="investigationList" style="display: none">
+                    <!-- Investigation cases will be here -->
                 </div>
                 <div class="database-list" id="todosList" style="display: none">
                     <!-- TODOs list will be here -->

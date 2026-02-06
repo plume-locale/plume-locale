@@ -155,7 +155,8 @@ function switchView(view) {
         'chaptersList', 'charactersList', 'worldList', 'timelineList',
         'notesList', 'codexList', 'arcsList', 'statsList', 'versionsList', 'analysisList',
         'todosList', 'corkboardList', 'mindmapList', 'plotList',
-        'relationsList', 'mapList', 'timelineVizList', 'storyGridList', 'thrillerList', 'noSidebarMessage'
+        'relationsList', 'mapList', 'timelineVizList', 'storyGridList', 'thrillerList', 'noSidebarMessage',
+        'investigationList'
     ];
 
     sidebarLists.forEach(listId => {
@@ -174,7 +175,8 @@ function switchView(view) {
         'mindmap': 'mindmapList',
         'timelineviz': 'timelineVizList',
         'thriller': 'thrillerList',
-        'map': 'mapList'
+        'map': 'mapList',
+        'investigation': 'investigationList'
     };
 
     const editorViewVues = ['stats', 'analysis', 'versions', 'todos', 'timeline', 'corkboard', 'plot', 'plotgrid', 'relations'];
@@ -362,6 +364,7 @@ function renderViewContent(view, containerId) {
         case 'timeline': if (typeof renderTimelineList === 'function') renderTimelineList(); break;
         case 'storygrid': if (typeof renderStoryGrid === 'function') renderStoryGrid(); break;
         case 'thriller': if (typeof renderThrillerBoard === 'function') renderThrillerBoard(); break;
+        case 'investigation': if (typeof renderInvestigationBoard === 'function') renderInvestigationBoard(); break;
         default:
             container.innerHTML = `
                 <div class="empty-state">

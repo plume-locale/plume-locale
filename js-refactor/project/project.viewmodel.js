@@ -18,14 +18,17 @@ const ProjectViewModel = {
                 if (savedId) {
                     currentProjectId = savedId;
                     project = projects.find(p => p.id === savedId);
+                    window.project = project;
                 }
 
                 if (!project && projects.length > 0) {
                     project = projects[0];
+                    window.project = project;
                     currentProjectId = project.id;
                 }
             } else {
                 project = ProjectModel.createDefault();
+                window.project = project;
                 projects = [project];
                 currentProjectId = project.id;
                 await ProjectRepository.save(project);
@@ -39,6 +42,7 @@ const ProjectViewModel = {
         } catch (error) {
             console.error('❌ Erreur chargement projets:', error);
             project = ProjectModel.createDefault();
+            window.project = project;
         }
     },
 
@@ -107,6 +111,7 @@ const ProjectViewModel = {
     switchTo(projectId) {
         currentProjectId = projectId;
         project = projects.find(p => p.id === projectId);
+        window.project = project;
 
         if (!project) return;
 
@@ -143,6 +148,7 @@ const ProjectViewModel = {
                 this.switchTo(projects[0].id);
             } else {
                 project = ProjectModel.createDefault();
+                window.project = project;
                 projects = [project];
                 currentProjectId = project.id;
                 await ProjectRepository.save(project);

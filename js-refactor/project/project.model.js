@@ -24,7 +24,14 @@ const ProjectModel = {
             codex: [],
             stats: { dailyGoal: 500, totalGoal: 80000, writingSessions: [] },
             versions: [],
-            relationships: []
+            relationships: [],
+            investigationBoard: {
+                cases: [],
+                activeCaseId: null,
+                facts: [],
+                knowledge: [],
+                suspectLinks: []
+            }
         };
     },
 
@@ -44,6 +51,13 @@ const ProjectModel = {
         project.versions = project.versions || [];
         project.relationships = project.relationships || [];
         project.acts = project.acts || [];
+        project.investigationBoard = project.investigationBoard || {
+            cases: [],
+            activeCaseId: null,
+            facts: [],
+            knowledge: [],
+            suspectLinks: []
+        };
         return project;
     },
 

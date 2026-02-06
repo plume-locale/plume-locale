@@ -41,8 +41,10 @@ CSS_ORDER = [
     '15.colorpalette.css',
     'undo-redo.css',
     '12.arc-board.css',
-    '14.word-repetition.css' ,
-    '14.product-tour.css' ,
+    '14.word-repetition.css',
+    '14.product-tour.css',
+    'js-refactor/investigation-board/investigation-board.css',
+    'js-refactor/investigation-board/investigation-board.tabs.css',
 ]
 
 # Ordre des fichiers JS
@@ -331,6 +333,17 @@ JS_ORDER = [
     'js-refactor/product-tour/product-tour.view.js',
     'js-refactor/product-tour/product-tour.handlers.js',
     'js-refactor/product-tour/product-tour.main.js',
+    
+    # Investigation Board Module (New)
+    'js-refactor/investigation-board/investigation-board.model.js',
+    'js-refactor/investigation-board/investigation-board.store.js',
+    'js-refactor/investigation-board/investigation-board.dashboard.js',
+    'js-refactor/investigation-board/investigation-board.registry.js',
+    'js-refactor/investigation-board/investigation-board.matrix.js',
+    'js-refactor/investigation-board/investigation-board.crime-web.js',
+    'js-refactor/investigation-board/investigation-board.timeline.js',
+    'js-refactor/investigation-board/investigation-board.demo.js',
+    'js-refactor/investigation-board/investigation-board.view.js',
 ]
 
 def read_file(path):
@@ -392,7 +405,9 @@ def collect_css():
     module_css_files = [
         'js-refactor/synonyms/synonyms.css',
         'js-refactor/map/map.css',
-        'js-refactor/keyboard-shortcuts/keyboard-shortcuts.css'
+        'js-refactor/keyboard-shortcuts/keyboard-shortcuts.css',
+        'js-refactor/investigation-board/investigation-board.css',
+        'js-refactor/investigation-board/investigation-board.tabs.css'
     ]
     for css_path in module_css_files:
         filepath = os.path.join(BUILD_DIR, css_path)
@@ -519,7 +534,11 @@ def build(output_file=None):
     </script>
 {footer}"""
     
-    output_path = os.path.join(BUILD_DIR, 'build', output_file)
+    if 'build' in output_file or os.path.isabs(output_file):
+        output_path = os.path.join(BUILD_DIR, output_file)
+    else:
+        output_path = os.path.join(BUILD_DIR, 'build', output_file)
+    
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     
     with open(output_path, 'w', encoding='utf-8') as f:
