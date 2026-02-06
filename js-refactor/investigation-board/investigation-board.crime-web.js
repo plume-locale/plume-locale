@@ -1,6 +1,6 @@
 /**
- * [MVVM : Investigation Crime Web View]
- * Visualisation "Toile d'Araignée" centrée sur le Crime.
+ * [MVVM : Investigation MMO View]
+ * Visualisation MMO centrée sur le Crime.
  * Affiche les suspects et leurs liaisons MMO (Mobile, Means, Opportunity).
  */
 
@@ -54,28 +54,37 @@ const InvestigationCrimeWebView = {
                 <div class="analysis-toolbar">
                     <div class="analysis-header-row">
                         <div class="analysis-selector-group">
-                            <label>Sujet de l'Enquête :</label>
+                            <label>${Localization.t('investigation.crimeweb.selector_label') || 'Sujet de l\'Enquête :'}</label>
                             <div class="select-wrapper">
                                 <i data-lucide="target"></i>
                                 <select id="analysisIncidentSelect" onchange="InvestigationCrimeWebView.setIncident(this.value)">
-                                    <option value="all" ${this.state.selectedIncidentId === 'all' ? 'selected' : ''}>-- Bilan Global (Tous les sujets) --</option>
-                                    ${groups['Major'].length > 0 ? `<optgroup label="Crimes majeurs">${groups['Major'].map(i => `<option value="${i.id}" ${i.id === this.state.selectedIncidentId ? 'selected' : ''}>${i.label}</option>`).join('')}</optgroup>` : ''}
-                                    ${groups['Events'].length > 0 ? `<optgroup label="Événements">${groups['Events'].map(i => `<option value="${i.id}" ${i.id === this.state.selectedIncidentId ? 'selected' : ''}>${i.label}</option>`).join('')}</optgroup>` : ''}
-                                    ${groups['Others'].length > 0 ? `<optgroup label="Autres indices">${groups['Others'].map(i => `<option value="${i.id}" ${i.id === this.state.selectedIncidentId ? 'selected' : ''}>${i.label}</option>`).join('')}</optgroup>` : ''}
+                                    <option value="all" ${this.state.selectedIncidentId === 'all' ? 'selected' : ''}>-- ${Localization.t('investigation.crimeweb.all_subjects') || 'Bilan Global (Tous les sujets)'} --</option>
+                                    ${groups['Major'].length > 0 ? `<optgroup label="${Localization.t('investigation.crimeweb.optgroup_major') || 'Crimes majeurs'}">${groups['Major'].map(i => `<option value="${i.id}" ${i.id === this.state.selectedIncidentId ? 'selected' : ''}>${i.label}</option>`).join('')}</optgroup>` : ''}
+                                    ${groups['Events'].length > 0 ? `<optgroup label="${Localization.t('investigation.crimeweb.optgroup_events') || 'Événements'}">${groups['Events'].map(i => `<option value="${i.id}" ${i.id === this.state.selectedIncidentId ? 'selected' : ''}>${i.label}</option>`).join('')}</optgroup>` : ''}
+                                    ${groups['Others'].length > 0 ? `<optgroup label="${Localization.t('investigation.crimeweb.optgroup_others') || 'Autres indices'}">${groups['Others'].map(i => `<option value="${i.id}" ${i.id === this.state.selectedIncidentId ? 'selected' : ''}>${i.label}</option>`).join('')}</optgroup>` : ''}
                                 </select>
                             </div>
                         </div>
                         
-                        ${this.state.selectedIncidentId === 'all' ? `
-                             <div class="analysis-filter-group">
-                                <label class="checkbox-label" title="Masquer les lignes sans activité MMO">
-                                    <input type="checkbox" id="filterEmptyMMO" 
-                                           ${this.state.hideEmptyMMO ? 'checked' : ''} 
-                                           onchange="InvestigationCrimeWebView.toggleEmptyFilter(this.checked)">
-                                    Masquer si vide
+                        <div class="matrix-actions-group" style="display: flex; gap: 20px; margin-left: 24px; align-items: center;">
+                            ${this.state.selectedIncidentId === 'all' ? `
+                                <label class="toggle-switch">
+                                    <input type="checkbox" 
+                                        ${this.state.hideEmptyMMO ? 'checked' : ''}
+                                        onchange="InvestigationCrimeWebView.toggleEmptyFilter(this.checked)">
+                                    <span class="toggle-slider"></span>
+                                    <span class="toggle-label">${Localization.t('investigation.crimeweb.filter_empty') || 'Masquer si vide'}</span>
                                 </label>
-                             </div>
-                        ` : ''}
+                            ` : ''}
+
+                            <label class="toggle-switch">
+                                <input type="checkbox" 
+                                    ${this.state.showMMODetails ? 'checked' : ''}
+                                    onchange="InvestigationCrimeWebView.toggleMMODetails(this.checked)">
+                                <span class="toggle-slider"></span>
+                                <span class="toggle-label">${Localization.t('investigation.crimeweb.show_details') || 'Détails'}</span>
+                            </label>
+                        </div>
                     </div>
 
                     <div class="analysis-timeline-container">
@@ -95,6 +104,11 @@ const InvestigationCrimeWebView = {
 
     toggleEmptyFilter: function (checked) {
         this.state.hideEmptyMMO = checked;
+        this.render(document.querySelector('.investigation-crime-web') || document.getElementById('investigationContent'));
+    },
+
+    toggleMMODetails: function (checked) {
+        this.state.showMMODetails = checked;
         this.render(document.querySelector('.investigation-crime-web') || document.getElementById('investigationContent'));
     },
 
@@ -279,31 +293,42 @@ const InvestigationCrimeWebView = {
                 <span class="suspect-name-table">${suspect.name}</span>
              </div>`;
 
+        const showDetails = this.state.showMMODetails;
+
+        const isInherited = link._isInherited;
+        const barClass = isInherited ? 'mmo-fill inherited' : 'mmo-fill';
+
         return `
-            <tr class="${rowClass}" onclick="InvestigationCrimeWebView.openMMOModal('${suspect.id}')">
+            <tr class="${rowClass}" onclick="InvestigationCrimeWebView.editSpecificMMO('${suspect.id}', '${incident.id}')">
                 <td class="td-suspect">
                     ${nameCellContent}
                 </td>
                 
                 <td class="td-mmo">
-                    <div class="mmo-bar-compact">
-                        <div class="mmo-track"><div class="mmo-fill motive" style="width: ${motive * 10}%"></div></div>
+                    <div class="mmo-bar-compact" title="${(link.motive && link.motive._inherited) ? 'Valeur héritée' : 'Valeur modifiée ici'}">
+                        <div class="mmo-track"><div class="mmo-fill motive ${(link.motive && link.motive._inherited) ? 'inherited' : ''}" style="width: ${motive * 10}%"></div></div>
                         <span class="mmo-val">${motive}</span>
+                        ${(link.motive && link.motive._inherited) ? '<i data-lucide="chevrons-left" class="inherited-icon"></i>' : ''}
                     </div>
+                    ${showDetails && link.motive && link.motive.description ? `<div class="mmo-detail-text">${link.motive.description}</div>` : ''}
                 </td>
                 
                 <td class="td-mmo">
-                    <div class="mmo-bar-compact">
-                        <div class="mmo-track"><div class="mmo-fill means" style="width: ${means * 10}%"></div></div>
+                    <div class="mmo-bar-compact" title="${(link.means && link.means._inherited) ? 'Valeur héritée' : 'Valeur modifiée ici'}">
+                        <div class="mmo-track"><div class="mmo-fill means ${(link.means && link.means._inherited) ? 'inherited' : ''}" style="width: ${means * 10}%"></div></div>
                         <span class="mmo-val">${means}</span>
+                        ${(link.means && link.means._inherited) ? '<i data-lucide="chevrons-left" class="inherited-icon"></i>' : ''}
                     </div>
+                     ${showDetails && link.means && link.means.description ? `<div class="mmo-detail-text">${link.means.description}</div>` : ''}
                 </td>
                 
                 <td class="td-mmo">
-                    <div class="mmo-bar-compact">
-                        <div class="mmo-track"><div class="mmo-fill opportunity" style="width: ${opportunity * 10}%"></div></div>
+                    <div class="mmo-bar-compact" title="${(link.opportunity && link.opportunity._inherited) ? 'Valeur héritée' : 'Valeur modifiée ici'}">
+                        <div class="mmo-track"><div class="mmo-fill opportunity ${(link.opportunity && link.opportunity._inherited) ? 'inherited' : ''}" style="width: ${opportunity * 10}%"></div></div>
                         <span class="mmo-val">${opportunity}</span>
+                        ${(link.opportunity && link.opportunity._inherited) ? '<i data-lucide="chevrons-left" class="inherited-icon"></i>' : ''}
                     </div>
+                     ${showDetails && link.opportunity && link.opportunity.description ? `<div class="mmo-detail-text">${link.opportunity.description}</div>` : ''}
                 </td>
 
                 <td class="td-score">
@@ -325,15 +350,20 @@ const InvestigationCrimeWebView = {
     },
 
     // --- MMO Modal ---
-
     openMMOModal: function (suspectId) {
         const facts = InvestigationStore.getFacts();
         const crime = facts.find(f => f.type === 'crime' || f.type === 'body') || { id: 'crime_placeholder' };
 
-        // Get Scene Context
-        const scenes = InvestigationStore.getScenes();
+        // Get Scene Context using getScenesWithContext for hierarchy info
+        const scenes = InvestigationStore.getScenesWithContext();
         const currentSceneId = InvestigationStore.state.filters.sceneId || (scenes.length > 0 ? scenes[scenes.length - 1].id : null);
-        const currentScene = scenes.find(s => s.id === currentSceneId) || { title: Localization.t('investigation.crimeweb.start') };
+        const currentScene = scenes.find(s => s.id == currentSceneId) || { title: Localization.t('investigation.crimeweb.start') };
+
+        // Construct Breadcrumb
+        let breadcrumbLabel = currentScene.title;
+        if (currentScene.actTitle && currentScene.chapterTitle) {
+            breadcrumbLabel = `${currentScene.actTitle} > ${currentScene.chapterTitle} > ${currentScene.title}`;
+        }
 
         // Use selected incident from state OR optional override (for nested view)
         const incidentId = this.state.tempOverrideIncidentId || this.state.selectedIncidentId || (crime ? crime.id : null);
@@ -342,20 +372,29 @@ const InvestigationCrimeWebView = {
         const link = InvestigationStore.getSuspectLinkAtScene(suspectId, incidentId, currentSceneId) || {};
 
         const suspect = InvestigationStore.getCharacters().find(c => c.id == suspectId);
-        const incidentLabel = InvestigationStore.getFacts().find(f => f.id == incidentId)?.label || 'Incident';
 
         const motiveLevel = link.motive ? link.motive.level : 0;
         const meansLevel = link.means ? link.means.level : 0;
         const oppLevel = link.opportunity ? link.opportunity.level : 0;
 
+        // Check if we have ANY local override in this scene by looking at raw links
+        // We use String() comparison to avoid type issues and handle null/undefined sceneId
+        const hasLocalOverride = InvestigationStore.state.suspectLinks.some(l =>
+            String(l.suspectId) === String(suspectId) &&
+            String(l.victimId) === String(incidentId) &&
+            (String(l.sceneId || '') === String(currentSceneId || ''))
+        );
+
         const modalHtml = `
             <div class="modal-overlay" id="mmoModal">
                 <div class="modal-container">
-                    <div class="modal-header">
-                        <h3>${Localization.t('investigation.mmo.modal.title').replace('{0}', suspect ? suspect.name : '???')}</h3>
-                        <div style="font-size:0.9rem; color: var(--text-secondary); margin-top:4px;">
-                            <i data-lucide="clock" style="width:14px; display:inline; vertical-align:middle;"></i> 
-                            ${Localization.t('investigation.mmo.modal.edition_for').replace('{0}', currentScene.title)}
+                    <div class="modal-header" style="align-items: flex-start;">
+                        <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
+                            <h3 style="margin: 0; line-height: 1.2;">${Localization.t('investigation.mmo.modal.title').replace('{0}', suspect ? suspect.name : '???')}</h3>
+                            <div style="font-size:0.85rem; color: var(--text-secondary); display: flex; align-items: center; gap: 6px;">
+                                <i data-lucide="clock" style="width:14px; height: 14px;"></i> 
+                                ${Localization.t('investigation.mmo.modal.edition_for').replace('{0}', breadcrumbLabel)}
+                            </div>
                         </div>
                         <button class="modal-close" onclick="document.getElementById('mmoModal').remove()">×</button>
                     </div>
@@ -378,9 +417,17 @@ const InvestigationCrimeWebView = {
                             <textarea id="descOpp" placeholder="${Localization.t('investigation.mmo.placeholder.opportunity')}" rows="2">${link.opportunity ? link.opportunity.description : ''}</textarea>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-secondary" onclick="document.getElementById('mmoModal').remove()">${Localization.t('investigation.dashboard.cancel')}</button>
-                        <button class="btn btn-primary" onclick="InvestigationCrimeWebView.saveMMO('${suspectId}', '${incidentId}', '${currentSceneId || ''}')">${Localization.t('investigation.dashboard.save')}</button>
+                    <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                             ${(hasLocalOverride && currentSceneId && currentSceneId !== 'start') ?
+                `<button class="btn btn-icon" style="color: var(--accent-red);" title="Réinitialiser (Repasser en héritage)" onclick="InvestigationCrimeWebView.deleteMMO('${suspectId}', '${incidentId}', '${currentSceneId}')">
+                                    <i data-lucide="trash-2"></i>
+                                 </button>` : ''}
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn btn-secondary" onclick="document.getElementById('mmoModal').remove()">${Localization.t('investigation.dashboard.cancel')}</button>
+                            <button class="btn btn-primary" onclick="InvestigationCrimeWebView.saveMMO('${suspectId}', '${incidentId}', '${currentSceneId || ''}')">${Localization.t('investigation.dashboard.save')}</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -400,21 +447,62 @@ const InvestigationCrimeWebView = {
         const oppLevel = parseInt(document.getElementById('rangeOpp').value);
         const oppDesc = document.getElementById('descOpp').value;
 
-        // Pass sceneId to update specific snapshot
-        InvestigationStore.updateSuspectLink({
+        // Get current Context to check inheritance state
+        const link = InvestigationStore.getSuspectLinkAtScene(suspectId, crimeId, sceneId) || {};
+
+        const payload = {
             suspectId: suspectId,
             victimId: crimeId,
-            sceneId: sceneId || null,
-            motive: { level: motiveLevel, description: motiveDesc },
-            means: { level: meansLevel, description: meansDesc },
-            opportunity: { level: oppLevel, description: oppDesc }
-        });
+            sceneId: sceneId || null
+        };
+
+        // Helper to decide if we should save a field
+        // We save IF:
+        // 1. Value has changed from the loaded link
+        // 2. OR The loaded link was ALREADY a local override (keep the lock)
+        // If it was Inherited AND Unchanged, we send nothing (so it remains inherited)
+
+        const checkField = (key, level, desc) => {
+            const currentObj = link[key];
+            const isInherited = currentObj ? currentObj._inherited : true; // Default to inherited if missing
+
+            const currentLevel = currentObj ? currentObj.level : 0;
+            const currentDesc = currentObj ? currentObj.description : '';
+
+            const changed = (level !== currentLevel) || (desc !== currentDesc);
+
+            // If changed, OR if it was already local: Save it.
+            if (changed || !isInherited) {
+                payload[key] = { level: level, description: desc };
+            }
+            // Else: Don't add to payload. 
+            // - If new snapshot: It won't be in there -> Inherited.
+            // - If existing properties: It won't overwrite -> Preserved.
+        };
+
+        checkField('motive', motiveLevel, motiveDesc);
+        checkField('means', meansLevel, meansDesc);
+        checkField('opportunity', oppLevel, oppDesc);
+
+        // Pass sceneId to update specific snapshot
+        InvestigationStore.updateSuspectLink(payload);
 
         document.getElementById('mmoModal').remove();
 
         // Refresh view
         if (window.InvestigationView && window.InvestigationView.renderActiveView) {
             window.InvestigationView.renderActiveView('crime-web');
+        }
+    },
+
+    deleteMMO: function (suspectId, crimeId, sceneId) {
+        if (confirm("Voulez-vous supprimer ces modifications locales et revenir à la valeur héritée ?")) {
+            InvestigationStore.deleteSuspectSnapshot(suspectId, crimeId, sceneId);
+            document.getElementById('mmoModal').remove();
+            // Refresh view
+            if (window.InvestigationView && window.InvestigationView.renderActiveView) {
+                window.InvestigationView.renderActiveView('crime-web');
+            }
         }
     }
 };

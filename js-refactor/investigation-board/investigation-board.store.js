@@ -276,51 +276,90 @@ const InvestigationStore = {
      * If no entry exists for this exact scene, it finds the most recent one.
      */
     getSuspectLinkAtScene: function (suspectId, victimId, sceneId) {
-        // 1. Get all MMO snapshots for this pair
-        // 1. Get all MMO snapshots for this pair
-        // Note: Use loose equality for IDs to handle string/number mismatch from HTML attributes
+        // 1. Get ordered list of relevant snapshots (Start -> Current)
+        // We use the flat scene list to determine order
+        const allScenes = this.getScenes();
+        let targetIndex = -1;
+
+        if (sceneId === 'start' || !sceneId) {
+            targetIndex = -1;
+        } else {
+            targetIndex = allScenes.findIndex(s => s.id == sceneId);
+            // If scene not found (e.g. demo data mismatch), fallback to end
+            if (targetIndex === -1 && sceneId) targetIndex = allScenes.length;
+        }
+
+        // Get all raw snapshots for this pair
         const history = this.state.suspectLinks.filter(l =>
             l.suspectId == suspectId && l.victimId == victimId
         );
 
         if (history.length === 0) return null;
 
-        // 2. If sceneId is null (Start), return the one with null/start sceneId
-        if (!sceneId) {
-            return history.find(l => !l.sceneId || l.sceneId === 'start') || null;
+        // 2. Prepare composite result
+        let result = {
+            suspectId,
+            victimId,
+            sceneId: sceneId || 'start', // The requested scene
+            motive: null,
+            means: null,
+            opportunity: null
+        };
+
+        // Helper to check if we are done
+        const isComplete = () => result.motive && result.means && result.opportunity;
+
+        // 3. Iterate backwards from Target Context to Start
+        // Potential Sources:
+        // A. Snapshot explicitly at Current Scene
+        // B. Snapshot at Previous Scenes...
+        // C. Snapshot at Start (null/'start')
+
+        // We build a list of "Candidates" snapshots in reverse chronological order
+        // 1. Current Scene
+        // 2. Preceding Scenes (descending)
+        // 3. Start
+
+        const candidates = [];
+
+        // Add current scene snapshot(s)
+        const currentSnap = history.find(l => l.sceneId == sceneId || (!sceneId && (!l.sceneId || l.sceneId === 'start')));
+        if (currentSnap) candidates.push({ snap: currentSnap, isLocal: true });
+
+        // Add past scenes snapshots
+        for (let i = targetIndex - 1; i >= 0; i--) {
+            const sId = allScenes[i].id;
+            const snap = history.find(l => l.sceneId == sId);
+            if (snap) candidates.push({ snap: snap, isLocal: false });
         }
 
-        // 3. Find exact match
-        const exactMatch = history.find(l => l.sceneId == sceneId);
-        if (exactMatch) return exactMatch;
-
-        // SPECIAL CASE: If querying for 'start' (Beginning of time) and no exact match exists,
-        // we should try to find a legacy 'null' record, OR return null (clean state).
-        // We must NOT fallback to "Latest" (future) data for the "Start" state.
-        if (sceneId === 'start') {
-            return history.find(l => !l.sceneId || l.sceneId === 'start') || null;
+        // Add start snapshot (if not already added as current)
+        if (sceneId !== 'start' && sceneId) {
+            const startSnap = history.find(l => !l.sceneId || l.sceneId === 'start');
+            if (startSnap) candidates.push({ snap: startSnap, isLocal: false });
         }
 
-        // 4. Fallback: Find the "latest" previous state
-        // We need Scene Order. For now, we rely on the flat scene list order.
-        const scenes = this.getScenes();
-        // Use loose equality to find index
-        const targetSceneIndex = scenes.findIndex(s => s.id == sceneId);
+        // 4. Resolve Attributes
+        for (const candidate of candidates) {
+            if (isComplete()) break; // Optimization
 
-        if (targetSceneIndex === -1) {
-            // Scene not found (maybe demo?), return latest added
-            return history[history.length - 1];
+            const { snap, isLocal } = candidate;
+
+            // Check Motive
+            if (!result.motive && snap.motive) {
+                result.motive = { ...snap.motive, _inherited: !isLocal };
+            }
+            // Check Means
+            if (!result.means && snap.means) {
+                result.means = { ...snap.means, _inherited: !isLocal };
+            }
+            // Check Opportunity
+            if (!result.opportunity && snap.opportunity) {
+                result.opportunity = { ...snap.opportunity, _inherited: !isLocal };
+            }
         }
 
-        // Iterate backwards from current scene index
-        for (let i = targetSceneIndex - 1; i >= 0; i--) {
-            const prevSceneId = scenes[i].id;
-            const prevLink = history.find(l => l.sceneId == prevSceneId);
-            if (prevLink) return prevLink;
-        }
-
-        // Return initial state if found, or null
-        return history.find(l => !l.sceneId || l.sceneId === 'start') || null;
+        return result;
     },
 
     /**
@@ -345,6 +384,22 @@ const InvestigationStore = {
         }
         this.save();
         this.refreshCurrentView();
+    },
+
+    deleteSuspectSnapshot: function (suspectId, victimId, sceneId) {
+        if (!sceneId || sceneId === 'start') return; // Cannot delete start state (it's the root)
+
+        const index = this.state.suspectLinks.findIndex(l =>
+            l.suspectId == suspectId &&
+            l.victimId == victimId &&
+            l.sceneId == sceneId
+        );
+
+        if (index !== -1) {
+            this.state.suspectLinks.splice(index, 1);
+            this.save();
+            this.refreshCurrentView();
+        }
     },
 
     // --- STORAGE ---

@@ -133,17 +133,23 @@ const InvestigationView = {
                         <button class="investigation-nav-btn ${currentView === 'registry' ? 'active' : ''}" 
                                 onclick="InvestigationStore.setCurrentView('registry')">
                             <i data-lucide="files"></i> ${Localization.t('investigation.tab.registry')}
-                            <i data-lucide="help-circle" class="help-trigger" onclick="event.stopPropagation(); InvestigationView.showHelp('registry')"></i>
+                            <span class="help-trigger" onclick="event.stopPropagation(); InvestigationView.showHelp('registry')">
+                                <i data-lucide="help-circle"></i>
+                            </span>
                         </button>
                         <button class="investigation-nav-btn ${currentView === 'matrix' ? 'active' : ''}" 
                                 onclick="InvestigationStore.setCurrentView('matrix')">
                             <i data-lucide="grid-3x3"></i> ${Localization.t('investigation.tab.matrix')}
-                            <i data-lucide="help-circle" class="help-trigger" onclick="event.stopPropagation(); InvestigationView.showHelp('matrix')"></i>
+                            <span class="help-trigger" onclick="event.stopPropagation(); InvestigationView.showHelp('matrix')">
+                                <i data-lucide="help-circle"></i>
+                            </span>
                         </button>
                         <button class="investigation-nav-btn ${currentView === 'crime-web' ? 'active' : ''}" 
                                 onclick="InvestigationStore.setCurrentView('crime-web')">
                             <i data-lucide="network"></i> ${Localization.t('investigation.tab.crimeweb')}
-                            <i data-lucide="help-circle" class="help-trigger" onclick="event.stopPropagation(); InvestigationView.showHelp('crime-web')"></i>
+                            <span class="help-trigger" onclick="event.stopPropagation(); InvestigationView.showHelp('crime-web')">
+                                <i data-lucide="help-circle"></i>
+                            </span>
                         </button>
                         <button class="investigation-nav-btn ${currentView === 'timeline' ? 'active' : ''}" 
                                 onclick="InvestigationStore.setCurrentView('timeline')">
