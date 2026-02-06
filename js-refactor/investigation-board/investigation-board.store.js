@@ -304,7 +304,8 @@ const InvestigationStore = {
         // 4. Fallback: Find the "latest" previous state
         // We need Scene Order. For now, we rely on the flat scene list order.
         const scenes = this.getScenes();
-        const targetSceneIndex = scenes.findIndex(s => s.id === sceneId);
+        // Use loose equality to find index
+        const targetSceneIndex = scenes.findIndex(s => s.id == sceneId);
 
         if (targetSceneIndex === -1) {
             // Scene not found (maybe demo?), return latest added
@@ -314,7 +315,7 @@ const InvestigationStore = {
         // Iterate backwards from current scene index
         for (let i = targetSceneIndex - 1; i >= 0; i--) {
             const prevSceneId = scenes[i].id;
-            const prevLink = history.find(l => l.sceneId === prevSceneId);
+            const prevLink = history.find(l => l.sceneId == prevSceneId);
             if (prevLink) return prevLink;
         }
 

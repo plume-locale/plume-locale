@@ -3398,3 +3398,486 @@
     color: var(--text-primary);
     white-space: nowrap;
 }
+
+/* ==========================================
+   ANALYSIS PIVOT (NEW CRIME WEB)
+   ========================================== */
+
+.investigation-analysis-view {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    background: var(--bg-tertiary);
+}
+
+/* --- TOOLBAR --- */
+.analysis-toolbar {
+    display: flex;
+    flex-direction: column;
+    /* Stack selector and timeline */
+    align-items: stretch;
+    padding: 16px 24px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+    z-index: 10;
+    gap: 16px;
+}
+
+.analysis-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.analysis-selector-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.analysis-selector-group label {
+    font-weight: 700;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.select-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.select-wrapper i {
+    position: absolute;
+    left: 10px;
+    width: 16px;
+    height: 16px;
+    color: var(--primary-color);
+    pointer-events: none;
+}
+
+#analysisIncidentSelect {
+    appearance: none;
+    -webkit-appearance: none;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    padding: 8px 16px 8px 36px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    min-width: 250px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+#analysisIncidentSelect:hover {
+    border-color: var(--primary-color);
+}
+
+#analysisIncidentSelect:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.1);
+}
+
+/* --- DETAILED VISUAL TIMELINE --- */
+.analysis-timeline-container {
+    margin-top: 16px;
+    width: 100%;
+}
+
+.timeline-meta-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.tm-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+}
+
+.tm-value {
+    font-weight: 800;
+    color: var(--primary-color);
+}
+
+.tm-context {
+    font-style: italic;
+    opacity: 0.8;
+    font-size: 0.85rem;
+}
+
+/* Track Structure */
+.visual-timeline-track {
+    width: 100%;
+}
+
+.timeline-acts-container {
+    display: flex;
+    gap: 4px;
+    /* Gap between Acts */
+    width: 100%;
+}
+
+/* Act Block */
+.timeline-act-block {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    /* Acts share width equally or based on content? simple flex:1 for now */
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--bg-primary);
+}
+
+.act-label {
+    background: var(--bg-secondary);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    font-weight: 800;
+    text-align: center;
+    padding: 2px 0;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Chapters Row */
+.act-chapters-row {
+    display: flex;
+    flex: 1;
+    height: 24px;
+    /* Height of the clickable track area */
+}
+
+.timeline-chapter-block {
+    display: flex;
+    flex: 1;
+    border-right: 1px dashed var(--border-color);
+    /* Subtle divider between chapters */
+}
+
+.timeline-chapter-block:last-child {
+    border-right: none;
+}
+
+.chapter-scenes-row {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    padding: 0 2px;
+    gap: 1px;
+    /* Tiny gap between scenes */
+}
+
+/* Scene Node */
+.ts-node {
+    flex: 1;
+    height: 12px;
+    background: var(--bg-tertiary);
+    /* Future scenes */
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+    min-width: 4px;
+}
+
+.ts-node:hover {
+    transform: scaleY(1.3);
+    background: var(--text-muted);
+}
+
+.ts-node.active {
+    background: var(--text-secondary);
+    /* Past scenes */
+}
+
+.ts-node.current {
+    background: var(--primary-color);
+    /* Current scene */
+    transform: scaleY(1.4);
+    box-shadow: 0 0 4px rgba(var(--primary-color-rgb), 0.4);
+    z-index: 2;
+}
+
+/* --- ANALYSIS CONTENT --- */
+.analysis-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+}
+
+.analysis-table-container {
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+.analysis-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.analysis-table thead {
+    background: var(--bg-primary);
+    border-bottom: 2px solid var(--border-color);
+}
+
+.analysis-table th {
+    padding: 16px 20px;
+    text-align: left;
+    font-size: 0.8rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+}
+
+.analysis-table td {
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border-color);
+    vertical-align: middle;
+}
+
+.analysis-row {
+    cursor: pointer;
+    transition: background 0.1s;
+}
+
+.analysis-row:hover {
+    background: rgba(var(--primary-color-rgb), 0.03);
+}
+
+.analysis-row:last-child td {
+    border-bottom: none;
+}
+
+/* Column Widths */
+.th-suspect {
+    width: 25%;
+}
+
+.th-mmo {
+    width: 20%;
+}
+
+.th-score {
+    width: 10%;
+    text-align: center !important;
+}
+
+.th-action {
+    width: 5%;
+}
+
+/* Cells */
+.suspect-cell-compact {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.suspect-avatar-micro {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 800;
+    font-size: 0.9rem;
+    background: var(--text-muted);
+    /* Fallback */
+}
+
+.suspect-name-table {
+    font-weight: 700;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+}
+
+/* MMO Compact Bars */
+.mmo-bar-compact {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.mmo-track {
+    flex: 1;
+    height: 6px;
+    background: var(--bg-tertiary);
+    border-radius: 3px;
+    overflow: hidden;
+    min-width: 60px;
+}
+
+.mmo-fill {
+    height: 100%;
+    border-radius: 3px;
+}
+
+.mmo-fill.motive {
+    background: var(--accent-red);
+}
+
+.mmo-fill.means {
+    background: var(--accent-gold);
+}
+
+.mmo-fill.opportunity {
+    background: var(--accent-green);
+}
+
+.mmo-val {
+    font-weight: 700;
+    font-family: monospace;
+    width: 20px;
+    text-align: right;
+    color: var(--text-secondary);
+}
+
+/* Score Badge */
+.td-score {
+    text-align: center !important;
+}
+
+.score-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-weight: 800;
+    font-size: 0.9rem;
+    min-width: 48px;
+}
+
+.score-badge.low {
+    background: var(--bg-tertiary);
+    color: var(--text-muted);
+}
+
+.score-badge.medium {
+    background: rgba(var(--accent-gold-rgb), 0.1);
+    color: var(--accent-gold);
+}
+
+.score-badge.high {
+    background: rgba(var(--accent-red-rgb), 0.15);
+    color: var(--accent-red);
+    box-shadow: 0 0 0 2px rgba(var(--accent-red-rgb), 0.1);
+}
+
+/* Actions */
+.btn-icon-sm {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.analysis-row:hover .btn-icon-sm {
+    background: var(--bg-primary);
+    color: var(--primary-color);
+}
+
+.btn-icon-sm i {
+    width: 14px;
+    height: 14px;
+}
+
+/* --- NESTED ROWS (GLOBAL VIEW) --- */
+.suspect-header-row td {
+    background: var(--bg-tertiary);
+    border-bottom: 2px solid var(--border-color);
+    padding: 8px 16px;
+}
+
+.suspect-header-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.suspect-name-header {
+    font-weight: 800;
+    font-size: 1rem;
+    color: var(--text-primary);
+}
+
+.nested-row {
+    background: var(--bg-primary);
+    /* Lighter than header */
+}
+
+.nested-row:hover {
+    background: var(--bg-secondary);
+}
+
+.nested-row td {
+    border-bottom: 1px dashed var(--border-color);
+}
+
+.nested-incident-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-left: 32px;
+    /* Indent */
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+.nested-incident-label i {
+    width: 14px;
+    height: 14px;
+    opacity: 0.5;
+}
+
+/* Filter Group */
+.analysis-filter-group {
+    display: flex;
+    align-items: center;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    user-select: none;
+    color: var(--text-secondary);
+    padding: 4px 8px;
+    border-radius: 4px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+}
+
+.checkbox-label:hover {
+    background: var(--bg-tertiary);
+}
+
+.checkbox-label input {
+    cursor: pointer;
+}
