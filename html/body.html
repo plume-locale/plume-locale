@@ -425,8 +425,9 @@
                         <i data-lucide="trending-up"></i>
                         <span data-i18n="tool.plot">Intrigue</span>
                     </button>
-                    <button class="scene-tool-btn" onclick="InvestigationSidebarUI.toggleSidebar()" id="sidebarInvestigationBtn"
-                        title="Afficher/masquer l'Enquête" data-i18n-title="tool.investigation">
+                    <button class="scene-tool-btn" onclick="InvestigationSidebarUI.toggleSidebar()"
+                        id="sidebarInvestigationBtn" title="Afficher/masquer l'Enquête"
+                        data-i18n-title="tool.investigation">
                         <i data-lucide="search"></i>
                         <span data-i18n="tool.investigation">Enquête</span>
                     </button>
@@ -541,8 +542,8 @@
                     data-i18n-title="tools.plot">
                     <i data-lucide="layout-grid"></i>
                 </button>
-                <button class="tool-btn" onclick="InvestigationSidebarUI.toggleSidebar()" id="toolInvestigationBtn" title="Enquête"
-                    data-i18n-title="tools.investigation">
+                <button class="tool-btn" onclick="InvestigationSidebarUI.toggleSidebar()" id="toolInvestigationBtn"
+                    title="Enquête" data-i18n-title="tools.investigation">
                     <i data-lucide="search"></i>
                 </button>
                 <div style="width: 100%; height: 1px; background: var(--border-color); margin: 0.5rem 0"></div>
@@ -610,13 +611,15 @@
                 <div class="sidebar-plot-header">
                     <div class="sidebar-plot-title">
                         <h3 data-i18n="tool.investigation"><i data-lucide="search"
-                                style="width: 16px; height: 16px; vertical-align: middle; margin-right: 6px"></i>Enquête</h3>
-                        <button class="sidebar-plot-toggle" onclick="InvestigationSidebarUI.toggleSidebar()" title="Masquer"
-                            data-i18n-title="btn.hide">
+                                style="width: 16px; height: 16px; vertical-align: middle; margin-right: 6px"></i>Enquête
+                        </h3>
+                        <button class="sidebar-plot-toggle" onclick="InvestigationSidebarUI.toggleSidebar()"
+                            title="Masquer" data-i18n-title="btn.hide">
                             <i data-lucide="x" style="width: 14px; height: 14px"></i>
                         </button>
                     </div>
-                    <div class="sidebar-plot-scene" id="investigationSidebarSceneName" data-i18n="sidebar.no_scene">Aucune scène sélectionnée</div>
+                    <div class="sidebar-plot-scene" id="investigationSidebarSceneName" data-i18n="sidebar.no_scene">
+                        Aucune scène sélectionnée</div>
                 </div>
                 <div class="sidebar-plot-list" id="investigationSidebarList">
                     <!-- Investigation cards will be inserted here -->
@@ -951,11 +954,11 @@
             <div class="form-group">
                 <label class="form-label" data-i18n="modal.world.type">Type</label>
                 <select class="form-input" id="worldTypeInput">
-                    <option value="Lieu">Lieu</option>
-                    <option value="Objet">Objet</option>
-                    <option value="Concept">Concept</option>
-                    <option value="Organisation">Organisation</option>
-                    <option value="événement">événement</option>
+                    <option value="Lieu" data-i18n="world.type.place">Lieu</option>
+                    <option value="Objet" data-i18n="world.type.object">Objet</option>
+                    <option value="Concept" data-i18n="world.type.concept">Concept</option>
+                    <option value="Organisation" data-i18n="world.type.organization">Organisation</option>
+                    <option value="Événement" data-i18n="world.type.event">Événement</option>
                 </select>
             </div>
             <div class="form-group">

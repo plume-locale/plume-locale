@@ -347,21 +347,21 @@ const InvestigationMMOView = {
         `;
     },
 
-    editSpecificMMO: function (suspectId, incidentId) {
+    editSpecificMMO: function (suspectId, incidentId, sceneId = null) {
         // Wrapper to force specific incident ID when in nested mode
         this.state.tempOverrideIncidentId = incidentId;
-        this.openMMOModal(suspectId);
+        this.openMMOModal(suspectId, sceneId);
         this.state.tempOverrideIncidentId = null;
     },
 
     // --- MMO Modal ---
-    openMMOModal: function (suspectId) {
+    openMMOModal: function (suspectId, forcedSceneId = null) {
         const facts = InvestigationStore.getFacts();
         const crime = facts.find(f => f.type === 'crime' || f.type === 'body') || { id: 'crime_placeholder' };
 
         // Get Scene Context using getScenesWithContext for hierarchy info
         const scenes = InvestigationStore.getScenesWithContext();
-        const currentSceneId = InvestigationStore.state.filters.sceneId || (scenes.length > 0 ? scenes[scenes.length - 1].id : null);
+        const currentSceneId = forcedSceneId || InvestigationStore.state.filters.sceneId || (scenes.length > 0 ? scenes[scenes.length - 1].id : null);
         const currentScene = scenes.find(s => s.id == currentSceneId) || { title: Localization.t('investigation.mmo.start') };
 
         // Construct Breadcrumb
@@ -494,20 +494,14 @@ const InvestigationMMOView = {
 
         document.getElementById('mmoModal').remove();
 
-        // Refresh view
-        if (window.InvestigationView && window.InvestigationView.renderActiveView) {
-            window.InvestigationView.renderActiveView('mmo');
-        }
+        // Refresh handled by refreshCurrentView inside updateSuspectLink
     },
 
     deleteMMO: function (suspectId, crimeId, sceneId) {
         if (confirm(Localization.t('investigation.mmo.confirm_reset_inheritance'))) {
             InvestigationStore.deleteSuspectSnapshot(suspectId, crimeId, sceneId);
             document.getElementById('mmoModal').remove();
-            // Refresh view
-            if (window.InvestigationView && window.InvestigationView.renderActiveView) {
-                window.InvestigationView.renderActiveView('mmo');
-            }
+            // Refresh handled by refreshCurrentView inside store
         }
     },
 

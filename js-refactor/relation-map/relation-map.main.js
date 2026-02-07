@@ -44,5 +44,5 @@
         RelationMapHandlers.handleAutoArrange();
     };
 
-    // Any other global functions requested by the view but now handled by handlers can be added here
+    window.relationMapRepository = repository;
 })();

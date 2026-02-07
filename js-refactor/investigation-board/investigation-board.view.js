@@ -24,8 +24,9 @@ const InvestigationView = {
                 <div class="sidebar-search-container">
                     <div class="search-input-wrapper">
                         <i data-lucide="search" class="search-icon"></i>
-                        <input type="text" placeholder="${Localization.t('search.placeholder') || 'Rechercher...'}" 
+                        <input type="text" placeholder="${Localization.t('investigation.case.search') || 'Rechercher...'}" 
                                id="sidebarCaseSearch"
+                               data-i18n-placeholder="investigation.case.search"
                                oninput="InvestigationView.filterSidebarCases(this.value)">
                     </div>
                 </div>
@@ -214,6 +215,23 @@ const InvestigationView = {
     },
 
     renderToolbarActions: function (viewMode) {
+        if (viewMode === 'timeline') {
+            const mode = InvestigationStore.state.timelineMode || 'default';
+            return `
+                <div class="view-mode-toggle">
+                    <button class="btn-toggle ${mode === 'default' ? 'active' : ''}" 
+                            onclick="InvestigationStore.setTimelineMode('default')" 
+                            title="${Localization.t('investigation.timeline.view.default') || 'Vue normale'}">
+                        <i data-lucide="layout-list"></i>
+                    </button>
+                    <button class="btn-toggle ${mode === 'compact' ? 'active' : ''}" 
+                            onclick="InvestigationStore.setTimelineMode('compact')"
+                            title="${Localization.t('investigation.timeline.view.compact') || 'Vue compacte'}">
+                        <i data-lucide="stretch-horizontal"></i>
+                    </button>
+                </div>
+            `;
+        }
         return '';
     },
 

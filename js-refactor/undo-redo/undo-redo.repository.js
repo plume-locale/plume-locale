@@ -189,6 +189,20 @@ const UndoRedoRepository = {
             debounced: []
         });
 
+        // Nouvelles intégrations
+        integrate(window.mapRepository, 'Map', {
+            immediate: ['addMap', 'updateMap', 'deleteMap', 'addLocation', 'updateLocation', 'deleteLocation', 'addCategory', 'addType', 'updateType', 'deleteType']
+        });
+        integrate(window.relationMapRepository, 'RelationMap', {
+            immediate: ['addRelation', 'updateRelation', 'deleteRelation', 'updateCharacterPosition', 'resetAllPositions', 'setAllPositions', 'saveCustomRelationType', 'deleteCustomRelationType']
+        });
+        integrate(window.sceneNavigationRepository, 'SceneNavigation', {
+            immediate: ['updateSceneContent']
+        });
+        integrate(window.CorkBoardRepository, 'CorkBoard', {
+            immediate: ['updateSceneSynopsis', 'updateSceneColor', 'reorderScenes', 'createAct', 'createChapter', 'createScene']
+        });
+
         console.log('[UndoRedo] Integration avec tous les repositories effectuee');
     }
 };

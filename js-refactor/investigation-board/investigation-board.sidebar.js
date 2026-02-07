@@ -4,6 +4,7 @@
  */
 const InvestigationSidebarUI = {
     activeSceneId: null,
+    selectedIncidentId: null,
 
     /**
      * Toggles the investigation sidebar visibility.
@@ -174,18 +175,39 @@ const InvestigationSidebarUI = {
 
         if (sceneCharactersIds.length === 0) return '';
 
-        // Find primary incident (Crime or Major Event)
-        // Try major types first, then any fact if none found
-        const facts = InvestigationStore.getFacts();
-        let primaryIncident = facts.find(f => ['crime', 'body', 'disappearance', 'event'].includes(f.type));
-        if (!primaryIncident && facts.length > 0) primaryIncident = facts[0];
+        // All facts from registry
+        const potentialIncidents = InvestigationStore.getFacts();
+
+        if (potentialIncidents.length === 0) return '';
+
+        // Determine which incident to show
+        let primaryIncident = null;
+        if (this.selectedIncidentId) {
+            primaryIncident = potentialIncidents.find(f => f.id === this.selectedIncidentId);
+        }
+
+        if (!primaryIncident) {
+            primaryIncident = potentialIncidents.find(f => ['crime', 'body', 'disappearance', 'event'].includes(f.type)) || potentialIncidents[0];
+        }
 
         if (!primaryIncident) return '';
 
         let html = `
-            <div class="sidebar-section-header">
-                <i data-lucide="users"></i>
-                <span>${Localization.t('investigation.mmo.characters_in_scene') || 'Personnages & MMO'}</span>
+            <div class="sidebar-section-header mmo-sidebar-header">
+                <div class="mmo-header-title">
+                    <i data-lucide="users"></i>
+                    <span data-i18n="investigation.mmo.characters_in_scene">${Localization.t('investigation.mmo.characters_in_scene') || 'Personnages & MMO'}</span>
+                </div>
+                
+                <select class="mmo-incident-selector-sidebar" 
+                        onchange="InvestigationSidebarUI.setMMOIncident(this.value)"
+                        title="${Localization.t('investigation.mmo.selector_label') || 'Sujet de l\'enquête'}">
+                    ${potentialIncidents.map(inc => `
+                        <option value="${inc.id}" ${inc.id === primaryIncident.id ? 'selected' : ''}>
+                            ${inc.label}
+                        </option>
+                    `).join('')}
+                </select>
             </div>
             <div class="sidebar-mmo-container">
         `;
@@ -206,7 +228,7 @@ const InvestigationSidebarUI = {
                             ${char.name.charAt(0)}
                         </div>
                         <span class="mmo-char-name">${char.name}</span>
-                        <button class="mmo-edit-btn" onclick="InvestigationMMOView.editSpecificMMO('${char.id}', '${primaryIncident.id}')">
+                        <button class="mmo-edit-btn" onclick="InvestigationMMOView.editSpecificMMO('${char.id}', '${primaryIncident.id}', '${sceneId}')">
                             <i data-lucide="edit-3"></i>
                         </button>
                     </div>
@@ -269,7 +291,6 @@ const InvestigationSidebarUI = {
         };
 
         InvestigationStore.updateSuspectLink(payload);
-        this.renderSidebar(sceneId);
 
         // Also refresh the main MMO view if it's open (in background)
         if (window.InvestigationMMOView && typeof window.InvestigationMMOView.render === 'function') {
@@ -287,6 +308,16 @@ const InvestigationSidebarUI = {
             InvestigationRegistryView.editFact(factId);
         } else {
             console.error("InvestigationRegistryView.editFact is not available");
+        }
+    },
+
+    /**
+     * Changes the active incident for MMO display.
+     */
+    setMMOIncident: function (incidentId) {
+        this.selectedIncidentId = incidentId;
+        if (this.activeSceneId) {
+            this.renderSidebar(this.activeSceneId);
         }
     }
 };

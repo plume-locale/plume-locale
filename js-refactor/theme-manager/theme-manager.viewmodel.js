@@ -49,7 +49,10 @@ const ThemeManagerViewModel = {
      */
     applyTheme: (colors) => {
         const root = document.documentElement;
-        Object.entries(colors).forEach(([variable, value]) => {
+        // Fusionner avec les défauts pour s'assurer que TOUTES les variables sont réinitialisées
+        const fullTheme = { ...ThemeManagerModel.defaultVariables, ...colors };
+
+        Object.entries(fullTheme).forEach(([variable, value]) => {
             root.style.setProperty(variable, value);
             if (!variable.endsWith('-rgb') && !variable.includes('highlight') && !variable.includes('shadow')) {
                 try {

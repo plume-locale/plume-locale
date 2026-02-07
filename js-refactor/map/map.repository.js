@@ -178,3 +178,4 @@ class MapRepository {
 }
 
 const mapRepository = new MapRepository();
+window.mapRepository = mapRepository;

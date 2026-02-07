@@ -117,7 +117,10 @@ const InvestigationDashboardView = {
 
                 <div class="overview-grid">
                     <div class="overview-card stats-card">
-                        <div class="card-title">${Localization.t('investigation.dashboard.progression')}</div>
+                        <div class="card-header-mini">
+                            <div class="card-title">${Localization.t('investigation.dashboard.progression')}</div>
+                            <i data-lucide="trending-up" class="card-icon-bg"></i>
+                        </div>
                         <div class="stat-content">
                             <div class="stat-main">${Localization.t('investigation.phase.' + (caseData.phase || 'collection'))}</div>
                             <div class="stat-sub">${Localization.t('investigation.status.' + caseData.status)}</div>
@@ -125,7 +128,10 @@ const InvestigationDashboardView = {
                     </div>
                     
                     <div class="overview-card stats-card">
-                        <div class="card-title">${Localization.t('investigation.dashboard.indices')}</div>
+                        <div class="card-header-mini">
+                            <div class="card-title">${Localization.t('investigation.dashboard.indices')}</div>
+                            <i data-lucide="file-search" class="card-icon-bg"></i>
+                        </div>
                         <div class="stat-content">
                             <div class="stat-main">${facts.length}</div>
                             <div class="stat-sub">${verifiedFacts} ${Localization.t('investigation.dashboard.verified')}, ${secretsCount} ${Localization.t('investigation.dashboard.secrets')}</div>
@@ -133,13 +139,17 @@ const InvestigationDashboardView = {
                     </div>
 
                     <div class="overview-card suspects-card">
-                        <div class="card-title">${Localization.t('investigation.dashboard.key_suspects')} (${suspects.length})</div>
+                        <div class="card-header-mini">
+                            <div class="card-title">${Localization.t('investigation.dashboard.key_suspects')} (${suspects.length})</div>
+                            <i data-lucide="users" class="card-icon-bg"></i>
+                        </div>
                         <div class="suspects-list">
                             ${suspects.slice(0, 4).map(s => {
             const nameChar = s.name?.[0] || s.firstName?.[0] || '?';
+            const charColor = s.color || 'var(--text-muted)';
             return `
-                                    <div class="suspect-mini-profile">
-                                        <div class="mini-avatar">${nameChar}</div>
+                                    <div class="suspect-mini-profile" style="border-left: 3px solid ${charColor}">
+                                        <div class="mini-avatar" style="background: ${charColor}">${nameChar}</div>
                                         <span>${s.name || s.firstName || Localization.t('investigation.common.character')}</span>
                                     </div>
                                 `;

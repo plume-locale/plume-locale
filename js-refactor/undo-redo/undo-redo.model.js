@@ -47,7 +47,16 @@ const UndoRedoConfig = {
         'toggleTodo': 'Changement d\'état TODO',
         'Scene.update': 'Modification de scène',
         'Chapter.update': 'Modification de chapitre',
-        'Act.update': 'Modification d\'acte'
+        'Act.update': 'Modification d\'acte',
+        'Map.updateLocation': 'Déplacement d\'un point sur la carte',
+        'Map.addLocation': 'Nouvel emplacement sur la carte',
+        'Map.deleteLocation': 'Suppression d\'un emplacement',
+        'RelationMap.updateCharacterPosition': 'Déplacement de personnage',
+        'RelationMap.addRelation': 'Nouvelle relation',
+        'RelationMap.deleteRelation': 'Suppression de relation',
+        'edit': 'Modification',
+        'change': 'Changement de valeur',
+        'select-change': 'Changement de sélection'
     }
 };
 

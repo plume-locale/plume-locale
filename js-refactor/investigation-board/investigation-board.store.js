@@ -15,6 +15,7 @@ const InvestigationStore = {
         knowledge: [],       // { characterId, factId, sceneId, state }
         suspectLinks: [],    // { suspectId, victimId, caseId, motive, means, opportunity }
         currentView: 'dashboard', // dashboard, matrix, mmo, registry
+        timelineMode: 'default', // default, compact
         filters: {
             characterId: null,
             sceneId: null
@@ -128,6 +129,13 @@ const InvestigationStore = {
         } else {
             console.error("❌ [Store] InvestigationView not found!");
         }
+    },
+
+    setTimelineMode: function (mode) {
+        console.log("🖱️ [Store] setTimelineMode triggered:", mode);
+        this.state.timelineMode = mode;
+        this.save();
+        this.refreshCurrentView();
     },
 
     // --- CASE MANAGEMENT ---
@@ -430,7 +438,8 @@ const InvestigationStore = {
                 activeCaseId: this.state.activeCaseId,
                 facts: this.state.facts,
                 knowledge: this.state.knowledge,
-                suspectLinks: this.state.suspectLinks
+                suspectLinks: this.state.suspectLinks,
+                timelineMode: this.state.timelineMode
             };
 
             console.log('💾 [InvestigationStore] Data updated in project.investigationBoard');
@@ -467,6 +476,7 @@ const InvestigationStore = {
             this.state.facts = data.facts || [];
             this.state.knowledge = data.knowledge || [];
             this.state.suspectLinks = data.suspectLinks || [];
+            this.state.timelineMode = data.timelineMode || 'default';
         } else {
             console.log('📂 [InvestigationStore] No saved data found, initializing empty state');
             this.state.cases = [];
@@ -478,8 +488,22 @@ const InvestigationStore = {
     },
 
     refreshCurrentView: function () {
-        const container = document.getElementById('investigationContent');
+        // 1. Refresh Investigation Structure Sidebar (independent of main view)
+        if (typeof InvestigationSidebarUI !== 'undefined') {
+            const sidebar = document.getElementById('sidebarInvestigation');
+            if (sidebar && !sidebar.classList.contains('hidden')) {
+                const sceneId = InvestigationSidebarUI.activeSceneId || (window.currentSceneId) || null;
+                if (sceneId) {
+                    console.log("🔄 [Store] Refreshing Investigation Sidebar for scene:", sceneId);
+                    InvestigationSidebarUI.renderSidebar(sceneId);
+                }
+            }
+        }
+
+        // 2. Refresh Main Investigation View if active
         if (window.InvestigationView) {
+            const container = document.getElementById('investigationContent');
+
             // Update Header (Tabs + Active Case Info)
             if (typeof window.InvestigationView.updateHeader === 'function') {
                 window.InvestigationView.updateHeader();
@@ -490,14 +514,12 @@ const InvestigationStore = {
                 window.InvestigationView.updateToolbar(this.state.currentView);
             }
 
-
-            // --- ADDED ---
-            // Force refresh of sidebar when switching active case
+            // Force refresh of embedded sidebar if in investigation view
             if (typeof window.InvestigationView.renderSidebar === 'function') {
                 window.InvestigationView.renderSidebar();
             }
 
-            // Update Content View
+            // Update Main Content
             if (container) {
                 window.InvestigationView.renderActiveView(this.state.currentView);
             }

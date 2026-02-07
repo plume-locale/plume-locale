@@ -21,6 +21,7 @@ const InvestigationRegistryView = {
                             <i data-lucide="search"></i>
                             <input type="text" id="registrySearchInput"
                                    placeholder="${Localization.t('investigation.sidebar.search')}" 
+                                   data-i18n-placeholder="investigation.sidebar.search"
                                    value="${searchTerm}"
                                    oninput="InvestigationRegistryView.handleSearch(this.value)">
                         </div>
@@ -215,7 +216,10 @@ const InvestigationRegistryView = {
                             <th>
                                 <div class="col-filter-input">
                                     <i data-lucide="search"></i>
-                                    <input type="text" placeholder="${Localization.t('investigation.registry.placeholder.filter')}" value="${this.state.search}" oninput="InvestigationRegistryView.handleSearch(this.value)">
+                                    <input type="text" placeholder="${Localization.t('investigation.registry.placeholder.filter')}" 
+                                           data-i18n-placeholder="investigation.registry.placeholder.filter"
+                                           value="${this.state.search}" 
+                                           oninput="InvestigationRegistryView.handleSearch(this.value)">
                                 </div>
                             </th>
                             <th>
@@ -464,7 +468,7 @@ const InvestigationRegistryView = {
         // Récupération des données pour les sélecteurs
         const allCharacters = InvestigationStore.getCharacters();
         const allLocations = InvestigationStore.getLocations();
-        const allArcs = (window.ArcModel && window.ArcModel.arcs) || [];
+        const allArcs = (typeof ArcRepository !== 'undefined') ? ArcRepository.getAll() : ((window.ArcModel && window.ArcModel.arcs) || []);
 
         const modalHtml = `
             <div class="modal-overlay" id="fact-modal">
@@ -525,7 +529,10 @@ const InvestigationRegistryView = {
                                 </div>
                                 <div class="form-group flex-1">
                                     <label>${Localization.t('investigation.registry.label.arc')}</label>
-                                    <input type="text" id="factArc" value="${existingFact?.relatedArcId || ''}" placeholder="${Localization.t('investigation.registry.placeholder.arc')}">
+                                    <select id="factArc">
+                                        <option value="">-- ${Localization.t('investigation.case.option.none')} --</option>
+                                        ${allArcs.map(arc => `<option value="${arc.id}" ${existingFact?.relatedArcId === arc.id ? 'selected' : ''}>${arc.title}</option>`).join('')}
+                                    </select>
                                 </div>
                             </div>
 

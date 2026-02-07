@@ -7,7 +7,7 @@
  * Coordination to add a world element.
  */
 function addWorldElementViewModel(name, type, description) {
-    if (!name) return { success: false, message: 'Le nom est obligatoire' };
+    if (!name) return { success: false, message: Localization.t('world.error.name_required') };
 
     const elementData = {
         name: name,
@@ -109,7 +109,7 @@ function getLinkedScenesForElementViewModel(elementId) {
             ...scene,
             actNumber,
             chapterNumber,
-            breadcrumb: `Acte ${actNumber} › Chapitre ${chapterNumber} › ${scene.sceneTitle}`
+            breadcrumb: Localization.t('world.breadcrumb', actNumber, chapterNumber, scene.sceneTitle)
         };
     });
 }
