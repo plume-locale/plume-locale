@@ -2103,6 +2103,9 @@ const LOCALE_FR = {
     "investigation.matrix.empty.desc": "La matrice montre comment l'information se diffuse parmi vos personnages au fil des scènes.",
     "investigation.model.default.case_title": "Nouvelle Affaire",
     "investigation.model.default.fact_label": "Nouvel indice",
+    "investigation.warning.clear_demo": "Êtes-vous sûr de vouloir supprimer toutes les données de démo de l'enquête ? (Affaires, Indices, Personnages de démo)",
+    "investigation.dashboard.clear_demo": "Effacer Démo",
+    "investigation.dashboard.demo_cleared": "Données démo effacées",
 
     // --- Thriller Board ---
     "thriller.view.grid": "Vue grille",

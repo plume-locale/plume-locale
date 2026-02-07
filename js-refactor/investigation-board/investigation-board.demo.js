@@ -1,73 +1,58 @@
 
-// Demo Data Injection Script: The Midnight Poisoning
-function injectDemoData() {
-    console.log("💉 Injecting Demo Data: The Midnight Poisoning...");
+// Demo Data Cleanup Script
+function clearDemoData() {
+    console.log("🧹 Clearing Demo Data...");
 
-    // 1. Clear Existing Data (Optional/Safety)
-    // InvestigationStore.state.cases = [];
+    if (confirm(Localization.t('investigation.warning.clear_demo'))) {
+        // 1. Clear Investigation Store
+        if (window.InvestigationStore) {
+            InvestigationStore.state.cases = [];
+            InvestigationStore.state.activeCaseId = null;
+            InvestigationStore.state.facts = [];
+            InvestigationStore.state.knowledge = [];
+            InvestigationStore.state.suspectLinks = [];
+            InvestigationStore.save();
+            console.log("✅ Investigation Board data cleared.");
+        }
 
-    // 2. Create Characters if missing
-    // We assume project characters exist. If not, we mock them.
-    let s1 = InvestigationStore.getCharacters().find(c => c.name.includes("Butler"));
-    if (!s1) s1 = { id: 101, name: "The Butler", role: "Suspect" };
+        // 2. Clear Demo Characters
+        // Remove characters matching specific demo names
+        if (window.project && window.project.characters) {
+            const demoNames = [
+                "The Butler", "The Heir",
+                "Alfred (Majordome)", "Baron Sterling",
+                "Dr. Aris", "Julian (Héritier)",
+                "M. Vane (Rival)", "Miss Scarlet",
+                "Sarah Jenkins", "Victor Blackwood"
+            ];
 
-    let s2 = InvestigationStore.getCharacters().find(c => c.name.includes("Heir"));
-    if (!s2) s2 = { id: 102, name: "The Heir", role: "Suspect" };
+            const initialLength = window.project.characters.length;
 
-    // 3. Create Case
-    const myCase = InvestigationStore.createCase({
-        title: "The Midnight Poisoning",
-        status: "Open"
-    });
-    InvestigationStore.setActiveCase(myCase.id);
+            // Filter by ID (101, 102) or Name (exact or partial matches for robustness)
+            window.project.characters = window.project.characters.filter(c => {
+                const isDemoId = [101, 102].includes(c.id);
+                const isDemoName = demoNames.some(name => c.name === name || c.name.includes(name));
+                return !isDemoId && !isDemoName;
+            });
 
-    // 4. Create Facts
-    const crime = InvestigationStore.createFact({
-        type: 'crime',
-        label: 'Baron Found Dead',
-        description: 'Poisoned in his study at midnight.',
-        truthStatus: 'verified'
-    });
-    InvestigationStore.addFact(crime);
+            if (window.project.characters.length < initialLength) {
+                console.log("✅ Demo characters removed.");
+                // Trigger save if possible
+                if (typeof saveProjectToDB === 'function') {
+                    saveProjectToDB(window.project);
+                }
+            }
+        }
 
-    const clue1 = InvestigationStore.createFact({
-        type: 'clue',
-        label: 'Empty Vial',
-        description: 'Found under the rug.',
-        truthStatus: 'suspicious'
-    });
-    InvestigationStore.addFact(clue1);
-
-    // 5. Create MMO Links (Evolution)
-
-    // Scene: Start (Initial Suspicion)
-    InvestigationStore.updateSuspectLink({
-        suspectId: s1.id,
-        victimId: crime.id,
-        sceneId: 'start',
-        motive: { level: 2, description: "Loyal servant?" },
-        means: { level: 8, description: "Has keys to medicine cabinet." },
-        opportunity: { level: 5, description: "Lives in house." }
-    });
-
-    // Scene: Scene 1 (The Discovery) - Suspicion Rises
-    // Assuming we have scenes, or we manually set ids
-    // Let's assume standard Act 1 Scene 1 ID if available, else 'scene_1'
-    const scenes = InvestigationStore.getScenes();
-    const scene1Id = scenes.length > 0 ? scenes[0].id : 'scene_1';
-
-    InvestigationStore.updateSuspectLink({
-        suspectId: s1.id,
-        victimId: crime.id,
-        sceneId: scene1Id,
-        motive: { level: 5, description: "Argued with Baron." },
-        means: { level: 8, description: "Has keys." },
-        opportunity: { level: 9, description: "Was seen near study." }
-    });
-
-    console.log("✅ Demo Data Injected!");
-    window.location.reload();
+        console.log("✨ Cleanup complete. Reloading...");
+        window.location.reload();
+    }
 }
 
 // Expose globally
-window.injectDemoData = injectDemoData;
+window.clearDemoData = clearDemoData;
+
+// Keep inject function for compatibility but make it do nothing or alert
+window.injectDemoData = function () {
+    alert("Demo injection is disabled. Use clearDemoData() to clean up.");
+};

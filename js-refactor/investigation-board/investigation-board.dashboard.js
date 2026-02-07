@@ -74,11 +74,13 @@ const InvestigationDashboardView = {
                     <i data-lucide="plus"></i> ${Localization.t('investigation.dashboard.onboarding.btn_primary')}
                 </button>
                 
+                
                 <div style="margin-top: 20px; text-align: center;">
-                    <button class="btn btn-secondary btn-sm" onclick="if(window.injectDemoData) { window.injectDemoData(); } else { alert(Localization.t('investigation.error.demo_not_loaded')); }">
-                        <i data-lucide="database"></i> ${Localization.t('investigation.dashboard.onboarding.load_demo')}
+                    <button class="btn btn-danger btn-sm" onclick="if(window.clearDemoData) { window.clearDemoData(); }">
+                        <i data-lucide="trash-2"></i> ${Localization.t('investigation.dashboard.clear_demo')}
                     </button>
                 </div>
+
             </div>
         `;
     },
@@ -106,8 +108,8 @@ const InvestigationDashboardView = {
                         <h2>${caseData.title}</h2>
                     </div>
                     <div class="overview-actions">
-                        <button class="btn btn-secondary" onclick="if(window.injectDemoData) { window.injectDemoData(); } else { alert(Localization.t('investigation.error.demo_not_loaded')); }">
-                            <i data-lucide="play-circle"></i> ${Localization.t('investigation.dashboard.demo')}
+                        <button class="btn btn-danger" onclick="if(window.clearDemoData) { window.clearDemoData(); }">
+                            <i data-lucide="trash-2"></i> ${Localization.t('investigation.dashboard.clear_demo')}
                         </button>
                         <button class="btn btn-secondary" onclick="InvestigationDashboardView.editCase('${caseData.id}')">
                             <i data-lucide="edit-2"></i> ${Localization.t('investigation.dashboard.edit')}
@@ -172,8 +174,8 @@ const InvestigationDashboardView = {
             <div class="dashboard-header">
                 <h2><i data-lucide="briefcase"></i> ${Localization.t('investigation.dashboard.my_cases')}</h2>
                 <div class="dashboard-actions">
-                    <button class="btn btn-secondary" onclick="if(window.injectDemoData) { window.injectDemoData(); } else { alert(Localization.t('investigation.error.demo_not_loaded')); }">
-                        <i data-lucide="play-circle"></i> ${Localization.t('investigation.dashboard.demo')}
+                    <button class="btn btn-danger" onclick="if(window.clearDemoData) { window.clearDemoData(); }">
+                        <i data-lucide="trash-2"></i> ${Localization.t('investigation.dashboard.clear_demo')}
                     </button>
                     <button class="btn btn-primary" onclick="InvestigationDashboardView.openCreateCaseModal()">
                         <i data-lucide="plus"></i> ${Localization.t('investigation.case.new')}
