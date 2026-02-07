@@ -68,11 +68,7 @@ const InvestigationView = {
                     </div>
                 </div>
 
-                <div class="sidebar-footer-actions">
-                    <button class="btn-sidebar-secondary" onclick="InvestigationStore.setCurrentView('dashboard')">
-                        <i data-lucide="layout-dashboard"></i> ${Localization.t('investigation.tab.dashboard')}
-                    </button>
-                </div>
+
             </div>
         `;
 
@@ -144,10 +140,10 @@ const InvestigationView = {
                                 <i data-lucide="help-circle"></i>
                             </span>
                         </button>
-                        <button class="investigation-nav-btn ${currentView === 'crime-web' ? 'active' : ''}" 
-                                onclick="InvestigationStore.setCurrentView('crime-web')">
-                            <i data-lucide="network"></i> ${Localization.t('investigation.tab.crimeweb')}
-                            <span class="help-trigger" onclick="event.stopPropagation(); InvestigationView.showHelp('crime-web')">
+                        <button class="investigation-nav-btn ${currentView === 'mmo' ? 'active' : ''}" 
+                                onclick="InvestigationStore.setCurrentView('mmo')">
+                            <i data-lucide="network"></i> ${Localization.t('investigation.tab.mmo')}
+                            <span class="help-trigger" onclick="event.stopPropagation(); InvestigationView.showHelp('mmo')">
                                 <i data-lucide="help-circle"></i>
                             </span>
                         </button>
@@ -199,7 +195,7 @@ const InvestigationView = {
             { key: 'dashboard', label: Localization.t('investigation.tab.dashboard'), icon: 'layout-dashboard' },
             { key: 'registry', label: Localization.t('investigation.tab.registry'), icon: 'files' },
             { key: 'matrix', label: Localization.t('investigation.tab.matrix'), icon: 'grid-3x3' },
-            { key: 'crime-web', label: Localization.t('investigation.tab.crimeweb'), icon: 'network' },
+            { key: 'mmo', label: Localization.t('investigation.tab.mmo'), icon: 'network' },
             { key: 'timeline', label: Localization.t('investigation.tab.timeline'), icon: 'clock-3' }
         ];
         const currentIndex = steps.findIndex(s => s.key === currentView);
@@ -309,9 +305,9 @@ const InvestigationView = {
                     contentContainer.innerHTML = `<div class="placeholder-view">${Localization.t('investigation.placeholder.matrix')}</div>`;
                 }
                 break;
-            case 'crime-web':
-                if (window.InvestigationCrimeWebView) {
-                    InvestigationCrimeWebView.render(contentContainer);
+            case 'mmo':
+                if (window.InvestigationMMOView) {
+                    InvestigationMMOView.render(contentContainer);
                 } else {
                     contentContainer.innerHTML = `<div class="placeholder-view">${Localization.t('investigation.placeholder.crimeweb')}</div>`;
                 }
@@ -364,13 +360,14 @@ const InvestigationView = {
                     Localization.t('investigation.matrix.legend.misled')
                 ]
             },
-            'crime-web': {
-                title: Localization.t('investigation.help.crimeweb'),
+            'mmo': {
+                title: Localization.t('investigation.help.mmo'),
                 icon: 'network',
-                text: Localization.t('investigation.placeholder.crimeweb'),
+                text: Localization.t('investigation.placeholder.mmo'),
                 tips: [
-                    Localization.t('investigation.help.crimeweb'),
-                    Localization.t('investigation.placeholder.crimeweb')
+                    Localization.t('investigation.mmo.tip.motive'),
+                    Localization.t('investigation.mmo.tip.means'),
+                    Localization.t('investigation.mmo.tip.opportunity')
                 ]
             }
         };
@@ -418,6 +415,6 @@ window.renderInvestigationBoard = function () {
         InvestigationView.render(container);
     } else {
         console.error('❌ Error: Container #editorView not found in DOM.');
-        alert('Erreur: Impossible de trouver le conteneur #editorView - Vérifiez que l\'application est bien chargée.');
+        alert(Localization.t('investigation.error.editor_not_found'));
     }
 };

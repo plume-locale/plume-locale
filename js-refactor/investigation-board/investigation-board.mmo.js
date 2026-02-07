@@ -4,7 +4,7 @@
  * Affiche les suspects et leurs liaisons MMO (Mobile, Means, Opportunity).
  */
 
-const InvestigationCrimeWebView = {
+const InvestigationMMOView = {
     state: {
         selectedIncidentId: null
     },
@@ -38,11 +38,11 @@ const InvestigationCrimeWebView = {
         // --- EMPTY STATE ---
         if (allCandidates.length === 0) {
             container.innerHTML = `
-                <div class="investigation-crime-web">
+                <div class="investigation-mmo">
                      <div class="empty-state-card">
                         <i data-lucide="activity" size="48"></i>
-                        <h4>${Localization.t('investigation.crimeweb.empty.title') || 'Aucune analyse possible'}</h4>
-                        <p>${Localization.t('investigation.crimeweb.empty.desc') || 'Ajoutez un Crime ou un Événement majeur dans le registre pour commencer.'}</p>
+                        <h4>${Localization.t('investigation.mmo.empty.title') || 'Aucune analyse possible'}</h4>
+                        <p>${Localization.t('investigation.mmo.empty.desc') || 'Ajoutez un Crime ou un Événement majeur dans le registre pour commencer.'}</p>
                     </div>
                 </div>`;
             return;
@@ -54,14 +54,14 @@ const InvestigationCrimeWebView = {
                 <div class="analysis-toolbar">
                     <div class="analysis-header-row">
                         <div class="analysis-selector-group">
-                            <label>${Localization.t('investigation.crimeweb.selector_label') || 'Sujet de l\'Enquête :'}</label>
+                            <label>${Localization.t('investigation.mmo.selector_label') || 'Sujet de l\'Enquête :'}</label>
                             <div class="select-wrapper">
                                 <i data-lucide="target"></i>
-                                <select id="analysisIncidentSelect" onchange="InvestigationCrimeWebView.setIncident(this.value)">
-                                    <option value="all" ${this.state.selectedIncidentId === 'all' ? 'selected' : ''}>-- ${Localization.t('investigation.crimeweb.all_subjects') || 'Bilan Global (Tous les sujets)'} --</option>
-                                    ${groups['Major'].length > 0 ? `<optgroup label="${Localization.t('investigation.crimeweb.optgroup_major') || 'Crimes majeurs'}">${groups['Major'].map(i => `<option value="${i.id}" ${i.id === this.state.selectedIncidentId ? 'selected' : ''}>${i.label}</option>`).join('')}</optgroup>` : ''}
-                                    ${groups['Events'].length > 0 ? `<optgroup label="${Localization.t('investigation.crimeweb.optgroup_events') || 'Événements'}">${groups['Events'].map(i => `<option value="${i.id}" ${i.id === this.state.selectedIncidentId ? 'selected' : ''}>${i.label}</option>`).join('')}</optgroup>` : ''}
-                                    ${groups['Others'].length > 0 ? `<optgroup label="${Localization.t('investigation.crimeweb.optgroup_others') || 'Autres indices'}">${groups['Others'].map(i => `<option value="${i.id}" ${i.id === this.state.selectedIncidentId ? 'selected' : ''}>${i.label}</option>`).join('')}</optgroup>` : ''}
+                                <select id="analysisIncidentSelect" onchange="InvestigationMMOView.setIncident(this.value)">
+                                    <option value="all" ${this.state.selectedIncidentId === 'all' ? 'selected' : ''}>-- ${Localization.t('investigation.mmo.all_subjects') || 'Bilan Global (Tous les sujets)'} --</option>
+                                    ${groups['Major'].length > 0 ? `<optgroup label="${Localization.t('investigation.mmo.optgroup_major') || 'Crimes majeurs'}">${groups['Major'].map(i => `<option value="${i.id}" ${i.id === this.state.selectedIncidentId ? 'selected' : ''}>${i.label}</option>`).join('')}</optgroup>` : ''}
+                                    ${groups['Events'].length > 0 ? `<optgroup label="${Localization.t('investigation.mmo.optgroup_events') || 'Événements'}">${groups['Events'].map(i => `<option value="${i.id}" ${i.id === this.state.selectedIncidentId ? 'selected' : ''}>${i.label}</option>`).join('')}</optgroup>` : ''}
+                                    ${groups['Others'].length > 0 ? `<optgroup label="${Localization.t('investigation.mmo.optgroup_others') || 'Autres indices'}">${groups['Others'].map(i => `<option value="${i.id}" ${i.id === this.state.selectedIncidentId ? 'selected' : ''}>${i.label}</option>`).join('')}</optgroup>` : ''}
                                 </select>
                             </div>
                         </div>
@@ -71,18 +71,18 @@ const InvestigationCrimeWebView = {
                                 <label class="toggle-switch">
                                     <input type="checkbox" 
                                         ${this.state.hideEmptyMMO ? 'checked' : ''}
-                                        onchange="InvestigationCrimeWebView.toggleEmptyFilter(this.checked)">
+                                        onchange="InvestigationMMOView.toggleEmptyFilter(this.checked)">
                                     <span class="toggle-slider"></span>
-                                    <span class="toggle-label">${Localization.t('investigation.crimeweb.filter_empty') || 'Masquer si vide'}</span>
+                                    <span class="toggle-label">${Localization.t('investigation.mmo.filter_empty') || 'Masquer si vide'}</span>
                                 </label>
                             ` : ''}
 
                             <label class="toggle-switch">
                                 <input type="checkbox" 
                                     ${this.state.showMMODetails ? 'checked' : ''}
-                                    onchange="InvestigationCrimeWebView.toggleMMODetails(this.checked)">
+                                    onchange="InvestigationMMOView.toggleMMODetails(this.checked)">
                                 <span class="toggle-slider"></span>
-                                <span class="toggle-label">${Localization.t('investigation.crimeweb.show_details') || 'Détails'}</span>
+                                <span class="toggle-label">${Localization.t('investigation.mmo.show_details') || 'Détails'}</span>
                             </label>
                         </div>
                     </div>
@@ -104,24 +104,24 @@ const InvestigationCrimeWebView = {
 
     toggleEmptyFilter: function (checked) {
         this.state.hideEmptyMMO = checked;
-        this.render(document.querySelector('.investigation-crime-web') || document.getElementById('investigationContent'));
+        this.render(document.querySelector('.investigation-mmo') || document.getElementById('investigationContent'));
     },
 
     toggleMMODetails: function (checked) {
         this.state.showMMODetails = checked;
-        this.render(document.querySelector('.investigation-crime-web') || document.getElementById('investigationContent'));
+        this.render(document.querySelector('.investigation-mmo') || document.getElementById('investigationContent'));
     },
 
     setIncident: function (id) {
         this.state.selectedIncidentId = id;
-        this.render(document.querySelector('.investigation-crime-web') || document.getElementById('investigationContent'));
+        this.render(document.querySelector('.investigation-mmo') || document.getElementById('investigationContent'));
     },
 
     onSceneClick: function (sceneId) {
         InvestigationStore.state.filters.sceneId = sceneId;
         console.log("🕰️ Scene Jump ->", sceneId);
         if (window.InvestigationView && window.InvestigationView.renderActiveView) {
-            window.InvestigationView.renderActiveView('crime-web');
+            window.InvestigationView.renderActiveView('mmo');
         } else {
             window.renderInvestigationBoard();
         }
@@ -135,7 +135,7 @@ const InvestigationCrimeWebView = {
         let currentAct = null;
 
         scenes.forEach((scene, index) => {
-            const actKey = scene.actTitle || 'Acte 1';
+            const actKey = scene.actTitle || Localization.t('investigation.mmo.fallback.act');
             let act = acts.find(a => a.title === actKey);
             if (!act) {
                 act = { title: actKey, chapters: [] };
@@ -143,7 +143,7 @@ const InvestigationCrimeWebView = {
             }
 
             // Group by Chapter within Act
-            const chapKey = scene.chapterTitle || 'Chapitre 1';
+            const chapKey = scene.chapterTitle || Localization.t('investigation.mmo.fallback.chapter');
             let chapter = act.chapters.find(c => c.title === chapKey);
             if (!chapter) {
                 chapter = { title: chapKey, scenes: [] };
@@ -166,8 +166,8 @@ const InvestigationCrimeWebView = {
 
         html += `
             <div class="timeline-meta-header">
-                <span class="tm-label"><i data-lucide="clock"></i> État des connaissances :</span>
-                <span class="tm-value">${currentScene ? currentScene.title : 'Début'}</span>
+                <span class="tm-label"><i data-lucide="clock"></i> ${Localization.t('investigation.mmo.state.knowledge_state')}</span>
+                <span class="tm-value">${currentScene ? currentScene.title : Localization.t('investigation.mmo.state.start')}</span>
                 <span class="tm-context">(${currentScene ? (currentScene.actTitle + ' > ' + currentScene.chapterTitle) : ''})</span>
             </div>
         `;
@@ -190,7 +190,7 @@ const InvestigationCrimeWebView = {
                     const classes = `ts-node ${isPast ? 'active' : ''} ${isActive ? 'current' : ''}`;
 
                     html += `<div class="${classes}" 
-                                  onclick="InvestigationCrimeWebView.onSceneClick('${scene.id}')"
+                                  onclick="InvestigationMMOView.onSceneClick('${scene.id}')"
                                   title="${scene.title} (${chapter.title})">
                              </div>`;
                 });
@@ -207,7 +207,7 @@ const InvestigationCrimeWebView = {
     },
 
     renderAnalysisTable: function (suspects, incidents, sceneId) {
-        if (suspects.length === 0) return `<div class="web-empty">${Localization.t('investigation.crimeweb.no_characters')}</div>`;
+        if (suspects.length === 0) return `<div class="web-empty">${Localization.t('investigation.mmo.no_characters')}</div>`;
 
         // Handle Single vs All
         const isAllMode = this.state.selectedIncidentId === 'all';
@@ -222,7 +222,7 @@ const InvestigationCrimeWebView = {
                             <th class="th-mmo">${Localization.t('investigation.mmo.motive') || 'Mobile'}</th>
                             <th class="th-mmo">${Localization.t('investigation.mmo.means') || 'Moyens'}</th>
                             <th class="th-mmo">${Localization.t('investigation.mmo.opportunity') || 'Opportunité'}</th>
-                            <th class="th-score">Score</th>
+                            <th class="th-score">${Localization.t('investigation.common.score')}</th>
                             <th class="th-action"></th>
                         </tr>
                     </thead>
@@ -299,13 +299,13 @@ const InvestigationCrimeWebView = {
         const barClass = isInherited ? 'mmo-fill inherited' : 'mmo-fill';
 
         return `
-            <tr class="${rowClass}" onclick="InvestigationCrimeWebView.editSpecificMMO('${suspect.id}', '${incident.id}')">
+            <tr class="${rowClass}" onclick="InvestigationMMOView.editSpecificMMO('${suspect.id}', '${incident.id}')">
                 <td class="td-suspect">
                     ${nameCellContent}
                 </td>
                 
                 <td class="td-mmo">
-                    <div class="mmo-bar-compact" title="${(link.motive && link.motive._inherited) ? 'Valeur héritée' : 'Valeur modifiée ici'}">
+                    <div class="mmo-bar-compact" title="${(link.motive && link.motive._inherited) ? Localization.t('investigation.mmo.value_inherited') : Localization.t('investigation.mmo.value_local')}">
                         <div class="mmo-track"><div class="mmo-fill motive ${(link.motive && link.motive._inherited) ? 'inherited' : ''}" style="width: ${motive * 10}%"></div></div>
                         <span class="mmo-val">${motive}</span>
                         ${(link.motive && link.motive._inherited) ? '<i data-lucide="chevrons-left" class="inherited-icon"></i>' : ''}
@@ -314,7 +314,7 @@ const InvestigationCrimeWebView = {
                 </td>
                 
                 <td class="td-mmo">
-                    <div class="mmo-bar-compact" title="${(link.means && link.means._inherited) ? 'Valeur héritée' : 'Valeur modifiée ici'}">
+                    <div class="mmo-bar-compact" title="${(link.means && link.means._inherited) ? Localization.t('investigation.mmo.value_inherited') : Localization.t('investigation.mmo.value_local')}">
                         <div class="mmo-track"><div class="mmo-fill means ${(link.means && link.means._inherited) ? 'inherited' : ''}" style="width: ${means * 10}%"></div></div>
                         <span class="mmo-val">${means}</span>
                         ${(link.means && link.means._inherited) ? '<i data-lucide="chevrons-left" class="inherited-icon"></i>' : ''}
@@ -323,7 +323,7 @@ const InvestigationCrimeWebView = {
                 </td>
                 
                 <td class="td-mmo">
-                    <div class="mmo-bar-compact" title="${(link.opportunity && link.opportunity._inherited) ? 'Valeur héritée' : 'Valeur modifiée ici'}">
+                    <div class="mmo-bar-compact" title="${(link.opportunity && link.opportunity._inherited) ? Localization.t('investigation.mmo.value_inherited') : Localization.t('investigation.mmo.value_local')}">
                         <div class="mmo-track"><div class="mmo-fill opportunity ${(link.opportunity && link.opportunity._inherited) ? 'inherited' : ''}" style="width: ${opportunity * 10}%"></div></div>
                         <span class="mmo-val">${opportunity}</span>
                         ${(link.opportunity && link.opportunity._inherited) ? '<i data-lucide="chevrons-left" class="inherited-icon"></i>' : ''}
@@ -336,7 +336,7 @@ const InvestigationCrimeWebView = {
                 </td>
 
                 <td class="td-action">
-                    <button class="btn-icon-sm" onclick="event.stopPropagation(); InvestigationCrimeWebView.editSpecificMMO('${suspect.id}', '${incident.id}')"><i data-lucide="edit-3"></i></button>
+                    <button class="btn-icon-sm" onclick="event.stopPropagation(); InvestigationMMOView.editSpecificMMO('${suspect.id}', '${incident.id}')"><i data-lucide="edit-3"></i></button>
                 </td>
             </tr>
         `;
@@ -357,7 +357,7 @@ const InvestigationCrimeWebView = {
         // Get Scene Context using getScenesWithContext for hierarchy info
         const scenes = InvestigationStore.getScenesWithContext();
         const currentSceneId = InvestigationStore.state.filters.sceneId || (scenes.length > 0 ? scenes[scenes.length - 1].id : null);
-        const currentScene = scenes.find(s => s.id == currentSceneId) || { title: Localization.t('investigation.crimeweb.start') };
+        const currentScene = scenes.find(s => s.id == currentSceneId) || { title: Localization.t('investigation.mmo.start') };
 
         // Construct Breadcrumb
         let breadcrumbLabel = currentScene.title;
@@ -420,13 +420,13 @@ const InvestigationCrimeWebView = {
                     <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center;">
                         <div>
                              ${(hasLocalOverride && currentSceneId && currentSceneId !== 'start') ?
-                `<button class="btn btn-icon" style="color: var(--accent-red);" title="Réinitialiser (Repasser en héritage)" onclick="InvestigationCrimeWebView.deleteMMO('${suspectId}', '${incidentId}', '${currentSceneId}')">
+                `<button class="btn btn-icon" style="color: var(--accent-red);" title="${Localization.t('investigation.mmo.action.reset_inheritance')}" onclick="InvestigationMMOView.deleteMMO('${suspectId}', '${incidentId}', '${currentSceneId}')">
                                     <i data-lucide="trash-2"></i>
                                  </button>` : ''}
                         </div>
                         <div style="display: flex; gap: 10px;">
                             <button class="btn btn-secondary" onclick="document.getElementById('mmoModal').remove()">${Localization.t('investigation.dashboard.cancel')}</button>
-                            <button class="btn btn-primary" onclick="InvestigationCrimeWebView.saveMMO('${suspectId}', '${incidentId}', '${currentSceneId || ''}')">${Localization.t('investigation.dashboard.save')}</button>
+                            <button class="btn btn-primary" onclick="InvestigationMMOView.saveMMO('${suspectId}', '${incidentId}', '${currentSceneId || ''}')">${Localization.t('investigation.dashboard.save')}</button>
                         </div>
                     </div>
                 </div>
@@ -491,20 +491,20 @@ const InvestigationCrimeWebView = {
 
         // Refresh view
         if (window.InvestigationView && window.InvestigationView.renderActiveView) {
-            window.InvestigationView.renderActiveView('crime-web');
+            window.InvestigationView.renderActiveView('mmo');
         }
     },
 
     deleteMMO: function (suspectId, crimeId, sceneId) {
-        if (confirm("Voulez-vous supprimer ces modifications locales et revenir à la valeur héritée ?")) {
+        if (confirm(Localization.t('investigation.mmo.confirm_reset_inheritance'))) {
             InvestigationStore.deleteSuspectSnapshot(suspectId, crimeId, sceneId);
             document.getElementById('mmoModal').remove();
             // Refresh view
             if (window.InvestigationView && window.InvestigationView.renderActiveView) {
-                window.InvestigationView.renderActiveView('crime-web');
+                window.InvestigationView.renderActiveView('mmo');
             }
         }
     }
 };
 
-window.InvestigationCrimeWebView = InvestigationCrimeWebView;
+window.InvestigationMMOView = InvestigationMMOView;

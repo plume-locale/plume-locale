@@ -90,6 +90,16 @@ function closeAllToolsSidebarPanels() {
         if (toolPlotBtn) toolPlotBtn.classList.remove('active');
         if (sidebarPlotBtn) sidebarPlotBtn.classList.remove('active');
     }
+
+    // Fermer le panneau de l'enquête (Investigation)
+    const sidebarInvestigation = document.getElementById('sidebarInvestigation');
+    const toolInvestigationBtn = document.getElementById('toolInvestigationBtn');
+    const sidebarInvestigationBtn = document.getElementById('sidebarInvestigationBtn');
+    if (sidebarInvestigation && !sidebarInvestigation.classList.contains('hidden')) {
+        sidebarInvestigation.classList.add('hidden');
+        if (toolInvestigationBtn) toolInvestigationBtn.classList.remove('active');
+        if (sidebarInvestigationBtn) sidebarInvestigationBtn.classList.remove('active');
+    }
 }
 
 /**
@@ -675,6 +685,11 @@ function openScene(actId, chapterId, sceneId) {
     // Refresh plot sidebar if open
     if (typeof PlotGridUI !== 'undefined' && !document.getElementById('sidebarPlot').classList.contains('hidden')) {
         PlotGridUI.renderSidebar(sceneId);
+    }
+
+    // Refresh investigation sidebar if open
+    if (typeof InvestigationSidebarUI !== 'undefined' && !document.getElementById('sidebarInvestigation').classList.contains('hidden')) {
+        InvestigationSidebarUI.renderSidebar(sceneId);
     }
 
     // Annotations automatic opening

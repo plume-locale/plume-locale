@@ -75,7 +75,7 @@ const InvestigationDashboardView = {
                 </button>
                 
                 <div style="margin-top: 20px; text-align: center;">
-                    <button class="btn btn-secondary btn-sm" onclick="if(window.injectDemoData) { window.injectDemoData(); } else { alert('Script démo non chargé'); }">
+                    <button class="btn btn-secondary btn-sm" onclick="if(window.injectDemoData) { window.injectDemoData(); } else { alert(Localization.t('investigation.error.demo_not_loaded')); }">
                         <i data-lucide="database"></i> ${Localization.t('investigation.dashboard.onboarding.load_demo')}
                     </button>
                 </div>
@@ -106,7 +106,7 @@ const InvestigationDashboardView = {
                         <h2>${caseData.title}</h2>
                     </div>
                     <div class="overview-actions">
-                        <button class="btn btn-secondary" onclick="if(window.injectDemoData) { window.injectDemoData(); } else { alert('Script démo non chargé'); }">
+                        <button class="btn btn-secondary" onclick="if(window.injectDemoData) { window.injectDemoData(); } else { alert(Localization.t('investigation.error.demo_not_loaded')); }">
                             <i data-lucide="play-circle"></i> ${Localization.t('investigation.dashboard.demo')}
                         </button>
                         <button class="btn btn-secondary" onclick="InvestigationDashboardView.editCase('${caseData.id}')">
@@ -140,35 +140,13 @@ const InvestigationDashboardView = {
             return `
                                     <div class="suspect-mini-profile">
                                         <div class="mini-avatar">${nameChar}</div>
-                                        <span>${s.name || s.firstName}</span>
+                                        <span>${s.name || s.firstName || Localization.t('investigation.common.character')}</span>
                                     </div>
                                 `;
         }).join('')}
                             ${suspects.length > 4 ? `<div class="more-count">+${suspects.length - 4}</div>` : ''}
                         </div>
                     </div>
-                </div>
-
-                <div class="overview-section">
-                    <div class="section-header">
-                        <h4>${Localization.t('investigation.dashboard.latest_discoveries')}</h4>
-                        <button class="btn-text" onclick="InvestigationStore.setCurrentView('registry')">${Localization.t('investigation.dashboard.view_all')}</button>
-                    </div>
-                    <div class="recent-facts-list">
-                        ${recentFacts.map(f => `
-                            <div class="recent-fact-item">
-                                <i data-lucide="search"></i>
-                                <span>${f.label}</span>
-                            </div>
-                        `).join('')}
-                        ${recentFacts.length === 0 ? `<p class="no-data">${Localization.t('investigation.dashboard.no_facts')}</p>` : ''}
-                    </div>
-                </div>
-
-                <div class="overview-footer">
-                    <button class="btn btn-primary btn-lg w-100" onclick="InvestigationStore.setCurrentView('registry')">
-                        ${Localization.t('investigation.dashboard.continue')}
-                    </button>
                 </div>
             </div>
         `;
@@ -184,7 +162,7 @@ const InvestigationDashboardView = {
             <div class="dashboard-header">
                 <h2><i data-lucide="briefcase"></i> ${Localization.t('investigation.dashboard.my_cases')}</h2>
                 <div class="dashboard-actions">
-                    <button class="btn btn-secondary" onclick="if(window.injectDemoData) { window.injectDemoData(); } else { alert('Script démo non chargé'); }">
+                    <button class="btn btn-secondary" onclick="if(window.injectDemoData) { window.injectDemoData(); } else { alert(Localization.t('investigation.error.demo_not_loaded')); }">
                         <i data-lucide="play-circle"></i> ${Localization.t('investigation.dashboard.demo')}
                     </button>
                     <button class="btn btn-primary" onclick="InvestigationDashboardView.openCreateCaseModal()">
@@ -344,7 +322,7 @@ const InvestigationDashboardView = {
                             <label>${Localization.t('investigation.case.label.victim')}</label>
                             <select id="caseVictim">
                                 <option value="">-- ${Localization.t('investigation.case.option.none')} --</option>
-                                ${characters.map(c => `<option value="${c.id}" ${existingCase?.victimId === c.id ? 'selected' : ''}>${c.name || c.firstName || 'Personnage'}</option>`).join('')}
+                                ${characters.map(c => `<option value="${c.id}" ${existingCase?.victimId === c.id ? 'selected' : ''}>${c.name || c.firstName || Localization.t('investigation.common.character')}</option>`).join('')}
                             </select>
                         </div>
                     </div>

@@ -20,7 +20,7 @@ const InvestigationRepository = {
         const now = Date.now();
         return {
             id: data.id || 'case_' + now + '_' + Math.random().toString(36).substr(2, 9),
-            title: data.title || 'Nouvelle Affaire',
+            title: data.title || Localization.t('investigation.model.default.case_title'),
             description: data.description || '',
             status: data.status || 'open', // open, in_progress, solved, closed
             phase: data.phase || 'collection', // collection, analysis, confrontation, resolution
@@ -40,7 +40,7 @@ const InvestigationRepository = {
         return {
             id: data.id || 'fact_' + now + '_' + Math.random().toString(36).substr(2, 9),
             type: data.type || 'clue', // clue, event, object, testimony
-            label: data.label || 'Nouvel indice',
+            label: data.label || Localization.t('investigation.model.default.fact_label'),
             description: data.description || '',
             isHidden: data.isHidden || false, // Si vrai, c'est un SECRET pour le lecteur par défaut
             truthStatus: data.truthStatus || 'verified', // verified, disputed, false (red herring)

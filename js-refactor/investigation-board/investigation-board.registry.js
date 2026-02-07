@@ -113,8 +113,8 @@ const InvestigationRegistryView = {
             listContainer.innerHTML = `
                 <div class="empty-state-card">
                     <i data-lucide="search" size="48"></i>
-                    <h4>${facts.length === 0 ? Localization.t('investigation.registry.empty.title') : 'Aucun résultat'}</h4>
-                    <p>${facts.length === 0 ? Localization.t('investigation.registry.empty.desc') : 'Ajustez votre recherche ou vos filtres.'}</p>
+                    <h4>${facts.length === 0 ? Localization.t('investigation.registry.empty.title') : Localization.t('investigation.registry.no_results')}</h4>
+                    <p>${facts.length === 0 ? Localization.t('investigation.registry.empty.desc') : Localization.t('investigation.registry.filter_desc')}</p>
                     ${facts.length === 0 ? `
                     <button class="btn btn-primary" onclick="InvestigationRegistryView.openAddFactModal()">
                         <i data-lucide="plus"></i> ${Localization.t('investigation.registry.empty.action')}
@@ -205,6 +205,8 @@ const InvestigationRegistryView = {
                             <th class="col-item">${Localization.t('investigation.registry.table.item')}</th>
                             <th class="col-type">${Localization.t('investigation.registry.table.type')}</th>
                             <th class="col-status">${Localization.t('investigation.registry.table.status')}</th>
+                            <th class="col-secret">${Localization.t('investigation.registry.table.secret')}</th>
+                            <th class="col-location">${Localization.t('investigation.registry.table.location')}</th>
                             <th class="col-chars">${Localization.t('investigation.registry.table.characters')}</th>
                             <th class="col-evolution">${Localization.t('investigation.registry.table.evolution')}</th>
                             <th class="col-actions"></th>
@@ -213,7 +215,7 @@ const InvestigationRegistryView = {
                             <th>
                                 <div class="col-filter-input">
                                     <i data-lucide="search"></i>
-                                    <input type="text" placeholder="Filtrer..." value="${this.state.search}" oninput="InvestigationRegistryView.handleSearch(this.value)">
+                                    <input type="text" placeholder="${Localization.t('investigation.registry.placeholder.filter')}" value="${this.state.search}" oninput="InvestigationRegistryView.handleSearch(this.value)">
                                 </div>
                             </th>
                             <th>
@@ -228,6 +230,8 @@ const InvestigationRegistryView = {
                                     ${statuses.map(s => `<option value="${s}" ${this.state.filterStatus === s ? 'selected' : ''}>${Localization.t('investigation.truth.' + s)}</option>`).join('')}
                                 </select>
                             </th>
+                            <th></th> <!-- Secret Filter (empty for now) -->
+                            <th></th> <!-- Location Filter (empty for now) -->
                             <th>
                                 <select class="col-filter-select" onchange="InvestigationRegistryView.handleCharacterFilter(this.value)">
                                     <option value="all">${Localization.t('investigation.dashboard.view_all')}</option>
@@ -237,13 +241,13 @@ const InvestigationRegistryView = {
                             <th>
                                 <select class="col-filter-select" onchange="InvestigationRegistryView.handleEvolutionFilter(this.value)">
                                     <option value="all">${Localization.t('investigation.dashboard.view_all')}</option>
-                                    <option value="yes" ${this.state.filterHasEvolution === 'yes' ? 'selected' : ''}>Oui</option>
-                                    <option value="no" ${this.state.filterHasEvolution === 'no' ? 'selected' : ''}>Non</option>
+                                    <option value="yes" ${this.state.filterHasEvolution === 'yes' ? 'selected' : ''}>${Localization.t('investigation.common.yes')}</option>
+                                    <option value="no" ${this.state.filterHasEvolution === 'no' ? 'selected' : ''}>${Localization.t('investigation.common.no')}</option>
                                 </select>
                             </th>
                             <th>
                                 <div class="row-actions visible">
-                                    <button class="btn-row-action" title="Réinitialiser les filtres" onclick="InvestigationRegistryView.resetFilters()">
+                                    <button class="btn-row-action" title="${Localization.t('investigation.registry.action.reset_filters')}" onclick="InvestigationRegistryView.resetFilters()">
                                         <i data-lucide="rotate-ccw"></i>
                                     </button>
                                 </div>
@@ -267,8 +271,8 @@ const InvestigationRegistryView = {
                 <tr>
                     <td colspan="6" class="table-empty-row">
                         <i data-lucide="search-x"></i>
-                        <span>Aucun résultat ne correspond à vos filtres.</span>
-                        <button class="btn-text-action" onclick="InvestigationRegistryView.resetFilters()">Voir tout</button>
+                        <span>${Localization.t('investigation.registry.no_results_filtered')}</span>
+                        <button class="btn-text-action" onclick="InvestigationRegistryView.resetFilters()">${Localization.t('investigation.dashboard.view_all')}</button>
                     </td>
                 </tr>
             `;
@@ -322,6 +326,17 @@ const InvestigationRegistryView = {
                 <td class="col-status">
                     <span class="status-pill-compact status-${fact.truthStatus}">${truthLabel}</span>
                 </td>
+                <td class="col-secret">
+                     ${fact.isHidden ? '<i data-lucide="shield-check" class="secret-icon-table" title="Secretness" style="color: var(--primary-color)"></i>' : '<i data-lucide="shield" style="opacity: 0.2;"></i>'}
+                </td>
+                <td class="col-location">
+                    <div class="location-cell-table">
+                        ${fact.relatedLocationIds?.[0] ? `
+                            <i data-lucide="map-pin"></i>
+                            <span>${(InvestigationStore.getLocations().find(l => l.id == fact.relatedLocationIds[0])?.name) || '-'}</span>
+                        ` : '<span class="no-location">-</span>'}
+                    </div>
+                </td>
                 <td class="col-chars">
                     <div class="chars-list-compact">
                         ${relatedChars.map(c => `
@@ -342,7 +357,7 @@ const InvestigationRegistryView = {
                 </td>
                 <td class="col-actions">
                     <div class="row-actions">
-                        <button class="btn-row-action" title="Supprimer" onclick="event.stopPropagation(); if(confirm('Supprimer cet item ?')) InvestigationStore.deleteFact('${fact.id}')">
+                        <button class="btn-row-action" title="${Localization.t('investigation.dashboard.delete')}" onclick="event.stopPropagation(); if(confirm(Localization.t('investigation.registry.confirm_delete_item'))) InvestigationStore.deleteFact('${fact.id}')">
                             <i data-lucide="trash-2"></i>
                         </button>
                     </div>
@@ -461,7 +476,7 @@ const InvestigationRegistryView = {
                     
                     <div class="modal-tabs">
                         <button class="tab-btn active" onclick="InvestigationRegistryView.switchTab('general', this)">${Localization.t('investigation.registry.modal.general')}</button>
-                        <button class="tab-btn" onclick="InvestigationRegistryView.switchTab('timeline', this)" ${!existingFact ? 'disabled title="Create fact first"' : ''}>${Localization.t('investigation.registry.modal.evolution')}</button>
+                        <button class="tab-btn" onclick="InvestigationRegistryView.switchTab('timeline', this)" ${!existingFact ? 'disabled title="' + Localization.t('investigation.registry.modal.evolution_disabled_tip') + '"' : ''}>${Localization.t('investigation.registry.modal.evolution')}</button>
                     </div>
 
                     <div class="modal-body">
@@ -568,7 +583,7 @@ const InvestigationRegistryView = {
         }
         return characters.map(char => {
             const isSelected = selectedIds.includes(char.id);
-            const name = char.name || char.firstName || 'Personnage';
+            const name = char.name || char.firstName || Localization.t('investigation.common.character');
             return `
                 <div class="char-select-item ${isSelected ? 'selected' : ''}" 
                      data-id="${char.id}" 
@@ -610,7 +625,7 @@ const InvestigationRegistryView = {
                     <div class="timeline-vertical-line"></div>
                     ${enrichedSteps.map((step, index) => {
             const statusLabel = Localization.t('investigation.evolution.status.' + step.state) || step.state;
-            const scene = step.scene || { title: 'Scène inconnue', actTitle: '?', chapterTitle: '?' };
+            const scene = step.scene || { title: Localization.t('investigation.common.unknown_scene'), actTitle: '?', chapterTitle: '?' };
 
             return `
                         <div class="evo-step timeline-scene-node" style="animation-delay: ${index * 0.05}s">
@@ -727,7 +742,7 @@ const InvestigationRegistryView = {
         const desc = document.getElementById('tlDesc').value;
 
         if (!desc) {
-            alert(Localization.t('investigation.evolution.step.how') + " required.");
+            alert(Localization.t('investigation.evolution.step.how') + " " + Localization.t('investigation.common.required') + ".");
             return;
         }
 
@@ -800,7 +815,7 @@ const InvestigationRegistryView = {
 
     // 4. DELETE
     deleteTimelineStep: function (factId, stepId) {
-        if (!confirm(Localization.t('investigation.dashboard.confirm_delete').replace('{0}', 'step'))) return;
+        if (!confirm(Localization.t('investigation.evolution.confirm_delete'))) return;
 
         const fact = InvestigationStore.getFactById(factId);
         if (!fact || !fact.timeline) return;
@@ -833,7 +848,7 @@ const InvestigationRegistryView = {
 
         const activeCase = InvestigationStore.getActiveCase();
         if (!activeCase && !factId) {
-            alert("Erreur: Aucune affaire active sélectionnée.");
+            alert(Localization.t('investigation.error.no_active_case'));
             return;
         }
 
@@ -872,7 +887,7 @@ const InvestigationRegistryView = {
 
         } catch (e) {
             console.error("❌ Error saving fact:", e);
-            alert("Une erreur est survenue lors de la sauvegarde.");
+            alert(Localization.t('investigation.error.save_failed'));
         }
     },
 

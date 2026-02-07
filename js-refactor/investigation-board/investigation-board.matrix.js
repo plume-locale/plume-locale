@@ -66,12 +66,14 @@ const InvestigationMatrixView = {
                             <input type="checkbox" 
                                 ${showAllFacts ? 'checked' : ''}
                                 onchange="InvestigationStore.state.filters.showAllFacts = this.checked; window.renderInvestigationBoard();">
+                            <span class="toggle-slider"></span>
                             <span class="toggle-label">${Localization.t('investigation.matrix.filter.show_all_facts')}</span>
                         </label>
                         <label class="toggle-switch">
                             <input type="checkbox" 
                                 ${hideIgnorant ? 'checked' : ''}
                                 onchange="InvestigationStore.state.filters.hideIgnorant = this.checked; window.renderInvestigationBoard();">
+                            <span class="toggle-slider"></span>
                             <span class="toggle-label">${Localization.t('investigation.matrix.filter.hide_ignorant')}</span>
                         </label>
                     </div>

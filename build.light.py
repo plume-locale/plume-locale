@@ -340,9 +340,10 @@ JS_ORDER = [
     'js-refactor/investigation-board/investigation-board.dashboard.js',
     'js-refactor/investigation-board/investigation-board.registry.js',
     'js-refactor/investigation-board/investigation-board.matrix.js',
-    'js-refactor/investigation-board/investigation-board.crime-web.js',
+    'js-refactor/investigation-board/investigation-board.mmo.js',
     'js-refactor/investigation-board/investigation-board.timeline.js',
     'js-refactor/investigation-board/investigation-board.demo.js',
+    'js-refactor/investigation-board/investigation-board.sidebar.js',
     'js-refactor/investigation-board/investigation-board.view.js',
 ]
 

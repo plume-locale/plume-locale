@@ -425,6 +425,11 @@
                         <i data-lucide="trending-up"></i>
                         <span data-i18n="tool.plot">Intrigue</span>
                     </button>
+                    <button class="scene-tool-btn" onclick="InvestigationSidebarUI.toggleSidebar()" id="sidebarInvestigationBtn"
+                        title="Afficher/masquer l'Enquête" data-i18n-title="tool.investigation">
+                        <i data-lucide="search"></i>
+                        <span data-i18n="tool.investigation">Enquête</span>
+                    </button>
                 </div>
                 <!-- Boutons déplier/replier tout -->
                 <div class="tree-collapse-toolbar" id="treeCollapseToolbar">
@@ -536,6 +541,10 @@
                     data-i18n-title="tools.plot">
                     <i data-lucide="layout-grid"></i>
                 </button>
+                <button class="tool-btn" onclick="InvestigationSidebarUI.toggleSidebar()" id="toolInvestigationBtn" title="Enquête"
+                    data-i18n-title="tools.investigation">
+                    <i data-lucide="search"></i>
+                </button>
                 <div style="width: 100%; height: 1px; background: var(--border-color); margin: 0.5rem 0"></div>
                 <button class="tool-btn" onclick="toggleLinksPanelVisibility()" id="toolLinksPanelBtn"
                     title="Afficher/Masquer les liens (Personnages, Univers, Timeline)" data-i18n-title="tools.links">
@@ -594,6 +603,23 @@
                 </div>
                 <div class="sidebar-plot-list" id="plotSidebarList">
                     <!-- Plot cards will be inserted here -->
+                </div>
+            </div>
+            <!-- Sidebar Investigation -->
+            <div class="sidebar-plot hidden" id="sidebarInvestigation">
+                <div class="sidebar-plot-header">
+                    <div class="sidebar-plot-title">
+                        <h3 data-i18n="tool.investigation"><i data-lucide="search"
+                                style="width: 16px; height: 16px; vertical-align: middle; margin-right: 6px"></i>Enquête</h3>
+                        <button class="sidebar-plot-toggle" onclick="InvestigationSidebarUI.toggleSidebar()" title="Masquer"
+                            data-i18n-title="btn.hide">
+                            <i data-lucide="x" style="width: 14px; height: 14px"></i>
+                        </button>
+                    </div>
+                    <div class="sidebar-plot-scene" id="investigationSidebarSceneName" data-i18n="sidebar.no_scene">Aucune scène sélectionnée</div>
+                </div>
+                <div class="sidebar-plot-list" id="investigationSidebarList">
+                    <!-- Investigation cards will be inserted here -->
                 </div>
             </div>
             <!-- Annotations Panel -->

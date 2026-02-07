@@ -14,7 +14,7 @@ const InvestigationStore = {
         facts: [],           // Facts now linked to cases via caseId
         knowledge: [],       // { characterId, factId, sceneId, state }
         suspectLinks: [],    // { suspectId, victimId, caseId, motive, means, opportunity }
-        currentView: 'dashboard', // dashboard, matrix, crime-web, registry
+        currentView: 'dashboard', // dashboard, matrix, mmo, registry
         filters: {
             characterId: null,
             sceneId: null
@@ -78,10 +78,10 @@ const InvestigationStore = {
         // Manual extraction to get hierarchy
         if (window.project && window.project.acts) {
             window.project.acts.forEach((act, actIndex) => {
-                const actTitle = act.title || `Acte ${actIndex + 1}`;
+                const actTitle = act.title || `${Localization.t('investigation.common.act')} ${actIndex + 1}`;
 
                 (act.chapters || []).forEach((chapter, chapIndex) => {
-                    const chapterTitle = chapter.title || `Chapitre ${chapIndex + 1}`;
+                    const chapterTitle = chapter.title || `${Localization.t('investigation.common.chapter')} ${chapIndex + 1}`;
 
                     (chapter.scenes || []).forEach((scene, sceneIndex) => {
                         enrichedScenes.push({
@@ -98,8 +98,8 @@ const InvestigationStore = {
             const rawScenes = this.getScenes();
             enrichedScenes = rawScenes.map((s, i) => ({
                 ...s,
-                actTitle: 'Histoire',
-                chapterTitle: 'Scènes',
+                actTitle: Localization.t('investigation.common.story'),
+                chapterTitle: Localization.t('investigation.common.scenes'),
                 index: i
             }));
         }
@@ -204,7 +204,7 @@ const InvestigationStore = {
             id: data.id || 'fact_' + now + '_' + Math.random().toString(36).substr(2, 9),
             caseId: data.caseId || this.state.activeCaseId, // Link to active case
             type: data.type || 'clue',
-            label: data.label || 'Nouvel indice',
+            label: data.label || Localization.t('investigation.model.default.fact_label'),
             description: data.description || '',
             isHidden: data.isHidden || false,
             truthStatus: data.truthStatus || 'verified',
