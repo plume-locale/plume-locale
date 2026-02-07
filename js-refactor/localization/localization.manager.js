@@ -23,6 +23,14 @@ class LocalizationManager {
         this.setLocale(savedLocale);
 
         console.log(`Localization Manager initialized. Locale: ${savedLocale}`);
+
+        // Add listener to close dropdown on outside click
+        document.addEventListener('click', (e) => {
+            const dropdown = document.getElementById('langDropdown');
+            if (dropdown && !dropdown.contains(e.target)) {
+                dropdown.classList.remove('open');
+            }
+        });
     }
 
     /**
@@ -72,12 +80,12 @@ class LocalizationManager {
     }
 
     /**
-     * Toggle between available locales (fr <-> en).
+     * Toggle between available locales (deprecated - use dropdown instead).
+     * Kept for backward compatibility.
      */
     toggleLocale() {
-        const current = this.getLocale();
-        const next = current === 'fr' ? 'en' : 'fr';
-        this.setLocale(next);
+        // With 4 languages, use the dropdown instead
+        console.warn('toggleLocale is deprecated. Please use the language dropdown.');
     }
 }
 

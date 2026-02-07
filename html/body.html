@@ -286,11 +286,11 @@
                 </button>
                 <button class="header-action-btn" onclick="openImportChapterModal()" title="Importer un texte"
                     data-i18n-title="header.import">
-                    <i data-lucide="file-up"></i>
+                    <i data-lucide="download"></i>
                 </button>
                 <button class="header-action-btn" onclick="showBackupMenu()" title="Sauvegardes et exports"
                     data-i18n-title="header.backup">
-                    <i data-lucide="download"></i>
+                    <i data-lucide="file-up"></i>
                 </button>
                 <button class="header-action-btn" onclick="KeyboardShortcutsHandlers.openShortcutsModal()"
                     title="Raccourcis clavier" data-i18n-title="header.shortcuts">
@@ -304,10 +304,34 @@
                     data-i18n-title="header.projects">
                     <i data-lucide="folder-open"></i>
                 </button>
-                <button class="header-action-btn" onclick="Localization.toggleLocale()" title="Changer la langue"
-                    data-i18n-title="header.lang.switch">
-                    <i data-lucide="languages"></i>
-                </button>
+                <div class="lang-dropdown" id="langDropdown">
+                    <button class="header-action-btn" title="Changer la langue" data-i18n-title="header.lang.switch"
+                        onclick="this.parentElement.classList.toggle('open'); event.stopPropagation();">
+                        <i data-lucide="languages"></i>
+                    </button>
+                    <div class="lang-dropdown-menu">
+                        <button class="lang-option" data-lang="fr"
+                            onclick="Localization.setLocale('fr'); this.closest('.lang-dropdown').classList.remove('open');">
+                            <span class="lang-flag">🇫🇷</span>
+                            <span class="lang-name">Français</span>
+                        </button>
+                        <button class="lang-option" data-lang="en"
+                            onclick="Localization.setLocale('en'); this.closest('.lang-dropdown').classList.remove('open');">
+                            <span class="lang-flag">🇬🇧</span>
+                            <span class="lang-name">English</span>
+                        </button>
+                        <button class="lang-option" data-lang="de"
+                            onclick="Localization.setLocale('de'); this.closest('.lang-dropdown').classList.remove('open');">
+                            <span class="lang-flag">🇩🇪</span>
+                            <span class="lang-name">Deutsch</span>
+                        </button>
+                        <button class="lang-option" data-lang="es"
+                            onclick="Localization.setLocale('es'); this.closest('.lang-dropdown').classList.remove('open');">
+                            <span class="lang-flag">🇪🇸</span>
+                            <span class="lang-name">Español</span>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
         <!-- Pomodoro Popup -->
@@ -1573,18 +1597,22 @@
             <div style="margin-bottom: 2rem">
                 <div style="font-size: 1rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-primary)"><i
                         data-lucide="help-circle"
-                        style="width: 16px; height: 16px; vertical-align: middle; margin-right: 6px"></i>Cloud (manuel)
+                        style="width: 16px; height: 16px; vertical-align: middle; margin-right: 6px"></i><span
+                        data-i18n="modal.backup.cloud.manual_title">Cloud (manuel)</span>
                 </div>
                 <div
                     style="padding: 1rem; background: var(--bg-secondary); border-radius: 4px; border: 1px solid var(--border-color)">
-                    <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.6">
+                    <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.6"
+                        data-i18n="modal.backup.cloud.manual_desc">
                         Pour sauvegarder manuellement sur d'autres services cloud :</p>
                     <ol
                         style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.8; padding-left: 1.5rem">
-                        <li>Clique sur "Télécharger en JSON"</li>
-                        <li>Le fichier contient TOUTES tes données</li>
-                        <li>Uploade-le manuellement sur ton service cloud préféré</li>
-                        <li>Pour restaurer : télécharge le fichier et utilise "Importer depuis un fichier"</li>
+                        <li data-i18n="modal.backup.cloud.manual_step1">Clique sur "Télécharger en JSON"</li>
+                        <li data-i18n="modal.backup.cloud.manual_step2">Le fichier contient TOUTES tes données</li>
+                        <li data-i18n="modal.backup.cloud.manual_step3">Uploade-le manuellement sur ton service cloud
+                            préféré</li>
+                        <li data-i18n="modal.backup.cloud.manual_step4">Pour restaurer : télécharge le fichier et
+                            utilise "Importer depuis un fichier"</li>
                     </ol>
                 </div>
             </div>

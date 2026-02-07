@@ -56,5 +56,29 @@ class LocalizationView {
                 el.placeholder = translateFn(placeholderKey);
             }
         });
+
+        // Update active class on language options
+        const langOptions = document.querySelectorAll('.lang-option');
+        langOptions.forEach(opt => {
+            const lang = opt.getAttribute('data-lang');
+            if (lang === currentLocale) {
+                opt.classList.add('active');
+            } else {
+                opt.classList.remove('active');
+            }
+        });
+
+        // Update the main button icon with the current flag
+        const langToggleBtn = document.querySelector('.lang-dropdown .header-action-btn');
+        if (langToggleBtn) {
+            const flags = {
+                'fr': '🇫🇷',
+                'en': '🇬🇧',
+                'de': '🇩🇪',
+                'es': '🇪🇸'
+            };
+            const currentFlag = flags[currentLocale] || '🌐';
+            langToggleBtn.innerHTML = `<span style="font-size: 1.2rem; line-height: 1;">${currentFlag}</span>`;
+        }
     }
 }

@@ -191,24 +191,18 @@ function switchView(view) {
 
     const editorViewVues = ['stats', 'analysis', 'versions', 'todos', 'timeline', 'corkboard', 'plot', 'plotgrid', 'relations'];
 
-    const viewLabelsNoSidebar = {
-        'stats': 'Statistiques', 'analysis': 'Analyse', 'versions': 'Versions',
-        'todos': 'TODOs', 'timeline': 'Timeline', 'corkboard': 'Tableau',
-        'thriller': 'Thriller', 'storygrid': 'Story Grid'
-    };
-
     if (sidebarViews[view]) {
         const listEl = document.getElementById(sidebarViews[view]);
         if (listEl) listEl.style.display = 'block';
     } else if (editorViewVues.includes(view)) {
         const noSidebarEl = document.getElementById('noSidebarMessage');
         if (noSidebarEl) {
-            const viewLabel = viewLabelsNoSidebar[view] || 'Cette vue';
+            const viewLabel = Localization.t('nav.' + view);
             noSidebarEl.innerHTML = `
                 <div style="padding: 2rem 1rem; text-align: center; color: var(--text-muted);">
                     <i data-lucide="layout-dashboard" style="width: 48px; height: 48px; opacity: 0.3; margin-bottom: 1rem;"></i>
                     <div style="font-size: 0.9rem; line-height: 1.6;">
-                        <strong>${viewLabel}</strong> utilise tout l'espace disponible.
+                        ${Localization.t('split.no_sidebar_view', [viewLabel])}
                     </div>
                 </div>`;
             noSidebarEl.style.display = 'block';
@@ -474,7 +468,7 @@ function loadGoogleFont(fontName) {
 
 function applyFont(fontName, panel = null) {
     if (fontName === 'custom') {
-        const customFont = prompt("Entrez le nom de la police Google Font exact (ex: 'Roboto Slab') :");
+        const customFont = prompt(Localization.t('prompt.custom_font'));
         if (customFont && customFont.trim()) {
             const cleanFontName = customFont.trim();
             loadGoogleFont(cleanFontName);

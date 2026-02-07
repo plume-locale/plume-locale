@@ -48,8 +48,8 @@ function renderThrillerCanvasView() {
 
     container.innerHTML = `
         <div class="thriller-board-toolbar">
-            <button class="btn btn-secondary btn-sm" onclick="handleToggleViewMode()" title="Basculer vers la vue grille">
-                <i data-lucide="table"></i> Vue grille
+            <button class="btn btn-secondary btn-sm" onclick="handleToggleViewMode()" title="${Localization.t('thriller.view.grid')}">
+                <i data-lucide="table"></i> ${Localization.t('thriller.view.grid')}
             </button>
         </div>
         <div class="thriller-board-canvas-wrapper">
@@ -61,7 +61,7 @@ function renderThrillerCanvasView() {
                 <div class="thriller-board-content" id="thrillerBoardContent">
                 </div>
             </div>
-            <button class="floating-add-button" onclick="handleAddElement()" title="Ajouter un nouvel élément">
+            <button class="floating-add-button" onclick="handleAddElement()" title="${Localization.t('thriller.action.add_element')}">
                 <i data-lucide="plus"></i>
             </button>
         </div>
@@ -89,17 +89,16 @@ function renderThrillerElements() {
                 <div class="thriller-empty-icon">
                     <i data-lucide="search" style="width: 48px; height: 48px; color: var(--text-secondary);"></i>
                 </div>
-                <h3>Aucun élément trouvé</h3>
+                <h3>${Localization.t('thriller.empty.title')}</h3>
                 <p>
-                    Il n'y a pas d'éléments de type "${currentFilter}" sur le tableau.<br>
-                    Utilisez le bouton "+" pour en ajouter un.
+                    ${Localization.t('thriller.empty.desc', [currentFilter])}
                 </p>
                 <div style="display: flex; gap: 10px; justify-content: center;">
                     <button class="btn btn-primary" onclick="handleAddElement('${currentFilter}')">
-                        <i data-lucide="plus"></i> Créer ${currentFilter}
+                        <i data-lucide="plus"></i> ${Localization.t('thriller.empty.create', [currentFilter])}
                     </button>
                     <button class="btn btn-secondary" onclick="ThrillerStateRepository.setCurrentFilter('clue'); renderThrillerBoard();">
-                         Voir tout
+                         ${Localization.t('thriller.empty.view_all')}
                     </button>
                 </div>
             </div>
@@ -143,7 +142,7 @@ function renderThrillerElements() {
                     </div>
                 </div>
                 <div class="thriller-element-content">
-                    <div class="thriller-element-description">${element.description || '<em style="opacity: 0.6">Aucune description</em>'}</div>
+                    <div class="thriller-element-description">${element.description || '<em style="opacity: 0.6">' + Localization.t('thriller.card.no_desc') + '</em>'}</div>
                 </div>
             </div>
         `;
@@ -171,25 +170,25 @@ function renderThrillerGridView() {
     container.innerHTML = `
         <div class="thriller-grid-view">
             <div class="thriller-board-toolbar">
-                <button class="btn btn-secondary btn-sm" onclick="handleToggleViewMode()" title="Basculer vers la vue canvas">
-                    <i data-lucide="layout"></i> Vue canvas
+                <button class="btn btn-secondary btn-sm" onclick="handleToggleViewMode()" title="${Localization.t('thriller.view.canvas')}">
+                    <i data-lucide="layout"></i> ${Localization.t('thriller.view.canvas')}
                 </button>
                 <div class="toolbar-divider"></div>
                 <button class="btn btn-secondary btn-sm ${gridData.columnMode === 'free' ? 'active' : ''}"
-                        onclick="handleSetColumnMode('free')" title="Colonnes libres">
-                    <i data-lucide="columns"></i> Colonnes libres
+                        onclick="handleSetColumnMode('free')" title="${Localization.t('thriller.toolbar.free_columns')}">
+                    <i data-lucide="columns"></i> ${Localization.t('thriller.toolbar.free_columns')}
                 </button>
                 <button class="btn btn-secondary btn-sm ${gridData.columnMode === 'narrative' ? 'active' : ''}"
-                        onclick="handleSetColumnMode('narrative')" title="Structure narrative">
-                    <i data-lucide="book-open"></i> Structure
+                        onclick="handleSetColumnMode('narrative')" title="${Localization.t('thriller.toolbar.narrative_structure')}">
+                    <i data-lucide="book-open"></i> ${Localization.t('thriller.toolbar.narrative_structure')}
                 </button>
                 <div class="toolbar-divider"></div>
-                <button class="btn btn-secondary btn-sm" onclick="handleAddRow()" title="Ajouter une ligne">
-                    <i data-lucide="plus"></i> Ajouter ligne
+                <button class="btn btn-secondary btn-sm" onclick="handleAddRow()" title="${Localization.t('thriller.action.add_row')}">
+                    <i data-lucide="plus"></i> ${Localization.t('thriller.action.add_row')}
                 </button>
                 ${gridData.columnMode === 'free' ? `
-                    <button class="btn btn-secondary btn-sm" onclick="handleAddColumn()" title="Ajouter une colonne">
-                        <i data-lucide="plus"></i> Ajouter colonne
+                    <button class="btn btn-secondary btn-sm" onclick="handleAddColumn()" title="${Localization.t('thriller.action.add_column')}">
+                        <i data-lucide="plus"></i> ${Localization.t('thriller.action.add_column')}
                     </button>
                 ` : ''}
             </div>
@@ -225,12 +224,12 @@ function renderThrillerGrid(gridData) {
         return `
             <div class="thriller-grid-empty-state">
                 <i data-lucide="table" style="width: 48px; height: 48px; color: var(--text-secondary);"></i>
-                <p>Aucun personnage ou lieu disponible</p>
+                <p>${Localization.t('thriller.grid.empty')}</p>
                 <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 0.5rem;">
-                    Créez des personnages ou des lieux pour qu'ils apparaissent automatiquement.
+                    ${Localization.t('thriller.grid.empty_desc')}
                 </p>
                 <button class="btn btn-primary" onclick="handleAddRow()">
-                    <i data-lucide="plus"></i> Ajouter une ligne personnalisée
+                    <i data-lucide="plus"></i> ${Localization.t('thriller.grid.add_row_custom')}
                 </button>
             </div>
         `;
@@ -241,7 +240,7 @@ function renderThrillerGrid(gridData) {
             <div class="thriller-grid-table" style="position: relative; z-index: 1;">
                 <div class="thriller-grid-header-row">
                     <div class="thriller-grid-row-header-cell">
-                        <span>Lignes / Colonnes</span>
+                        <span>${Localization.t('thriller.grid.header_label')}</span>
                     </div>
                     ${columns.map(col => `
                         <div class="thriller-grid-column-header" data-column-id="${col.id}">
@@ -388,7 +387,7 @@ function renderThrillerCard(card) {
         const isTrue = card.data && card.data.is_true;
         headerExtra = `
             <span class="thriller-card-badge" style="background: ${isTrue ? '#27ae60' : '#e74c3c'}; color: white; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; margin-left: auto;">
-                ${isTrue ? 'VRAI' : 'FAUX'}
+                ${isTrue ? Localization.t('thriller.card.alibi.true') : Localization.t('thriller.card.alibi.false')}
             </span>
         `;
     }
@@ -483,7 +482,7 @@ function renderWitnessesProperty(card, prop, value) {
                 </div>
                 <div class="thriller-card-property-content">
                     <span class="thriller-card-property-label">${prop.label}:</span>
-                    <span class="thriller-card-property-value"><em>Aucun témoin</em></span>
+                    <span class="thriller-card-property-value"><em>${Localization.t('thriller.card.witnesses_empty')}</em></span>
                 </div>
                 <div class="thriller-card-socket thriller-card-socket-right"
                      data-card-id="${card.id}" data-property="${prop.key}" data-side="right"
@@ -690,7 +689,7 @@ function renderThrillerList() {
     footer.style.marginTop = 'auto'; // Pousser vers le bas si flex column
     footer.innerHTML = `
         <button class="btn btn-secondary w-100" onclick="openTypeEditor()">
-            <i data-lucide="settings"></i> Gérer les types de cartes
+            <i data-lucide="settings"></i> ${Localization.t('thriller.action.edit_type')}
         </button>
     `;
     container.appendChild(footer);
@@ -730,7 +729,7 @@ function handleEditElement(elementId) {
 }
 
 function handleDeleteElement(elementId) {
-    if (!confirm('Supprimer cet élément et toutes ses cartes ?')) return;
+    if (!confirm(Localization.t('thriller.confirm.delete_element'))) return;
     const result = deleteElementVM(elementId);
     if (result.sideEffects.shouldSave) saveProject();
     if (result.sideEffects.shouldRender) renderThrillerBoard();
@@ -750,14 +749,14 @@ function handleSelectAndViewElement(elementId) {
 }
 
 function handleDeleteCard(cardId) {
-    if (!confirm('Supprimer cette carte ?')) return;
+    if (!confirm(Localization.t('thriller.confirm.delete_card'))) return;
     const result = deleteCardVM(cardId);
     if (result.sideEffects.shouldSave) saveProject();
     if (result.sideEffects.shouldRender) renderThrillerBoard();
 }
 
 function handleDeleteConnection(connectionId, sourceTitle = '') {
-    if (!confirm(`Supprimer cette connexion ${sourceTitle ? 'depuis "' + sourceTitle + '"' : ''} ?`)) return;
+    if (!confirm(Localization.t('thriller.confirm.delete_connection', [sourceTitle]))) return;
     const result = deleteGridConnectionVM(connectionId);
     if (result.sideEffects.shouldSave) saveProject();
     if (result.sideEffects.shouldRenderConnections) renderThrillerConnections();

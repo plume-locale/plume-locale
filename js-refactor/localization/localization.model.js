@@ -7,7 +7,9 @@ class LocalizationModel {
         this.currentLocale = 'fr'; // Default
         this.locales = {
             'fr': typeof LOCALE_FR !== 'undefined' ? LOCALE_FR : {},
-            'en': typeof LOCALE_EN !== 'undefined' ? LOCALE_EN : {}
+            'en': typeof LOCALE_EN !== 'undefined' ? LOCALE_EN : {},
+            'de': typeof LOCALE_DE !== 'undefined' ? LOCALE_DE : {},
+            'es': typeof LOCALE_ES !== 'undefined' ? LOCALE_ES : {}
         };
         this.observers = [];
     }

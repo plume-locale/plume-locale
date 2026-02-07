@@ -7,9 +7,8 @@
     padding: 0 2rem;
     gap: 2rem;
     position: relative;
-    z-index: 1000;
+    z-index: 9000;
     box-shadow: 0 1px 3px var(--shadow);
-    overflow: hidden;
 }
 
 .app-logo {
@@ -224,4 +223,110 @@
 .header-action-btn:disabled {
     opacity: 0.4;
     cursor: not-allowed;
+}
+
+/* Language Dropdown */
+.lang-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.lang-dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 0.75rem;
+    min-width: 160px;
+    background: rgba(var(--bg-primary-rgb), 0.95);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 9001;
+    padding: 0.5rem;
+    pointer-events: auto;
+}
+
+.lang-dropdown.open .lang-dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.lang-dropdown.open .header-action-btn {
+    background: var(--accent-gold);
+    color: white;
+    border-color: var(--accent-gold);
+}
+
+/* Ensure no parent clips the menu */
+.app-header {
+    overflow: visible !important;
+}
+
+/* Decorative arrow */
+.lang-dropdown-menu::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    right: 14px;
+    width: 12px;
+    height: 12px;
+    background: rgba(var(--bg-primary-rgb), 0.95);
+    border-top: 1px solid var(--border-color);
+    border-left: 1px solid var(--border-color);
+    transform: rotate(45deg);
+    z-index: -1;
+}
+
+.lang-option {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.lang-option:hover {
+    background: var(--bg-secondary);
+    color: var(--primary-color);
+}
+
+.lang-flag {
+    font-size: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+.lang-name {
+    flex: 1;
+}
+
+/* Active state indicator for language */
+.lang-option.active {
+    background: var(--primary-color);
+    color: white;
+}
+
+/* Ensure icons in options are styled if used */
+.lang-option i {
+    width: 16px;
+    height: 16px;
+    stroke-width: 2;
 }

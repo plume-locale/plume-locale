@@ -56,6 +56,8 @@ JS_ORDER = [
     # Localization Module
     'js-refactor/localization/locales/fr.js',
     'js-refactor/localization/locales/en.js',
+    'js-refactor/localization/locales/de.js',
+    'js-refactor/localization/locales/es.js',
     'js-refactor/localization/localization.model.js',
     'js-refactor/localization/localization.view.js',
     'js-refactor/localization/localization.manager.js',
