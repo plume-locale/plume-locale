@@ -1,31 +1,15 @@
-#!/usr/bin/env python3
-"""
-Script de déploiement vers /live
-Copie tous les fichiers nécessaires listés dans build.light.py vers le répertoire /live
-Usage: python3 deploy-to-live.py
-"""
-
 import os
+import glob
+import re
 import sys
-import shutil
-from datetime import datetime
 
-# Importer les listes de fichiers depuis build.light.py
-BUILD_DIR = os.path.dirname(os.path.abspath(__file__))
+# Configuration paths
+BUILD_DIR = os.getcwd()
 LIVE_DIR = os.path.join(BUILD_DIR, 'live')
-LOG_FILE = os.path.join(BUILD_DIR, 'deploy.log')
+OUTPUT_FILE = os.path.join(LIVE_DIR, 'index.html')
 
-# Fichier log global
-log_handle = None
-
-def log(message):
-    """Écrit un message dans la console ET dans le fichier log"""
-    print(message)
-    if log_handle:
-        log_handle.write(message + '\n')
-        log_handle.flush()
-
-# Ordre des fichiers CSS (copié depuis build.light.py)
+# We need to extract the lists from build.light.py
+# explicit lists here to avoid import issues
 CSS_ORDER = [
     # Vendor CSS (bundled)
     '../vendor/driver.css',
@@ -48,7 +32,6 @@ CSS_ORDER = [
     'js-refactor/investigation-board/investigation-board.tabs.css',
 ]
 
-# Ordre des fichiers JS (copié depuis build.light.py)
 JS_ORDER = [
     # Vendor libraries (bundled)
     'vendor/driver.js.iife.js',
@@ -122,7 +105,7 @@ JS_ORDER = [
     'js-refactor/colorpalette/color-palette.view.js',
     'js-refactor/colorpalette/color-palette.handlers.js',
     'js-refactor/colorpalette/color-palette.main.js',
-    # Mobile Menu refactored files (order: model -> repository -> viewmodel -> view -> main)
+    # Mobile Menu refactored files
     'js-refactor/mobile-menu/mobile-menu.model.js',
     'js-refactor/mobile-menu/mobile-menu.repository.js',
     'js-refactor/mobile-menu/mobile-menu.viewmodel.js',
@@ -160,7 +143,7 @@ JS_ORDER = [
     'js-refactor/notes/notes.view.js',
     'js-refactor/notes/notes.handlers.js',
     'js-refactor/notes/notes.main.js',
-    # Snapshots refactored files (order: model -> repository -> viewmodel -> view -> main)
+    # Snapshots refactored files
     'js-refactor/snapshots/snapshots.model.js',
     'js-refactor/snapshots/snapshots.repository.js',
     'js-refactor/snapshots/snapshots.viewmodel.js',
@@ -183,7 +166,7 @@ JS_ORDER = [
     'js-refactor/codex/codex.repository.js',
     'js-refactor/codex/codex.viewmodel.js',
     'js-refactor/codex/codex.view.js',
-    # Search refactored files (order: model -> repository -> viewmodel -> view -> handlers -> main)
+    # Search refactored files
     'js-refactor/search/search.model.js',
     'js-refactor/search/search.repository.js',
     'js-refactor/search/search.viewmodel.js',
@@ -197,7 +180,7 @@ JS_ORDER = [
     'js-refactor/focusMode/focusMode.view.js',
     'js-refactor/focusMode/focusMode.handlers.js',
     'js-refactor/focusMode/focusMode.main.js',
-    # Keyboard Shortcuts refactored files (order: model -> repository -> viewmodel -> view -> handlers -> main)
+    # Keyboard Shortcuts refactored files
     'js-refactor/keyboard-shortcuts/keyboard-shortcuts.model.js',
     'js-refactor/keyboard-shortcuts/keyboard-shortcuts.repository.js',
     'js-refactor/keyboard-shortcuts/keyboard-shortcuts.viewmodel.js',
@@ -210,21 +193,21 @@ JS_ORDER = [
     'js-refactor/revision/revision.view.js',
     'js-refactor/revision/revision.handlers.js',
     'js-refactor/revision/revision.main.js',
-    # Todo refactored files (order: model -> repository -> viewmodel -> view -> handlers -> main)
+    # Todo refactored files
     'js-refactor/todo/todo.model.js',
     'js-refactor/todo/todo.repository.js',
     'js-refactor/todo/todo.viewmodel.js',
     'js-refactor/todo/todo.view.js',
     'js-refactor/todo/todo.handlers.js',
     'js-refactor/todo/todo.main.js',
-    # Corkboard refactored files (order: model -> repository -> viewmodel -> view -> handlers -> main)
+    # Corkboard refactored files
     'js-refactor/corkboard/corkboard.model.js',
     'js-refactor/corkboard/corkboard.repository.js',
     'js-refactor/corkboard/corkboard.viewmodel.js',
     'js-refactor/corkboard/corkboard.view.js',
     'js-refactor/corkboard/corkboard.handlers.js',
     'js-refactor/corkboard/corkboard.main.js',
-    # Mindmap refactored files (order: model -> repository -> viewmodel -> view -> handlers -> main)
+    # Mindmap refactored files
     'js-refactor/mindmap/mindmap.model.js',
     'js-refactor/mindmap/mindmap.repository.js',
     'js-refactor/mindmap/mindmap.viewmodel.js',
@@ -287,7 +270,6 @@ JS_ORDER = [
     'js-refactor/mobile-swipe/mobile-swipe.view.js',
     'js-refactor/mobile-swipe/mobile-swipe.handlers.js',
     'js-refactor/mobile-swipe/mobile-swipe.main.js',
-    # '44.storygrid.js',  # RETIRÉ pour version Light
     # Arc Board
     'js-refactor/arc-board/arc-board.config.js',
     'js-refactor/arc-board/arc-board.models.js',
@@ -310,7 +292,7 @@ JS_ORDER = [
     'js-refactor/sceneNavigation/scene-navigation.view.js',
     'js-refactor/sceneNavigation/scene-navigation.handlers.js',
     'js-refactor/sceneNavigation/scene-navigation.main.js',
-    # Synonyms Module (French synonyms dictionary - local)
+    # Synonyms Module
     'js-refactor/synonyms/synonyms.config.js',
     'js-refactor/synonyms/synonyms.model.js',
     'js-refactor/synonyms/synonyms.dictionary.js',
@@ -318,7 +300,7 @@ JS_ORDER = [
     'js-refactor/synonyms/synonyms.repository.js',
     'js-refactor/synonyms/synonyms.viewmodel.js',
     'js-refactor/synonyms/synonyms.view.js',
-    # Import Chapter Module (import .docx, .txt, .md, .epub, .pages)
+    # Import Chapter Module
     'js-refactor/import-chapter/import-chapter.model.js',
     'js-refactor/import-chapter/import-chapter.viewmodel.js',
     'js-refactor/import-chapter/import-chapter.view.js',
@@ -336,7 +318,6 @@ JS_ORDER = [
     'js-refactor/product-tour/product-tour.view.js',
     'js-refactor/product-tour/product-tour.handlers.js',
     'js-refactor/product-tour/product-tour.main.js',
-    
     # Investigation Board Module (New)
     'js-refactor/investigation-board/investigation-board.model.js',
     'js-refactor/investigation-board/investigation-board.store.js',
@@ -350,192 +331,135 @@ JS_ORDER = [
     'js-refactor/investigation-board/investigation-board.view.js',
 ]
 
-# Fichiers HTML essentiels
-HTML_FILES = [
-    'html/head.html',
-    'html/body.html',
-    'html/footer.html'
+IGNORED_ORIGINALS = [
+    '_01.app.js', '_03.project.js', '_05.undo-redo.js', '_06.structure.js', '_07.stats.js', 
+    '_08.auto-detect.js', '_09.floating-editor.js', '_10.colorpalette.js', '_11.updateStats.js',
+    '_15.characters.js', '_16.split-view.js', '_17.world.js', '_19.notes.js', '_21.sceneVersions.js', '_22.diff.js', 
+    '_23.stats.js', '_24.codex.js', '_25.globalSearch.js', '_26.focusMode.js', 
+    '_26.focusMode.refactor.js', 
+    '_28.revision.js', '_29.todos.js', '_30.corkboard.js', '_30.corkboard.refactor.js', 
+    '_31.mindmap.js', '_32.touch-events.js',
+    '_33.plot.js', '_34.relations-graph.js', '_35.renderMap.js', '_36.timeline-metro.js', '_43.arcs.js', '_44.storygrid.js', 
+    '_45.arc-board.js', '_45.arc-board.refactor.js', '_46.thriller-board.js', '38.tension.js', '40.sidebar-views.js',
+    '12.import-export.js', '39.export.js', '41.storageMonitoring.js', '02.storage.js', '20.snapshots.js', '13.mobile-menu.js',
+    '27.keyboardShortcuts.js', '42.mobile-swipe.js', '14.dragndrop-acts.js'
 ]
 
-# CSS des modules
 MODULE_CSS_FILES = [
     'js-refactor/synonyms/synonyms.css',
     'js-refactor/map/map.css',
-    'js-refactor/keyboard-shortcuts/keyboard-shortcuts.css'
+    'js-refactor/keyboard-shortcuts/keyboard-shortcuts.css',
+    # These are already in CSS_ORDER
+    # 'js-refactor/investigation-board/investigation-board.css',
+    # 'js-refactor/investigation-board/investigation-board.tabs.css'
 ]
 
+def read_file(path):
+    full_path = os.path.join(BUILD_DIR, path)
+    if not os.path.exists(full_path):
+        print(f"File not found: {path} (full: {full_path})")
+        return ""
+    with open(full_path, 'r', encoding='utf-8') as f:
+        return f.read()
 
+def clean_html_menu(body_content):
+    # Same logic as build.light.py
+    body_content = re.sub(r'<button[^>]+id="header-tab-thriller"[^>]*>.*?</button>', '', body_content, flags=re.DOTALL)
+    body_content = re.sub(r'<button[^>]+id="header-tab-storygrid"[^>]*>.*?</button>', '', body_content, flags=re.DOTALL)
+    body_content = re.sub(r'<button[^>]+data-view="thriller"[^>]*>.*?</button>', '', body_content, flags=re.DOTALL)
+    body_content = re.sub(r'<button[^>]+data-view="storygrid"[^>]*>.*?</button>', '', body_content, flags=re.DOTALL)
+    body_content = re.sub(r'<div[^>]+id="thrillerList"[^>]*>.*?</div>', '', body_content, flags=re.DOTALL)
+    body_content = re.sub(r'<option[^>]+value="thriller"[^>]*>.*?</option>', '', body_content)
+    return body_content
 
-def get_all_files_to_deploy():
-    """Retourne la liste complète des fichiers à déployer"""
-    files = []
+def generate_index():
+    head = read_file('html/head.html')
+    body = read_file('html/body.html')
+    footer = read_file('html/footer.html')
     
-    # Ajouter les fichiers CSS
-    for css_file in CSS_ORDER:
-        if css_file.startswith('../vendor/'):
-            # Vendor CSS files
-            files.append(css_file.replace('../', ''))
-        elif css_file.startswith('js-refactor/'):
-             # Module CSS files (already relative path)
-             files.append(css_file)
-        elif css_file == 'undo-redo.css':
-             # Special case if needed, but undo-redo.css is likely in css/
-             files.append(f'css/{css_file}')
+    body = clean_html_menu(body)
+    
+    # CSS Links
+    css_links = []
+    
+    processed_css = []
+    
+    for css in CSS_ORDER:
+        filename = os.path.basename(css)
+        link = f'<link rel="stylesheet" href="./css/{filename}">'
+        css_links.append(link)
+        processed_css.append(css)
+
+    # 2. Other CSS files in css/ folder not in order (excluding storygrid)
+    local_css_dir = os.path.join(BUILD_DIR, 'css')
+    for filepath in glob.glob(os.path.join(local_css_dir, '*.css')):
+        filename = os.path.basename(filepath)
+        if filename not in [os.path.basename(c) for c in CSS_ORDER] and filename != '11.storygrid.css':
+            link = f'<link rel="stylesheet" href="./css/{filename}">'
+            css_links.append(link)
+
+    # 3. Module CSS files
+    for css in MODULE_CSS_FILES:
+        # Check if basename already processed (to avoid dups if multiple paths have same name, unlikely but safekeeping)
+        if css not in processed_css: 
+             filename = os.path.basename(css)
+             link = f'<link rel="stylesheet" href="./css/{filename}">'
+             css_links.append(link)
+
+    # JS Scripts
+    js_scripts = []
+    
+    # helper to normalize js path to live/js/...
+    def get_live_js_path(original_path):
+        if original_path.startswith('vendor/'):
+             return f'./js/{original_path}' # keep vendor/ struct inside js/
+        elif original_path.startswith('js-refactor/'):
+             return f'./js/{original_path.replace("js-refactor/", "")}'
+        elif original_path.startswith('js/'):
+             return f'./js/{original_path.replace("js/", "")}'
         else:
-            files.append(f'css/{css_file}')
-    
-    # Ajouter les CSS des modules
-    files.extend(MODULE_CSS_FILES)
-    
-    # Ajouter les fichiers JS
-    for js_file in JS_ORDER:
-        if js_file.startswith('vendor/') or js_file.startswith('js-refactor/'):
-            files.append(js_file)
-        else:
-            files.append(f'js/{js_file}')
-    
+             return f'./js/{original_path}'
 
-    
-    
-    return files
-
-def get_dest_path(file_path):
-    """Détermine le chemin de destination pour un fichier donné"""
-    # CSS -> live/css/filename.css (flattened)
-    if file_path.endswith('.css'):
-        return os.path.join('css', os.path.basename(file_path))
-    
-    # JS -> live/js/... (merged roots)
-    if file_path.endswith('.js'):
-        if file_path.startswith('vendor/'):
-             return os.path.join('js', file_path) # js/vendor/...
-        elif file_path.startswith('js-refactor/'):
-             return os.path.join('js', file_path.replace('js-refactor/', '')) # js/... (without js-refactor prefix)
-        elif file_path.startswith('js/'):
-             return os.path.join('js', file_path.replace('js/', '')) # js/... (without js prefix)
-        else:
-             return os.path.join('js', file_path)
+    # 1. JS_ORDER
+    for js in JS_ORDER:
+         src = get_live_js_path(js)
+         js_scripts.append(f'<script src="{src}"></script>')
              
+    # 2. Extra JS files
+    local_js_dir = os.path.join(BUILD_DIR, 'js')
+    for filepath in glob.glob(os.path.join(local_js_dir, '*.js')):
+        filename = os.path.basename(filepath)
+        
+        is_in_order = False
+        for order_item in JS_ORDER:
+            # Check by basename if it matches something loose in JS_ORDER
+            if os.path.basename(order_item) == filename:
+                is_in_order = True
+                break
+        
+        if (not is_in_order and 
+            filename not in IGNORED_ORIGINALS and
+            not filename.startswith('_') and
+            'thriller' not in filename.lower() and
+            'storygrid' not in filename.lower()):
+            
+            src = f'./js/{filename}'
+            js_scripts.append(f'<script src="{src}"></script>')
 
-        
-    # HTML -> root (already handled by index.html generation, but if we deployed other html...)
-    if file_path.startswith('html/'):
-         return file_path
-         
-    return file_path
+    # Construct HTML
+    html_content = f"""{head}
+    <!-- Generated CSS Links -->
+    {chr(10).join(css_links)}
+</head>
+{body}
+    <!-- Generated JS Scripts -->
+    {chr(10).join(js_scripts)}
+{footer}"""
 
-def copy_file(src_path, dest_rel_path): # Changed second arg to relative path in live/
-    """Copie un fichier vers son emplacement calculé dans /live"""
-    try:
-        dest_full_path = os.path.join(LIVE_DIR, dest_rel_path)
-        
-        # Créer le répertoire de destination si nécessaire
-        dest_dir = os.path.dirname(dest_full_path)
-        if dest_dir:
-            os.makedirs(dest_dir, exist_ok=True)
-        
-        # Copier le fichier
-        shutil.copy2(src_path, dest_full_path)
-        return True
-    except Exception as e:
-        log(f"   [ERREUR] Impossible de copier {src_path} vers {dest_rel_path}: {e}")
-        return False
-
-def deploy():
-    """Déploie tous les fichiers vers le répertoire /live"""
-    global log_handle
+    with open(OUTPUT_FILE, 'w', encoding='utf-8') as f:
+        f.write(html_content)
     
-    # Ouvrir le fichier log
-    log_handle = open(LOG_FILE, 'w', encoding='utf-8')
-    
-    log(f"========================================")
-    log(f"Déploiement vers /live - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    log(f"========================================")
-    log(f"Répertoire source: {BUILD_DIR}")
-    log(f"Répertoire cible: {LIVE_DIR}")
-    log("")
-    
-    # Créer le répertoire /live s'il n'existe pas
-    if os.path.exists(LIVE_DIR):
-        log(f"--- Nettoyage du répertoire /live existant ---")
-        try:
-            shutil.rmtree(LIVE_DIR)
-            log(f"   [OK] Répertoire /live supprimé")
-        except Exception as e:
-            log(f"   [ERREUR] Impossible de supprimer /live: {e}")
-            log_handle.close()
-            return False
-    
-    log(f"--- Création du répertoire /live ---")
-    try:
-        os.makedirs(LIVE_DIR, exist_ok=True)
-        log(f"   [OK] Répertoire /live créé")
-    except Exception as e:
-        log(f"   [ERREUR] Impossible de créer /live: {e}")
-        log_handle.close()
-        return False
-    
-    log("")
-    log(f"--- Copie des fichiers ---")
-    
-    # Obtenir la liste des fichiers à déployer
-    files_to_deploy = get_all_files_to_deploy()
-    
-    copied_count = 0
-    missing_count = 0
-    error_count = 0
-    
-    for file_path in files_to_deploy:
-        src_path = os.path.join(BUILD_DIR, file_path)
-        dest_rel_path = get_dest_path(file_path)
-        
-        if not os.path.exists(src_path):
-            log(f"   [!] Fichier manquant: {file_path}")
-            missing_count += 1
-            continue
-        
-        if copy_file(src_path, dest_rel_path):
-            copied_count += 1
-        else:
-            error_count += 1
-    
-    log("")
-    log(f"========================================")
-    log(f"DÉPLOIEMENT TERMINÉ")
-    log(f"========================================")
-    log(f"Fichiers copiés: {copied_count}")
-    log(f"Fichiers manquants: {missing_count}")
-    log(f"Erreurs: {error_count}")
-    log(f"Total: {len(files_to_deploy)} fichiers")
-    log("")
-    log(f"Répertoire de déploiement: {LIVE_DIR}")
-    
-    # Calculer la taille totale
-    total_size = 0
-    for root, dirs, files in os.walk(LIVE_DIR):
-        for file in files:
-            file_path = os.path.join(root, file)
-            total_size += os.path.getsize(file_path)
-    
-    log(f"Taille totale: {total_size:,} octets ({total_size / 1024 / 1024:.2f} MB)")
-    
-    # Generate index.html explicitly after deployment
-    log(f"--- Génération de index.html ---")
-    try:
-        import subprocess
-        result = subprocess.run([sys.executable, 'generate_live_index.py'], capture_output=True, text=True)
-        if result.returncode == 0:
-            log(f"   [OK] index.html généré avec succès")
-        else:
-            log(f"   [ERREUR] Échec de la génération de index.html: {result.stderr}")
-            error_count += 1
-    except Exception as e:
-        log(f"   [ERREUR] Exception lors de la génération de index.html: {e}")
-        error_count += 1
-        
-    log_handle.close()
-    return error_count == 0
+    print(f"Generated {OUTPUT_FILE}")
 
 if __name__ == "__main__":
-    success = deploy()
-    sys.exit(0 if success else 1)
+    generate_index()
