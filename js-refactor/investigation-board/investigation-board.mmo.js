@@ -84,6 +84,11 @@ const InvestigationMMOView = {
                                 <span class="toggle-slider"></span>
                                 <span class="toggle-label">${Localization.t('investigation.mmo.show_details') || 'Détails'}</span>
                             </label>
+
+                            <button class="reset-all-btn" onclick="InvestigationMMOView.handleResetAll()" title="${Localization.t('investigation.mmo.reset_all_tooltip') || 'Remise à zéro de tous les MMO'}">
+                                <i data-lucide="trash-2"></i>
+                                <span>Reset</span>
+                            </button>
                         </div>
                     </div>
 
@@ -503,6 +508,13 @@ const InvestigationMMOView = {
             if (window.InvestigationView && window.InvestigationView.renderActiveView) {
                 window.InvestigationView.renderActiveView('mmo');
             }
+        }
+    },
+
+    handleResetAll: function () {
+        const confirmMsg = Localization.t('investigation.mmo.reset_confirm') || "Voulez-vous vraiment remettre à zéro TOUT le travail MMO (niveaux et commentaires) ? Cette action est irréversible.";
+        if (confirm(confirmMsg)) {
+            InvestigationStore.resetAllMMO();
         }
     }
 };

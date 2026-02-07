@@ -56,7 +56,7 @@ const WordRepetitionHandlers = {
      */
     onPrefChange(key, value) {
         WordRepetitionRepository.updatePreference(key, value);
-        WordRepetitionView.notify('Préférence mise à jour', 'info');
+        WordRepetitionView.notify(Localization.t('repetition.notify.pref_updated'), 'info');
     },
 
     /**
@@ -131,7 +131,7 @@ const WordRepetitionHandlers = {
     onCopySuggestion(suggestion) {
         if (navigator.clipboard) {
             navigator.clipboard.writeText(suggestion).then(() => {
-                WordRepetitionView.notify(`"${suggestion}" copié !`, 'success');
+                WordRepetitionView.notify(Localization.t('repetition.notify.copied', suggestion), 'success');
             });
         } else {
             // Fallback
@@ -141,7 +141,7 @@ const WordRepetitionHandlers = {
             textarea.select();
             document.execCommand('copy');
             document.body.removeChild(textarea);
-            WordRepetitionView.notify(`"${suggestion}" copié !`, 'success');
+            WordRepetitionView.notify(Localization.t('repetition.notify.copied', suggestion), 'success');
         }
     },
 
@@ -164,7 +164,7 @@ const WordRepetitionHandlers = {
                 }
             }
         } else {
-            WordRepetitionView.notify('Aucune suggestion supplémentaire', 'info');
+            WordRepetitionView.notify(Localization.t('repetition.notify.no_more_suggestions'), 'info');
         }
     },
 
@@ -286,11 +286,11 @@ const WordRepetitionHandlers = {
      * Gestionnaire d'ajout de mot ignoré
      */
     onAddIgnoredWord() {
-        const word = prompt('Mot à ignorer :');
+        const word = prompt(Localization.t('repetition.prompt.ignore'));
         if (word && word.trim()) {
             const success = WordRepetitionRepository.addIgnoredWord(word.trim());
             if (success) {
-                WordRepetitionView.notify(`"${word.trim()}" ajouté aux mots ignorés`, 'success');
+                WordRepetitionView.notify(Localization.t('repetition.notify.word_added', word.trim()), 'success');
                 this._refreshPanel();
             }
         }
@@ -304,7 +304,7 @@ const WordRepetitionHandlers = {
     onRemoveIgnoredWord(word) {
         const success = WordRepetitionRepository.removeIgnoredWord(word);
         if (success) {
-            WordRepetitionView.notify(`"${word}" retiré des mots ignorés`, 'success');
+            WordRepetitionView.notify(Localization.t('repetition.notify.word_removed', word), 'success');
             this._refreshPanel();
         }
     },
@@ -333,7 +333,7 @@ const WordRepetitionHandlers = {
                 editor,
                 NodeFilter.SHOW_TEXT,
                 {
-                    acceptNode: function(node) {
+                    acceptNode: function (node) {
                         // Ignorer les noeuds déjà dans un mark
                         if (node.parentElement && node.parentElement.classList.contains('word-rep-highlight')) {
                             return NodeFilter.FILTER_REJECT;
@@ -400,7 +400,7 @@ const WordRepetitionHandlers = {
 
         // Afficher le nombre de surlignages
         if (highlightCount > 0) {
-            WordRepetitionView.notify(`${highlightCount} occurrence(s) surlignée(s)`, 'info');
+            WordRepetitionView.notify(Localization.t('repetition.notify.highlights', highlightCount), 'info');
         }
     },
 

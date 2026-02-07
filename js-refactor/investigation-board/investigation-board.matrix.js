@@ -79,10 +79,10 @@ const InvestigationMatrixView = {
                     </div>
                     
                     <div class="matrix-legend">
-                        <div class="legend-item"><span class="legend-dot state-knows"></span> ${Localization.t('investigation.matrix.legend.knows')}</div>
-                        <div class="legend-item"><span class="legend-dot state-suspicious"></span> ${Localization.t('investigation.matrix.legend.suspicious')}</div>
-                        <div class="legend-item"><span class="legend-dot state-misled"></span> ${Localization.t('investigation.matrix.legend.misled')}</div>
-                        <div class="legend-item"><span class="legend-dot state-ignorant"></span> ${Localization.t('investigation.matrix.legend.ignorant')}</div>
+                        <div class="legend-item"><i data-lucide="check" class="matrix-icon state-knows"></i> ${Localization.t('investigation.matrix.legend.knows')}</div>
+                        <div class="legend-item"><i data-lucide="help-circle" class="matrix-icon state-suspicious"></i> ${Localization.t('investigation.matrix.legend.suspicious')}</div>
+                        <div class="legend-item"><i data-lucide="alert-triangle" class="matrix-icon state-misled"></i> ${Localization.t('investigation.matrix.legend.misled')}</div>
+                        <div class="legend-item"><i data-lucide="circle" class="matrix-icon state-ignorant"></i> ${Localization.t('investigation.matrix.legend.ignorant')}</div>
                     </div>
                 </div>
                 
@@ -92,7 +92,14 @@ const InvestigationMatrixView = {
                             <thead>
                                 <tr>
                                     <th class="th-sticky-corner">${Localization.t('investigation.matrix.col.char_scene')}</th>
-                                    ${scenes.map(s => `<th><div class="th-scene-title" title="${s.title}">${s.title}</div></th>`).join('')}
+                                    ${scenes.map(s => `
+                                        <th>
+                                            <div class="th-scene-title" title="${s.actTitle} > ${s.chapterTitle} > ${s.title}">
+                                                <span class="matrix-act-name">${s.actTitle}</span>
+                                                <span class="matrix-chap-name">${s.chapterTitle}</span>
+                                                <span class="matrix-scene-name">${s.title}</span>
+                                            </div>
+                                        </th>`).join('')}
                                 </tr>
                             </thead>
                             <tbody>

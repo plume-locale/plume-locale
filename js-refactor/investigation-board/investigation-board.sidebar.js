@@ -72,6 +72,10 @@ const InvestigationSidebarUI = {
         const facts = InvestigationStore.getFacts();
         const allCharacters = InvestigationStore.getCharacters();
         const allLocations = InvestigationStore.getLocations();
+
+        // 1. Render MMO Section (New)
+        const mmoHTML = this.renderMMOSection(sceneId, allCharacters);
+
         const cardsHTML = [];
 
         facts.forEach(fact => {
@@ -137,13 +141,141 @@ const InvestigationSidebarUI = {
             });
         });
 
-        if (cardsHTML.length === 0) {
+        if (cardsHTML.length === 0 && !mmoHTML) {
             container.innerHTML = `<div class="empty-state">${Localization.t('investigation.timeline.empty') || 'Aucun item d’enquête lié à cette scène.'}</div>`;
         } else {
-            container.innerHTML = cardsHTML.join('');
+            container.innerHTML = (mmoHTML || '') + cardsHTML.join('');
         }
 
         if (typeof lucide !== 'undefined') lucide.createIcons();
+    },
+
+    /**
+     * Renders a quick-access MMO section for characters in the scene.
+     */
+    renderMMOSection: function (sceneId, allCharacters) {
+        if (!sceneId || typeof project === 'undefined') return '';
+
+        // Find characters linked to this scene
+        let sceneCharactersIds = [];
+        project.acts.forEach(a => {
+            a.chapters.forEach(c => {
+                const s = c.scenes.find(sc => sc.id == sceneId);
+                if (s) {
+                    if (s.linkedCharacters) {
+                        sceneCharactersIds = [...new Set([...sceneCharactersIds, ...s.linkedCharacters])];
+                    }
+                    if (s.confirmedPresentCharacters) {
+                        sceneCharactersIds = [...new Set([...sceneCharactersIds, ...s.confirmedPresentCharacters])];
+                    }
+                }
+            });
+        });
+
+        if (sceneCharactersIds.length === 0) return '';
+
+        // Find primary incident (Crime or Major Event)
+        // Try major types first, then any fact if none found
+        const facts = InvestigationStore.getFacts();
+        let primaryIncident = facts.find(f => ['crime', 'body', 'disappearance', 'event'].includes(f.type));
+        if (!primaryIncident && facts.length > 0) primaryIncident = facts[0];
+
+        if (!primaryIncident) return '';
+
+        let html = `
+            <div class="sidebar-section-header">
+                <i data-lucide="users"></i>
+                <span>${Localization.t('investigation.mmo.characters_in_scene') || 'Personnages & MMO'}</span>
+            </div>
+            <div class="sidebar-mmo-container">
+        `;
+
+        sceneCharactersIds.forEach(charId => {
+            const char = allCharacters.find(c => c.id == charId);
+            if (!char) return;
+
+            const link = InvestigationStore.getSuspectLinkAtScene(charId, primaryIncident.id, sceneId) || {};
+            const motive = (link.motive && link.motive.level) || 0;
+            const means = (link.means && link.means.level) || 0;
+            const opportunity = (link.opportunity && link.opportunity.level) || 0;
+
+            html += `
+                <div class="sidebar-mmo-card">
+                    <div class="mmo-card-header">
+                        <div class="mmo-char-avatar" style="background-color: ${char.color || 'var(--primary-color)'}">
+                            ${char.name.charAt(0)}
+                        </div>
+                        <span class="mmo-char-name">${char.name}</span>
+                        <button class="mmo-edit-btn" onclick="InvestigationMMOView.editSpecificMMO('${char.id}', '${primaryIncident.id}')">
+                            <i data-lucide="edit-3"></i>
+                        </button>
+                    </div>
+                    <div class="mmo-quick-bars">
+                        ${this.renderMiniBar('motive', motive, charId, primaryIncident.id, sceneId)}
+                        ${this.renderMiniBar('means', means, charId, primaryIncident.id, sceneId)}
+                        ${this.renderMiniBar('opportunity', opportunity, charId, primaryIncident.id, sceneId)}
+                    </div>
+                </div>
+            `;
+        });
+
+        html += `</div><div class="sidebar-divider"></div>`;
+        return html;
+    },
+
+    renderMiniBar: function (type, value, charId, incidentId, sceneId) {
+        const labels = { motive: 'M', means: 'M', opportunity: 'O' };
+        const fullLabels = { motive: 'Mobile', means: 'Moyens', opportunity: 'Opportunité' };
+
+        return `
+            <div class="mmo-mini-row" title="${fullLabels[type]} : ${value}/10">
+                <span class="mmo-mini-label">${labels[type]}</span>
+                <div class="mmo-mini-track" onclick="InvestigationSidebarUI.quickUpdateMMO('${charId}', '${incidentId}', '${sceneId}', '${type}', event)">
+                    <div class="mmo-mini-fill ${type}" style="width: ${value * 10}%"></div>
+                </div>
+                <span class="mmo-mini-val">${value}</span>
+            </div>
+        `;
+    },
+
+    quickUpdateMMO: function (charId, incidentId, sceneId, type, event) {
+        event.stopPropagation();
+        const rect = event.currentTarget.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const width = rect.width;
+        const newLevel = Math.max(0, Math.min(10, Math.round((x / width) * 10)));
+
+        // Get current link to preserve other values and descriptions
+        const currentLink = InvestigationStore.getSuspectLinkAtScene(charId, incidentId, sceneId) || {};
+
+        const payload = {
+            suspectId: charId,
+            victimId: incidentId,
+            sceneId: sceneId || null
+        };
+
+        // Initialize fields from current link
+        ['motive', 'means', 'opportunity'].forEach(key => {
+            const val = currentLink[key];
+            if (val) {
+                payload[key] = { level: val.level, description: val.description || '' };
+            }
+        });
+
+        // Update target field
+        payload[type] = {
+            level: newLevel,
+            description: (currentLink[type] && currentLink[type].description) || ''
+        };
+
+        InvestigationStore.updateSuspectLink(payload);
+        this.renderSidebar(sceneId);
+
+        // Also refresh the main MMO view if it's open (in background)
+        if (window.InvestigationMMOView && typeof window.InvestigationMMOView.render === 'function') {
+            const container = document.querySelector('.investigation-mmo');
+            if (container) window.InvestigationMMOView.render(container);
+        }
     },
 
     /**

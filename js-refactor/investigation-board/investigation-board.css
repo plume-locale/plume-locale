@@ -895,31 +895,27 @@
     font-weight: 600;
 }
 
-.legend-dot {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    border: 2px solid var(--border-color);
+.legend-item .matrix-icon {
+    width: 16px;
+    height: 16px;
+    stroke-width: 2.5;
 }
 
-.legend-dot.state-knows {
-    background: var(--accent-green);
-    border-color: var(--accent-green);
+.legend-item .matrix-icon.state-knows {
+    color: var(--accent-green);
 }
 
-.legend-dot.state-suspicious {
-    background: var(--accent-gold);
-    border-color: var(--accent-gold);
+.legend-item .matrix-icon.state-suspicious {
+    color: var(--accent-gold);
 }
 
-.legend-dot.state-misled {
-    background: var(--accent-red);
-    border-color: var(--accent-red);
+.legend-item .matrix-icon.state-misled {
+    color: var(--accent-red);
 }
 
-.legend-dot.state-ignorant {
-    background: transparent;
-    opacity: 0.5;
+.legend-item .matrix-icon.state-ignorant {
+    color: var(--text-muted);
+    opacity: 0.3;
 }
 
 /* Grid & Scroll */
@@ -1002,13 +998,39 @@
     transform: rotate(180deg);
     white-space: nowrap;
     text-align: left;
-    width: 40px;
-    /* Fixed width columns */
-    max-height: 120px;
+    width: 44px;
+    /* Increased width for better spacing */
+    height: 180px;
+    /* Fixed height for vertical labels */
+    max-height: 180px;
     overflow: hidden;
-    text-overflow: ellipsis;
     margin: 0 auto;
     cursor: default;
+    display: flex;
+    flex-direction: column;
+    padding: 8px 0;
+}
+
+.matrix-act-name {
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--primary-color);
+    margin-bottom: 4px;
+    opacity: 0.8;
+}
+
+.matrix-chap-name {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+}
+
+.matrix-scene-name {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-primary);
 }
 
 /* Rows & Cells */
@@ -4135,3 +4157,171 @@
     background: rgba(239, 68, 68, 0.1);
     color: #ef4444;
 }
+
+/* --- SIDEBAR MMO WIDGET --- */
+.sidebar-section-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    font-size: 0.8rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--primary-color);
+    letter-spacing: 0.5px;
+    background: rgba(var(--bg-tertiary-rgb), 0.3);
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 12px;
+}
+
+.sidebar-mmo-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 0 16px 16px 16px;
+}
+
+.sidebar-mmo-card {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 12px;
+    transition: all 0.2s ease;
+}
+
+.sidebar-mmo-card:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.mmo-card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.mmo-char-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: white;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.mmo-char-name {
+    flex: 1;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--text-primary);
+}
+
+.mmo-edit-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.mmo-edit-btn:hover {
+    color: var(--primary-color);
+    background: rgba(var(--primary-color-rgb), 0.1);
+}
+
+.mmo-quick-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.mmo-mini-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.75rem;
+}
+
+.mmo-mini-label {
+    width: 12px;
+    font-weight: 800;
+    color: var(--text-muted);
+}
+
+.mmo-mini-track {
+    flex: 1;
+    height: 6px;
+    background: var(--bg-tertiary);
+    border-radius: 3px;
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.mmo-mini-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mmo-mini-fill.motive {
+    background: var(--accent-red);
+}
+
+.mmo-mini-fill.means {
+    background: var(--accent-gold);
+}
+
+.mmo-mini-fill.opportunity {
+    background: var(--accent-green);
+}
+
+.mmo-mini-val {
+    width: 16px;
+    text-align: right;
+    font-weight: 700;
+    color: var(--text-secondary);
+    font-size: 0.7rem;
+}
+
+.sidebar-divider {
+    height: 1px;
+    background: var(--border-color);
+    margin: 8px 16px;
+    opacity: 0.5;
+}
+.reset-all-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #ef4444 !important;
+    color: white !important;
+    border: none !important;
+    padding: 6px 14px !important;
+    border-radius: 8px !important;
+    font-size: 0.85rem !important;
+    font-weight: 700 !important;
+    cursor: pointer !important;
+    transition: all 0.2s !important;
+    box-shadow: 0 2px 6px rgba(239, 68, 68, 0.2) !important;
+}
+
+.reset-all-btn:hover {
+    background: #dc2626 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3) !important;
+}
+
+.reset-all-btn i {
+    width: 14px !important;
+    height: 14px !important;
+    stroke-width: 3 !important;
+}
+

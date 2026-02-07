@@ -386,6 +386,22 @@ const InvestigationStore = {
         this.refreshCurrentView();
     },
 
+    /**
+     * Resets all MMO data to 0 and clears descriptions.
+     */
+    resetAllMMO: function () {
+        this.state.suspectLinks.forEach(link => {
+            ['motive', 'means', 'opportunity'].forEach(type => {
+                if (link[type]) {
+                    link[type].level = 0;
+                    link[type].description = '';
+                }
+            });
+        });
+        this.save();
+        this.refreshCurrentView();
+    },
+
     deleteSuspectSnapshot: function (suspectId, victimId, sceneId) {
         if (!sceneId || sceneId === 'start') return; // Cannot delete start state (it's the root)
 

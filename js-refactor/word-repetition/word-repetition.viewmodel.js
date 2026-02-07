@@ -37,7 +37,7 @@ const WordRepetitionViewModel = {
                 WordRepetitionState.isAnalyzing = false;
                 return {
                     success: false,
-                    message: 'Aucun texte à analyser'
+                    message: Localization.t('repetition.msg.no_text')
                 };
             }
 
@@ -64,14 +64,14 @@ const WordRepetitionViewModel = {
             return {
                 success: true,
                 report: report,
-                message: `${report.stats.repetitionsCount} répétition(s) détectée(s)`
+                message: Localization.t('repetition.msg.detected', report.stats.repetitionsCount)
             };
         } catch (error) {
             console.error('[WordRepetitionViewModel] Erreur analyse:', error);
             WordRepetitionState.isAnalyzing = false;
             return {
                 success: false,
-                message: 'Erreur lors de l\'analyse'
+                message: Localization.t('repetition.msg.error')
             };
         }
     },
@@ -158,7 +158,7 @@ const WordRepetitionViewModel = {
                         const scene = chapterForScene.scenes.find(s => s.id === (target.sceneId || currentSceneId));
                         if (scene) {
                             extractSceneText(scene, actForScene.id, actForScene.title,
-                                           chapterForScene.id, chapterForScene.title);
+                                chapterForScene.id, chapterForScene.title);
                         }
                     }
                 }
@@ -386,7 +386,7 @@ const WordRepetitionViewModel = {
 
         return {
             success,
-            message: success ? `"${word}" sera ignoré dans les prochaines analyses` : 'Erreur'
+            message: success ? Localization.t('repetition.msg.ignore_success', word) : Localization.t('repetition.msg.generic_error')
         };
     },
 
@@ -400,7 +400,7 @@ const WordRepetitionViewModel = {
         const success = WordRepetitionRepository.removeIgnoredWord(word);
         return {
             success,
-            message: success ? `"${word}" sera analysé à nouveau` : 'Erreur'
+            message: success ? Localization.t('repetition.msg.unignore_success', word) : Localization.t('repetition.msg.generic_error')
         };
     },
 
