@@ -35,6 +35,15 @@ def get_all_files_to_deploy():
     """Retourne la liste complète des fichiers à déployer"""
     files = []
     
+    # Ajouter les fichiers du dossier doc
+    doc_path = os.path.join(BUILD_DIR, 'doc')
+    if os.path.exists(doc_path):
+        for root, dirs, filenames in os.walk(doc_path):
+            for filename in filenames:
+                full_path = os.path.join(root, filename)
+                rel_path = os.path.relpath(full_path, BUILD_DIR)
+                files.append(rel_path.replace('\\', '/'))
+
     # Ajouter les fichiers CSS
     for css_file in CSS_ORDER:
         if css_file.startswith('../vendor/'):
@@ -62,6 +71,10 @@ def get_all_files_to_deploy():
 
 def get_dest_path(file_path):
     """Détermine le chemin de destination pour un fichier donné dans /live"""
+    # DOC
+    if file_path.startswith('doc/'):
+         return file_path
+
     # CSS -> live/css/filename.css (flattened)
     if file_path.endswith('.css'):
         return os.path.join('css', os.path.basename(file_path))
