@@ -122,26 +122,30 @@ class DragNDropActsView {
      * Set up drag and drop for Scenes
      */
     setupSceneDragAndDrop() {
-        const sceneItems = document.querySelectorAll('.scene-item.draggable');
+        const sceneItems = document.querySelectorAll('.scene-item');
 
         sceneItems.forEach(item => {
             const dragHandle = item.querySelector('.drag-handle');
             if (dragHandle) {
                 dragHandle.title = Localization.t('dragndrop.handle.scene');
-            }
-            item.addEventListener('dragstart', (e) => {
-                const sceneId = parseInt(item.dataset.sceneId);
-                const chapterId = parseInt(item.dataset.chapterId);
-                const actId = parseInt(item.dataset.actId);
-                this.viewModel.startDragScene(sceneId, chapterId, actId);
-                item.classList.add('dragging');
-                e.dataTransfer.effectAllowed = 'move';
-            });
 
-            item.addEventListener('dragend', (e) => {
-                item.classList.remove('dragging');
-                this.viewModel.endDragScene();
-            });
+                // Add dragstart to handle
+                dragHandle.addEventListener('dragstart', (e) => {
+                    const sceneId = parseInt(item.dataset.sceneId);
+                    const chapterId = parseInt(item.dataset.chapterId);
+                    const actId = parseInt(item.dataset.actId);
+                    this.viewModel.startDragScene(sceneId, chapterId, actId);
+                    item.classList.add('dragging');
+                    e.dataTransfer.effectAllowed = 'move';
+                    e.dataTransfer.setData('type', 'scene');
+                    e.stopPropagation();
+                });
+
+                dragHandle.addEventListener('dragend', (e) => {
+                    item.classList.remove('dragging');
+                    this.viewModel.endDragScene();
+                });
+            }
 
             item.addEventListener('dragover', (e) => {
                 const targetSceneId = parseInt(item.dataset.sceneId);

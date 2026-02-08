@@ -264,9 +264,9 @@ function renderActsList() {
                 const sNumber = `${actIndex + 1}.${chapterIndex + 1}.${sceneIndex + 1}`;
                 const isActive = typeof currentSceneId !== 'undefined' && currentSceneId === scene.id;
 
-                html += `<div class="scene-item draggable ${isActive ? 'active' : ''}" draggable="true" data-scene-id="${scene.id}" data-chapter-id="${chapter.id}" data-act-id="${act.id}" onclick="openScene(${act.id}, ${chapter.id}, ${scene.id})" ${tooltip ? `title="${tooltip}"` : ''}>
+                html += `<div class="scene-item ${isActive ? 'active' : ''}" data-scene-id="${scene.id}" data-chapter-id="${chapter.id}" data-act-id="${act.id}" onclick="openScene(${act.id}, ${chapter.id}, ${scene.id})" ${tooltip ? `title="${tooltip}"` : ''}>
                     <div style="display: flex; align-items: center; gap: 0.4rem; flex: 1; min-width: 0;">
-                        <span class="drag-handle"><i data-lucide="grip-vertical" style="width:12px;height:12px;vertical-align:middle;"></i></span>
+                        <span class="drag-handle" draggable="true" onclick="event.stopPropagation()"><i data-lucide="grip-vertical" style="width:12px;height:12px;vertical-align:middle;"></i></span>
                         <span class="auto-number">${sNumber}</span>
                         <div style="flex: 1; min-width: 0; overflow: hidden;">
                             <span ondblclick="event.stopPropagation(); startEditingScene(${act.id}, ${chapter.id}, ${scene.id}, this)" style="display: block;">${scene.title}</span>

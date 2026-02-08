@@ -294,11 +294,11 @@ function renderViewContent(view, containerId) {
         case 'editor':
             if (currentActId && currentChapterId && currentSceneId) {
                 if (containerId === 'editorView' && !splitViewActive) {
-                    const act = project.acts.find(a => a.id === currentActId);
+                    const act = project.acts.find(a => a.id == currentActId);
                     if (act) {
-                        const chapter = act.chapters.find(c => c.id === currentChapterId);
+                        const chapter = act.chapters.find(c => c.id == currentChapterId);
                         if (chapter) {
-                            const scene = chapter.scenes.find(s => s.id === currentSceneId);
+                            const scene = chapter.scenes.find(s => s.id == currentSceneId);
                             if (scene) {
                                 if (typeof renderEditor === 'function') {
                                     renderEditor(act, chapter, scene);
@@ -624,11 +624,14 @@ function openScene(actId, chapterId, sceneId) {
     currentChapterId = chapterId;
     currentSceneId = sceneId;
 
-    const act = project.acts.find(a => a.id === actId);
-    const chapter = act ? act.chapters.find(c => c.id === chapterId) : null;
-    const scene = chapter ? chapter.scenes.find(s => s.id === sceneId) : null;
+    const act = project.acts.find(a => a.id == actId);
+    const chapter = act ? act.chapters.find(c => c.id == chapterId) : null;
+    const scene = chapter ? chapter.scenes.find(s => s.id == sceneId) : null;
 
-    if (!scene) return;
+    if (!scene) {
+        console.error(`[openScene] Scène introuvable : ${actId}, ${chapterId}, ${sceneId}`);
+        return;
+    }
 
     // Mise à jour visuelle sidebar
     document.querySelectorAll('.act-header, .chapter-header, .scene-item').forEach(el => el.classList.remove('active'));

@@ -361,7 +361,7 @@ function renderOrganizerScene(scene, index, actId, chapterId) {
 
     html += `
         <div class="org-block org-scene ${isSelected ? 'selected-block' : ''}" id="org-scene-${scene.id}" draggable="true" data-type="scene" data-id="${scene.id}" data-parent-id="${chapterId}" data-act-id="${actId}">
-            <div class="org-header ${isSelected ? 'selected' : ''}" onclick="handleOrganizerClick(event, 'scene', ${scene.id})">
+            <div class="org-header ${isSelected ? 'selected' : ''}" onclick="handleOrganizerClick(event, 'scene', ${scene.id})" ondblclick="openSceneFromOrganizer(${actId}, ${chapterId}, ${scene.id})">
                 <i data-lucide="grip-vertical" class="drag-handle" style="cursor: grab;"></i>
                 <span>${scene.title}</span>
                 <span class="org-stats">${Localization.t('dragndrop.organizer.count_words', [scene.wordCount || 0])}</span>
@@ -384,6 +384,13 @@ function handleOrganizerClick(event, type, id) {
     // const isRange = event.shiftKey; // Simplification: Treat shift as multi for now or implement range later
 
     selectOrganizerItem(type, id, isMulti);
+}
+
+function openSceneFromOrganizer(actId, chapterId, sceneId) {
+    if (typeof openScene === 'function') {
+        openScene(actId, chapterId, sceneId);
+        if (typeof closeModal === 'function') closeModal('structureOrganizerModal');
+    }
 }
 
 function selectOrganizerItem(type, id, isMulti) {
