@@ -189,7 +189,7 @@ const ProjectViewModel = {
                 if (!imported.title) throw new Error(Localization.t('project.viewmodel.import_invalid_format'));
 
                 imported.id = Date.now();
-                imported.title += Localization.t('project.viewmodel.import_suffix');
+                // imported.title += Localization.t('project.viewmodel.import_suffix'); // Removed as per user request
                 imported.createdAt = new Date().toISOString();
                 imported.updatedAt = new Date().toISOString();
 
