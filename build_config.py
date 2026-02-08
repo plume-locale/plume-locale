@@ -22,6 +22,7 @@ CSS_ORDER = [
     '14.product-tour.css',
     'investigation-board.css',
     'investigation-board.tabs.css',
+    '17.documentation-button.css',
 ]
 
 # CSS des modules additionnels
