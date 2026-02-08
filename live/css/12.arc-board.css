@@ -1,5 +1,5 @@
 /* ============================================
-   ARC BOARD - Canvas Style (Milanote-inspired)
+   ARC BOARD - Canvas Style (globalnotes-inspired)
    ============================================ */
 
 /* ============================================
@@ -327,7 +327,7 @@
     height: 100%;
     overflow: auto;
     cursor: grab;
-    /* Grille de fond style Milanote */
+    /* Grille de fond style globalnotes */
     background-image:
         radial-gradient(circle, var(--border-color) 1px, transparent 1px);
     background-size: 24px 24px;

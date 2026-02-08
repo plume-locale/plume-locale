@@ -166,7 +166,7 @@ function switchView(view) {
         'notesList', 'codexList', 'arcsList', 'statsList', 'versionsList', 'analysisList',
         'todosList', 'corkboardList', 'mindmapList', 'plotList',
         'relationsList', 'mapList', 'timelineVizList', 'storyGridList', 'thrillerList', 'noSidebarMessage',
-        'investigationList'
+        'investigationList', 'globalnotesList'
     ];
 
     sidebarLists.forEach(listId => {
@@ -186,7 +186,8 @@ function switchView(view) {
         'timelineviz': 'timelineVizList',
         'thriller': 'thrillerList',
         'map': 'mapList',
-        'investigation': 'investigationList'
+        'investigation': 'investigationList',
+        'globalnotes': 'globalnotesList'
     };
 
     const editorViewVues = ['stats', 'analysis', 'versions', 'todos', 'timeline', 'corkboard', 'plot', 'plotgrid', 'relations'];
@@ -369,6 +370,7 @@ function renderViewContent(view, containerId) {
         case 'storygrid': if (typeof renderStoryGrid === 'function') renderStoryGrid(); break;
         case 'thriller': if (typeof renderThrillerBoard === 'function') renderThrillerBoard(); break;
         case 'investigation': if (typeof renderInvestigationBoard === 'function') renderInvestigationBoard(); break;
+        case 'globalnotes': if (typeof renderGlobalNotes === 'function') renderGlobalNotes(); break;
         default:
             container.innerHTML = `
                 <div class="empty-state">
@@ -421,6 +423,7 @@ function refreshAllViews() {
         case 'timelineviz': if (typeof renderTimelineVizView === 'function') renderTimelineVizView(); break;
         case 'arcs': if (typeof renderArcsList === 'function') renderArcsList(); break;
         case 'investigation': if (typeof renderInvestigationBoard === 'function') renderInvestigationBoard(); break;
+        case 'globalnotes': if (typeof renderGlobalNotes === 'function') renderGlobalNotes(); break;
     }
 
     // 5. Rafraîchir l'éditeur si une scène est ouverte
@@ -1980,3 +1983,4 @@ function renderCodexWelcome() {
         </div>`;
     if (typeof lucide !== 'undefined') lucide.createIcons();
 }
+

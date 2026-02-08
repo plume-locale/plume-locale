@@ -2386,8 +2386,23 @@ const LOCALE_ES = {
     "thriller.toolbar.narrative_structure": "Estructura",
     "thriller.toolbar.free_columns": "Columnas libres",
 
-
-
-
-
+    // --- GlobalNotes ---
+    "globalnotes.breadcrumb.root": "Todo el proyecto",
+    "globalnotes.default.board_title": "Nuevo tablero",
+    "globalnotes.default.home": "Inicio",
+    "globalnotes.new.board_title": "Tablero sin título",
+    "globalnotes.tool.note": "Nota",
+    "globalnotes.tool.board": "Tablero",
+    "globalnotes.tool.column": "Columna",
+    "globalnotes.tool.image": "Imagen",
+    "globalnotes.tool.link": "Enlace",
+    "globalnotes.tool.checklist": "Lista",
+    "globalnotes.tool.video": "Vídeo",
+    "globalnotes.tool.audio": "Audio",
+    "globalnotes.tool.file": "Archivo",
+    "globalnotes.tool.color": "Color",
+    "globalnotes.tool.delete": "Eliminar",
+    "globalnotes.empty.board": "Haz clic en la barra de herramientas para añadir tu primera nota",
+    "globalnotes.placeholder.note": "Escribe algo...",
+    "globalnotes.action.go_up": "Subir"
 };

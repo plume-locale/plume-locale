@@ -2404,4 +2404,24 @@ const LOCALE_DE = {
     "thriller.confirm.delete_connection": "Diese Verbindung {0} löschen?",
     "thriller.toolbar.narrative_structure": "Struktur",
     "thriller.toolbar.free_columns": "Freie Spalten",
+
+    // --- GlobalNotes ---
+    "globalnotes.breadcrumb.root": "Gesamtes Projekt",
+    "globalnotes.default.board_title": "Neues Board",
+    "globalnotes.default.home": "Startseite",
+    "globalnotes.new.board_title": "Unbenanntes Board",
+    "globalnotes.tool.note": "Notiz",
+    "globalnotes.tool.board": "Board",
+    "globalnotes.tool.column": "Spalte",
+    "globalnotes.tool.image": "Bild",
+    "globalnotes.tool.link": "Link",
+    "globalnotes.tool.checklist": "Checkliste",
+    "globalnotes.tool.video": "Video",
+    "globalnotes.tool.audio": "Audio",
+    "globalnotes.tool.file": "Datei",
+    "globalnotes.tool.color": "Farbe",
+    "globalnotes.tool.delete": "Löschen",
+    "globalnotes.empty.board": "Klicken Sie auf die Symbolleiste, um Ihre erste Notiz hinzuzufügen",
+    "globalnotes.placeholder.note": "Etwas eingeben...",
+    "globalnotes.action.go_up": "Nach oben"
 };

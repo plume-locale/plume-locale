@@ -23,6 +23,7 @@ CSS_ORDER = [
     'investigation-board.css',
     'investigation-board.tabs.css',
     '17.documentation-button.css',
+    'globalnotes.css',
 ]
 
 # CSS des modules additionnels
@@ -333,6 +334,14 @@ JS_ORDER = [
     'js/investigation-board/investigation-board.demo.js',
     'js/investigation-board/investigation-board.sidebar.js',
     'js/investigation-board/investigation-board.view.js',
+    # globalnotes
+    'js/globalnotes/globalnotes.model.js',
+    'js/globalnotes/globalnotes.repository.js',
+    'js/globalnotes/globalnotes.viewmodel.js',
+    'js/globalnotes/globalnotes.view.js',
+    'js/globalnotes/globalnotes.item.view.js',
+    'js/globalnotes/globalnotes.handlers.js',
+    'js/globalnotes/globalnotes.main.js',
 ]
 
 # Files to ignore (already refactored or retired)
@@ -349,3 +358,4 @@ IGNORED_ORIGINALS = [
     '12.import-export.js', '39.export.js', '41.storageMonitoring.js', '02.storage.js', '20.snapshots.js', '13.mobile-menu.js',
     '27.keyboardShortcuts.js', '42.mobile-swipe.js', '14.dragndrop-acts.js'
 ]
+
