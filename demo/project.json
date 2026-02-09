@@ -587,6 +587,150 @@
             }
         ]
     },
+    "plotGrid": {
+        "columns": [
+            {
+                "id": "pg_col_struct",
+                "type": "structure",
+                "title": "Structure Narrative",
+                "order": 0
+            },
+            {
+                "id": "pg_col_spider",
+                "type": "custom",
+                "title": "Arc A : L'Araignée de Verre",
+                "order": 1
+            },
+            {
+                "id": "pg_col_tear",
+                "type": "custom",
+                "title": "Arc B : La Larme du Tsar",
+                "order": 2
+            },
+            {
+                "id": "pg_col_chars",
+                "type": "custom",
+                "title": "Arc C : Marc & Elena",
+                "order": 3
+            }
+        ],
+        "rows": [
+            {
+                "id": "pg_row_111",
+                "type": "structure",
+                "structureId": 111,
+                "structureType": "scene",
+                "order": 0
+            },
+            {
+                "id": "pg_row_112",
+                "type": "structure",
+                "structureId": 112,
+                "structureType": "scene",
+                "order": 10
+            },
+            {
+                "id": "pg_row_121",
+                "type": "structure",
+                "structureId": 121,
+                "structureType": "scene",
+                "order": 20
+            },
+            {
+                "id": "pg_row_122",
+                "type": "structure",
+                "structureId": 122,
+                "structureType": "scene",
+                "order": 30
+            },
+            {
+                "id": "pg_row_211",
+                "type": "structure",
+                "structureId": 211,
+                "structureType": "scene",
+                "order": 40
+            },
+            {
+                "id": "pg_row_212",
+                "type": "structure",
+                "structureId": 212,
+                "structureType": "scene",
+                "order": 50
+            },
+            {
+                "id": "pg_row_221",
+                "type": "structure",
+                "structureId": 221,
+                "structureType": "scene",
+                "order": 60
+            },
+            {
+                "id": "pg_row_222",
+                "type": "structure",
+                "structureId": 222,
+                "structureType": "scene",
+                "order": 70
+            }
+        ],
+        "cards": [
+            {
+                "id": "card_1",
+                "rowId": "pg_row_111",
+                "colId": "pg_col_spider",
+                "title": "L'indice pourpre",
+                "content": "Marc remarque un fragment de verre qui ne vient pas de la villa."
+            },
+            {
+                "id": "card_2",
+                "rowId": "pg_row_112",
+                "colId": "pg_col_spider",
+                "title": "Le fil rubis",
+                "content": "Découverte du fil de soie. Premier lien concret avec l'organisation."
+            },
+            {
+                "id": "card_3",
+                "rowId": "pg_row_121",
+                "colId": "pg_col_chars",
+                "title": "Vieilles blessures",
+                "content": "Elena et Marc évoquent leur passé commun et la raison de leur rupture."
+            },
+            {
+                "id": "card_4",
+                "rowId": "pg_row_121",
+                "colId": "pg_col_tear",
+                "title": "L'âme de verre",
+                "content": "Elena révèle que le fil contient de la fibre optique militaire."
+            },
+            {
+                "id": "card_5",
+                "rowId": "pg_row_122",
+                "colId": "pg_col_tear",
+                "title": "Le projet impérial",
+                "content": "Origine de la Larme : un système de communication par prisme."
+            },
+            {
+                "id": "card_6",
+                "rowId": "pg_row_211",
+                "colId": "pg_col_tear",
+                "title": "Le prototype",
+                "content": "Marc trouve la sphère dans l'usine désaffectée. Elle est active."
+            },
+            {
+                "id": "card_7",
+                "rowId": "pg_row_221",
+                "colId": "pg_col_spider",
+                "title": "L'architecte",
+                "content": "Révélation : Blackwood a tout orchestré."
+            },
+            {
+                "id": "card_8",
+                "rowId": "pg_row_222",
+                "colId": "pg_col_spider",
+                "title": "Coupure de courant",
+                "content": "Marc sabote le signal du phare, neutralisant le réseau de l'Araignée."
+            }
+        ]
+    },
     "notes": [],
     "codex": [],
     "stats": {
