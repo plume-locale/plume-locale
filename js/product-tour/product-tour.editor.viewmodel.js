@@ -14,6 +14,12 @@ const ProductTourEditorViewModel = {
      * Initialise l'éditeur.
      */
     init: function () {
+        // Sécurité : n'autoriser l'éditeur que si le paramètre ?editTour=true est présent dans l'URL
+        const urlParams = new URLSearchParams(window.location.search);
+        if (!urlParams.has('editTour')) {
+            return;
+        }
+
         ProductTourEditorView.init();
         this.state.currentView = typeof currentView !== 'undefined' ? currentView : 'editor';
         this.loadCurrentTour();
@@ -92,8 +98,30 @@ const ProductTourEditorViewModel = {
             description: step.popover.description,
             image: step.popover.image,
             side: step.popover.side,
-            align: step.popover.align
+            align: step.popover.align,
+            clickBefore: step.clickBefore,
+            clickAfter: step.clickAfter
         });
+    },
+
+    /**
+     * Déplace une étape vers le haut.
+     */
+    moveStepUp: function (index) {
+        if (index <= 0) return;
+        const steps = this.state.currentTour;
+        [steps[index - 1], steps[index]] = [steps[index], steps[index - 1]];
+        ProductTourEditorView.renderSidebar(steps);
+    },
+
+    /**
+     * Déplace une étape vers le bas.
+     */
+    moveStepDown: function (index) {
+        const steps = this.state.currentTour;
+        if (index >= steps.length - 1) return;
+        [steps[index + 1], steps[index]] = [steps[index], steps[index + 1]];
+        ProductTourEditorView.renderSidebar(steps);
     },
 
     /**

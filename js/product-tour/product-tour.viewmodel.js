@@ -147,6 +147,45 @@ async function startProductTourVM() {
             };
         }
 
+        // Enricher les steps avec les actions automatiques (ex: clickBefore) et les médias (images)
+        steps.forEach(step => {
+            // Support des images : injection dans la description
+            if (step.popover.image) {
+                const imgHtml = `<img src="${step.popover.image}" class="driver-popover-image">`;
+                step.popover.description = imgHtml + (step.popover.description || '');
+            }
+
+            if (step.clickBefore) {
+
+                const originalOnHighlightStarted = step.onHighlightStarted;
+                step.onHighlightStarted = (element) => {
+                    const elToClick = document.querySelector(step.clickBefore);
+                    if (elToClick) {
+                        console.log('🎓 Auto-clicking element before step:', step.clickBefore);
+                        elToClick.click();
+                    }
+                    if (typeof originalOnHighlightStarted === 'function') {
+                        originalOnHighlightStarted(element);
+                    }
+                };
+            }
+
+            if (step.clickAfter) {
+                const originalOnDeselected = step.onDeselected;
+                step.onDeselected = (element) => {
+                    const elToClick = document.querySelector(step.clickAfter);
+                    if (elToClick) {
+                        console.log('🎓 Auto-clicking element after step:', step.clickAfter);
+                        elToClick.click();
+                    }
+                    if (typeof originalOnDeselected === 'function') {
+                        originalOnDeselected(element);
+                    }
+                };
+            }
+        });
+
+
         // Créer la configuration Driver.js
         const isMobile = window.innerWidth < 768;
         const config = isMobile

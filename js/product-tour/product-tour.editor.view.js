@@ -11,7 +11,8 @@ const ProductTourEditorView = {
         overlay: null,
         highlight: null,
         modal: null,
-        sidebar: null
+        sidebar: null,
+        selectionTarget: 'element' // 'element', 'clickBefore', 'clickAfter'
     },
 
     /**
@@ -90,8 +91,8 @@ const ProductTourEditorView = {
                     <textarea id="tour-edit-desc" rows="4" placeholder="Décrivez ce que fait cet élément..."></textarea>
                 </div>
                 <div class="tour-editor-field">
-                    <label>URL Image (optionnel)</label>
-                    <input type="text" id="tour-edit-image" placeholder="https://...">
+                    <label>Image (URL ou chemin local ex: tour/step1.png)</label>
+                    <input type="text" id="tour-edit-image" placeholder="tour/mon-image.png">
                 </div>
                 <div style="display: flex; gap: 1rem;">
                     <div class="tour-editor-field" style="flex: 1;">
@@ -110,6 +111,24 @@ const ProductTourEditorView = {
                             <option value="center">Centre</option>
                             <option value="end">Fin</option>
                         </select>
+                    </div>
+                </div>
+                <div class="tour-editor-field">
+                    <label>Action avant : Sélecteur à cliquer (ex: pour ouvrir un menu)</label>
+                    <div style="display: flex; gap: 5px;">
+                        <input type="text" id="tour-edit-click" placeholder="#id-du-bouton-a-cliquer" style="flex: 1;">
+                        <button class="tour-step-btn" onclick="ProductTourEditorView.toggleSelectionMode('clickBefore')" title="Choisir l'élément">
+                            <i data-lucide="mouse-pointer-2" style="width:14px;"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="tour-editor-field">
+                    <label>Action après : Sélecteur à cliquer (ex: pour fermer un menu)</label>
+                    <div style="display: flex; gap: 5px;">
+                        <input type="text" id="tour-edit-click-after" placeholder="#id-du-bouton-a-fermer" style="flex: 1;">
+                        <button class="tour-step-btn" onclick="ProductTourEditorView.toggleSelectionMode('clickAfter')" title="Choisir l'élément">
+                            <i data-lucide="mouse-pointer-2" style="width:14px;"></i>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -174,13 +193,17 @@ const ProductTourEditorView = {
 
     /**
      * Bascule le mode de sélection.
+     * @param {string} target - Le champ cible ('element', 'clickBefore', 'clickAfter')
      */
-    toggleSelectionMode: function () {
+    toggleSelectionMode: function (target = 'element') {
+        this.elements.selectionTarget = target;
         const isActive = this.elements.overlay.classList.toggle('active');
-        if (!isActive) {
-            this.elements.highlight.style.display = 'none';
+
+        if (isActive) {
+            this.elements.modal.classList.remove('active'); // Cacher le modal pendant la sélection
+            ProductTourNotificationView.showInfo("Cliquez sur un élément de l'interface.");
         } else {
-            ProductTourNotificationView.showInfo("Cliquez sur un élément de l'interface pour créer une étape.");
+            this.elements.highlight.style.display = 'none';
         }
     },
 
@@ -226,8 +249,18 @@ const ProductTourEditorView = {
 
         if (el) {
             const selector = ProductTourStepModel.getUniqueSelector(el);
-            this.toggleSelectionMode();
-            this.showModal(selector);
+            const target = this.elements.selectionTarget;
+            this.toggleSelectionMode(); // Désactive l'overlay
+
+            if (target === 'element') {
+                this.showModal(selector);
+            } else if (target === 'clickBefore') {
+                this.elements.modal.classList.add('active');
+                document.getElementById('tour-edit-click').value = selector;
+            } else if (target === 'clickAfter') {
+                this.elements.modal.classList.add('active');
+                document.getElementById('tour-edit-click-after').value = selector;
+            }
         }
     },
 
@@ -241,6 +274,8 @@ const ProductTourEditorView = {
         document.getElementById('tour-edit-image').value = data?.image || '';
         document.getElementById('tour-edit-side').value = data?.side || 'bottom';
         document.getElementById('tour-edit-align').value = data?.align || 'start';
+        document.getElementById('tour-edit-click').value = data?.clickBefore || '';
+        document.getElementById('tour-edit-click-after').value = data?.clickAfter || '';
 
         this.elements.modal.classList.add('active');
         document.getElementById('tour-edit-title').focus();
@@ -262,7 +297,9 @@ const ProductTourEditorView = {
                 image: document.getElementById('tour-edit-image').value,
                 side: document.getElementById('tour-edit-side').value,
                 align: document.getElementById('tour-edit-align').value
-            }
+            },
+            clickBefore: document.getElementById('tour-edit-click').value,
+            clickAfter: document.getElementById('tour-edit-click-after').value
         };
 
         ProductTourEditorViewModel.addOrUpdateStep(stepData);
@@ -285,6 +322,12 @@ const ProductTourEditorView = {
                 <div class="tour-step-card-header">
                     <span class="tour-step-title">${index + 1}. ${step.popover.title || 'Sans titre'}</span>
                     <div class="tour-step-actions">
+                        <button class="tour-step-btn" onclick="ProductTourEditorViewModel.moveStepUp(${index})" ${index === 0 ? 'disabled style="opacity: 0.2; cursor: default;"' : ''}>
+                            <i data-lucide="chevron-up" style="width:14px;"></i>
+                        </button>
+                        <button class="tour-step-btn" onclick="ProductTourEditorViewModel.moveStepDown(${index})" ${index === steps.length - 1 ? 'disabled style="opacity: 0.2; cursor: default;"' : ''}>
+                            <i data-lucide="chevron-down" style="width:14px;"></i>
+                        </button>
                         <button class="tour-step-btn" onclick="ProductTourEditorViewModel.editStep(${index})"><i data-lucide="edit-2" style="width:14px;"></i></button>
                         <button class="tour-step-btn" onclick="ProductTourEditorViewModel.removeStep(${index})"><i data-lucide="trash-2" style="width:14px;"></i></button>
                     </div>

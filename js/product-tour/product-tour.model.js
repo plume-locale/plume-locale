@@ -92,7 +92,9 @@ const ProductTourStepModel = {
             onHighlighted: data.onHighlighted || null,
             onDeselected: data.onDeselected || null,
             onNext: data.onNext || null,
-            onPrevious: data.onPrevious || null
+            onPrevious: data.onPrevious || null,
+            clickBefore: data.clickBefore || null,
+            clickAfter: data.clickAfter || null
         };
     },
 
@@ -118,10 +120,10 @@ const ProductTourStepModel = {
      */
     getUniqueSelector: function (el) {
         if (!el || !(el instanceof HTMLElement)) return null;
-        
+
         // 1. Essayer par ID
         if (el.id) return `#${el.id}`;
-        
+
         // 2. Essayer par classes spécifiques (si pas trop génériques)
         if (el.classList.length > 0) {
             const ignoredClasses = ['active', 'selected', 'hover', 'dragging', 'visible'];
@@ -225,7 +227,7 @@ const ProductTourStepsModel = {
     getAllSteps: function (view = 'editor') {
         const isMobile = window.innerWidth < 768;
         if (isMobile) return this.getMobileSteps(view);
-        
+
         return this.getDesktopSteps(view);
     },
 
