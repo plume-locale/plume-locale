@@ -195,6 +195,13 @@ JS_ORDER = [
     'js/revision/revision.view.js',
     'js/revision/revision.handlers.js',
     'js/revision/revision.main.js',
+    # Mention Help Module
+    'js/mention-help/mention-help.model.js',
+    'js/mention-help/mention-help.repository.js',
+    'js/mention-help/mention-help.viewmodel.js',
+    'js/mention-help/mention-help.view.js',
+    'js/mention-help/mention-help.handlers.js',
+    'js/mention-help/mention-help.main.js',
     # Todo refactored files
     'js/todo/todo.model.js',
     'js/todo/todo.repository.js',

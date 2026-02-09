@@ -9,6 +9,15 @@ const LOCALE_FR = {
     "nav.arcs": "Arcs",
     "nav.thriller": "Thriller",
     "nav.storygrid": "StoryGrid",
+
+    // --- Mentions ---
+    "mention.type.character": "Personnage",
+    "mention.type.world": "Élément d'univers",
+    "mention.type.globalnote": "Note globale",
+    "mention.type.codex": "Codex / Note",
+    "mention.score.present": "Présent dans cette scène",
+    "mention.quick_create.title": "Créer '{0}'",
+    "mention.quick_create.desc": "Ajouter ce nouveau {0} à votre projet",
     "nav.investigation": "Enquête",
     "nav.characters": "Personnages",
     "nav.world": "Univers",

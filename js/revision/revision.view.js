@@ -135,21 +135,6 @@ const RevisionView = {
         if (input) {
             input.value = '';
             input.focus();
-
-            // Re-init mentions listener
-            input.oninput = (e) => {
-                const value = e.target.value;
-                const cursorPos = e.target.selectionStart;
-                const textBefore = value.substring(0, cursorPos);
-                const atIndex = textBefore.lastIndexOf('@');
-
-                if (atIndex !== -1 && (atIndex === 0 || textBefore[atIndex - 1] === ' ')) {
-                    const query = textBefore.substring(atIndex + 1);
-                    this.showMentionsList(query, input);
-                } else {
-                    this.hideMentionsList();
-                }
-            };
         }
     },
 
@@ -161,110 +146,6 @@ const RevisionView = {
         if (guide) {
             guide.classList.toggle('hidden');
         }
-    },
-
-    /**
-     * Shows a list of entities for @ mentions.
-     */
-    showMentionsList(query, input) {
-        let list = document.getElementById('annotationMentions');
-        if (!list) {
-            list = document.createElement('div');
-            list.id = 'annotationMentions';
-            list.className = 'mentions-list';
-            list.style.cssText = `
-                position: absolute;
-                background: var(--bg-secondary);
-                border: 1px solid var(--border-color);
-                border-radius: 8px;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-                max-height: 200px;
-                overflow-y: auto;
-                width: 220px;
-                z-index: 10000;
-                display: none;
-            `;
-            document.body.appendChild(list);
-
-            // Add styles for hover and items once
-            if (!document.getElementById('mentionsStyles')) {
-                const style = document.createElement('style');
-                style.id = 'mentionsStyles';
-                style.innerHTML = `
-                    .mention-item {
-                        padding: 8px 12px;
-                        cursor: pointer;
-                        display: flex;
-                        align-items: center;
-                        gap: 10px;
-                        font-size: 0.85rem;
-                        color: var(--text-primary);
-                        transition: background 0.2s;
-                    }
-                    .mention-item:hover {
-                        background: var(--bg-tertiary);
-                    }
-                    .mention-item i {
-                        color: var(--accent-primary, #4a90e2);
-                        opacity: 0.8;
-                    }
-                `;
-                document.head.appendChild(style);
-            }
-        }
-
-        const entities = RevisionViewModel.getEntities();
-        const filtered = entities.filter(e => e.name.toLowerCase().includes(query.toLowerCase()));
-
-        if (filtered.length > 0) {
-            const rect = input.getBoundingClientRect();
-            list.style.left = `${rect.left}px`;
-            list.style.top = `${rect.top - Math.min(filtered.length * 40, 200) - 10}px`;
-            list.style.display = 'block';
-
-            list.innerHTML = filtered.map(e => `
-                <div class="mention-item" onclick="RevisionView.insertMention('${e.name.replace(/'/g, "\\'")}', '${query.replace(/'/g, "\\'")}')">
-                    <i data-lucide="${e.type}" style="width:14px;height:14px;"></i>
-                    <span>${e.name}</span>
-                </div>
-            `).join('');
-
-            if (typeof lucide !== 'undefined') lucide.createIcons();
-        } else {
-            this.hideMentionsList();
-        }
-    },
-
-    /**
-     * Inserts a selected mention into the textarea.
-     */
-    insertMention(name, query) {
-        const input = document.getElementById('annotationText');
-        if (!input) return;
-
-        const value = input.value;
-        const cursorPos = input.selectionStart;
-        const textBefore = value.substring(0, cursorPos);
-        const textAfter = value.substring(cursorPos);
-        const atIndex = textBefore.lastIndexOf('@');
-
-        const newValue = textBefore.substring(0, atIndex) + name + ' ' + textAfter;
-        input.value = newValue;
-        input.focus();
-
-        // Position cursor after inserted name
-        const newPos = atIndex + name.length + 1;
-        input.setSelectionRange(newPos, newPos);
-
-        this.hideMentionsList();
-    },
-
-    /**
-     * Hides the mentions list.
-     */
-    hideMentionsList() {
-        const list = document.getElementById('annotationMentions');
-        if (list) list.style.display = 'none';
     },
 
     /**

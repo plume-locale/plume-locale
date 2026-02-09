@@ -100,6 +100,11 @@ async function init() {
         await initProductTourVM();
     }
 
+    // Initialize Mention Help
+    if (typeof MentionHelp !== 'undefined' && MentionHelp.init) {
+        MentionHelp.init();
+    }
+
     // Ensure all icons are rendered
     if (typeof lucide !== 'undefined') {
         lucide.createIcons();
