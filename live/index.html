@@ -44,11 +44,12 @@
 <link rel="stylesheet" href="./css/investigation-board.css">
 <link rel="stylesheet" href="./css/investigation-board.tabs.css">
 <link rel="stylesheet" href="./css/17.documentation-button.css">
+<link rel="stylesheet" href="./css/globalnotes.css">
 <link rel="stylesheet" href="./css/13.thriller-board.css">
 <link rel="stylesheet" href="./css/16.theme-manager-premium.css">
 <link rel="stylesheet" href="./css/synonyms.css">
-<link rel="stylesheet" href="./css/keyboard-shortcuts.css">
 <link rel="stylesheet" href="./css/map.css">
+<link rel="stylesheet" href="./css/keyboard-shortcuts.css">
 <link rel="stylesheet" href="./css/synonyms.css">
 <link rel="stylesheet" href="./css/map.css">
 <link rel="stylesheet" href="./css/keyboard-shortcuts.css">
@@ -84,6 +85,10 @@
                 </button>
                 
                 
+                <button class="mobile-nav-item" onclick="switchViewMobile('globalnotes')" data-view="globalnotes">
+                    <span class="mobile-nav-item-icon"><i data-lucide="layout"></i></span>
+                    <span data-i18n="nav.globalnotes">globalnotes</span>
+                </button>
             </div>
         </div>
         <div class="mobile-nav-section">
@@ -299,6 +304,10 @@
                     <button class="nav-btn" onclick="switchView('investigation')" id="header-tab-investigation">
                         <span class="nav-btn-icon"><i data-lucide="search"></i></span>
                         <span class="nav-btn-text" data-i18n="nav.investigation">Enquête</span>
+                    </button>
+                    <button class="nav-btn" onclick="switchView('globalnotes')" id="header-tab-globalnotes">
+                        <span class="nav-btn-icon"><i data-lucide="layout"></i></span>
+                        <span class="nav-btn-text" data-i18n="nav.globalnotes">globalnotes</span>
                     </button>
                 </div>
                 <!-- Section 2 : Personnages, Univers, Codex, Notes -->
@@ -654,6 +663,9 @@
                 </div>
                 <div class="database-list" id="investigationList" style="display: none">
                     <!-- Investigation cases will be here -->
+                </div>
+                <div class="database-list" id="globalnotesList" style="display: none">
+                    <!-- globalnotes boards will be here -->
                 </div>
                 <div class="database-list" id="todosList" style="display: none">
                     <!-- TODOs list will be here -->
@@ -2534,6 +2546,8 @@
         </div>
     </div>
 </body>
+
+
     <!-- Generated JS Scripts -->
     <script src="./js/vendor/driver.js.iife.js"></script>
 <script src="./js/vendor/idb.js"></script>
@@ -2796,6 +2810,13 @@
 <script src="./js/investigation-board/investigation-board.demo.js"></script>
 <script src="./js/investigation-board/investigation-board.sidebar.js"></script>
 <script src="./js/investigation-board/investigation-board.view.js"></script>
+<script src="./js/globalnotes/globalnotes.model.js"></script>
+<script src="./js/globalnotes/globalnotes.repository.js"></script>
+<script src="./js/globalnotes/globalnotes.viewmodel.js"></script>
+<script src="./js/globalnotes/globalnotes.view.js"></script>
+<script src="./js/globalnotes/globalnotes.item.view.js"></script>
+<script src="./js/globalnotes/globalnotes.handlers.js"></script>
+<script src="./js/globalnotes/globalnotes.main.js"></script>
 
     </body>
 </html>

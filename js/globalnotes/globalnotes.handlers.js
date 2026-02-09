@@ -126,27 +126,33 @@ const GlobalNotesHandlers = {
         menu.style.left = x + 'px';
         menu.style.top = y + 'px';
 
+        const typeActions = this.getTypeSpecificActions(item);
+
         menu.innerHTML = `
             <div class="context-menu-group">
                 <div class="context-menu-item" onclick="GlobalNotesHandlers.duplicateItem('${itemId}')">
-                    <i data-lucide="copy"></i> Duplicate
+                    <i data-lucide="copy"></i> ${Localization.t('globalnotes.menu.duplicate') || 'Duplicate'}
                 </div>
                 <div class="context-menu-item" onclick="GlobalNotesHandlers.toggleLock('${itemId}')">
-                    <i data-lucide="${item.config.isLocked ? 'unlock' : 'lock'}"></i> ${item.config.isLocked ? 'Unlock' : 'Lock'}
+                    <i data-lucide="${item.config.isLocked ? 'unlock' : 'lock'}"></i> ${item.config.isLocked ? Localization.t('globalnotes.menu.unlock') || 'Unlock' : Localization.t('globalnotes.menu.lock') || 'Lock'}
                 </div>
             </div>
+            
+            ${typeActions ? `<div class="context-menu-divider"></div><div class="context-menu-group">${typeActions}</div>` : ''}
+
+            ${item.type !== 'color' ? `
             <div class="context-menu-divider"></div>
-            <div class="context-menu-title">Background Color</div>
+            <div class="context-menu-title">${Localization.t('globalnotes.menu.bg_color') || 'Background Color'}</div>
             <div class="context-color-grid">
-                <div class="color-dot" style="background:#fff9c4" onclick="GlobalNotesHandlers.setItemColor('${itemId}', '#fff9c4')"></div>
-                <div class="color-dot" style="background:#e3f2fd" onclick="GlobalNotesHandlers.setItemColor('${itemId}', '#e3f2fd')"></div>
-                <div class="color-dot" style="background:#e8f5e9" onclick="GlobalNotesHandlers.setItemColor('${itemId}', '#e8f5e9')"></div>
-                <div class="color-dot" style="background:#fce4ec" onclick="GlobalNotesHandlers.setItemColor('${itemId}', '#fce4ec')"></div>
-                <div class="color-dot" style="background:#ffffff" onclick="GlobalNotesHandlers.setItemColor('${itemId}', '#ffffff')"></div>
-                <div class="color-dot" style="background:#f3e5f5" onclick="GlobalNotesHandlers.setItemColor('${itemId}', '#f3e5f5')"></div>
+                <div class="color-dot" title="Yellow" style="background:#fff9c4" onclick="GlobalNotesHandlers.setItemColor('${itemId}', '#fff9c4')"></div>
+                <div class="color-dot" title="Blue" style="background:#e3f2fd" onclick="GlobalNotesHandlers.setItemColor('${itemId}', '#e3f2fd')"></div>
+                <div class="color-dot" title="Green" style="background:#e8f5e9" onclick="GlobalNotesHandlers.setItemColor('${itemId}', '#e8f5e9')"></div>
+                <div class="color-dot" title="Pink" style="background:#fce4ec" onclick="GlobalNotesHandlers.setItemColor('${itemId}', '#fce4ec')"></div>
+                <div class="color-dot" title="White" style="background:#ffffff" onclick="GlobalNotesHandlers.setItemColor('${itemId}', '#ffffff')"></div>
+                <div class="color-dot" title="Purple" style="background:#f3e5f5" onclick="GlobalNotesHandlers.setItemColor('${itemId}', '#f3e5f5')"></div>
             </div>
             <div class="context-menu-divider"></div>
-            <div class="context-menu-title">Border Style</div>
+            <div class="context-menu-title">${Localization.t('globalnotes.menu.border_style') || 'Border Style'}</div>
             <div class="context-color-grid">
                 <div class="color-dot" style="border:2px solid #000" onclick="GlobalNotesHandlers.setItemBorderColor('${itemId}', '#000000')"></div>
                 <div class="color-dot" style="border:2px solid #cbd5e1" onclick="GlobalNotesHandlers.setItemBorderColor('${itemId}', '#cbd5e1')"></div>
@@ -155,18 +161,64 @@ const GlobalNotesHandlers = {
                 <div class="color-dot" style="border:2px solid transparent" onclick="GlobalNotesHandlers.setItemBorderColor('${itemId}', 'transparent')"></div>
             </div>
             <div class="context-menu-group horizontal">
-                <div class="context-menu-btn" onclick="GlobalNotesHandlers.setItemBorderThickness('${itemId}', 0)">None</div>
-                <div class="context-menu-btn" onclick="GlobalNotesHandlers.setItemBorderThickness('${itemId}', 2)">Thin</div>
-                <div class="context-menu-btn" onclick="GlobalNotesHandlers.setItemBorderThickness('${itemId}', 5)">Thick</div>
+                <div class="context-menu-btn" onclick="GlobalNotesHandlers.setItemBorderThickness('${itemId}', 0)">${Localization.t('globalnotes.menu.border_none') || 'None'}</div>
+                <div class="context-menu-btn" onclick="GlobalNotesHandlers.setItemBorderThickness('${itemId}', 2)">${Localization.t('globalnotes.menu.border_thin') || 'Thin'}</div>
+                <div class="context-menu-btn" onclick="GlobalNotesHandlers.setItemBorderThickness('${itemId}', 5)">${Localization.t('globalnotes.menu.border_thick') || 'Thick'}</div>
             </div>
+            ` : ''}
             <div class="context-menu-divider"></div>
             <div class="context-menu-item delete" onclick="GlobalNotesViewModel.deleteSelectedItem()">
-                <i data-lucide="trash-2"></i> Delete
+                <i data-lucide="trash-2"></i> ${Localization.t('globalnotes.menu.delete') || 'Delete'}
             </div>
         `;
 
         document.body.appendChild(menu);
         if (typeof lucide !== 'undefined') lucide.createIcons({ root: menu });
+    },
+
+    getTypeSpecificActions: function (item) {
+        const id = item.id;
+        switch (item.type) {
+            case 'map':
+                return `
+                    <div class="context-menu-item" onclick="GlobalNotesHandlers.promptMapUrl('${id}')">
+                        <i data-lucide="link"></i> ${Localization.t('globalnotes.menu.map_url') || 'Google Maps Link'}
+                    </div>
+                `;
+            case 'image':
+                return `
+                    <div class="context-menu-item" onclick="GlobalNotesHandlers.triggerImageUpload('${id}')">
+                        <i data-lucide="upload"></i> ${Localization.t('globalnotes.menu.upload') || 'Upload Image'}
+                    </div>
+                `;
+            case 'video':
+                return `
+                    <div class="context-menu-item" onclick="GlobalNotesHandlers.promptVideoUrl('${id}')">
+                        <i data-lucide="link"></i> ${Localization.t('globalnotes.menu.change_source') || 'Change URL'}
+                    </div>
+                `;
+            case 'note':
+            case 'heading':
+                return `
+                    <div class="context-menu-item" onclick="GlobalNotesHandlers.clearContent('${id}')">
+                        <i data-lucide="eraser"></i> ${Localization.t('globalnotes.menu.clear') || 'Clear Content'}
+                    </div>
+                `;
+            case 'board':
+                return `
+                    <div class="context-menu-item" onclick="GlobalNotesViewModel.setActiveBoard('${item.data.targetBoardId}'); updateSidebarActions();">
+                        <i data-lucide="external-link"></i> ${Localization.t('globalnotes.menu.open_board') || 'Open Board'}
+                    </div>
+                `;
+            case 'link':
+                return `
+                    <div class="context-menu-item" onclick="GlobalNotesHandlers.promptLinkUrl('${id}')">
+                        <i data-lucide="edit-3"></i> ${Localization.t('globalnotes.menu.change_source') || 'Change Link'}
+                    </div>
+                `;
+            default:
+                return '';
+        }
     },
 
     hideContextMenu: function () {
@@ -208,14 +260,52 @@ const GlobalNotesHandlers = {
 
     promptImageUrl: function (itemId) {
         const url = prompt('Enter Image URL:');
-        if (url) GlobalNotesViewModel.updateItemData(itemId, { url: url });
-        GlobalNotesView.renderContent();
+        if (url) {
+            GlobalNotesViewModel.updateItemData(itemId, { url: url });
+            GlobalNotesView.renderContent();
+        }
+    },
+
+    triggerImageUpload: function (itemId) {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    GlobalNotesViewModel.updateItemData(itemId, { url: event.target.result });
+                    GlobalNotesView.renderContent();
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+        input.click();
     },
 
     promptVideoUrl: function (itemId) {
         const url = prompt('Enter YouTube Video URL:');
-        if (url) GlobalNotesViewModel.updateItemData(itemId, { url: url });
-        GlobalNotesView.renderContent();
+        if (url) {
+            GlobalNotesViewModel.updateItemData(itemId, { url: url });
+            GlobalNotesView.renderContent();
+        }
+    },
+
+    promptLinkUrl: function (itemId) {
+        let url = prompt('Enter Link URL (e.g., https://google.com):');
+        if (url) {
+            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                url = 'https://' + url;
+            }
+            GlobalNotesViewModel.updateItemData(itemId, { url: url, title: url });
+            GlobalNotesView.renderContent();
+        }
+    },
+
+    updateLinkTitle: function (itemId, newTitle, event) {
+        if (event) event.stopPropagation();
+        GlobalNotesViewModel.updateItemData(itemId, { title: newTitle });
     },
 
     promptColorChange: function (itemId) {
@@ -231,8 +321,8 @@ const GlobalNotesHandlers = {
 
         const colors = ColorPaletteModel.colors;
         const picker = document.createElement('div');
-        picker.id = 'globalnotesColorPalette';
-        picker.className = 'color-picker-dropdown active';
+        picker.id = 'globalnotesColorPalette'; // Matches CSS animation if we rename it or use it as is
+        picker.className = 'globalnotes-color-palette-popup';
 
         const itemEl = document.querySelector(`.globalnotes-item[data-id="${itemId}"]`);
         const rect = itemEl.getBoundingClientRect();
@@ -243,30 +333,30 @@ const GlobalNotesHandlers = {
         picker.style.opacity = '1';
         picker.style.pointerEvents = 'auto';
 
+        // Adjust if off-screen (approximative height calculation)
+        const pickerHeight = 240;
+        if (rect.bottom + 5 + pickerHeight > window.innerHeight) {
+            picker.style.top = (rect.top - pickerHeight - 5) + 'px';
+        }
+
         let colorsHtml = colors.map(color => `
-            <div class="color-swatch" 
+            <div class="palette-swatch" 
                  style="background: ${color}" 
                  onmousedown="event.stopPropagation(); GlobalNotesHandlers.applyItemColor('${itemId}', '${color}')"
                  title="${color}"></div>
         `).join('');
 
         picker.innerHTML = `
-            <div class="color-picker-header">
-                <i data-lucide="palette"></i>
-                <span>${Localization.t('globalnotes.color_palette') || 'Color Palette'}</span>
-            </div>
-            <div class="color-grid">
+            <div class="palette-grid">
                 ${colorsHtml}
             </div>
-            <div class="color-input-wrapper">
-                <div class="color-manual-input">
-                    <input type="color" value="${item.config.color || '#4361ee'}" 
-                           oninput="event.stopPropagation(); GlobalNotesHandlers.applyItemColor('${itemId}', this.value)"
-                           onmousedown="event.stopPropagation()">
-                    <input type="text" value="${item.config.color || '#4361ee'}" 
-                           onchange="event.stopPropagation(); GlobalNotesHandlers.applyItemColor('${itemId}', this.value)"
-                           onmousedown="event.stopPropagation()">
-                </div>
+            <div class="palette-custom">
+                <input type="color" value="${item.config.color || '#4361ee'}" 
+                       oninput="event.stopPropagation(); GlobalNotesHandlers.applyItemColor('${itemId}', this.value)"
+                       onmousedown="event.stopPropagation()">
+                <input type="text" value="${item.config.color || '#4361ee'}" 
+                       onchange="event.stopPropagation(); GlobalNotesHandlers.applyItemColor('${itemId}', this.value)"
+                       onmousedown="event.stopPropagation()">
             </div>
         `;
 
@@ -299,6 +389,43 @@ const GlobalNotesHandlers = {
         }
     },
 
+    promptMapUrl: function (itemId) {
+        const item = GlobalNotesRepository.getItems().find(i => i.id == itemId);
+        if (!item) return;
+
+        const url = prompt('Google Maps URL:', item.data.url || '');
+        if (url === null) return;
+
+        const coords = this.extractCoordsFromMapUrl(url);
+        const update = { url: url };
+
+        if (coords) {
+            update.lat = coords.lat;
+            update.lng = coords.lng;
+        }
+
+        GlobalNotesViewModel.updateItemData(itemId, update);
+    },
+
+    extractCoordsFromMapUrl: function (url) {
+        if (!url) return null;
+        // Search for @lat,lng in the URL (Google Maps standard)
+        const match = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+        if (match) {
+            return { lat: parseFloat(match[1]), lng: parseFloat(match[2]) };
+        }
+        // Also search for query params if applicable
+        const urlParams = new URLSearchParams(url.split('?')[1]);
+        const q = urlParams.get('q');
+        if (q && q.includes(',')) {
+            const parts = q.split(',');
+            if (!isNaN(parts[0]) && !isNaN(parts[1])) {
+                return { lat: parseFloat(parts[0]), lng: parseFloat(parts[1]) };
+            }
+        }
+        return null;
+    },
+
     editMapItem: function (itemId) {
         const item = GlobalNotesRepository.getItems().find(i => i.id == itemId);
         if (!item) return;
@@ -317,6 +444,15 @@ const GlobalNotesHandlers = {
             lat: parseFloat(lat),
             lng: parseFloat(lng)
         });
+    },
+
+    clearContent: function (itemId) {
+        const item = GlobalNotesRepository.getItems().find(i => i.id == itemId);
+        if (item) {
+            if (item.type === 'note') GlobalNotesViewModel.updateItemData(itemId, { content: '' });
+            if (item.type === 'heading') GlobalNotesViewModel.updateItemData(itemId, { text: '' });
+            GlobalNotesView.renderContent();
+        }
     },
 
     setItemBorderColor: function (itemId, color) {
@@ -348,8 +484,44 @@ const GlobalNotesHandlers = {
     updateTableData: function (itemId, row, col, val) {
         const item = GlobalNotesRepository.getItems().find(i => i.id == itemId);
         if (item && item.data.data) {
+            if (!item.data.data[row]) item.data.data[row] = [];
             item.data.data[row][col] = val;
             GlobalNotesRepository.saveItem(item);
+        }
+    },
+
+    updateTableHeader: function (itemId, col, val) {
+        const item = GlobalNotesRepository.getItems().find(i => i.id == itemId);
+        if (item && item.data.headers) {
+            item.data.headers[col] = val;
+            GlobalNotesRepository.saveItem(item);
+        }
+    },
+
+    addTableRow: function (itemId) {
+        const item = GlobalNotesRepository.getItems().find(i => i.id == itemId);
+        if (item) {
+            item.data.rows++;
+            const newRow = Array(item.data.cols).fill('');
+            item.data.data.push(newRow);
+            GlobalNotesRepository.saveItem(item);
+            GlobalNotesView.renderContent();
+        }
+    },
+
+    addTableColumn: function (itemId) {
+        const item = GlobalNotesRepository.getItems().find(i => i.id == itemId);
+        if (item) {
+            item.data.cols++;
+            if (!item.data.headers) item.data.headers = Array(item.data.cols - 1).fill('');
+            item.data.headers.push('');
+            item.data.data.forEach(row => row.push(''));
+
+            // Adjust width to fit
+            item.width += 100;
+
+            GlobalNotesRepository.saveItem(item);
+            GlobalNotesView.renderContent();
         }
     },
 
@@ -374,19 +546,59 @@ const GlobalNotesHandlers = {
         }
     },
 
-    moveToColumn: function (itemId, columnId) {
-        const item = GlobalNotesRepository.getItems().find(i => i.id == itemId);
-        if (item) {
+    moveToColumn: function (itemId, columnId, index = -1) {
+        const items = GlobalNotesRepository.getItems();
+        const item = items.find(i => i.id == itemId);
+        const column = items.find(i => i.id == columnId);
+
+        if (item && column && column.type === 'column') {
+            const oldColumnId = item.columnId;
             item.columnId = columnId;
+
+            if (!column.data.items) column.data.items = [];
+
+            // Remove from old column index array if it was there
+            if (oldColumnId && oldColumnId !== columnId) {
+                const oldColumn = items.find(i => i.id === oldColumnId);
+                if (oldColumn && oldColumn.data.items) {
+                    oldColumn.data.items = oldColumn.data.items.filter(id => id !== itemId);
+                    GlobalNotesRepository.saveItem(oldColumn);
+                }
+            }
+
+            // Add to new column
+            if (!column.data.items.includes(itemId)) {
+                if (index >= 0) {
+                    column.data.items.splice(index, 0, itemId);
+                } else {
+                    column.data.items.push(itemId);
+                }
+            }
+
             GlobalNotesRepository.saveItem(item);
+            GlobalNotesRepository.saveItem(column);
+        }
+    },
+
+    reorderInColumn: function (itemId, columnId, targetIndex) {
+        const column = GlobalNotesRepository.getItems().find(i => i.id == columnId);
+        if (column && column.data.items) {
+            const currentIndex = column.data.items.indexOf(itemId);
+            if (currentIndex !== -1) {
+                column.data.items.splice(currentIndex, 1);
+                column.data.items.splice(targetIndex, 0, itemId);
+                GlobalNotesRepository.saveItem(column);
+            }
         }
     },
 
     removeFromColumn: function (itemId) {
-        const item = GlobalNotesRepository.getItems().find(i => i.id == itemId);
+        const items = GlobalNotesRepository.getItems();
+        const item = items.find(i => i.id == itemId);
         const el = document.querySelector(`.globalnotes-item[data-id="${itemId}"]`);
+
         if (item && el) {
-            // Get current visual position relative to the board content
+            const oldColumnId = item.columnId;
             const contentRect = document.getElementById('globalnotesBoardContent').getBoundingClientRect();
             const itemRect = el.getBoundingClientRect();
             const zoom = GlobalNotesViewModel.state.zoom;
@@ -394,6 +606,14 @@ const GlobalNotesHandlers = {
             item.columnId = null;
             item.x = (itemRect.left - contentRect.left) / zoom;
             item.y = (itemRect.top - contentRect.top) / zoom;
+
+            if (oldColumnId) {
+                const oldColumn = items.find(i => i.id === oldColumnId);
+                if (oldColumn && oldColumn.data.items) {
+                    oldColumn.data.items = oldColumn.data.items.filter(id => id !== itemId);
+                    GlobalNotesRepository.saveItem(oldColumn);
+                }
+            }
 
             GlobalNotesRepository.saveItem(item);
         }
@@ -430,6 +650,20 @@ const GlobalNotesHandlers = {
         }
     },
 
+    getDropIndex: function (dropzone, mouseY) {
+        const children = Array.from(dropzone.querySelectorAll('.globalnotes-item:not(.dragging)'));
+        if (children.length === 0) return 0;
+
+        for (let i = 0; i < children.length; i++) {
+            const rect = children[i].getBoundingClientRect();
+            const middle = rect.top + rect.height / 2;
+            if (mouseY < middle) {
+                return i;
+            }
+        }
+        return children.length;
+    },
+
     onItemMouseDown: function (e, itemId) {
         // Handle Connection Mode
         if (GlobalNotesViewModel.state.isConnectionMode) {
@@ -455,7 +689,7 @@ const GlobalNotesHandlers = {
         }
 
         // If clicking on an interactive element, don't start dragging
-        const interactiveSelectors = 'button, input, select, textarea, [contenteditable="true"], .color-preview-circle, .checklist-text, .check-box, .item-table-container td, .map-info';
+        const interactiveSelectors = 'button, input, select, textarea, [contenteditable="true"], .color-preview-circle, .checklist-text, .check-box, .item-table-container td, .map-info, .file-placeholder, .file-content';
         if (e.target.closest(interactiveSelectors)) {
             return;
         }
@@ -551,13 +785,40 @@ const GlobalNotesHandlers = {
 
             // Highlight dropzone if dragging a single item
             if (this.dragData.items.length === 1) {
-                document.querySelectorAll('.column-items-dropzone').forEach(dz => dz.classList.remove('drag-over'));
+                document.querySelectorAll('.column-items-dropzone').forEach(dz => {
+                    dz.classList.remove('drag-over');
+                    const existingPlaceholder = dz.querySelector('.drop-placeholder');
+                    if (existingPlaceholder) existingPlaceholder.remove();
+                });
+
                 const dropzone = document.elementFromPoint(e.clientX, e.clientY)?.closest('.column-items-dropzone');
                 if (dropzone) {
                     const columnId = dropzone.getAttribute('data-column-id');
-                    if (columnId !== this.dragData.targetId) {
+                    const draggedId = this.dragData.targetId;
+
+                    if (columnId !== draggedId) {
                         dropzone.classList.add('drag-over');
+
+                        // Show placeholder for reordering
+                        const index = this.getDropIndex(dropzone, e.clientY);
+                        const placeholder = document.createElement('div');
+                        placeholder.className = 'drop-placeholder';
+                        placeholder.style.height = '4px';
+                        placeholder.style.background = 'var(--primary-color)';
+                        placeholder.style.margin = '4px 0';
+                        placeholder.style.borderRadius = '2px';
+
+                        const children = dropzone.querySelectorAll('.globalnotes-item:not(.dragging)');
+                        if (index < children.length) {
+                            dropzone.insertBefore(placeholder, children[index]);
+                        } else {
+                            dropzone.appendChild(placeholder);
+                        }
+
+                        this.dragData.dropIndex = index;
                     }
+                } else {
+                    this.dragData.dropIndex = -1;
                 }
             }
         }
@@ -604,7 +865,14 @@ const GlobalNotesHandlers = {
                 if (dropColumnId) {
                     // Prevent moving a column into itself or into another column (columns are top-level only in this model)
                     if (item.type !== 'column' && item.id !== dropColumnId) {
-                        this.moveToColumn(item.id, dropColumnId);
+                        const targetIndex = this.dragData.dropIndex !== undefined ? this.dragData.dropIndex : -1;
+                        if (item.columnId === dropColumnId) {
+                            // Reorder within the same column
+                            this.reorderInColumn(item.id, dropColumnId, targetIndex);
+                        } else {
+                            // Move to new column
+                            this.moveToColumn(item.id, dropColumnId, targetIndex);
+                        }
                     } else if (!item.columnId) {
                         // If it's a column or it can't enter, just update position
                         GlobalNotesViewModel.updateItemPosition(item.id, parseInt(dragItem.el.style.left), parseInt(dragItem.el.style.top));
@@ -686,12 +954,18 @@ const GlobalNotesHandlers = {
         input.onchange = (e) => {
             const file = e.target.files[0];
             if (file) {
-                const data = {
-                    name: file.name,
-                    size: (file.size / 1024).toFixed(1) + ' KB',
-                    type: file.type || 'File'
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const data = {
+                        name: file.name,
+                        size: (file.size / 1024).toFixed(1) + ' KB',
+                        type: file.type || 'File',
+                        url: event.target.result // Store DataURL for local access
+                    };
+                    GlobalNotesViewModel.updateItemData(itemId, data);
+                    GlobalNotesView.renderContent();
                 };
-                GlobalNotesViewModel.updateItemData(itemId, data);
+                reader.readAsDataURL(file);
             }
         };
         input.click();

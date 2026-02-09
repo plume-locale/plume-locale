@@ -63,6 +63,10 @@ const GlobalNotesViewModel = {
         if (window.GlobalNotesView) {
             window.GlobalNotesView.render();
         }
+
+        if (typeof updateSidebarActions === 'function') {
+            updateSidebarActions('globalnotes');
+        }
     },
 
     createNewBoard: function (parentId = null, x = 100, y = 100) {
@@ -90,6 +94,10 @@ const GlobalNotesViewModel = {
             window.GlobalNotesView.renderContent();
         }
 
+        if (typeof updateSidebarActions === 'function') {
+            updateSidebarActions('globalnotes');
+        }
+
         return newBoard.id;
     },
 
@@ -102,7 +110,30 @@ const GlobalNotesViewModel = {
     },
 
     getItemsInColumn: function (columnId) {
-        return GlobalNotesRepository.getItems().filter(i => i.columnId == columnId);
+        const column = GlobalNotesRepository.getItems().find(i => i.id === columnId);
+        const columnItems = GlobalNotesRepository.getItems().filter(i => i.columnId == columnId);
+
+        if (column && column.data) {
+            if (!column.data.items) column.data.items = [];
+
+            // Sync IDs: ensure all items with this columnId are in data.items
+            const itemIds = columnItems.map(i => i.id);
+            itemIds.forEach(id => {
+                if (!column.data.items.includes(id)) {
+                    column.data.items.push(id);
+                }
+            });
+
+            // Clean up IDs of items that are no longer in this column
+            column.data.items = column.data.items.filter(id => itemIds.includes(id));
+
+            // Return sorted items
+            return columnItems.sort((a, b) => {
+                return column.data.items.indexOf(a.id) - column.data.items.indexOf(b.id);
+            });
+        }
+
+        return columnItems;
     },
 
     addItem: function (type, x, y, columnId = null) {
@@ -161,6 +192,14 @@ const GlobalNotesViewModel = {
                 });
             }
 
+            if (item.columnId) {
+                const column = allItems.find(i => i.id === item.columnId);
+                if (column && column.data.items) {
+                    column.data.items = column.data.items.filter(id => id !== item.id);
+                    GlobalNotesRepository.saveItem(column);
+                }
+            }
+
             // Cleanup connections involving this item
             const activeBoard = this.getActiveBoard();
             if (activeBoard && activeBoard.connections) {
@@ -174,6 +213,10 @@ const GlobalNotesViewModel = {
 
         if (window.GlobalNotesView) {
             window.GlobalNotesView.renderContent();
+        }
+
+        if (typeof updateSidebarActions === 'function') {
+            updateSidebarActions('globalnotes');
         }
     },
 

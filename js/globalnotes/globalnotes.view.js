@@ -22,7 +22,6 @@ const GlobalNotesView = {
             <div class="globalnotes-container">
                 ${this.renderHeader()}
                 <div class="globalnotes-canvas-wrapper" style="flex: 1; position: relative; overflow: hidden; background: #f8fafc;">
-                    ${this.renderToolbar()}
                     <div id="globalnotesCanvas" class="globalnotes-canvas" style="width:100%; height:100%;">
                         <div id="globalnotesBoardContent" class="globalnotes-board-content">
                             <svg id="globalnotesConnectionsLayer" class="connections-layer"></svg>
@@ -71,93 +70,7 @@ const GlobalNotesView = {
     },
 
     renderToolbar: function () {
-        return `
-            <div class="globalnotes-toolbar vertical">
-                <div class="tool-item" onclick="GlobalNotesView.addNewItem('board')" title="${Localization.t('globalnotes.tool.board')}">
-                    <i data-lucide="layout-grid"></i>
-                    <span class="tool-label">Board</span>
-                </div>
-                <div class="tool-item" onclick="GlobalNotesView.addNewItem('column')" title="${Localization.t('globalnotes.tool.column')}">
-                    <i data-lucide="columns"></i>
-                    <span class="tool-label">Column</span>
-                </div>
-                <div class="tool-item" onclick="GlobalNotesView.addNewItem('note')" title="${Localization.t('globalnotes.tool.note')}">
-                    <i data-lucide="sticky-note"></i>
-                    <span class="tool-label">Note</span>
-                </div>
-                <div class="tool-item" onclick="GlobalNotesView.addNewItem('link')" title="${Localization.t('globalnotes.tool.link')}">
-                    <i data-lucide="link"></i>
-                    <span class="tool-label">Link</span>
-                </div>
-                <div class="tool-item" onclick="GlobalNotesView.addNewItem('checklist')" title="To-do">
-                    <i data-lucide="list-checks"></i>
-                    <span class="tool-label">To-do</span>
-                </div>
-                <div class="tool-item" onclick="GlobalNotesView.addNewItem('line')" title="Line">
-                    <i data-lucide="minus" style="transform: rotate(-45deg);"></i>
-                    <span class="tool-label">Line</span>
-                </div>
-                <div class="tool-item" onclick="GlobalNotesView.addNewItem('comment')" title="Comment">
-                    <i data-lucide="message-square"></i>
-                    <span class="tool-label">Comment</span>
-                </div>
-                <div class="tool-item" onclick="GlobalNotesView.addNewItem('table')" title="Table">
-                    <i data-lucide="table"></i>
-                    <span class="tool-label">Table</span>
-                </div>
-                
-                <div class="tool-item more-tools" onclick="GlobalNotesHandlers.toggleMoreMenu(event)" title="More">
-                    <i data-lucide="more-horizontal"></i>
-                </div>
-
-                <div class="tool-divider"></div>
-
-                <div class="tool-item" onclick="GlobalNotesView.addNewItem('image')" title="${Localization.t('globalnotes.tool.image')}">
-                    <i data-lucide="image"></i>
-                    <span class="tool-label">Image</span>
-                </div>
-                <div class="tool-item" onclick="GlobalNotesView.addNewItem('file')" title="${Localization.t('globalnotes.tool.file')}">
-                    <i data-lucide="upload"></i>
-                    <span class="tool-label">Upload</span>
-                </div>
-                <div class="tool-item" onclick="GlobalNotesView.addNewItem('sketch')" title="Draw">
-                    <i data-lucide="pen"></i>
-                    <span class="tool-label">Draw</span>
-                </div>
-
-                <div class="spacer"></div>
-
-                <div class="tool-item delete" onclick="GlobalNotesViewModel.deleteSelectedItem()" title="${Localization.t('globalnotes.tool.delete')}">
-                    <i data-lucide="trash-2"></i>
-                </div>
-
-                <div id="globalnotesMoreMenu" class="more-tools-popup hidden">
-                    <div class="more-grid">
-                        <div class="more-item" onclick="GlobalNotesView.addNewItem('sketch')">
-                            <i data-lucide="brush" class="icon-sketch"></i><span>Sketch</span>
-                        </div>
-                        <div class="more-item" onclick="GlobalNotesView.addNewItem('color')">
-                            <i data-lucide="palette" class="icon-color"></i><span>Color</span>
-                        </div>
-                        <div class="more-item" onclick="GlobalNotesView.addNewItem('document')">
-                            <i data-lucide="file-text" class="icon-doc"></i><span>Document</span>
-                        </div>
-                        <div class="more-item" onclick="GlobalNotesView.addNewItem('audio')">
-                            <i data-lucide="mic" class="icon-audio"></i><span>Audio</span>
-                        </div>
-                        <div class="more-item" onclick="GlobalNotesView.addNewItem('map')">
-                            <i data-lucide="map-pin" class="icon-map"></i><span>Map</span>
-                        </div>
-                        <div class="more-item" onclick="GlobalNotesView.addNewItem('video')">
-                            <i data-lucide="video" class="icon-video"></i><span>Video</span>
-                        </div>
-                         <div class="more-item" onclick="GlobalNotesView.addNewItem('heading')">
-                            <i data-lucide="type" class="icon-heading"></i><span>Heading</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
+        return '';
     },
 
     renderContent: function () {
@@ -171,9 +84,14 @@ const GlobalNotesView = {
 
         if (items.length === 0) {
             itemsLayer.innerHTML = `
-                <div class="empty-board-message">
-                    <i data-lucide="layout" style="width: 48px; height: 48px; margin-bottom: 1rem;"></i>
-                    <div>${Localization.t('globalnotes.empty.board') || 'Click on the toolbar to add your first note'}</div>
+                <div class="empty-board-placeholder">
+                    <div class="empty-board-visual">
+                        <i data-lucide="layout-grid"></i>
+                    </div>
+                    <div class="empty-board-text">
+                        <div class="empty-title">${Localization.t('globalnotes.empty.title') || 'Votre tableau est prêt'}</div>
+                        <div class="empty-desc">${Localization.t('globalnotes.empty.board') || 'Utilisez les outils à gauche pour ajouter des notes, des tableaux ou des images.'}</div>
+                    </div>
                 </div>
             `;
         } else {

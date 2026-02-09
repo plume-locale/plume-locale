@@ -135,7 +135,7 @@ function switchView(view) {
         'projectProgressBar',
         'statusFilters',
         'sceneTools',
-        'toolsSidebar'
+        'sidebar-header'
     ];
 
     structureOnlyElements.forEach(id => {
@@ -144,6 +144,26 @@ function switchView(view) {
             el.style.display = (view === 'editor') ? '' : 'none';
         }
     });
+
+    // Special handling for toolsSidebar (visible in editor AND globalnotes)
+    const toolsSidebar = document.getElementById('toolsSidebar');
+    if (toolsSidebar) {
+        if (!window.originalToolsSidebarHTML) {
+            window.originalToolsSidebarHTML = toolsSidebar.innerHTML;
+        }
+
+        if (view === 'editor') {
+            toolsSidebar.style.display = '';
+            // Restore default tools
+            toolsSidebar.innerHTML = window.originalToolsSidebarHTML;
+            if (typeof lucide !== 'undefined') lucide.createIcons({ root: toolsSidebar });
+        } else if (view === 'globalnotes') {
+            toolsSidebar.style.display = '';
+            updateGNToolsSidebar();
+        } else {
+            toolsSidebar.style.display = 'none';
+        }
+    }
 
     // Toolbar de l'arborescence
     const treeCollapseToolbar = document.getElementById('treeCollapseToolbar');
@@ -186,8 +206,7 @@ function switchView(view) {
         'timelineviz': 'timelineVizList',
         'thriller': 'thrillerList',
         'map': 'mapList',
-        'investigation': 'investigationList',
-        'globalnotes': 'globalnotesList'
+        'investigation': 'investigationList'
     };
 
     const editorViewVues = ['stats', 'analysis', 'versions', 'todos', 'timeline', 'corkboard', 'plot', 'plotgrid', 'relations'];
@@ -272,10 +291,117 @@ function updateSidebarActions(view) {
         case 'arcs':
             html = `<button class="btn btn-primary" onclick="createNewArc()">+ ${Localization.t('nav.arcs')}</button>`;
             break;
+        case 'globalnotes':
+            html = `
+                <div class="sidebar-gn-tools-container" style="padding: 16px 0;">
+                    <div class="gn-sidebar-section">
+                        <div class="gn-section-header" style="margin: 0 16px 8px 16px;">${Localization.t('globalnotes.sidebar.group.boards') || 'Mes Tableaux'}</div>
+                        <div class="gn-boards-list">
+                            ${renderGlobalNotesTree()}
+                        </div>
+                    </div>
+                </div>
+            `;
+            break;
     }
 
     sidebarActions.innerHTML = html;
     if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+/**
+ * Resets the vertical tools sidebar with GlobalNotes creation tools.
+ */
+function updateGNToolsSidebar() {
+    const toolsSidebar = document.getElementById('toolsSidebar');
+    if (!toolsSidebar) return;
+
+    toolsSidebar.innerHTML = `
+        <div class="tool-item">
+            <button class="tool-btn" onclick="GlobalNotesView.addNewItem('board')" title="${Localization.t('globalnotes.tool.board')}"><i data-lucide="layout-grid"></i></button>
+            <span class="tool-label">${Localization.t('globalnotes.tool.board_label') || 'Board'}</span>
+        </div>
+        <div class="tool-item">
+            <button class="tool-btn" onclick="GlobalNotesView.addNewItem('column')" title="${Localization.t('globalnotes.tool.column')}"><i data-lucide="columns"></i></button>
+            <span class="tool-label">${Localization.t('globalnotes.tool.column_label') || 'Column'}</span>
+        </div>
+        <div class="tool-item">
+            <button class="tool-btn" onclick="GlobalNotesView.addNewItem('note')" title="${Localization.t('globalnotes.tool.note')}"><i data-lucide="sticky-note"></i></button>
+            <span class="tool-label">${Localization.t('globalnotes.tool.note_label') || 'Note'}</span>
+        </div>
+        <div class="tool-separator"></div>
+        <div class="tool-item">
+            <button class="tool-btn" onclick="GlobalNotesView.addNewItem('checklist')" title="${Localization.t('globalnotes.tool.checklist')}"><i data-lucide="list-checks"></i></button>
+            <span class="tool-label">${Localization.t('globalnotes.tool.checklist_label') || 'To-do'}</span>
+        </div>
+        <div class="tool-item">
+            <button class="tool-btn" onclick="GlobalNotesView.addNewItem('table')" title="${Localization.t('globalnotes.tool.table')}"><i data-lucide="table"></i></button>
+            <span class="tool-label">${Localization.t('globalnotes.tool.table_label') || 'Table'}</span>
+        </div>
+        <div class="tool-item">
+            <button class="tool-btn" onclick="GlobalNotesView.addNewItem('sketch')" title="${Localization.t('globalnotes.tool.sketch')}"><i data-lucide="pen"></i></button>
+            <span class="tool-label">${Localization.t('globalnotes.tool.sketch_label') || 'Sketch'}</span>
+        </div>
+        <div class="tool-separator"></div>
+        <div class="tool-item">
+            <button class="tool-btn" onclick="GlobalNotesView.addNewItem('image')" title="${Localization.t('globalnotes.tool.image')}"><i data-lucide="image"></i></button>
+            <span class="tool-label">${Localization.t('globalnotes.tool.image_label') || 'Image'}</span>
+        </div>
+        <div class="tool-item">
+            <button class="tool-btn" onclick="GlobalNotesView.addNewItem('file')" title="${Localization.t('globalnotes.tool.file')}"><i data-lucide="upload"></i></button>
+            <span class="tool-label">${Localization.t('globalnotes.tool.file_label') || 'File'}</span>
+        </div>
+        <div class="tool-item">
+            <button class="tool-btn" onclick="GlobalNotesView.addNewItem('video')" title="${Localization.t('globalnotes.tool.video')}"><i data-lucide="video"></i></button>
+            <span class="tool-label">${Localization.t('globalnotes.tool.video_label') || 'Video'}</span>
+        </div>
+        <div class="tool-item">
+            <button class="tool-btn" onclick="GlobalNotesView.addNewItem('link')" title="${Localization.t('globalnotes.tool.link')}"><i data-lucide="link"></i></button>
+            <span class="tool-label">${Localization.t('globalnotes.tool.link_label') || 'Link'}</span>
+        </div>
+        <div class="tool-item">
+            <button class="tool-btn" onclick="GlobalNotesView.addNewItem('map')" title="${Localization.t('globalnotes.tool.map')}"><i data-lucide="map-pin"></i></button>
+            <span class="tool-label">${Localization.t('globalnotes.tool.map_label') || 'Map'}</span>
+        </div>
+        <div class="tool-item">
+            <button class="tool-btn" onclick="GlobalNotesView.addNewItem('color')" title="${Localization.t('globalnotes.tool.color')}"><i data-lucide="palette"></i></button>
+            <span class="tool-label">${Localization.t('globalnotes.tool.color_label') || 'Color'}</span>
+        </div>
+    `;
+    if (typeof lucide !== 'undefined') lucide.createIcons({ root: toolsSidebar });
+}
+
+/**
+ * Renders the boards as a nested treeview.
+ */
+function renderGlobalNotesTree() {
+    if (typeof GlobalNotesRepository === 'undefined') return '';
+    const boards = GlobalNotesRepository.getBoards();
+    if (boards.length === 0) return '';
+
+    // Step 1: Find roots (boards without parent or parent doesn't exist)
+    const roots = boards.filter(b => !b.parentId || !boards.some(parent => parent.id === b.parentId));
+
+    return roots.map(root => renderGNTreeItem(root, boards, 0)).join('');
+}
+
+function renderGNTreeItem(board, allBoards, level) {
+    const isActive = GlobalNotesViewModel.state.activeBoardId === board.id;
+    const children = allBoards.filter(b => b.parentId === board.id);
+    const hasChildren = children.length > 0;
+
+    return `
+        <div class="gn-tree-node">
+            <div class="gn-board-nav-item ${isActive ? 'active' : ''}" 
+                 style="padding-left: ${12 + level * 12}px;"
+                 onclick="GlobalNotesViewModel.setActiveBoard('${board.id}'); updateSidebarActions();">
+                ${hasChildren ? '<i data-lucide="chevron-down" style="width: 12px; height: 12px; margin-right: -4px; opacity: 0.5;"></i>' : '<div style="width: 12px;"></div>'}
+                <i data-lucide="${level === 0 ? 'home' : 'layout'}" style="width: 14px; height: 14px;"></i>
+                <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1;">${board.title}</span>
+            </div>
+            ${hasChildren ? `<div class="gn-tree-children">${children.map(child => renderGNTreeItem(child, allBoards, level + 1)).join('')}</div>` : ''}
+        </div>
+    `;
 }
 
 // Ensure sidebar actions are updated when locale changes
@@ -320,19 +446,19 @@ function renderViewContent(view, containerId) {
             // État vide par défaut pour l'éditeur
             if (project.acts.length === 0 || (project.acts.length === 1 && project.acts[0].chapters.length === 0)) {
                 container.innerHTML = `
-                    <div class="empty-state">
+                <div class="empty-state">
                         <div class="empty-state-icon"><i data-lucide="pencil" style="width:48px;height:48px;stroke-width:1;"></i></div>
                         <div class="empty-state-title">${Localization.t('empty.start')}</div>
                         <div class="empty-state-text">${Localization.t('empty.create_chapter')}</div>
                         <button class="btn btn-primary" onclick="openAddChapterModal()">${Localization.t('btn.create')}</button>
-                    </div>`;
+                    </div> `;
             } else {
                 container.innerHTML = `
-                    <div class="empty-state">
+                <div class="empty-state">
                         <div class="empty-state-icon"><i data-lucide="pencil" style="width:48px;height:48px;stroke-width:1;"></i></div>
                         <div class="empty-state-title">${Localization.t('empty.select_scene')}</div>
                         <div class="empty-state-text">${Localization.t('empty.select_sidebar')}</div>
-                    </div>`;
+                    </div> `;
             }
             break;
 
@@ -377,7 +503,7 @@ function renderViewContent(view, containerId) {
                     <div class="empty-state-icon"><i data-lucide="layout" style="width:48px;height:48px;stroke-width:1;"></i></div>
                     <div class="empty-state-title">Panneau vide</div>
                     <div class="empty-state-text">Cliquez sur l'en-tête pour choisir une vue</div>
-                </div>`;
+                </div> `;
             break;
     }
 }
@@ -459,7 +585,7 @@ const POPULAR_GOOGLE_FONTS = [
 
 function loadGoogleFont(fontName) {
     if (!fontName) return;
-    const linkId = `font-${fontName.replace(/\s+/g, '-').toLowerCase()}`;
+    const linkId = `font - ${fontName.replace(/\s+/g, '-').toLowerCase()} `;
     if (!document.getElementById(linkId)) {
         const link = document.createElement('link');
         link.id = linkId;

@@ -8,11 +8,19 @@ const GlobalNotesItemView = {
         console.log('Rendering item:', item.id, 'Type:', item.type, 'In column:', !!item.columnId);
         let style = "";
         const isInColumn = !!item.columnId;
+        const isColorItem = item.type === 'color';
+        // For color items, the base color is transparent because it's handled by the inner container
+        const baseColor = isColorItem ? (item.config.color || '#4361ee') : (item.config.color || '#ffffff');
+        const contrastColor = GlobalNotesItemView.getContrastColor(baseColor);
 
         if (!isInColumn) {
-            style = `left: ${item.x}px; top: ${item.y}px; width: ${item.width}px; height: ${item.height === 'auto' ? 'auto' : item.height + 'px'}; z-index: ${item.zIndex}; background-color: ${item.config.color}; border: ${item.config.borderThickness}px ${item.config.borderStyle || 'solid'} ${item.config.borderColor || 'transparent'};`;
+            const bgColor = isColorItem ? 'transparent' : item.config.color;
+            const extraStyle = isColorItem ? 'box-shadow: none; border: none; min-width: 0; min-height: 0;' : `border: ${item.config.borderThickness}px ${item.config.borderStyle || 'solid'} ${item.config.borderColor || 'transparent'};`;
+            style = `left: ${item.x}px; top: ${item.y}px; width: ${item.width}px; height: ${item.height === 'auto' ? 'auto' : item.height + 'px'}; z-index: ${item.zIndex}; background-color: ${bgColor}; color: ${contrastColor}; ${extraStyle}`;
         } else {
-            style = `position: relative; width: 100% !important; margin-bottom: 12px; height: auto; background-color: ${item.config.color}; left: 0; top: 0; border: ${item.config.borderThickness}px ${item.config.borderStyle || 'solid'} ${item.config.borderColor || 'transparent'};`;
+            const bgColor = isColorItem ? 'transparent' : item.config.color;
+            const extraStyle = isColorItem ? 'box-shadow: none; border: none; min-width: 0; min-height: 0;' : `border: ${item.config.borderThickness}px ${item.config.borderStyle || 'solid'} ${item.config.borderColor || 'transparent'};`;
+            style = `position: relative; width: 100% !important; margin-bottom: 12px; height: auto; background-color: ${bgColor}; color: ${contrastColor}; left: 0; top: 0; ${extraStyle}`;
         }
 
         return `
@@ -23,7 +31,7 @@ const GlobalNotesItemView = {
                  onmousedown="GlobalNotesHandlers.onItemMouseDown(event, '${item.id}')"
                  ondblclick="GlobalNotesHandlers.onItemDbClick(event, '${item.id}')">
                 
-                <div class="item-inner">
+                <div class="item-inner" style="${isColorItem ? 'padding: 0;' : ''}">
                     ${GlobalNotesItemView.renderItemContent(item)}
                 </div>
                 
@@ -61,11 +69,16 @@ const GlobalNotesItemView = {
                 return `
                     <div class="item-image-container">
                         ${data.url ? `<img src="${data.url}" />` : `
-                            <div class="image-placeholder" 
-                                 onmousedown="event.stopPropagation()"
-                                 onclick="GlobalNotesHandlers.promptImageUrl('${item.id}')">
+                            <div class="image-placeholder" onmousedown="event.stopPropagation()">
                                 <i data-lucide="image"></i>
-                                <span>Add Image URL</span>
+                                <div class="image-placeholder-actions">
+                                    <button class="btn-image-action" onclick="GlobalNotesHandlers.triggerImageUpload('${item.id}')">
+                                        <i data-lucide="upload"></i> <span>Upload</span>
+                                    </button>
+                                    <button class="btn-image-action" onclick="GlobalNotesHandlers.promptImageUrl('${item.id}')">
+                                        <i data-lucide="link"></i> <span>URL</span>
+                                    </button>
+                                </div>
                             </div>
                         `}
                         <div class="item-caption" contenteditable="true" 
@@ -76,14 +89,23 @@ const GlobalNotesItemView = {
                 `;
             case 'link':
                 return `
-                    <div class="link-preview" onclick="window.open('${data.url}', '_blank')">
-                        ${data.image ? `<img src="${data.image}" class="link-image" />` : `
-                            <div class="link-icon-fallback"><i data-lucide="external-link"></i></div>
+                    <div class="link-item-container" onmousedown="event.stopPropagation()">
+                        ${data.url ? `
+                            <div class="link-preview" onclick="window.open('${data.url}', '_blank')">
+                                ${data.image ? `<img src="${data.image}" class="link-image" />` : `
+                                    <div class="link-icon-fallback"><i data-lucide="external-link"></i></div>
+                                `}
+                                <div class="link-details">
+                                    <div class="link-title" contenteditable="true" onblur="GlobalNotesHandlers.updateLinkTitle('${item.id}', this.innerText, event)">${data.title || 'Link'}</div>
+                                    <div class="link-url-text">${this.truncate(data.url, 40)}</div>
+                                </div>
+                            </div>
+                        ` : `
+                            <div class="link-placeholder" onclick="GlobalNotesHandlers.promptLinkUrl('${item.id}')">
+                                <i data-lucide="link"></i>
+                                <span>Add Link URL</span>
+                            </div>
                         `}
-                        <div class="link-details">
-                            <div class="link-title">${data.title || 'Link Title'}</div>
-                            <div class="link-url-text">${this.truncate(data.url, 40)}</div>
-                        </div>
                     </div>
                 `;
             case 'column':
@@ -157,68 +179,96 @@ const GlobalNotesItemView = {
                 `;
             case 'file':
                 return `
-                    <div class="item-file" 
-                         onmousedown="event.stopPropagation()"
-                         onclick="GlobalNotesHandlers.triggerFileUpload('${item.id}')">
-                        <div class="file-icon"><i data-lucide="file-text"></i></div>
-                        <div class="file-info">
-                            <div class="file-name">${data.name || 'document.pdf'}</div>
-                            <div class="file-meta">${data.size || '0 KB'} • ${data.type || 'File'}</div>
-                        </div>
+                    <div class="item-file" onmousedown="event.stopPropagation()">
+                        ${data.url ? `
+                            <div class="file-content" onclick="GlobalNotesHandlers.triggerFileUpload('${item.id}')">
+                                <div class="file-icon"><i data-lucide="file-text"></i></div>
+                                <div class="file-info">
+                                    <div class="file-name">${data.name || 'document.pdf'}</div>
+                                    <div class="file-meta">${data.size || '0 KB'} • ${data.type || 'File'}</div>
+                                    ${data.url ? `<a href="${data.url}" download="${data.name}" class="file-download-btn"><i data-lucide="download"></i> Download</a>` : ''}
+                                </div>
+                            </div>
+                        ` : `
+                            <div class="file-placeholder" onclick="GlobalNotesHandlers.triggerFileUpload('${item.id}')">
+                                <i data-lucide="upload-cloud"></i>
+                                <span>Add File</span>
+                            </div>
+                        `}
                     </div>
                 `;
             case 'color':
+                const cColor = item.config.color && item.config.color !== 'transparent' ? item.config.color : '#4361ee';
+                const textColor = GlobalNotesItemView.getContrastColor(cColor);
                 return `
-                    <div class="item-color-swatch">
-                        <div class="color-preview-circle" 
-                             style="background: ${item.config.color || '#4361ee'}"
-                             onmousedown="event.stopPropagation()"
-                             onclick="GlobalNotesHandlers.promptColorChange('${item.id}')"></div>
-                        <div class="color-label" contenteditable="true" 
-                             onmousedown="event.stopPropagation()"
-                             onblur="GlobalNotesViewModel.updateItemData('${item.id}', { label: this.innerText })">
-                             ${data.label || 'Primary'}
+                    <div class="item-color-container" style="background: ${cColor}; color: ${textColor} !important;">
+                         <div class="color-content" onclick="GlobalNotesHandlers.promptColorChange('${item.id}')">
+                            <div class="color-label" contenteditable="true" 
+                                 style="color: ${textColor} !important;"
+                                 onmousedown="event.stopPropagation()"
+                                 onblur="GlobalNotesViewModel.updateItemData('${item.id}', { label: this.innerText })">
+                                 ${data.label || 'Primary'}
+                            </div>
+                            <div class="color-hex-badge">
+                                <span>${item.config.color || '#4361ee'}</span>
+                            </div>
                         </div>
-                        <div class="color-hex">${item.config.color || '#4361ee'}</div>
                     </div>
                 `;
             case 'table':
                 return `
-                <div class="item-table-container">
-                    <table class="globalnotes-table">
-                        ${Array.from({ length: data.rows }).map((_, r) => `
-                            <tr>
-                                ${Array.from({ length: data.cols }).map((_, c) => `
-                                    <td contenteditable="true" onblur="GlobalNotesHandlers.updateTableData('${item.id}', ${r}, ${c}, this.innerText)">
-                                        ${data.data[r][c] || ''}
-                                    </td>
+                <div class="item-table-container" onmousedown="event.stopPropagation()">
+                    <div class="table-actions-top">
+                        <button class="btn-table-action" title="${Localization.t('globalnotes.action.add_column')}" onclick="GlobalNotesHandlers.addTableColumn('${item.id}')">
+                            <i data-lucide="plus"></i> <span>${Localization.t('globalnotes.action.add_column') || 'Add Column'}</span>
+                        </button>
+                    </div>
+                    <div class="table-wrapper">
+                        <table class="globalnotes-table">
+                            <thead>
+                                <tr>
+                                    ${(data.headers || []).map((h, c) => `
+                                        <th contenteditable="true" onblur="GlobalNotesHandlers.updateTableHeader('${item.id}', ${c}, this.innerText)">
+                                            ${h || ''}
+                                        </th>
+                                    `).join('')}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${Array.from({ length: data.rows }).map((_, r) => `
+                                    <tr>
+                                        ${Array.from({ length: data.cols }).map((_, c) => `
+                                            <td contenteditable="true" onblur="GlobalNotesHandlers.updateTableData('${item.id}', ${r}, ${c}, this.innerText)">
+                                                ${(data.data[r] && data.data[r][c]) || ''}
+                                            </td>
+                                        `).join('')}
+                                    </tr>
                                 `).join('')}
-                            </tr>
-                        `).join('')}
-                    </table>
-                </div>
-            `;
-            case 'comment':
-                return `
-                <div class="item-comment">
-                    <div class="comment-author">${data.author || 'User'}</div>
-                    <div class="comment-text" contenteditable="true" onblur="GlobalNotesViewModel.updateItemData('${item.id}', { text: this.innerText })">
-                        ${data.text || 'Add a comment...'}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="table-actions-bottom">
+                        <button class="btn-table-action" onclick="GlobalNotesHandlers.addTableRow('${item.id}')">
+                            <i data-lucide="plus"></i> <span>${Localization.t('globalnotes.action.add_row') || 'Add Row'}</span>
+                        </button>
                     </div>
                 </div>
             `;
             case 'map':
+                const hasUrl = !!data.url;
                 return `
                 <div class="item-map-container">
                     <div class="map-placeholder">
                         <i data-lucide="map"></i>
                         <div class="map-info" 
-                             onmousedown="event.stopPropagation()"
-                             onclick="GlobalNotesHandlers.editMapItem('${item.id}')">
-                            <span class="map-title-label">${data.title || 'Location'}</span>
-                            <div class="map-coords">${data.lat || 0}, ${data.lng || 0}</div>
+                             onmousedown="event.stopPropagation()">
+                            <span class="map-title-label" contenteditable="true" onblur="GlobalNotesViewModel.updateItemData('${item.id}', { title: this.innerText })">${data.title || 'Location'}</span>
+                            <div class="map-coords" onclick="GlobalNotesHandlers.editMapItem('${item.id}')">${data.lat || 0}, ${data.lng || 0}</div>
                         </div>
-                        <div class="map-edit-hint">Click to set coords</div>
+                        <div class="map-actions">
+                            ${hasUrl ? `<button class="btn-map-action" onclick="window.open('${data.url}', '_blank')"><i data-lucide="external-link"></i> Open</button>` : ''}
+                            <button class="btn-map-action" onclick="GlobalNotesHandlers.promptMapUrl('${item.id}')"><i data-lucide="link"></i> ${hasUrl ? 'Change Link' : 'Add Link'}</button>
+                        </div>
                     </div>
                 </div>
             `;
@@ -275,9 +325,29 @@ const GlobalNotesItemView = {
     truncate: function (str, n) {
         if (!str) return '';
         return (str.length > n) ? str.substr(0, n - 1) + '&hellip;' : str;
+    },
+
+    getContrastColor: function (hexcolor) {
+        if (!hexcolor || hexcolor === 'transparent') return '#1e293b';
+
+        let hex = hexcolor.replace('#', '').trim();
+
+        // Handle shorthand hex like #000
+        if (hex.length === 3) {
+            hex = hex.split('').map(char => char + char).join('');
+        }
+
+        // Fallback for non-hex strings
+        if (hex.length !== 6) return '#1e293b';
+
+        const r = parseInt(hex.substr(0, 2), 16);
+        const g = parseInt(hex.substr(2, 2), 16);
+        const b = parseInt(hex.substr(4, 2), 16);
+
+        // Simple brightness formula
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        return (brightness > 155) ? '#1e293b' : '#ffffff';
     }
 };
 
 window.GlobalNotesItemView = GlobalNotesItemView;
-
-

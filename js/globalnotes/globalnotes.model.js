@@ -72,7 +72,6 @@ const GlobalNotesModel = {
             case 'file': return 200;
             case 'color': return 80;
             case 'table': return 400;
-            case 'comment': return 200;
             case 'map': return 400;
             case 'heading': return 400;
             case 'line': return 200;
@@ -140,9 +139,10 @@ const GlobalNotesModel = {
                 };
             case 'file':
                 return {
-                    name: inputData.name || 'document.pdf',
-                    size: inputData.size || '0 KB',
-                    type: inputData.type || 'application/pdf'
+                    name: inputData.name || null,
+                    size: inputData.size || null,
+                    type: inputData.type || null,
+                    url: inputData.url || null
                 };
             case 'color':
                 return {
@@ -153,16 +153,15 @@ const GlobalNotesModel = {
                 return {
                     rows: inputData.rows || 3,
                     cols: inputData.cols || 3,
+                    headers: inputData.headers || ['', '', ''],
                     data: inputData.data || [
                         ['', '', ''],
                         ['', '', ''],
                         ['', '', '']
                     ]
                 };
-            case 'comment':
-                return { text: inputData.text || '', author: 'User' };
             case 'map':
-                return { lat: 48.8566, lng: 2.3522, zoom: 12, title: 'Paris' };
+                return { lat: 48.8566, lng: 2.3522, zoom: 12, title: 'Paris', url: inputData.url || '' };
             case 'heading':
                 return { text: inputData.text || 'Section Title' };
             case 'sketch':
