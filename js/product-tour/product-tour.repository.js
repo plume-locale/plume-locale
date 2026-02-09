@@ -144,20 +144,20 @@ const ProductTourDriverRepository = {
         return new Promise((resolve) => {
             const startTime = Date.now();
             let checkCount = 0;
-            
+
             const checkDriver = () => {
                 checkCount++;
                 const elapsed = Date.now() - startTime;
-                
+
                 // Check for driver.js IIFE bundle export: window.driver.js.driver
                 const driverFn = window.driver?.js?.driver || window.driver?.driver || window.driver;
-                
+
                 if (typeof driverFn === 'function') {
                     console.log(`✅ Driver.js loaded after ${elapsed}ms (${checkCount} checks)`);
                     resolve(true);
                     return;
                 }
-                
+
                 if (elapsed > timeout) {
                     console.error(`❌ Driver.js library loading timeout after ${elapsed}ms (${checkCount} checks)`);
                     console.error('window.driver:', window.driver);
@@ -166,15 +166,15 @@ const ProductTourDriverRepository = {
                     resolve(false);
                     return;
                 }
-                
+
                 // Log every second
                 if (checkCount % 10 === 0) {
                     console.log(`⏳ Waiting for Driver.js... ${elapsed}ms elapsed`);
                 }
-                
+
                 setTimeout(checkDriver, 100);
             };
-            
+
             checkDriver();
         });
     },
@@ -193,11 +193,11 @@ const ProductTourDriverRepository = {
                 console.error('Driver.js library not loaded');
                 return null;
             }
-            
+
             // Get the driver function from the IIFE bundle
             // The bundle exports to window.driver.js.driver
             const driverFn = window.driver?.js?.driver || window.driver?.driver || window.driver;
-            
+
             if (typeof driverFn !== 'function') {
                 console.error('Driver function not found or not a function:', typeof driverFn);
                 return null;
@@ -205,7 +205,7 @@ const ProductTourDriverRepository = {
 
             // Filtrer les steps valides
             const validSteps = ProductTourStepsModel.filterValidSteps(steps);
-            
+
             if (validSteps.length === 0) {
                 console.warn('No valid steps found for tour');
                 return null;
@@ -371,26 +371,70 @@ const ProductTourDriverRepository = {
 const ProductTourStepsRepository = {
     /**
      * Récupère tous les steps du tour.
-     * @returns {Array} Liste des steps.
+     * @param {string} view - Vue actuelle.
+     * @returns {Promise<Array>} Liste des steps.
      */
-    getAllSteps: function () {
-        return ProductTourStepsModel.getAllSteps();
+    getAllSteps: async function (view) {
+        // 1. Chercher un tour personnalisé
+        const customSteps = await this.loadCustomTour(view);
+        if (customSteps && customSteps.length > 0) {
+            return customSteps;
+        }
+
+        // 2. Fallback sur les steps par défaut
+        return ProductTourStepsModel.getAllSteps(view);
     },
 
     /**
-     * Récupère les steps desktop.
+     * Sauvegarde un tour personnalisé pour une vue.
+     * @param {string} view - Nom de la vue.
+     * @param {Array} steps - Liste des steps.
+     * @returns {Promise<boolean>} Succès.
+     */
+    saveCustomTour: async function (view, steps) {
+        try {
+            const tours = await loadSetting('customProductTours') || {};
+            tours[view] = steps;
+            await saveSetting('customProductTours', tours);
+            console.log(`✅ Custom tour saved for view: ${view}`);
+            return true;
+        } catch (error) {
+            console.error('Error saving custom tour:', error);
+            return false;
+        }
+    },
+
+    /**
+     * Charge un tour personnalisé pour une vue.
+     * @param {string} view - Nom de la vue.
+     * @returns {Promise<Array|null>} Liste des steps ou null.
+     */
+    loadCustomTour: async function (view) {
+        try {
+            const tours = await loadSetting('customProductTours');
+            return tours ? (tours[view] || null) : null;
+        } catch (error) {
+            console.error('Error loading custom tour:', error);
+            return null;
+        }
+    },
+
+    /**
+     * Récupère les steps desktop (par défaut).
+     * @param {string} view - Vue actuelle.
      * @returns {Array} Steps desktop.
      */
-    getDesktopSteps: function () {
-        return ProductTourStepsModel.getDesktopSteps();
+    getDesktopSteps: function (view) {
+        return ProductTourStepsModel.getDesktopSteps(view);
     },
 
     /**
-     * Récupère les steps mobile.
+     * Récupère les steps mobile (par défaut).
+     * @param {string} view - Vue actuelle.
      * @returns {Array} Steps mobile.
      */
-    getMobileSteps: function () {
-        return ProductTourStepsModel.getMobileSteps();
+    getMobileSteps: function (view) {
+        return ProductTourStepsModel.getMobileSteps(view);
     },
 
     /**
@@ -402,3 +446,4 @@ const ProductTourStepsRepository = {
         return ProductTourStepsModel.filterValidSteps(steps);
     }
 };
+

@@ -24,6 +24,7 @@ CSS_ORDER = [
     'investigation-board.tabs.css',
     '17.documentation-button.css',
     'globalnotes.css',
+    'product-tour-editor.css',
 ]
 
 # CSS des modules additionnels
@@ -328,6 +329,8 @@ JS_ORDER = [
     'js/product-tour/product-tour.repository.js',
     'js/product-tour/product-tour.viewmodel.js',
     'js/product-tour/product-tour.view.js',
+    'js/product-tour/product-tour.editor.view.js',
+    'js/product-tour/product-tour.editor.viewmodel.js',
     'js/product-tour/product-tour.handlers.js',
     'js/product-tour/product-tour.main.js',
     # Investigation Board

@@ -137,7 +137,8 @@ async function startProductTourVM() {
         }
 
         // Récupérer les steps
-        const steps = ProductTourStepsRepository.getAllSteps();
+        const view = typeof currentView !== 'undefined' ? currentView : 'editor';
+        const steps = await ProductTourStepsRepository.getAllSteps(view);
         if (steps.length === 0) {
             ProductTourNotificationView.showError(Localization.t('tour.notification.no_steps'));
             return {
