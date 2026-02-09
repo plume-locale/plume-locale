@@ -322,6 +322,7 @@ const ProductTourEditorView = {
                 <div class="tour-step-card-header">
                     <span class="tour-step-title">${index + 1}. ${step.popover.title || 'Sans titre'}</span>
                     <div class="tour-step-actions">
+                        <button class="tour-step-btn" onclick="ProductTourEditorViewModel.previewStep(${index})" title="Prévisualiser"><i data-lucide="eye" style="width:14px;"></i></button>
                         <button class="tour-step-btn" onclick="ProductTourEditorViewModel.moveStepUp(${index})" ${index === 0 ? 'disabled style="opacity: 0.2; cursor: default;"' : ''}>
                             <i data-lucide="chevron-up" style="width:14px;"></i>
                         </button>

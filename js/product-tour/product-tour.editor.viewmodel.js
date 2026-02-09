@@ -37,6 +37,10 @@ const ProductTourEditorViewModel = {
             this.loadCurrentTour();
         } else {
             ProductTourNotificationView.showInfo("Mode Édition du Tour désactivé");
+            if (this.state.previewDriver) {
+                this.state.previewDriver.destroy();
+                this.state.previewDriver = null;
+            }
             if (ProductTourEditorView.isSelectionModeActive()) {
                 ProductTourEditorView.toggleSelectionMode();
             }
@@ -122,6 +126,69 @@ const ProductTourEditorViewModel = {
         if (index >= steps.length - 1) return;
         [steps[index + 1], steps[index]] = [steps[index], steps[index + 1]];
         ProductTourEditorView.renderSidebar(steps);
+    },
+
+    /**
+     * Prévisualise une étape spécifique.
+     */
+    previewStep: async function (index) {
+        const step = this.state.currentTour[index];
+        if (!step) return;
+
+        // Arrêter tout tour ou preview en cours
+        if (this.state.previewDriver) {
+            this.state.previewDriver.destroy();
+            this.state.previewDriver = null;
+        }
+        if (typeof stopProductTourVM === 'function') {
+            stopProductTourVM();
+        }
+
+        // Préparer une copie pour le preview
+        const previewStep = JSON.parse(JSON.stringify(step));
+
+        // Enrichissement identique au ViewModel principal
+        if (previewStep.popover.image) {
+            const imgHtml = `<img src="${previewStep.popover.image}" class="driver-popover-image">`;
+            previewStep.popover.description = imgHtml + (previewStep.popover.description || '');
+        }
+
+        // Action avant
+        if (previewStep.clickBefore) {
+            const elToClick = document.querySelector(previewStep.clickBefore);
+            if (elToClick) elToClick.click();
+        }
+
+        // Utiliser Driver.js directement pour un preview rapide
+        const driverFn = window.driver?.js?.driver || window.driver?.driver || window.driver;
+        if (typeof driverFn !== 'function') return;
+
+        // Config simplifiée pour le preview
+        this.state.previewDriver = driverFn({
+            animate: true,
+            opacity: 0.75,
+            padding: 10,
+            allowClose: true,
+            overlayClickNext: false,
+            showButtons: ['close'],
+            showProgress: false,
+            onDeselected: () => {
+                this.state.previewDriver = null;
+            }
+        });
+
+        // Lancer le highlight avec un petit délai si action avant
+        const highlight = () => {
+            if (this.state.previewDriver) {
+                this.state.previewDriver.highlight(previewStep);
+            }
+        };
+
+        if (previewStep.clickBefore) {
+            setTimeout(highlight, 100);
+        } else {
+            highlight();
+        }
     },
 
     /**
