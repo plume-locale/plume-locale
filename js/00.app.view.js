@@ -319,53 +319,44 @@ function updateGNToolsSidebar() {
     toolsSidebar.innerHTML = `
         <div class="tool-item">
             <button class="tool-btn" onclick="GlobalNotesView.addNewItem('board')" title="${Localization.t('globalnotes.tool.board')}"><i data-lucide="layout-grid"></i></button>
-            <span class="tool-label">${Localization.t('globalnotes.tool.board_label') || 'Board'}</span>
         </div>
         <div class="tool-item">
             <button class="tool-btn" onclick="GlobalNotesView.addNewItem('column')" title="${Localization.t('globalnotes.tool.column')}"><i data-lucide="columns"></i></button>
-            <span class="tool-label">${Localization.t('globalnotes.tool.column_label') || 'Column'}</span>
         </div>
         <div class="tool-item">
             <button class="tool-btn" onclick="GlobalNotesView.addNewItem('note')" title="${Localization.t('globalnotes.tool.note')}"><i data-lucide="sticky-note"></i></button>
-            <span class="tool-label">${Localization.t('globalnotes.tool.note_label') || 'Note'}</span>
         </div>
         <div class="tool-separator"></div>
         <div class="tool-item">
             <button class="tool-btn" onclick="GlobalNotesView.addNewItem('checklist')" title="${Localization.t('globalnotes.tool.checklist')}"><i data-lucide="list-checks"></i></button>
-            <span class="tool-label">${Localization.t('globalnotes.tool.checklist_label') || 'To-do'}</span>
         </div>
         <div class="tool-item">
             <button class="tool-btn" onclick="GlobalNotesView.addNewItem('table')" title="${Localization.t('globalnotes.tool.table')}"><i data-lucide="table"></i></button>
-            <span class="tool-label">${Localization.t('globalnotes.tool.table_label') || 'Table'}</span>
         </div>
         <div class="tool-item">
             <button class="tool-btn" onclick="GlobalNotesView.addNewItem('sketch')" title="${Localization.t('globalnotes.tool.sketch')}"><i data-lucide="pen"></i></button>
-            <span class="tool-label">${Localization.t('globalnotes.tool.sketch_label') || 'Sketch'}</span>
+        </div>
+        <div class="tool-item">
+            <button class="tool-btn" onclick="GlobalNotesView.addNewItem('line')" title="${Localization.t('globalnotes.tool.line')}"><i data-lucide="share-2"></i></button>
         </div>
         <div class="tool-separator"></div>
         <div class="tool-item">
             <button class="tool-btn" onclick="GlobalNotesView.addNewItem('image')" title="${Localization.t('globalnotes.tool.image')}"><i data-lucide="image"></i></button>
-            <span class="tool-label">${Localization.t('globalnotes.tool.image_label') || 'Image'}</span>
         </div>
         <div class="tool-item">
             <button class="tool-btn" onclick="GlobalNotesView.addNewItem('file')" title="${Localization.t('globalnotes.tool.file')}"><i data-lucide="upload"></i></button>
-            <span class="tool-label">${Localization.t('globalnotes.tool.file_label') || 'File'}</span>
         </div>
         <div class="tool-item">
             <button class="tool-btn" onclick="GlobalNotesView.addNewItem('video')" title="${Localization.t('globalnotes.tool.video')}"><i data-lucide="video"></i></button>
-            <span class="tool-label">${Localization.t('globalnotes.tool.video_label') || 'Video'}</span>
         </div>
         <div class="tool-item">
             <button class="tool-btn" onclick="GlobalNotesView.addNewItem('link')" title="${Localization.t('globalnotes.tool.link')}"><i data-lucide="link"></i></button>
-            <span class="tool-label">${Localization.t('globalnotes.tool.link_label') || 'Link'}</span>
         </div>
         <div class="tool-item">
             <button class="tool-btn" onclick="GlobalNotesView.addNewItem('map')" title="${Localization.t('globalnotes.tool.map')}"><i data-lucide="map-pin"></i></button>
-            <span class="tool-label">${Localization.t('globalnotes.tool.map_label') || 'Map'}</span>
         </div>
         <div class="tool-item">
             <button class="tool-btn" onclick="GlobalNotesView.addNewItem('color')" title="${Localization.t('globalnotes.tool.color')}"><i data-lucide="palette"></i></button>
-            <span class="tool-label">${Localization.t('globalnotes.tool.color_label') || 'Color'}</span>
         </div>
     `;
     if (typeof lucide !== 'undefined') lucide.createIcons({ root: toolsSidebar });

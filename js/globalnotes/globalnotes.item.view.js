@@ -228,10 +228,16 @@ const GlobalNotesItemView = {
                             <thead>
                                 <tr>
                                     ${(data.headers || []).map((h, c) => `
-                                        <th contenteditable="true" onblur="GlobalNotesHandlers.updateTableHeader('${item.id}', ${c}, this.innerText)">
-                                            ${h || ''}
+                                        <th class="table-header-cell">
+                                            <div class="header-content" contenteditable="true" onblur="GlobalNotesHandlers.updateTableHeader('${item.id}', ${c}, this.innerText)">
+                                                ${h || ''}
+                                            </div>
+                                            <button class="btn-delete-col" onclick="GlobalNotesHandlers.deleteTableColumn('${item.id}', ${c})" title="${Localization.t('globalnotes.action.delete_column') || 'Delete Column'}">
+                                                <i data-lucide="x"></i>
+                                            </button>
                                         </th>
                                     `).join('')}
+                                    <th class="table-action-col"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -242,6 +248,11 @@ const GlobalNotesItemView = {
                                                 ${(data.data[r] && data.data[r][c]) || ''}
                                             </td>
                                         `).join('')}
+                                        <td class="table-action-cell">
+                                            <button class="btn-delete-row" onclick="GlobalNotesHandlers.deleteTableRow('${item.id}', ${r})" title="${Localization.t('globalnotes.action.delete_row') || 'Delete Row'}">
+                                                <i data-lucide="trash-2"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                 `).join('')}
                             </tbody>

@@ -259,7 +259,7 @@ const GlobalNotesHandlers = {
     },
 
     promptImageUrl: function (itemId) {
-        const url = prompt('Enter Image URL:');
+        const url = prompt(Localization.t('globalnotes.prompt.image_url') || 'Enter Image URL:');
         if (url) {
             GlobalNotesViewModel.updateItemData(itemId, { url: url });
             GlobalNotesView.renderContent();
@@ -285,7 +285,7 @@ const GlobalNotesHandlers = {
     },
 
     promptVideoUrl: function (itemId) {
-        const url = prompt('Enter YouTube Video URL:');
+        const url = prompt(Localization.t('globalnotes.prompt.video_url') || 'Enter YouTube Video URL:');
         if (url) {
             GlobalNotesViewModel.updateItemData(itemId, { url: url });
             GlobalNotesView.renderContent();
@@ -293,7 +293,7 @@ const GlobalNotesHandlers = {
     },
 
     promptLinkUrl: function (itemId) {
-        let url = prompt('Enter Link URL (e.g., https://google.com):');
+        let url = prompt(Localization.t('globalnotes.prompt.link_url') || 'Enter Link URL (e.g., https://google.com):');
         if (url) {
             if (!url.startsWith('http://') && !url.startsWith('https://')) {
                 url = 'https://' + url;
@@ -393,7 +393,7 @@ const GlobalNotesHandlers = {
         const item = GlobalNotesRepository.getItems().find(i => i.id == itemId);
         if (!item) return;
 
-        const url = prompt('Google Maps URL:', item.data.url || '');
+        const url = prompt(Localization.t('globalnotes.prompt.map_url') || 'Google Maps URL:', item.data.url || '');
         if (url === null) return;
 
         const coords = this.extractCoordsFromMapUrl(url);
@@ -430,13 +430,13 @@ const GlobalNotesHandlers = {
         const item = GlobalNotesRepository.getItems().find(i => i.id == itemId);
         if (!item) return;
 
-        const title = prompt('Map Title:', item.data.title || 'Location');
+        const title = prompt(Localization.t('globalnotes.prompt.map_title') || 'Map Title:', item.data.title || 'Location');
         if (title === null) return;
 
-        const lat = prompt('Latitude:', item.data.lat || 48.8566);
+        const lat = prompt(Localization.t('globalnotes.prompt.latitude') || 'Latitude:', item.data.lat || 48.8566);
         if (lat === null) return;
 
-        const lng = prompt('Longitude:', item.data.lng || 2.3522);
+        const lng = prompt(Localization.t('globalnotes.prompt.longitude') || 'Longitude:', item.data.lng || 2.3522);
         if (lng === null) return;
 
         GlobalNotesViewModel.updateItemData(itemId, {
@@ -509,6 +509,21 @@ const GlobalNotesHandlers = {
         }
     },
 
+    deleteTableRow: function (itemId, rowIndex) {
+        const item = GlobalNotesRepository.getItems().find(i => i.id == itemId);
+        if (item && item.data.rows > 1) {
+            item.data.rows--;
+            item.data.data.splice(rowIndex, 1);
+            GlobalNotesRepository.saveItem(item);
+            GlobalNotesView.renderContent();
+        } else if (item && item.data.rows === 1) {
+            // Optional: reset row if last one, or do nothing
+            item.data.data[0] = Array(item.data.cols).fill('');
+            GlobalNotesRepository.saveItem(item);
+            GlobalNotesView.renderContent();
+        }
+    },
+
     addTableColumn: function (itemId) {
         const item = GlobalNotesRepository.getItems().find(i => i.id == itemId);
         if (item) {
@@ -519,6 +534,21 @@ const GlobalNotesHandlers = {
 
             // Adjust width to fit
             item.width += 100;
+
+            GlobalNotesRepository.saveItem(item);
+            GlobalNotesView.renderContent();
+        }
+    },
+
+    deleteTableColumn: function (itemId, colIndex) {
+        const item = GlobalNotesRepository.getItems().find(i => i.id == itemId);
+        if (item && item.data.cols > 1) {
+            item.data.cols--;
+            if (item.data.headers) item.data.headers.splice(colIndex, 1);
+            item.data.data.forEach(row => row.splice(colIndex, 1));
+
+            // Adjust width
+            item.width = Math.max(200, item.width - 100);
 
             GlobalNotesRepository.saveItem(item);
             GlobalNotesView.renderContent();
