@@ -731,6 +731,217 @@
             }
         ]
     },
+    "narrativeArcs": [
+        {
+            "id": "arc_spider",
+            "title": "Arc A : L'Araignée de Verre",
+            "category": "mystery",
+            "color": "#607d8b",
+            "description": "L'enquête sur le réseau de faussaires.",
+            "type": "mystery",
+            "importance": "major",
+            "board": {
+                "items": [
+                    {
+                        "id": "col_spider",
+                        "type": "column",
+                        "x": 50,
+                        "y": 50,
+                        "title": "Enquête",
+                        "width": 260,
+                        "cards": [
+                            {
+                                "id": "arc_card_a1",
+                                "type": "note",
+                                "content": "<b>L'indice pourpre</b><br>Marc remarque un fragment de verre qui ne vient pas de la villa."
+                            },
+                            {
+                                "id": "arc_card_a2",
+                                "type": "note",
+                                "content": "<b>Le fil rubis</b><br>Découverte du fil de soie. Premier lien concret."
+                            },
+                            {
+                                "id": "arc_card_a7",
+                                "type": "note",
+                                "content": "<b>L'architecte</b><br>Révélation : Blackwood a tout orchestré."
+                            },
+                            {
+                                "id": "arc_card_a8",
+                                "type": "note",
+                                "content": "<b>Coupure de courant</b><br>Marc sabote le signal du phare."
+                            }
+                        ]
+                    }
+                ],
+                "connections": [
+                    {
+                        "id": "conn_a1_a2",
+                        "from": "arc_card_a1",
+                        "to": "arc_card_a2"
+                    },
+                    {
+                        "id": "conn_a7_a8",
+                        "from": "arc_card_a7",
+                        "to": "arc_card_a8"
+                    }
+                ]
+            },
+            "scenePresence": [
+                {
+                    "sceneId": 111,
+                    "intensity": 3
+                },
+                {
+                    "sceneId": 112,
+                    "intensity": 4
+                },
+                {
+                    "sceneId": 221,
+                    "intensity": 5
+                },
+                {
+                    "sceneId": 222,
+                    "intensity": 5
+                }
+            ]
+        },
+        {
+            "id": "arc_tear",
+            "title": "Arc B : La Larme du Tsar",
+            "category": "plot",
+            "color": "#e74c3c",
+            "description": "La technologie photonique et le projet impérial.",
+            "type": "plot",
+            "importance": "major",
+            "board": {
+                "items": [
+                    {
+                        "id": "col_tear",
+                        "type": "column",
+                        "x": 50,
+                        "y": 50,
+                        "title": "Technologie",
+                        "width": 260,
+                        "cards": [
+                            {
+                                "id": "arc_card_b4",
+                                "type": "note",
+                                "content": "<b>L'âme de verre</b><br>Elena révèle la fibre optique militaire."
+                            },
+                            {
+                                "id": "arc_card_b5",
+                                "type": "note",
+                                "content": "<b>Le projet impérial</b><br>Origine de la Larme : système de prisme."
+                            },
+                            {
+                                "id": "arc_card_b6",
+                                "type": "note",
+                                "content": "<b>Le prototype</b><br>Marc trouve la sphère active dans l'usine."
+                            }
+                        ]
+                    }
+                ],
+                "connections": [
+                    {
+                        "id": "conn_b4_b5",
+                        "from": "arc_card_b4",
+                        "to": "arc_card_b5"
+                    },
+                    {
+                        "id": "conn_b5_b6",
+                        "from": "arc_card_b5",
+                        "to": "arc_card_b6"
+                    }
+                ]
+            },
+            "scenePresence": [
+                {
+                    "sceneId": 121,
+                    "intensity": 5
+                },
+                {
+                    "sceneId": 122,
+                    "intensity": 3
+                },
+                {
+                    "sceneId": 211,
+                    "intensity": 4
+                }
+            ]
+        },
+        {
+            "id": "arc_relationship",
+            "title": "Arc C : Marc & Elena",
+            "category": "relationship",
+            "color": "#e91e63",
+            "description": "Leur relation passée et présente.",
+            "type": "relationship",
+            "importance": "minor",
+            "board": {
+                "items": [
+                    {
+                        "id": "col_chars",
+                        "type": "column",
+                        "x": 50,
+                        "y": 50,
+                        "title": "Relation",
+                        "width": 260,
+                        "cards": [
+                            {
+                                "id": "arc_card_c3",
+                                "type": "note",
+                                "content": "<b>Vieilles blessures</b><br>Retrouvailles tendues et aveux sur leur passé."
+                            }
+                        ]
+                    }
+                ],
+                "connections": []
+            },
+            "scenePresence": [
+                {
+                    "sceneId": 121,
+                    "intensity": 4
+                }
+            ]
+        }
+    ],
+    "interArcConnections": [
+        {
+            "id": "inter_a2_b4",
+            "fromArcId": "arc_spider",
+            "fromItemId": "arc_card_a2",
+            "fromSide": "right",
+            "toArcId": "arc_tear",
+            "toItemId": "arc_card_b4",
+            "toSide": "left",
+            "type": "cause",
+            "label": "Déclenche l'expertise"
+        },
+        {
+            "id": "inter_b6_a7",
+            "fromArcId": "arc_tear",
+            "fromItemId": "arc_card_b6",
+            "fromSide": "right",
+            "toArcId": "arc_spider",
+            "toItemId": "arc_card_a7",
+            "toSide": "left",
+            "type": "cause",
+            "label": "Preuve accablante"
+        },
+        {
+            "id": "inter_c3_b4",
+            "fromArcId": "arc_relationship",
+            "fromItemId": "arc_card_c3",
+            "fromSide": "right",
+            "toArcId": "arc_tear",
+            "toItemId": "arc_card_b4",
+            "toSide": "left",
+            "type": "parallel",
+            "label": "Tension émotionnelle"
+        }
+    ],
+    "arcCategories": {},
+    "collapsedArcCategories": [],
     "notes": [],
     "codex": [],
     "stats": {
