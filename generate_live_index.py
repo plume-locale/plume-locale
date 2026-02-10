@@ -110,10 +110,18 @@ def generate_index():
             src = f'./js/{filename}'
             js_scripts.append(f'<script src="{src}"></script>')
 
+    # Embed the demo project as a global variable to avoid fetch/CORS issues
+    demo_json = read_file('demo/project.json')
+    demo_script = ""
+    if demo_json:
+        # On échappe les backticks et on s'assure que c'est du JSON valide pour du JS
+        demo_script = f'<script>window.PLUME_DEMO_PROJECT = {demo_json};</script>'
+
     # Construct HTML
     html_content = f"""{head}
     <!-- Generated CSS Links -->
     {chr(10).join(css_links)}
+    {demo_script}
 </head>
 {body}
     <!-- Generated JS Scripts -->

@@ -21,12 +21,21 @@ const ProjectViewModel = {
      * Initialisation et chargement des projets.
      */
     async init() {
+        console.log('🚀 Initialisation du ProjectViewModel...');
         try {
-            const loadedProjects = await ProjectRepository.getAll();
+            let loadedProjects = await ProjectRepository.getAll();
+            console.log('🔍 Projets trouvés en base:', loadedProjects ? loadedProjects.length : 0);
 
-            if (loadedProjects && loadedProjects.length > 0) {
+            // Si un seul projet existe et c'est le projet par défaut vide "Mon Roman", 
+            // on le considère comme "vide" pour forcer le chargement de la démo si possible.
+            const isInitialDefault = loadedProjects && loadedProjects.length === 1 &&
+                loadedProjects[0].title === Localization.t('project.model.default_title') &&
+                (!loadedProjects[0].acts || loadedProjects[0].acts.length === 0);
+
+            if (loadedProjects && loadedProjects.length > 0 && !isInitialDefault) {
                 projects = loadedProjects;
                 const savedId = await ProjectRepository.loadSetting('currentProjectId');
+                console.log('📌 ID projet sauvegardé:', savedId);
 
                 if (savedId) {
                     currentProjectId = savedId;
@@ -40,11 +49,59 @@ const ProjectViewModel = {
                     currentProjectId = project.id;
                 }
             } else {
-                project = ProjectModel.createDefault();
+                console.log('💡 Aucun projet (ou projet vide), tentative de chargement de demo/project.json...');
+
+                // Tentative de chargement du projet de démo
+                try {
+                    // 1. Vérifier si le projet est déjà injecté dans la page (plus fiable)
+                    if (window.PLUME_DEMO_PROJECT) {
+                        project = window.PLUME_DEMO_PROJECT;
+                        console.log('✅ Projet de démo trouvé dans window.PLUME_DEMO_PROJECT');
+                    } else {
+                        // 2. Sinon, tentative de fetch classique (fallback)
+                        const paths = [
+                            './demo/project.json',
+                            'demo/project.json',
+                            '../demo/project.json'
+                        ];
+                        let response;
+                        for (const p of paths) {
+                            try {
+                                response = await fetch(p);
+                                if (response.ok) {
+                                    console.log(`📡 Fetch réussi depuis: ${p}`);
+                                    break;
+                                }
+                            } catch (err) { }
+                        }
+
+                        if (response && response.ok) {
+                            project = await response.json();
+                        } else {
+                            throw new Error('Démos introuvables via fetch');
+                        }
+                    }
+
+                    if (project) {
+                        // S'assurer qu'on ne garde pas un vieil ID qui pourrait entrer en conflit
+                        if (!project.id || project.id === 'demo_project' || project.id === 1707519130000) {
+                            project.id = Date.now();
+                        }
+                        console.log('✅ Projet de démo "' + project.title + '" chargé avec succès');
+                    }
+                } catch (e) {
+                    console.warn('⚠️ Echec du chargement de la démo:', e.message);
+                    console.log('ℹ️ Création du projet vide par défaut.');
+                    project = ProjectModel.createDefault();
+                }
+
                 window.project = project;
                 projects = [project];
                 currentProjectId = project.id;
+
+                // On écrase le projet par défaut précédent s'il existait
                 await ProjectRepository.save(project);
+                await ProjectRepository.saveSetting('currentProjectId', currentProjectId);
             }
 
             project = ProjectModel.ensureStructure(project);

@@ -8,11 +8,13 @@ Usage: python3 deploy-to-live.py
 import os
 import sys
 import shutil
+import glob
+import re
 from datetime import datetime
 
 # Importer les listes depuis build_config.py
 try:
-    from build_config import CSS_ORDER, JS_ORDER, MODULE_CSS_FILES
+    from build_config import CSS_ORDER, JS_ORDER, MODULE_CSS_FILES, IGNORED_ORIGINALS
 except ImportError:
     print("ERREUR: build_config.py introuvable.")
     sys.exit(1)
@@ -35,7 +37,7 @@ def get_all_files_to_deploy():
     """Retourne la liste complète des fichiers à déployer"""
     files = []
     
-    # Ajouter les fichiers du dossier doc
+    # 1. Ajouter les fichiers du dossier doc
     doc_path = os.path.join(BUILD_DIR, 'doc')
     if os.path.exists(doc_path):
         for root, dirs, filenames in os.walk(doc_path):
@@ -44,35 +46,81 @@ def get_all_files_to_deploy():
                 rel_path = os.path.relpath(full_path, BUILD_DIR)
                 files.append(rel_path.replace('\\', '/'))
 
-    # Ajouter les fichiers CSS
+    # 1b. Ajouter les fichiers du dossier demo
+    demo_path = os.path.join(BUILD_DIR, 'demo')
+    if os.path.exists(demo_path):
+        for root, dirs, filenames in os.walk(demo_path):
+            for filename in filenames:
+                full_path = os.path.join(root, filename)
+                rel_path = os.path.relpath(full_path, BUILD_DIR)
+                files.append(rel_path.replace('\\', '/'))
+
+
+    # 2. Ajouter les fichiers CSS
+    processed_css = set()
+    
+    # CSS_ORDER
     for css_file in CSS_ORDER:
         if css_file.startswith('../vendor/'):
             # Vendor CSS files
-            files.append(css_file.replace('../', ''))
+            rel_path = css_file.replace('../', '')
         elif css_file.startswith('js/'):
              # Module CSS files (already relative path)
-             files.append(css_file)
+             rel_path = css_file
         elif css_file == 'undo-redo.css':
-             files.append(f'css/{css_file}')
+             rel_path = f'css/{css_file}'
         else:
-            files.append(f'css/{css_file}')
+            rel_path = f'css/{css_file}'
+        
+        files.append(rel_path)
+        processed_css.add(os.path.basename(rel_path))
     
-    # Ajouter les CSS des modules
-    files.extend(MODULE_CSS_FILES)
+    # MODULE_CSS_FILES
+    for css_path in MODULE_CSS_FILES:
+        files.append(css_path)
+        processed_css.add(os.path.basename(css_path))
+        
+    # Extra CSS (loose files) - logic from build.light.py
+    css_dir = os.path.join(BUILD_DIR, 'css')
+    for filepath in glob.glob(os.path.join(css_dir, '*.css')):
+        filename = os.path.basename(filepath)
+        if filename not in processed_css and filename != '11.storygrid.css':
+            files.append(f'css/{filename}')
+            processed_css.add(filename)
     
-    # Ajouter les fichiers JS
+    # 3. Ajouter les fichiers JS
+    processed_js = set()
+    
+    # JS_ORDER
     for js_file in JS_ORDER:
         if js_file.startswith('vendor/') or js_file.startswith('js/'):
-            files.append(js_file)
+            rel_path = js_file
         else:
-            files.append(f'js/{js_file}')
+            rel_path = f'js/{js_file}'
+        
+        files.append(rel_path)
+        processed_js.add(os.path.basename(rel_path))
+    
+    # Extra JS (loose files) - logic from build.light.py
+    js_dir = os.path.join(BUILD_DIR, 'js')
+    for filepath in glob.glob(os.path.join(js_dir, '*.js')):
+        filename = os.path.basename(filepath)
+        
+        if (filename not in processed_js and 
+            filename not in IGNORED_ORIGINALS and
+            not filename.startswith('_') and
+            'thriller' not in filename.lower() and
+            'storygrid' not in filename.lower()):
+            
+            files.append(f'js/{filename}')
+            processed_js.add(filename)
     
     return files
 
 def get_dest_path(file_path):
     """Détermine le chemin de destination pour un fichier donné dans /live"""
-    # DOC
-    if file_path.startswith('doc/'):
+    # DOC & DEMO
+    if file_path.startswith('doc/') or file_path.startswith('demo/'):
          return file_path
 
     # CSS -> live/css/filename.css (flattened)
@@ -85,7 +133,6 @@ def get_dest_path(file_path):
              return os.path.join('js', file_path) # js/vendor/...
         elif file_path.startswith('js/'):
              # Merging js/ and js-refactor/ if they existed, but here we just strip one level if needed
-             # Logic from old script: file_path.replace('js/', '')
              return os.path.join('js', file_path.replace('js/', '')) 
         else:
              return os.path.join('js', file_path)
@@ -99,6 +146,8 @@ def get_dest_path(file_path):
 def copy_file(src_path, dest_rel_path):
     """Copie un fichier vers son emplacement calculé dans /live"""
     try:
+        # Normaliser le chemin pour l'OS actuel
+        dest_rel_path = dest_rel_path.replace('/', os.sep).replace('\\', os.sep)
         dest_full_path = os.path.join(LIVE_DIR, dest_rel_path)
         
         # Créer le répertoire de destination
@@ -141,14 +190,28 @@ def deploy():
     if os.path.exists(LIVE_DIR):
         log(f"--- Nettoyage du répertoire /live existant ---")
         try:
-            shutil.rmtree(LIVE_DIR)
-            log(f"   [OK] Répertoire /live supprimé")
+            # Sur Windows, rmtree peut échouer si des fichiers sont ouverts ou indexés.
+            # On essaie une approche plus permissive.
+            import time
+            def remove_readonly(func, path, excinfo):
+                import os, stat
+                os.chmod(path, stat.S_IWRITE)
+                func(path)
+
+            for i in range(3):
+                try:
+                    shutil.rmtree(LIVE_DIR, onerror=remove_readonly)
+                    log(f"   [OK] Répertoire /live supprimé (tentative {i+1})")
+                    break
+                except Exception as e:
+                    if i == 2: # Dernière tentative
+                        log(f"   [ATTENTION] Impossible de supprimer complètement /live: {e}. On continue quand même...")
+                    else:
+                        time.sleep(1)
         except Exception as e:
-            log(f"   [ERREUR] Impossible de supprimer /live: {e}")
-            log_handle.close()
-            return False
+            log(f"   [ATTENTION] Erreur lors du nettoyage de /live: {e}")
     
-    log(f"--- Création du répertoire /live ---")
+    log(f"--- Création/Vérification du répertoire /live ---")
     try:
         os.makedirs(LIVE_DIR, exist_ok=True)
         log(f"   [OK] Répertoire /live créé")
@@ -216,3 +279,4 @@ def deploy():
 if __name__ == "__main__":
     success = deploy()
     sys.exit(0 if success else 1)
+
