@@ -25,18 +25,18 @@ const RevisionView = {
             toolbar.innerHTML = `
                 <span class="revision-badge"><i data-lucide="pencil" style="width:14px;height:14px;vertical-align:middle;margin-right:6px;"></i>${Localization.t('revision.mode_badge')}</span>
                 <button class="highlight-btn yellow ${selectedColor === 'yellow' ? 'active' : ''}" 
-                        onclick="RevisionViewModel.selectHighlightColor('yellow')">${Localization.t('revision.color.yellow')}</button>
+                        onmousedown="event.preventDefault()" onclick="RevisionViewModel.selectHighlightColor('yellow')">${Localization.t('revision.color.yellow')}</button>
                 <button class="highlight-btn green ${selectedColor === 'green' ? 'active' : ''}" 
-                        onclick="RevisionViewModel.selectHighlightColor('green')">${Localization.t('revision.color.green')}</button>
+                        onmousedown="event.preventDefault()" onclick="RevisionViewModel.selectHighlightColor('green')">${Localization.t('revision.color.green')}</button>
                 <button class="highlight-btn blue ${selectedColor === 'blue' ? 'active' : ''}" 
-                        onclick="RevisionViewModel.selectHighlightColor('blue')">${Localization.t('revision.color.blue')}</button>
+                        onmousedown="event.preventDefault()" onclick="RevisionViewModel.selectHighlightColor('blue')">${Localization.t('revision.color.blue')}</button>
                 <button class="highlight-btn red ${selectedColor === 'red' ? 'active' : ''}" 
-                        onclick="RevisionViewModel.selectHighlightColor('red')">${Localization.t('revision.color.red')}</button>
+                        onmousedown="event.preventDefault()" onclick="RevisionViewModel.selectHighlightColor('red')">${Localization.t('revision.color.red')}</button>
                 <button class="highlight-btn purple ${selectedColor === 'purple' ? 'active' : ''}" 
-                        onclick="RevisionViewModel.selectHighlightColor('purple')">${Localization.t('revision.color.purple')}</button>
-                <button class="btn" onclick="RevisionViewModel.applyHighlight()"><i data-lucide="highlighter" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>${Localization.t('revision.btn.highlight')}</button>
-                <button class="btn" onclick="RevisionViewModel.removeHighlight()"><i data-lucide="trash-2" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>${Localization.t('revision.btn.remove')}</button>
-                <button class="btn" onclick="RevisionViewModel.openAnnotationPopup()"><i data-lucide="message-square" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>${Localization.t('revision.btn.annotate')}</button>
+                        onmousedown="event.preventDefault()" onclick="RevisionViewModel.selectHighlightColor('purple')">${Localization.t('revision.color.purple')}</button>
+                <button class="btn" onmousedown="event.preventDefault()" onclick="RevisionViewModel.applyHighlight()"><i data-lucide="highlighter" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>${Localization.t('revision.btn.highlight')}</button>
+                <button class="btn" onmousedown="event.preventDefault()" onclick="RevisionViewModel.removeHighlight()"><i data-lucide="trash-2" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>${Localization.t('revision.btn.remove')}</button>
+                <button class="btn" onmousedown="event.preventDefault()" onclick="RevisionViewModel.openAnnotationPopup()"><i data-lucide="message-square" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>${Localization.t('revision.btn.annotate')}</button>
                 <div style="flex: 1;"></div>
                 <button class="btn btn-primary" onclick="RevisionViewModel.toggleRevisionMode()"><i data-lucide="check" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>${Localization.t('revision.btn.quit')}</button>
             `;

@@ -1032,16 +1032,16 @@ function getEditorToolbarHTML(panel = null) {
     return `
         <!-- Basic formatting -->
         <div class="toolbar-group">
-            <button class="toolbar-btn" data-format="bold" onclick="${fnName}(${fnPrefix}'bold')" title="${Localization.t('toolbar.bold')}">
+            <button class="toolbar-btn" data-format="bold" onmousedown="event.preventDefault()" onclick="${fnName}(${fnPrefix}'bold')" title="${Localization.t('toolbar.bold')}">
                 <i data-lucide="bold" style="width:14px;height:14px;"></i>
             </button>
-            <button class="toolbar-btn" data-format="italic" onclick="${fnName}(${fnPrefix}'italic')" title="${Localization.t('toolbar.italic')}">
+            <button class="toolbar-btn" data-format="italic" onmousedown="event.preventDefault()" onclick="${fnName}(${fnPrefix}'italic')" title="${Localization.t('toolbar.italic')}">
                 <i data-lucide="italic" style="width:14px;height:14px;"></i>
             </button>
-            <button class="toolbar-btn" data-format="underline" onclick="${fnName}(${fnPrefix}'underline')" title="${Localization.t('toolbar.underline')}">
+            <button class="toolbar-btn" data-format="underline" onmousedown="event.preventDefault()" onclick="${fnName}(${fnPrefix}'underline')" title="${Localization.t('toolbar.underline')}">
                 <i data-lucide="underline" style="width:14px;height:14px;"></i>
             </button>
-            <button class="toolbar-btn" data-format="strikethrough" onclick="${fnName}(${fnPrefix}'strikeThrough')" title="${Localization.t('toolbar.strikethrough')}">
+            <button class="toolbar-btn" data-format="strikethrough" onmousedown="event.preventDefault()" onclick="${fnName}(${fnPrefix}'strikeThrough')" title="${Localization.t('toolbar.strikethrough')}">
                 <i data-lucide="strikethrough" style="width:14px;height:14px;"></i>
             </button>
         </div>
@@ -1067,7 +1067,7 @@ function getEditorToolbarHTML(panel = null) {
         <!-- Text color -->
         <div class="toolbar-group">
             <div class="color-picker-wrapper">
-                <button class="toolbar-btn" onclick="toggleColorPicker('text', event, ${panel ? `'${panel}'` : 'null'})" title="${Localization.t('toolbar.color_text')}">
+                <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="toggleColorPicker('text', event, ${panel ? `'${panel}'` : 'null'})" title="${Localization.t('toolbar.color_text')}">
                     <i data-lucide="baseline" style="width:14px;height:14px; border-bottom: 2px solid currentColor;"></i>
                 </button>
                 <div class="color-picker-dropdown" id="textColorPicker${idSuffix}">
@@ -1081,14 +1081,14 @@ function getEditorToolbarHTML(panel = null) {
                             <input type="color" id="textColorInput${idSuffix}" onchange="applyTextColor(this.value, ${panel ? `'${panel}'` : 'null'})">
                             <input type="text" id="textColorHex${idSuffix}" placeholder="${Localization.t('toolbar.color_hex_placeholder')}" maxlength="7" onchange="applyTextColor(this.value, ${panel ? `'${panel}'` : 'null'})">
                         </div>
-                        <button class="color-reset-btn" onclick="applyTextColor('', ${panel ? `'${panel}'` : 'null'})" title="${Localization.t('toolbar.color_reset')}">
+                        <button class="color-reset-btn" onmousedown="event.preventDefault()" onclick="applyTextColor('', ${panel ? `'${panel}'` : 'null'})" title="${Localization.t('toolbar.color_reset')}">
                             <i data-lucide="rotate-ccw"></i>
                         </button>
                     </div>
                 </div>
             </div>
             <div class="color-picker-wrapper">
-                <button class="toolbar-btn" onclick="toggleColorPicker('background', event, ${panel ? `'${panel}'` : 'null'})" title="${Localization.t('toolbar.color_bg')}">
+                <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="toggleColorPicker('background', event, ${panel ? `'${panel}'` : 'null'})" title="${Localization.t('toolbar.color_bg')}">
                     <i data-lucide="highlighter" style="width:14px;height:14px; border-bottom: 2px solid yellow;"></i>
                 </button>
                 <div class="color-picker-dropdown" id="backgroundColorPicker${idSuffix}">
@@ -1102,7 +1102,7 @@ function getEditorToolbarHTML(panel = null) {
                             <input type="color" id="bgColorInput${idSuffix}" onchange="applyBackgroundColor(this.value, ${panel ? `'${panel}'` : 'null'})">
                             <input type="text" id="bgColorHex${idSuffix}" placeholder="#FFFF00" maxlength="7" onchange="applyBackgroundColor(this.value, ${panel ? `'${panel}'` : 'null'})">
                         </div>
-                        <button class="color-reset-btn" onclick="applyBackgroundColor('', ${panel ? `'${panel}'` : 'null'})" title="${Localization.t('toolbar.color_reset')}">
+                        <button class="color-reset-btn" onmousedown="event.preventDefault()" onclick="applyBackgroundColor('', ${panel ? `'${panel}'` : 'null'})" title="${Localization.t('toolbar.color_reset')}">
                             <i data-lucide="rotate-ccw"></i>
                         </button>
                     </div>
@@ -1112,70 +1112,68 @@ function getEditorToolbarHTML(panel = null) {
         
         <!-- Alignment -->
         <div class="toolbar-group">
-            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'justifyLeft')" title="${Localization.t('toolbar.align_left')}">
+            <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="${fnName}(${fnPrefix}'justifyLeft')" title="${Localization.t('toolbar.align_left')}">
                 <i data-lucide="align-left" style="width:14px;height:14px;"></i>
             </button>
-            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'justifyCenter')" title="${Localization.t('toolbar.align_center')}">
+            <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="${fnName}(${fnPrefix}'justifyCenter')" title="${Localization.t('toolbar.align_center')}">
                 <i data-lucide="align-center" style="width:14px;height:14px;"></i>
             </button>
-            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'justifyRight')" title="${Localization.t('toolbar.align_right')}">
+            <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="${fnName}(${fnPrefix}'justifyRight')" title="${Localization.t('toolbar.align_right')}">
                 <i data-lucide="align-right" style="width:14px;height:14px;"></i>
             </button>
-            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'justifyFull')" title="${Localization.t('toolbar.align_justify')}">
+            <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="${fnName}(${fnPrefix}'justifyFull')" title="${Localization.t('toolbar.align_justify')}">
                 <i data-lucide="align-justify" style="width:14px;height:14px;"></i>
             </button>
         </div>
         
         <!-- Headings -->
         <div class="toolbar-group">
-            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'formatBlock', 'h1')" title="${Localization.t('toolbar.heading_1')}"><i data-lucide="heading-1" style="width:14px;height:14px;"></i></button>
-            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'formatBlock', 'h2')" title="${Localization.t('toolbar.heading_2')}"><i data-lucide="heading-2" style="width:14px;height:14px;"></i></button>
-            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'formatBlock', 'h3')" title="${Localization.t('toolbar.heading_3')}"><i data-lucide="heading-3" style="width:14px;height:14px;"></i></button>
-            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'formatBlock', 'p')" title="${Localization.t('toolbar.paragraph')}"><i data-lucide="pilcrow" style="width:14px;height:14px;"></i></button>
+            <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="${fnName}(${fnPrefix}'formatBlock', 'h1')" title="${Localization.t('toolbar.heading_1')}"><i data-lucide="heading-1" style="width:14px;height:14px;"></i></button>
+            <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="${fnName}(${fnPrefix}'formatBlock', 'h2')" title="${Localization.t('toolbar.heading_2')}"><i data-lucide="heading-2" style="width:14px;height:14px;"></i></button>
+            <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="${fnName}(${fnPrefix}'formatBlock', 'h3')" title="${Localization.t('toolbar.heading_3')}"><i data-lucide="heading-3" style="width:14px;height:14px;"></i></button>
+            <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="${fnName}(${fnPrefix}'formatBlock', 'p')" title="${Localization.t('toolbar.paragraph')}"><i data-lucide="pilcrow" style="width:14px;height:14px;"></i></button>
         </div>
         
         <!-- Lists and quotes -->
         <div class="toolbar-group">
-            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'insertUnorderedList')" title="${Localization.t('toolbar.list_bullets')}"><i data-lucide="list" style="width:14px;height:14px;"></i></button>
-            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'insertOrderedList')" title="${Localization.t('toolbar.list_ordered')}"><i data-lucide="list-ordered" style="width:14px;height:14px;"></i></button>
-            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'formatBlock', 'blockquote')" title="${Localization.t('toolbar.quote')}"><i data-lucide="quote" style="width:14px;height:14px;"></i></button>
+            <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="${fnName}(${fnPrefix}'insertUnorderedList')" title="${Localization.t('toolbar.list_bullets')}"><i data-lucide="list" style="width:14px;height:14px;"></i></button>
+            <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="${fnName}(${fnPrefix}'insertOrderedList')" title="${Localization.t('toolbar.list_ordered')}"><i data-lucide="list-ordered" style="width:14px;height:14px;"></i></button>
+            <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="${fnName}(${fnPrefix}'formatBlock', 'blockquote')" title="${Localization.t('toolbar.quote')}"><i data-lucide="quote" style="width:14px;height:14px;"></i></button>
         </div>
         
         <!-- Indentation -->
         <div class="toolbar-group">
-            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'indent')" title="${Localization.t('toolbar.indent_increase')}"><i data-lucide="indent" style="width:14px;height:14px;"></i></button>
-            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'outdent')" title="${Localization.t('toolbar.indent_decrease')}"><i data-lucide="outdent" style="width:14px;height:14px;"></i></button>
+            <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="${fnName}(${fnPrefix}'indent')" title="${Localization.t('toolbar.indent_increase')}"><i data-lucide="indent" style="width:14px;height:14px;"></i></button>
+            <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="${fnName}(${fnPrefix}'outdent')" title="${Localization.t('toolbar.indent_decrease')}"><i data-lucide="outdent" style="width:14px;height:14px;"></i></button>
         </div>
         
         <!-- Superscript, subscript -->
         <div class="toolbar-group">
-            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'superscript')" title="${Localization.t('toolbar.superscript')}"><i data-lucide="superscript" style="width:14px;height:14px;"></i></button>
-            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'subscript')" title="${Localization.t('toolbar.subscript')}"><i data-lucide="subscript" style="width:14px;height:14px;"></i></button>
+            <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="${fnName}(${fnPrefix}'superscript')" title="${Localization.t('toolbar.superscript')}"><i data-lucide="superscript" style="width:14px;height:14px;"></i></button>
+            <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="${fnName}(${fnPrefix}'subscript')" title="${Localization.t('toolbar.subscript')}"><i data-lucide="subscript" style="width:14px;height:14px;"></i></button>
         </div>
         
         <!-- Synonyms -->
         <div class="toolbar-group">
-            <button class="toolbar-btn" onclick="if(typeof SynonymsView !== 'undefined') SynonymsView.toggle()" title="${Localization.t('toolbar.synonyms')}">
+            <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="if(typeof SynonymsView !== 'undefined') SynonymsView.toggle()" title="${Localization.t('toolbar.synonyms')}">
                 <i data-lucide="book-a" style="width:14px;height:14px;"></i>
             </button>
         </div>
-
+        
         <!-- Other -->
         <div class="toolbar-group">
-            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'insertHorizontalRule')" title="${Localization.t('toolbar.horizontal_rule')}"><i data-lucide="minus" style="width:14px;height:14px;"></i></button>
-            <button class="toolbar-btn" onclick="${fnName}(${fnPrefix}'removeFormat')" title="${Localization.t('toolbar.remove_format')}"><i data-lucide="eraser" style="width:14px;height:14px;"></i></button>
+            <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="${fnName}(${fnPrefix}'insertHorizontalRule')" title="${Localization.t('toolbar.horizontal_rule')}"><i data-lucide="minus" style="width:14px;height:14px;"></i></button>
+            <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="${fnName}(${fnPrefix}'removeFormat')" title="${Localization.t('toolbar.remove_format')}"><i data-lucide="eraser" style="width:14px;height:14px;"></i></button>
         </div>
-
         
         <!-- Revision mode button -->
         <div class="toolbar-group">
-            <button class="toolbar-btn" onclick="toggleRevisionMode()" title="${Localization.t('toolbar.revision_mode')}" style="color: var(--accent-gold); font-weight: 600;"><i data-lucide="pencil" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> ${Localization.t('toolbar.revision')}</button>
+            <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="toggleRevisionMode()" title="${Localization.t('toolbar.revision_mode')}" style="color: var(--accent-gold); font-weight: 600;"><i data-lucide="pencil" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> ${Localization.t('toolbar.revision')}</button>
         </div>
-
-
+        
         <!-- Page Preview Button -->
         <div class="toolbar-group">
-            <button class="toolbar-btn" onclick="openPagePreview()" title="${Localization.t('preview.title')}">
+            <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="openPagePreview()" title="${Localization.t('preview.title')}">
                 <i data-lucide="eye" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>
                 <span>${Localization.t('preview.title')}</span>
             </button>
