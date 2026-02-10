@@ -155,7 +155,7 @@ async function startProductTourVM() {
         // Enricher les steps avec les actions automatiques (ex: clickBefore) et les médias (images)
         steps.forEach(step => {
             // Support des images : injection dans la description
-            if (step.popover.image) {
+            if (step.popover && step.popover.image) {
                 const imgHtml = `<img src="${step.popover.image}" class="driver-popover-image">`;
                 step.popover.description = imgHtml + (step.popover.description || '');
             }
