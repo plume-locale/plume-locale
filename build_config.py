@@ -25,6 +25,7 @@ CSS_ORDER = [
     '17.documentation-button.css',
     'globalnotes.css',
     'product-tour-editor.css',
+    'project-landing.css',
 ]
 
 # CSS des modules additionnels

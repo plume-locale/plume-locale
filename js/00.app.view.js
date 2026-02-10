@@ -141,7 +141,7 @@ function switchView(view) {
     structureOnlyElements.forEach(id => {
         const el = document.getElementById(id);
         if (el) {
-            el.style.display = (view === 'editor') ? '' : 'none';
+            el.style.display = (view === 'editor' || (view === 'projects' && id === 'sidebar-header')) ? '' : 'none';
         }
     });
 
@@ -206,7 +206,8 @@ function switchView(view) {
         'timelineviz': 'timelineVizList',
         'thriller': 'thrillerList',
         'map': 'mapList',
-        'investigation': 'investigationList'
+        'investigation': 'investigationList',
+        'projects': 'projectsSidebarList'
     };
 
     const editorViewVues = ['stats', 'analysis', 'versions', 'todos', 'timeline', 'corkboard', 'plot', 'plotgrid', 'relations'];
@@ -409,6 +410,11 @@ function renderViewContent(view, containerId) {
     if (!container) return;
 
     switch (view) {
+        case 'projects':
+            if (typeof ProjectView !== 'undefined' && typeof ProjectView.renderLandingPage === 'function') {
+                ProjectView.renderLandingPage(projects);
+            }
+            break;
         case 'editor':
             if (currentActId && currentChapterId && currentSceneId) {
                 if (containerId === 'editorView' && !splitViewActive) {
@@ -541,6 +547,7 @@ function refreshAllViews() {
         case 'arcs': if (typeof renderArcsList === 'function') renderArcsList(); break;
         case 'investigation': if (typeof renderInvestigationBoard === 'function') renderInvestigationBoard(); break;
         case 'globalnotes': if (typeof renderGlobalNotes === 'function') renderGlobalNotes(); break;
+        case 'projects': if (typeof ProjectView !== 'undefined' && typeof ProjectView.renderLandingPage === 'function') ProjectView.renderLandingPage(projects); break;
     }
 
     // 5. Rafraîchir l'éditeur si une scène est ouverte

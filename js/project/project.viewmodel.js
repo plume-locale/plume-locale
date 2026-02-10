@@ -5,6 +5,19 @@
 
 const ProjectViewModel = {
     /**
+     * Mode d'affichage de la landing page (grid/table).
+     */
+    viewMode: localStorage.getItem('plume_projects_view_mode') || 'grid',
+
+    /**
+     * Change le mode d'affichage.
+     */
+    setViewMode(mode) {
+        this.viewMode = mode;
+        localStorage.setItem('plume_projects_view_mode', mode);
+        ProjectView.renderLandingPage(projects);
+    },
+    /**
      * Initialisation et chargement des projets.
      */
     async init() {
@@ -36,7 +49,11 @@ const ProjectViewModel = {
 
             project = ProjectModel.ensureStructure(project);
             ProjectView.updateHeader(project.title);
-            ProjectView.renderList(projects, currentProjectId);
+            ProjectView.renderSidebarList(projects);
+
+            if (currentView === 'projects') {
+                ProjectView.renderLandingPage(projects);
+            }
 
             console.log('✅ Projets chargés:', projects.length);
         } catch (error) {
@@ -101,8 +118,12 @@ const ProjectViewModel = {
         await this.saveAll();
 
         ProjectView.closeNewModal();
-        this.switchTo(newProject.id);
-        ProjectView.closeProjectsModal();
+
+        if (currentView === 'projects') {
+            ProjectView.renderLandingPage(projects);
+        } else {
+            this.switchTo(newProject.id);
+        }
     },
 
     /**
@@ -127,7 +148,11 @@ const ProjectViewModel = {
         if (typeof refreshAllViews === 'function') refreshAllViews();
 
         localStorage.setItem('plume_locale_current_project', projectId);
-        ProjectView.renderList(projects, currentProjectId);
+        ProjectView.renderSidebarList(projects);
+
+        if (currentView === 'projects') {
+            ProjectView.renderLandingPage(projects);
+        }
     },
 
     /**
@@ -156,7 +181,10 @@ const ProjectViewModel = {
             }
         }
 
-        ProjectView.renderList(projects, currentProjectId);
+        ProjectView.renderSidebarList(projects);
+        if (currentView === 'projects') {
+            ProjectView.renderLandingPage(projects);
+        }
     },
 
     /**
@@ -174,6 +202,21 @@ const ProjectViewModel = {
         a.download = `${proj.title.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.json`;
         a.click();
         URL.revokeObjectURL(url);
+    },
+
+    /**
+     * Ouvre le menu de sauvegarde pour un projet spécifique.
+     */
+    backup(projectId) {
+        const proj = projects.find(p => p.id === projectId);
+        if (!proj) return;
+
+        // On définit temporairement ce projet comme actif pour le modal de backup
+        window.project = proj;
+
+        if (typeof ImportExportViewModel !== 'undefined') {
+            ImportExportViewModel.showBackupMenu();
+        }
     },
 
     /**
@@ -195,13 +238,23 @@ const ProjectViewModel = {
 
                 projects.push(imported);
                 await this.saveAll();
-                ProjectView.renderList(projects, currentProjectId);
+                ProjectView.renderSidebarList(projects);
+                if (currentView === 'projects') {
+                    ProjectView.renderLandingPage(projects);
+                }
                 alert(Localization.t('project.viewmodel.import_success', [imported.title]));
             } catch (error) {
                 alert(Localization.t('project.viewmodel.error_prefix') + error.message);
             }
         };
         reader.readAsText(file);
+    },
+
+    /**
+     * Déclenche le sélecteur de fichier pour l'import.
+     */
+    importHandler() {
+        document.getElementById('importProjectFile')?.click();
     },
 
     /**
