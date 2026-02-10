@@ -22,7 +22,9 @@ async function initProductTourVM() {
 
         // Créer le bouton de tour dans le header
         ProductTourButtonView.create(() => {
-            startProductTourVM();
+            // Au lieu de démarrer directement, on affiche le modal de bienvenue
+            // pour permettre de choisir, d'ignorer ou de masquer définitivement.
+            showWelcomeModalVM();
         });
 
         // Vérifier si on doit afficher le modal de bienvenue
@@ -131,6 +133,9 @@ async function startProductTourVM() {
     console.log('Starting product tour...');
 
     try {
+        // Réinitialiser le step sauvegardé pour recommencer du début
+        await ProductTourStateRepository.updateCurrentStep(0);
+
         // Fermer le modal de bienvenue s'il est ouvert
         if (ProductTourWelcomeView.isVisible()) {
             ProductTourWelcomeView.hide();

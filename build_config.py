@@ -327,6 +327,7 @@ JS_ORDER = [
     'js/word-repetition/word-repetition.main.js',
     # Product tour
     'js/product-tour/product-tour.model.js',
+    'js/product-tour/product-tour.data.js',
     'js/product-tour/product-tour.repository.js',
     'js/product-tour/product-tour.viewmodel.js',
     'js/product-tour/product-tour.view.js',

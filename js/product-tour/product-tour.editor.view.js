@@ -24,6 +24,11 @@ const ProductTourEditorView = {
         this._createModal();
         this._createSidebar();
         this._initShortcuts();
+
+        // Active le rendu via CSS plutôt que via les vieilles balises <font>
+        try {
+            document.execCommand('styleWithCSS', false, true);
+        } catch (e) { }
     },
 
     /**
@@ -36,6 +41,40 @@ const ProductTourEditorView = {
         link.rel = 'stylesheet';
         link.href = 'css/product-tour-editor.css';
         document.head.appendChild(link);
+    },
+
+    /**
+     * Exécute une commande de mise en forme sur l'éditeur riche.
+     */
+    execCommand: function (command, value = null) {
+        const editor = document.getElementById('editor-tour');
+        if (editor && editor._lastRange) {
+            const sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(editor._lastRange);
+        }
+
+        // S'assurer que le rendu se fait via CSS (indispensable pour les couleurs)
+        try {
+            document.execCommand('styleWithCSS', false, true);
+        } catch (e) { }
+
+        if (command === 'removeFormat') {
+            document.execCommand('removeFormat', false, null);
+            // Renforcer la gomme pour les couleurs CSS
+            document.execCommand('foreColor', false, 'inherit');
+            document.execCommand('hiliteColor', false, 'transparent');
+        } else {
+            document.execCommand(command, false, value);
+        }
+
+        if (editor) {
+            editor.focus();
+            const sel = window.getSelection();
+            if (sel.rangeCount > 0) {
+                editor._lastRange = sel.getRangeAt(0).cloneRange();
+            }
+        }
     },
 
     /**
@@ -87,8 +126,28 @@ const ProductTourEditorView = {
                     <input type="text" id="tour-edit-title" placeholder="Ex: Bienvenue sur l'éditeur">
                 </div>
                 <div class="tour-editor-field">
-                    <label>Description (HTML supporté)</label>
-                    <textarea id="tour-edit-desc" rows="4" placeholder="Décrivez ce que fait cet élément..."></textarea>
+                    <label>Description</label>
+                    <div class="tour-rte-toolbar">
+                        <button type="button" class="tour-rte-btn" onmousedown="event.preventDefault()" onclick="ProductTourEditorView.execCommand('bold')" title="Gras">
+                            <i data-lucide="bold"></i>
+                        </button>
+                        <button type="button" class="tour-rte-btn" onmousedown="event.preventDefault()" onclick="ProductTourEditorView.execCommand('italic')" title="Italique">
+                            <i data-lucide="italic"></i>
+                        </button>
+                        <button type="button" class="tour-rte-btn" onmousedown="event.preventDefault()" onclick="ProductTourEditorView.execCommand('insertUnorderedList')" title="Liste à puces">
+                            <i data-lucide="list"></i>
+                        </button>
+                        <button type="button" class="tour-rte-btn" onmousedown="event.preventDefault()" onclick="ProductTourEditorView.execCommand('insertOrderedList')" title="Liste ordonnée">
+                            <i data-lucide="list-ordered"></i>
+                        </button>
+                        <button type="button" class="tour-rte-btn" onmousedown="event.preventDefault()" onclick="ProductTourEditorView.execCommand('createLink')" title="Lien">
+                            <i data-lucide="link"></i>
+                        </button>
+                        <button type="button" class="tour-rte-btn" onmousedown="event.preventDefault()" onclick="ProductTourEditorView.execCommand('removeFormat')" title="Effacer la mise en forme">
+                            <i data-lucide="eraser"></i>
+                        </button>
+                    </div>
+                    <div id="editor-tour" class="tour-rte-editor" contenteditable="true"></div>
                 </div>
                 <div class="tour-editor-field">
                     <label>Image (URL ou chemin local ex: tour/step1.png)</label>
@@ -141,6 +200,23 @@ const ProductTourEditorView = {
         document.body.appendChild(modal);
         this.elements.modal = modal;
 
+        const editor = document.getElementById('editor-tour');
+        if (editor) {
+            const saveRange = () => {
+                const sel = window.getSelection();
+                if (sel.rangeCount > 0) {
+                    const range = sel.getRangeAt(0);
+                    // Vérifier que la sélection est bien dans l'éditeur
+                    if (editor.contains(range.commonAncestorContainer)) {
+                        editor._lastRange = range.cloneRange();
+                    }
+                }
+            };
+            editor.addEventListener('mouseup', saveRange);
+            editor.addEventListener('keyup', saveRange);
+            editor.addEventListener('focus', saveRange);
+        }
+
         if (typeof lucide !== 'undefined') lucide.createIcons();
 
         document.getElementById('tour-save-step').addEventListener('click', () => {
@@ -164,11 +240,11 @@ const ProductTourEditorView = {
             <div class="tour-sidebar-list" id="tour-sidebar-list">
                 <!-- Les étapes seront injectées ici -->
             </div>
-            <div class="tour-editor-footer" style="padding: 10px;">
-                <button class="tour-editor-btn tour-editor-btn-primary" style="width: 100%;" onclick="ProductTourEditorViewModel.saveTour()">Sauvegarder le Tour</button>
+            <div class="tour-editor-footer" style="padding: 10px; display: flex; flex-direction: column; gap: 8px;">
+                <button class="tour-editor-btn tour-editor-btn-secondary" style="width: 100%;" onclick="ProductTourEditorViewModel.exportTourJSON()">Exporter JSON pour .data.js</button>
+                <button class="tour-editor-btn tour-editor-btn-primary" style="width: 100%;" onclick="ProductTourEditorViewModel.saveTour()">Sauvegarder (Temp DB)</button>
             </div>
         `;
-
         document.body.appendChild(sidebar);
         this.elements.sidebar = sidebar;
     },
@@ -270,7 +346,7 @@ const ProductTourEditorView = {
     showModal: function (selector, data = null) {
         document.getElementById('tour-edit-selector').value = selector;
         document.getElementById('tour-edit-title').value = data?.title || '';
-        document.getElementById('tour-edit-desc').value = data?.description || '';
+        document.getElementById('editor-tour').innerHTML = data?.description || '';
         document.getElementById('tour-edit-image').value = data?.image || '';
         document.getElementById('tour-edit-side').value = data?.side || 'bottom';
         document.getElementById('tour-edit-align').value = data?.align || 'start';
@@ -293,7 +369,7 @@ const ProductTourEditorView = {
             element: document.getElementById('tour-edit-selector').value,
             popover: {
                 title: document.getElementById('tour-edit-title').value,
-                description: document.getElementById('tour-edit-desc').value,
+                description: document.getElementById('editor-tour').innerHTML,
                 image: document.getElementById('tour-edit-image').value,
                 side: document.getElementById('tour-edit-side').value,
                 align: document.getElementById('tour-edit-align').value

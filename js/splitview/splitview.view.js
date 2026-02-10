@@ -373,6 +373,11 @@ function formatTextInPanel(panel, command, value = null) {
     // Focus the editor
     editor.focus();
 
+    // S'assurer que le rendu se fait via CSS
+    try {
+        document.execCommand('styleWithCSS', false, true);
+    } catch (e) { }
+
     // Execute the command
     document.execCommand(command, false, value);
 

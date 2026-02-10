@@ -126,7 +126,9 @@ const ProductTourStateRepository = {
      * @returns {boolean} True si doit être affiché.
      */
     shouldShowOnStartup: function () {
-        return this.isFirstVisit() && productTourState.preferences.showOnStartup;
+        // Désormais, on ne se base que sur la préférence explicite
+        // pour permettre de revoir le tour tant qu'on n'a pas coché "Ne plus afficher"
+        return productTourState.preferences.showOnStartup;
     }
 };
 
@@ -375,13 +377,20 @@ const ProductTourStepsRepository = {
      * @returns {Promise<Array>} Liste des steps.
      */
     getAllSteps: async function (view) {
-        // 1. Chercher un tour personnalisé
+        // 1. Chercher dans les données statiques (priorité haute)
+        const staticSteps = this.loadStaticTour(view);
+        if (staticSteps && staticSteps.length > 0) {
+            console.log(`🎓 Loading static tour for view: ${view}`);
+            return staticSteps;
+        }
+
+        // 2. Chercher un tour temporaire/perso dans la DB (pour tests/édition)
         const customSteps = await this.loadCustomTour(view);
         if (customSteps && customSteps.length > 0) {
             return customSteps;
         }
 
-        // 2. Fallback sur les steps par défaut
+        // 3. Fallback sur les steps programmés par défaut
         return ProductTourStepsModel.getAllSteps(view);
     },
 
@@ -393,10 +402,12 @@ const ProductTourStepsRepository = {
      */
     saveCustomTour: async function (view, steps) {
         try {
+            // On sauvegarde quand même dans Settings pour permettre la prévisualisation immédiate
+            // mais l'utilisateur sait qu'il doit l'exporter pour le rendre permanent.
             const tours = await loadSetting('customProductTours') || {};
             tours[view] = steps;
             await saveSetting('customProductTours', tours);
-            console.log(`✅ Custom tour saved for view: ${view}`);
+            console.log(`✅ Custom tour saved to DB for view: ${view} (temporary until exported)`);
             return true;
         } catch (error) {
             console.error('Error saving custom tour:', error);
@@ -405,7 +416,19 @@ const ProductTourStepsRepository = {
     },
 
     /**
-     * Charge un tour personnalisé pour une vue.
+     * Charge un tour statique depuis le fichier de données.
+     * @param {string} view - Nom de la vue.
+     * @returns {Array|null} Liste des steps ou null.
+     */
+    loadStaticTour: function (view) {
+        if (typeof ProductTourData !== 'undefined' && ProductTourData.tours && ProductTourData.tours[view]) {
+            return ProductTourData.tours[view];
+        }
+        return null;
+    },
+
+    /**
+     * Charge un tour personnalisé pour une vue (depuis la DB, pour l'éditeur).
      * @param {string} view - Nom de la vue.
      * @returns {Promise<Array|null>} Liste des steps ou null.
      */

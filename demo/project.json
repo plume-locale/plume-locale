@@ -386,6 +386,71 @@
             ]
         }
     ],
+    "metroTimeline": [
+        {
+            "id": 101,
+            "title": "L'Arrivée à la Villa",
+            "date": "15/10/2026",
+            "order": 1,
+            "description": "Marc Laroque pénètre dans la demeure de Blackwood sous une pluie battante.",
+            "characters": [
+                "char_marc"
+            ],
+            "sceneId": 111
+        },
+        {
+            "id": 102,
+            "title": "Expertise Optique",
+            "date": "15/10/2026",
+            "order": 2,
+            "description": "Elena identifie le fil rubis comme une pièce de technologie impériale.",
+            "characters": [
+                "char_marc",
+                "char_elena"
+            ],
+            "sceneId": 121
+        },
+        {
+            "id": 103,
+            "title": "Le Piège se Referme",
+            "date": "15/10/2026",
+            "order": 3,
+            "description": "Vibrations destructrices dans l'atelier d'Elena. Marc la sauve de justesse.",
+            "characters": [
+                "char_marc",
+                "char_elena"
+            ],
+            "sceneId": 122
+        },
+        {
+            "id": 104,
+            "title": "La Verrerie de l'Oubli",
+            "date": "16/10/2026",
+            "order": 4,
+            "description": "Marc infiltre le laboratoire secret et dérobe la Larme du Tsar.",
+            "characters": [
+                "char_marc"
+            ],
+            "sceneId": 211
+        },
+        {
+            "id": 105,
+            "title": "L'Ultime Refraction",
+            "date": "16/10/2026",
+            "order": 5,
+            "description": "Face à face au sommet du phare. Marc sabote le signal de Blackwood.",
+            "characters": [
+                "char_marc",
+                "char_blackwood"
+            ],
+            "sceneId": 222
+        }
+    ],
+    "characterColors": {
+        "char_marc": "#1E88E5",
+        "char_blackwood": "#FB8C00",
+        "char_elena": "#43A047"
+    },
     "investigationBoard": {
         "activeCaseId": "case_blackwood_murder",
         "cases": [
@@ -743,7 +808,7 @@
             "board": {
                 "items": [
                     {
-                        "id": "col_spider",
+                        "id": "item_1707519130001",
                         "type": "column",
                         "x": 50,
                         "y": 50,
@@ -752,18 +817,24 @@
                         "cards": [
                             {
                                 "id": "arc_card_a1",
-                                "type": "note",
-                                "content": "<b>L'indice pourpre</b><br>Marc remarque un fragment de verre qui ne vient pas de la villa."
+                                "type": "scene",
+                                "sceneId": 111,
+                                "sceneTitle": "Scène 1 : L'arrivée sur les lieux",
+                                "breadcrumb": "ACTE 1 : LE PIÈGE › CHAPITRE 1 : VERRE BRISÉ",
+                                "status": "complete"
                             },
                             {
                                 "id": "arc_card_a2",
-                                "type": "note",
-                                "content": "Découverte du fil de soie. Premier lien concret avec l'organisation."
+                                "type": "scene",
+                                "sceneId": 112,
+                                "sceneTitle": "Scène 2 : Le fil rouge",
+                                "breadcrumb": "ACTE 1 : LE PIÈGE › CHAPITRE 1 : VERRE BRISÉ",
+                                "status": "complete"
                             }
                         ]
                     },
                     {
-                        "id": "col_a_ev3",
+                        "id": "item_1707519130002",
                         "type": "column",
                         "x": 710,
                         "y": 50,
@@ -772,13 +843,16 @@
                         "cards": [
                             {
                                 "id": "arc_card_a7",
-                                "type": "note",
-                                "content": "Révélation : Blackwood a tout orchestré."
+                                "type": "scene",
+                                "sceneId": 221,
+                                "sceneTitle": "Scène 1 : La Mise en Scène",
+                                "breadcrumb": "ACTE 2 : LA VÉRITÉ ÉCLATÉE › CHAPITRE 4",
+                                "status": "complete"
                             }
                         ]
                     },
                     {
-                        "id": "col_a_ev4",
+                        "id": "item_1707519130003",
                         "type": "column",
                         "x": 1040,
                         "y": 50,
@@ -787,8 +861,11 @@
                         "cards": [
                             {
                                 "id": "arc_card_a8",
-                                "type": "note",
-                                "content": "Marc sabote le signal du phare, neutralisant le réseau."
+                                "type": "scene",
+                                "sceneId": 222,
+                                "sceneTitle": "Scène 2 : Le Phare de la Vérité",
+                                "breadcrumb": "ACTE 2 : LA VÉRITÉ ÉCLATÉE › CHAPITRE 4",
+                                "status": "complete"
                             }
                         ]
                     }
@@ -796,36 +873,39 @@
                 "connections": [
                     {
                         "id": "conn_a1_a2",
-                        "from": "col_a_ev1",
-                        "to": "col_a_ev2"
+                        "from": "item_1707519130001",
+                        "fromSide": "right",
+                        "to": "item_1707519130002",
+                        "toSide": "left"
                     },
                     {
                         "id": "conn_a2_a3",
-                        "from": "col_a_ev2",
-                        "to": "col_a_ev3"
-                    },
-                    {
-                        "id": "conn_a3_a4",
-                        "from": "col_a_ev3",
-                        "to": "col_a_ev4"
+                        "from": "item_1707519130002",
+                        "fromSide": "right",
+                        "to": "item_1707519130003",
+                        "toSide": "left"
                     }
                 ]
             },
             "scenePresence": [
                 {
                     "sceneId": 111,
+                    "columnId": "item_1707519130001",
                     "intensity": 3
                 },
                 {
                     "sceneId": 112,
+                    "columnId": "item_1707519130001",
                     "intensity": 4
                 },
                 {
                     "sceneId": 221,
+                    "columnId": "item_1707519130002",
                     "intensity": 5
                 },
                 {
                     "sceneId": 222,
+                    "columnId": "item_1707519130003",
                     "intensity": 5
                 }
             ]
@@ -841,7 +921,7 @@
             "board": {
                 "items": [
                     {
-                        "id": "col_b_ev1",
+                        "id": "item_1707519130004",
                         "type": "column",
                         "x": 50,
                         "y": 50,
@@ -850,13 +930,16 @@
                         "cards": [
                             {
                                 "id": "arc_card_b4",
-                                "type": "note",
-                                "content": "Elena révèle que le fil contient de la fibre optique militaire."
+                                "type": "scene",
+                                "sceneId": 121,
+                                "sceneTitle": "Scène 1 : L'Experte",
+                                "breadcrumb": "ACTE 1 : LE PIÈGE › CHAPITRE 2",
+                                "status": "complete"
                             }
                         ]
                     },
                     {
-                        "id": "col_b_ev2",
+                        "id": "item_1707519130005",
                         "type": "column",
                         "x": 380,
                         "y": 50,
@@ -865,13 +948,16 @@
                         "cards": [
                             {
                                 "id": "arc_card_b5",
-                                "type": "note",
-                                "content": "Origine de la Larme : un système de communication par prisme."
+                                "type": "scene",
+                                "sceneId": 122,
+                                "sceneTitle": "Scène 2 : La Larme du Tsar",
+                                "breadcrumb": "ACTE 1 : LE PIÈGE › CHAPITRE 2",
+                                "status": "complete"
                             }
                         ]
                     },
                     {
-                        "id": "col_b_ev3",
+                        "id": "item_1707519130006",
                         "type": "column",
                         "x": 710,
                         "y": 50,
@@ -880,8 +966,11 @@
                         "cards": [
                             {
                                 "id": "arc_card_b6",
-                                "type": "note",
-                                "content": "Marc trouve la sphère active dans l'usine désaffectée."
+                                "type": "scene",
+                                "sceneId": 211,
+                                "sceneTitle": "Scène 1 : La Verrerie de l'Oubli",
+                                "breadcrumb": "ACTE 2 : LA VÉRITÉ ÉCLATÉE › CHAPITRE 3",
+                                "status": "complete"
                             }
                         ]
                     }
@@ -889,27 +978,34 @@
                 "connections": [
                     {
                         "id": "conn_b1_b2",
-                        "from": "col_b_ev1",
-                        "to": "col_b_ev2"
+                        "from": "item_1707519130004",
+                        "fromSide": "right",
+                        "to": "item_1707519130005",
+                        "toSide": "left"
                     },
                     {
                         "id": "conn_b2_b3",
-                        "from": "col_b_ev2",
-                        "to": "col_b_ev3"
+                        "from": "item_1707519130005",
+                        "fromSide": "right",
+                        "to": "item_1707519130006",
+                        "toSide": "left"
                     }
                 ]
             },
             "scenePresence": [
                 {
                     "sceneId": 121,
+                    "columnId": "item_1707519130004",
                     "intensity": 5
                 },
                 {
                     "sceneId": 122,
+                    "columnId": "item_1707519130005",
                     "intensity": 3
                 },
                 {
                     "sceneId": 211,
+                    "columnId": "item_1707519130006",
                     "intensity": 4
                 }
             ]
@@ -925,7 +1021,7 @@
             "board": {
                 "items": [
                     {
-                        "id": "col_c_ev1",
+                        "id": "item_1707519130007",
                         "type": "column",
                         "x": 50,
                         "y": 50,
@@ -934,8 +1030,11 @@
                         "cards": [
                             {
                                 "id": "arc_card_c3",
-                                "type": "note",
-                                "content": "Elena et Marc évoquent leur passé commun et la raison de leur rupture."
+                                "type": "scene",
+                                "sceneId": 121,
+                                "sceneTitle": "Scène 1 : L'Experte",
+                                "breadcrumb": "ACTE 1 : LE PIÈGE › CHAPITRE 2",
+                                "status": "complete"
                             }
                         ]
                     }
@@ -945,6 +1044,7 @@
             "scenePresence": [
                 {
                     "sceneId": 121,
+                    "columnId": "item_1707519130007",
                     "intensity": 4
                 }
             ]
@@ -996,6 +1096,83 @@
     },
     "versions": [],
     "relationships": [],
+    "relations": [
+        {
+            "id": "rel_marc_elena",
+            "char1Id": "char_marc",
+            "char2Id": "char_elena",
+            "type": "amitie",
+            "description": "Anciens collègues de confiance. Elena aide Marc à décoder les preuves technologiques.",
+            "createdAt": "2026-02-10T21:40:00.000Z"
+        },
+        {
+            "id": "rel_marc_blackwood",
+            "char1Id": "char_marc",
+            "char2Id": "char_blackwood",
+            "type": "rivalite",
+            "description": "Marc cherche à exposer la fraude de Blackwood, tandis que Blackwood le manipule.",
+            "createdAt": "2026-02-10T21:40:00.000Z"
+        },
+        {
+            "id": "rel_elena_blackwood",
+            "char1Id": "char_elena",
+            "char2Id": "char_blackwood",
+            "type": "rivalite",
+            "description": "Elena méprise Blackwood pour avoir exploité les brevets de son grand-père.",
+            "createdAt": "2026-02-10T21:40:00.000Z"
+        }
+    ],
+    "characterPositions": {
+        "char_elena": {
+            "x": 300,
+            "y": 200
+        },
+        "char_marc": {
+            "x": 550,
+            "y": 350
+        },
+        "char_blackwood": {
+            "x": 300,
+            "y": 500
+        }
+    },
+    "maps": [
+        {
+            "id": 1707519130000,
+            "name": "Carte de la Côte d'Albâtre",
+            "image": "https://images.unsplash.com/photo-1526772662000-3f88f10405ff?q=80&w=1000",
+            "locations": [
+                {
+                    "name": "Villa Blackwood",
+                    "x": 75,
+                    "y": 25,
+                    "description": "Perchée sur la falaise, point de départ de l'enquête.",
+                    "typeId": "crime-scene"
+                },
+                {
+                    "name": "L'Atelier d'Elena",
+                    "x": 30,
+                    "y": 60,
+                    "description": "Zone industrielle basse, refuge technique.",
+                    "typeId": "hideout"
+                },
+                {
+                    "name": "Verrerie de l'Oubli",
+                    "x": 15,
+                    "y": 15,
+                    "description": "Cachée dans la forêt dense, laboratoire de photonique.",
+                    "typeId": "default"
+                },
+                {
+                    "name": "Phare de la Pointe-Noire",
+                    "x": 85,
+                    "y": 80,
+                    "description": "Point culminant de la côte, site de la confrontation finale.",
+                    "typeId": "marker"
+                }
+            ]
+        }
+    ],
     "globalnotes": {
         "boards": [],
         "items": [],

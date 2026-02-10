@@ -192,16 +192,50 @@ const ProductTourEditorViewModel = {
     },
 
     /**
-     * Sauvegarde le tour actuel (simulation pour l'instant).
+     * Sauvegarde le tour actuel dans la DB (temporaire).
      */
     saveTour: async function () {
         try {
             await ProductTourStepsRepository.saveCustomTour(this.state.currentView, this.state.currentTour);
-            ProductTourNotificationView.showSuccess("Le tour a été sauvegardé avec succès.");
+            ProductTourNotificationView.showSuccess("Le tour a été sauvegardé dans la base temporaire.");
         } catch (error) {
             console.error('Error saving tour:', error);
             ProductTourNotificationView.showError("Erreur lors de la sauvegarde du tour.");
         }
+    },
+
+    /**
+     * Exporte le tour sous forme de JSON pour le fichier product-tour.data.js.
+     */
+    exportTourJSON: function () {
+        if (!this.state.currentTour || this.state.currentTour.length === 0) {
+            ProductTourNotificationView.showInfo("Le tour est vide.");
+            return;
+        }
+
+        // On nettoie un peu le JSON pour qu'il soit propre
+        const cleanTour = this.state.currentTour.map(step => {
+            const s = { ...step };
+            // Supprimer les champs nuls ou vides pour alléger le fichier
+            if (!s.clickBefore) delete s.clickBefore;
+            if (!s.clickAfter) delete s.clickAfter;
+            if (!s.popover.image) delete s.popover.image;
+            return s;
+        });
+
+        const json = JSON.stringify(cleanTour, null, 4);
+
+        // Copier dans le presse-papier
+        navigator.clipboard.writeText(json).then(() => {
+            ProductTourNotificationView.showSuccess("JSON copié dans le presse-papier ! Collez-le dans product-tour.data.js");
+            console.log("--- EXPORT JSON ---");
+            console.log(json);
+            console.log("-------------------");
+        }).catch(err => {
+            console.error('Could not copy text: ', err);
+            // Fallback si clipboard échoue
+            alert("Erreur de copie automatique. Le JSON a été affiché dans la console (F12).");
+        });
     }
 };
 
