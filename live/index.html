@@ -26,34 +26,36 @@
     <!-- Driver.js - Product Tour Library (bundled in CSS and JS) -->
     <!-- Generated CSS Links -->
     <link rel="stylesheet" href="./css/driver.css">
-<link rel="stylesheet" href="./css/01.variables.css">
-<link rel="stylesheet" href="./css/02.base.css">
-<link rel="stylesheet" href="./css/03.header.css">
-<link rel="stylesheet" href="./css/04.sidebar.css">
-<link rel="stylesheet" href="./css/05.modals.css">
-<link rel="stylesheet" href="./css/06.editor.css">
-<link rel="stylesheet" href="./css/07.characters.css">
-<link rel="stylesheet" href="./css/08.visualizations.css">
-<link rel="stylesheet" href="./css/09.utilities.css">
-<link rel="stylesheet" href="./css/10.mobile.css">
-<link rel="stylesheet" href="./css/15.colorpalette.css">
-<link rel="stylesheet" href="./css/undo-redo.css">
-<link rel="stylesheet" href="./css/12.arc-board.css">
-<link rel="stylesheet" href="./css/14.word-repetition.css">
-<link rel="stylesheet" href="./css/14.product-tour.css">
-<link rel="stylesheet" href="./css/investigation-board.css">
-<link rel="stylesheet" href="./css/investigation-board.tabs.css">
-<link rel="stylesheet" href="./css/17.documentation-button.css">
-<link rel="stylesheet" href="./css/globalnotes.css">
-<link rel="stylesheet" href="./css/13.thriller-board.css">
-<link rel="stylesheet" href="./css/16.theme-manager-premium.css">
-<link rel="stylesheet" href="./css/synonyms.css">
-<link rel="stylesheet" href="./css/map.css">
-<link rel="stylesheet" href="./css/keyboard-shortcuts.css">
-<link rel="stylesheet" href="./css/synonyms.css">
-<link rel="stylesheet" href="./css/map.css">
-<link rel="stylesheet" href="./css/keyboard-shortcuts.css">
+    <link rel="stylesheet" href="./css/01.variables.css">
+    <link rel="stylesheet" href="./css/02.base.css">
+    <link rel="stylesheet" href="./css/03.header.css">
+    <link rel="stylesheet" href="./css/04.sidebar.css">
+    <link rel="stylesheet" href="./css/05.modals.css">
+    <link rel="stylesheet" href="./css/06.editor.css">
+    <link rel="stylesheet" href="./css/07.characters.css">
+    <link rel="stylesheet" href="./css/08.visualizations.css">
+    <link rel="stylesheet" href="./css/09.utilities.css">
+    <link rel="stylesheet" href="./css/10.mobile.css">
+    <link rel="stylesheet" href="./css/15.colorpalette.css">
+    <link rel="stylesheet" href="./css/undo-redo.css">
+    <link rel="stylesheet" href="./css/12.arc-board.css">
+    <link rel="stylesheet" href="./css/14.word-repetition.css">
+    <link rel="stylesheet" href="./css/14.product-tour.css">
+    <link rel="stylesheet" href="./css/investigation-board.css">
+    <link rel="stylesheet" href="./css/investigation-board.tabs.css">
+    <link rel="stylesheet" href="./css/17.documentation-button.css">
+    <link rel="stylesheet" href="./css/globalnotes.css">
+    <link rel="stylesheet" href="./css/13.thriller-board.css">
+    <link rel="stylesheet" href="./css/16.theme-manager-premium.css">
+    <link rel="stylesheet" href="./css/synonyms.css">
+    <link rel="stylesheet" href="./css/map.css">
+    <link rel="stylesheet" href="./css/keyboard-shortcuts.css">
+    <link rel="stylesheet" href="./css/synonyms.css">
+    <link rel="stylesheet" href="./css/map.css">
+    <link rel="stylesheet" href="./css/keyboard-shortcuts.css">
+    <link rel="stylesheet" href="./css/page-preview.css">
 </head>
+
 <body>
     <!-- Mobile Menu Handle (poignée latérale) -->
     <div class="mobile-menu-handle" onclick="toggleMobileSidebar()"></div>
@@ -83,8 +85,8 @@
                     <span class="mobile-nav-item-icon"><i data-lucide="git-commit-horizontal"></i></span>
                     <span data-i18n="nav.arcs">Arcs Narratifs</span>
                 </button>
-                
-                
+
+
                 <button class="mobile-nav-item" onclick="switchViewMobile('globalnotes')" data-view="globalnotes">
                     <span class="mobile-nav-item-icon"><i data-lucide="layout"></i></span>
                     <span data-i18n="nav.globalnotes">globalnotes</span>
@@ -299,8 +301,8 @@
                         <span class="nav-btn-icon"><i data-lucide="git-commit-horizontal"></i></span>
                         <span class="nav-btn-text" data-i18n="nav.arcs">Arcs</span>
                     </button>
-                    
-                    
+
+
                     <button class="nav-btn" onclick="switchView('investigation')" id="header-tab-investigation">
                         <span class="nav-btn-icon"><i data-lucide="search"></i></span>
                         <span class="nav-btn-text" data-i18n="nav.investigation">Enquête</span>
@@ -670,7 +672,7 @@
                 <div class="database-list" id="todosList" style="display: none">
                     <!-- TODOs list will be here -->
                 </div>
-                
+
                 <div class="database-list" id="noSidebarMessage" style="display: none">
                     <!-- Message for views without sidebar -->
                 </div>
@@ -1593,7 +1595,7 @@
                 <select class="form-input" id="newProjectTemplate">
                     <option value="">Projet vide</option>
                     <option value="fantasy">Fantasy (3 actes + personnages types)</option>
-                    
+
                     <option value="scifi">Science-Fiction (Worldbuilding avancé)</option>
                 </select>
             </div>
@@ -2548,8 +2550,8 @@
 </body>
 
 
-    <!-- Generated JS Scripts -->
-    <script src="./js/vendor/driver.js.iife.js"></script>
+<!-- Generated JS Scripts -->
+<script src="./js/vendor/driver.js.iife.js"></script>
 <script src="./js/vendor/idb.js"></script>
 <script src="./js/01.app.refactor.js"></script>
 <script src="./js/localization/locales/fr.js"></script>
@@ -2593,6 +2595,7 @@
 <script src="./js/structure/structure.repository.js"></script>
 <script src="./js/structure/structure.viewmodel.js"></script>
 <script src="./js/00.app.view.js"></script>
+<script src="./js/page-preview.js"></script>
 <script src="./js/structure/structure.view.js"></script>
 <script src="./js/structure/structure-organizer.view.js"></script>
 <script src="./js/structure/structure.helpers.js"></script>
@@ -2818,5 +2821,6 @@
 <script src="./js/globalnotes/globalnotes.handlers.js"></script>
 <script src="./js/globalnotes/globalnotes.main.js"></script>
 
-    </body>
+</body>
+
 </html>

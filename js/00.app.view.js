@@ -7,6 +7,7 @@
 let activeStatusFilters = ['draft', 'progress', 'complete', 'review'];
 let currentStatusMenu = null;
 let chapterScrollTrackingHandler = null;
+let currentPageFormat = localStorage.getItem('plume_page_format') || 'none';
 
 // --- DISPATCHER DE REPOSITORY ---
 
@@ -562,12 +563,12 @@ function refreshAllViews() {
         }
     }
 
-    // 6. Rafraîchir la sidebar mobile si on est sur mobile
-    const isMobile = window.innerWidth <= 900;
-    const sidebarViewsWithConfig = ['editor', 'characters', 'world', 'notes', 'codex'];
     if (isMobile && sidebarViewsWithConfig.includes(currentView) && typeof renderMobileSidebarView === 'function') {
         renderMobileSidebarView(currentView);
     }
+
+    // 7. Rafraîchir le format de page
+    // Nettoyage historique : updatePageFormatUI n'existe plus
 }
 
 // --- GOOGLE FONTS SUPPORT ---
@@ -1163,8 +1164,18 @@ function getEditorToolbarHTML(panel = null) {
         <div class="toolbar-group">
             <button class="toolbar-btn" onclick="toggleRevisionMode()" title="${Localization.t('toolbar.revision_mode')}" style="color: var(--accent-gold); font-weight: 600;"><i data-lucide="pencil" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> ${Localization.t('toolbar.revision')}</button>
         </div>
+
+
+        <!-- Page Preview Button -->
+        <div class="toolbar-group">
+            <button class="toolbar-btn" onclick="openPagePreview()" title="${Localization.t('preview.title')}">
+                <i data-lucide="eye" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>
+                <span>${Localization.t('preview.title')}</span>
+            </button>
+        </div>
     `;
 }
+
 
 /**
  * [MVVM : View]
