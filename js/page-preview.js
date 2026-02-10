@@ -19,31 +19,109 @@ function getPageDimensions(format) {
 
 let currentPreviewFormat = 'a4';
 let currentPreviewPagesPerRow = 2;
+let currentPreviewScope = 'all';
+let currentZoom = 100;
 
 /**
  * Ouvre la modale de prévisualisation de page
  */
-function openPagePreview() {
+function openPagePreview(scope = 'all') {
+    currentPreviewScope = scope;
+
+    // Utiliser le format établi globalement s'il existe et est valide
+    if (typeof currentPageFormat !== 'undefined' && currentPageFormat !== 'none') {
+        const knownFormats = ['a4', 'moyen', 'a5', 'digest', 'pocket'];
+        if (knownFormats.includes(currentPageFormat)) {
+            currentPreviewFormat = currentPageFormat;
+        }
+    }
+
     const modal = document.getElementById('pagePreviewModal');
     if (!modal) {
         createPagePreviewModal();
+    } else {
+        // Mettre à jour le sélecteur de portée et format si déjà ouvert
+        const scopeSelect = document.getElementById('previewScopeSelect');
+        if (scopeSelect) scopeSelect.value = currentPreviewScope;
+
+        const formatSelect = document.getElementById('previewFormatSelect');
+        if (formatSelect) formatSelect.value = currentPreviewFormat;
     }
-
-    // Récupérer le contenu de l'éditeur actif
-    const activeEditor = document.querySelector('.editor-textarea');
-    if (!activeEditor) {
-        alert('Aucun contenu à prévisualiser');
-        return;
-    }
-
-    const content = activeEditor.innerHTML;
-
-    // Générer la prévisualisation
-    generatePagePreview(content, currentPreviewFormat);
 
     // Afficher la modale
     document.getElementById('pagePreviewModal').classList.add('active');
     document.body.style.overflow = 'hidden';
+
+    // Récupérer le contenu selon la portée
+    const content = getPreviewContent(currentPreviewScope);
+
+    if (!content || content.trim() === "") {
+        alert(Localization.t('preview.no_content') || 'Aucun contenu à prévisualiser');
+        document.getElementById('pagePreviewModal').classList.remove('active'); // Hide modal if no content
+        document.body.style.overflow = ''; // Restore scroll
+        return;
+    }
+
+    // Générer la prévisualisation (le scrollHeight fonctionnera car la modale est active/visible)
+    setTimeout(() => {
+        generatePagePreview(content, currentPreviewFormat);
+    }, 50);
+}
+
+/**
+ * Récupère le contenu à prévisualiser selon la portée
+ */
+function getPreviewContent(scope) {
+    if (scope === 'scene') {
+        const activeEditor = document.querySelector('.editor-textarea');
+        return activeEditor ? activeEditor.innerHTML : '';
+    }
+
+    if (scope === 'all' && typeof project !== 'undefined') {
+        let fullHTML = '';
+        project.acts.forEach((act, actIndex) => {
+            // Page de titre d'acte
+            fullHTML += `<h1 class="preview-act-title" style="text-align: center; padding-top: 5cm; margin-bottom: 0.5cm; font-size: 28pt; text-transform: uppercase; letter-spacing: 3pt;">
+                ${Localization.t('search.default.act') || 'Acte'} ${actIndex + 1}
+            </h1>`;
+            fullHTML += `<h2 class="preview-act-subtitle" style="text-align: center; margin-bottom: 2cm; font-size: 20pt; font-style: italic; font-weight: normal; color: #444; page-break-after: always;">${act.title}</h2>`;
+
+            act.chapters.forEach((chapter, chapterIndex) => {
+                // Titre de chapitre
+                fullHTML += `<h3 class="preview-chapter-title" style="text-align: center; padding-top: 3cm; margin-bottom: 0.3cm; font-size: 18pt; text-transform: uppercase; letter-spacing: 1pt; page-break-before: always;">
+                    ${Localization.t('search.default.chapter') || 'Chapitre'} ${chapterIndex + 1}
+                </h3>`;
+                fullHTML += `<h4 class="preview-chapter-subtitle" style="text-align: center; margin-bottom: 2cm; font-size: 15pt; font-weight: normal; font-style: italic; color: #666;">${chapter.title}</h4>`;
+
+                chapter.scenes.forEach((scene, sceneIndex) => {
+                    if (scene.content && scene.content.trim() !== "") {
+                        // NORMALISATION DU CONTENU
+                        // Les scènes dans le JSON utilisent souvent \n\n pour les paragraphes
+                        // et peuvent contenir des <span>. On s'assure que tout est bien découpé en <p>.
+                        let content = scene.content;
+
+                        // Si pas de balises de bloc, on entoure tout de <p> et on coupe aux \n\n
+                        if (!/<(p|div|h[1-6]|ul|ol|li|blockquote)/i.test(content)) {
+                            content = '<p>' + content.trim().split(/\n\n+/).join('</p><p>') + '</p>';
+                        } else {
+                            // S'il y a déjà des balises, on vérifie s'il reste des \n\n orphelins
+                            content = content.replace(/\n\n+/g, '</p><p>');
+                        }
+
+                        fullHTML += `<div class="preview-content-chunk">${content}</div>`;
+
+                        // Séparateur de scène sauf si c'est la dernière du chapitre
+                        if (sceneIndex < chapter.scenes.length - 1) {
+                            fullHTML += `<div class="preview-scene-separator" style="text-align: center; margin: 2.5rem 0; font-size: 18pt; color: #ccc;">* * *</div>`;
+                        }
+                    }
+                });
+            });
+        });
+        return fullHTML;
+    }
+
+    return '';
 }
 
 /**
@@ -70,43 +148,52 @@ function createPagePreviewModal() {
                 
                 <div class="page-preview-toolbar">
                     <div class="preview-controls">
-                        <label>
-                            <i data-lucide="file-text" style="width:14px;height:14px;"></i>
-                            ${Localization.t('preview.format')}
+                        <div class="control-group">
+                            <i data-lucide="layers" style="width:14px;height:14px;color:var(--text-muted);"></i>
+                            <span>${Localization.t('preview.scope') || 'Portée'}</span>
+                            <select id="previewScopeSelect" onchange="changePreviewScope(this.value)">
+                                <option value="all" ${currentPreviewScope === 'all' ? 'selected' : ''}>${Localization.t('preview.scope_all') || 'Histoire complète'}</option>
+                                <option value="scene" ${currentPreviewScope === 'scene' ? 'selected' : ''}>${Localization.t('preview.scope_scene') || 'Scène actuelle'}</option>
+                            </select>
+                        </div>
+
+                        <div class="control-group">
+                            <i data-lucide="file-text" style="width:14px;height:14px;color:var(--text-muted);"></i>
+                            <span>${Localization.t('preview.format')}</span>
                             <select id="previewFormatSelect" onchange="changePreviewFormat(this.value)">
-                                <option value="a4">${Localization.t('toolbar.page_format.a4')}</option>
-                                <option value="moyen">${Localization.t('toolbar.page_format.moyen')}</option>
-                                <option value="a5">${Localization.t('toolbar.page_format.a5')}</option>
-                                <option value="digest">${Localization.t('toolbar.page_format.digest')}</option>
-                                <option value="pocket">${Localization.t('toolbar.page_format.pocket')}</option>
+                                <option value="a4" ${currentPreviewFormat === 'a4' ? 'selected' : ''}>${Localization.t('toolbar.page_format.a4')}</option>
+                                <option value="moyen" ${currentPreviewFormat === 'moyen' ? 'selected' : ''}>${Localization.t('toolbar.page_format.moyen')}</option>
+                                <option value="a5" ${currentPreviewFormat === 'a5' ? 'selected' : ''}>${Localization.t('toolbar.page_format.a5')}</option>
+                                <option value="digest" ${currentPreviewFormat === 'digest' ? 'selected' : ''}>${Localization.t('toolbar.page_format.digest')}</option>
+                                <option value="pocket" ${currentPreviewFormat === 'pocket' ? 'selected' : ''}>${Localization.t('toolbar.page_format.pocket')}</option>
                             </select>
-                        </label>
+                        </div>
                         
-                        <label>
-                            <i data-lucide="columns-2" style="width:14px;height:14px;"></i>
-                            ${Localization.t('preview.pages_per_row')}
+                        <div class="control-group">
+                            <i data-lucide="columns-2" style="width:14px;height:14px;color:var(--text-muted);"></i>
+                            <span>${Localization.t('preview.pages_per_row')}</span>
                             <select id="previewPagesPerRowSelect" onchange="changePreviewPagesPerRow(this.value)">
-                                <option value="1">1</option>
-                                <option value="2" selected>2</option>
-                                <option value="3">3</option>
-                                <option value="4">4</option>
+                                <option value="1" ${currentPreviewPagesPerRow === 1 ? 'selected' : ''}>1</option>
+                                <option value="2" ${currentPreviewPagesPerRow === 2 ? 'selected' : ''}>2</option>
+                                <option value="3" ${currentPreviewPagesPerRow === 3 ? 'selected' : ''}>3</option>
+                                <option value="4" ${currentPreviewPagesPerRow === 4 ? 'selected' : ''}>4</option>
                             </select>
-                        </label>
+                        </div>
                         
                         <div class="preview-zoom-controls">
-                            <button onclick="zoomPreview(-10)" title="${Localization.t('preview.zoom_out')}">
-                                <i data-lucide="zoom-out" style="width:14px;height:14px;"></i>
+                            <button class="zoom-btn" onclick="zoomPreview(-10)" title="${Localization.t('preview.zoom_out')}">
+                                <i data-lucide="minus" style="width:14px;height:14px;"></i>
                             </button>
-                            <span id="previewZoomLevel">100%</span>
-                            <button onclick="zoomPreview(10)" title="${Localization.t('preview.zoom_in')}">
-                                <i data-lucide="zoom-in" style="width:14px;height:14px;"></i>
+                            <span id="previewZoomLevel" style="min-width: 45px; text-align: center; font-variant-numeric: tabular-nums;">${currentZoom}%</span>
+                            <button class="zoom-btn" onclick="zoomPreview(10)" title="${Localization.t('preview.zoom_in')}">
+                                <i data-lucide="plus" style="width:14px;height:14px;"></i>
                             </button>
                         </div>
                     </div>
                     
                     <button class="btn btn-primary" onclick="printPreview()">
                         <i data-lucide="printer" style="width:14px;height:14px;"></i>
-                        ${Localization.t('preview.print')}
+                        <span>${Localization.t('preview.print')}</span>
                     </button>
                 </div>
                 
@@ -134,73 +221,114 @@ function generatePagePreview(content, format) {
     // Créer un wrapper pour les pages
     const pagesWrapper = document.createElement('div');
     pagesWrapper.className = 'preview-pages-wrapper';
+    pagesWrapper.id = 'previewPagesWrapper';
+    // On applique le zoom et la grille
     pagesWrapper.style.cssText = `
         display: grid;
         grid-template-columns: repeat(${currentPreviewPagesPerRow}, 1fr);
         gap: 2rem;
-        padding: 2rem;
+        padding: 4rem 2rem;
         justify-items: center;
+        zoom: ${currentZoom / 100};
+        -moz-transform: scale(${currentZoom / 100});
+        -moz-transform-origin: top center;
+        width: 100%;
     `;
 
-    // Créer un élément temporaire pour mesurer le contenu
+    // TRÈS IMPORTANT : Ajouter le wrapper au conteneur AVANT de générer les pages
+    // pour que les mesures de scrollHeight soient correctes.
+    container.appendChild(pagesWrapper);
+
+    // Créer un élément temporaire pour parser le contenu
     const tempDiv = document.createElement('div');
-    tempDiv.style.cssText = `
-        position: absolute;
-        visibility: hidden;
-        width: calc(${dims.width} - ${dims.paddingLeft} - ${dims.paddingRight});
-        font-size: 11.5pt;
-        line-height: 1.45;
-        font-family: 'Crimson Pro', serif;
-    `;
+    tempDiv.style.display = 'none';
     tempDiv.innerHTML = content;
     document.body.appendChild(tempDiv);
 
-    // Calculer la hauteur de contenu disponible par page
-    const pageContentHeight = `calc(${dims.height} - ${dims.paddingTop} - ${dims.paddingBottom} - 1.5cm)`;
-    const pageContentHeightPx = parseFloat(dims.height) * 37.795275591 -
-        parseFloat(dims.paddingTop) * 37.795275591 -
-        parseFloat(dims.paddingBottom) * 37.795275591 -
-        1.5 * 37.795275591;
+    // Calculer la hauteur de contenu disponible par page (en pixels)
+    // Conversion cm vers px: 1cm = 37.795px
+    const cmToPx = 37.795275591;
+    const pageContentHeightPx = (parseFloat(dims.height) - parseFloat(dims.paddingTop) - parseFloat(dims.paddingBottom) - 1.5) * cmToPx;
 
     // Diviser le contenu en pages
-    let currentPage = createPreviewPage(dims, 1);
-    let currentPageContent = currentPage.querySelector('.page-text');
     let pageNumber = 1;
+    let currentPage = createPreviewPage(dims, pageNumber);
+    pagesWrapper.appendChild(currentPage); // Ajouter à la DOM tout de suite
+    let currentPageContent = currentPage.querySelector('.page-text');
 
-    const nodes = Array.from(tempDiv.childNodes);
-    let currentHeight = 0;
+    // On utilise un tableau de nœuds à traiter de manière récursive/granulaire
+    // On aplatit les chunks de contenu pour avoir accès directement aux paragraphes
+    let nodesToProcess = [];
+    Array.from(tempDiv.childNodes).forEach(node => {
+        if (node.classList && node.classList.contains('preview-content-chunk')) {
+            nodesToProcess.push(...Array.from(node.childNodes));
+        } else {
+            nodesToProcess.push(node);
+        }
+    });
 
-    nodes.forEach(node => {
+    let i = 0;
+    while (i < nodesToProcess.length) {
+        const node = nodesToProcess[i];
+
+        // Ignorer les nœuds vides (texte seul avec uniquement des espaces/retours à la ligne)
+        if (node.nodeType === 3 && node.textContent.trim() === "") {
+            i++;
+            continue;
+        }
+
         const clone = node.cloneNode(true);
+
+        // Vérifier si le nœud demande un saut de page manuel avant
+        const hasManualBreakBefore = node.nodeType === 1 && node.style && (node.style.pageBreakBefore === 'always' || node.style.breakBefore === 'always' || node.style.breakBefore === 'page');
+
+        if (hasManualBreakBefore && currentPageContent.childNodes.length > 0) {
+            pageNumber++;
+            currentPage = createPreviewPage(dims, pageNumber);
+            pagesWrapper.appendChild(currentPage);
+            currentPageContent = currentPage.querySelector('.page-text');
+        }
+
         currentPageContent.appendChild(clone);
 
-        // Vérifier si on dépasse
-        if (currentPageContent.scrollHeight > pageContentHeightPx && currentHeight > 0) {
-            // Retirer le dernier élément
+        // Si on dépasse la hauteur de la page
+        // On laisse une petite marge de 5px pour éviter les arrondis foireux
+        if (currentPageContent.scrollHeight > pageContentHeightPx + 5) {
             currentPageContent.removeChild(clone);
 
-            // Ajouter la page au wrapper
-            pagesWrapper.appendChild(currentPage);
+            // TENTATIVE DE DÉCOMPOSITION
+            // Si le nœud a lui même des enfants et qu'il est déjà à l'origine d'un débordement
+            // On va essayer de le décomposer pour ne pas perdre de texte
+            if (node.nodeType === 1 && node.childNodes.length > 1 && (node.tagName === 'P' || node.tagName === 'DIV' || node.tagName === 'BLOCKQUOTE')) {
+                const children = Array.from(node.childNodes);
+                // On crée des fragments qui héritent des styles du parent
+                const fragments = children.map(child => {
+                    const wrap = node.cloneNode(false);
+                    wrap.appendChild(child.cloneNode(true));
+                    return wrap;
+                });
+                nodesToProcess.splice(i, 1, ...fragments);
+                // On ne change pas i pour traiter le premier fragment au prochain tour
+                continue;
+            }
 
             // Créer une nouvelle page
             pageNumber++;
             currentPage = createPreviewPage(dims, pageNumber);
+            pagesWrapper.appendChild(currentPage);
             currentPageContent = currentPage.querySelector('.page-text');
+
+            // Ajouter l'élément sur la nouvelle page
             currentPageContent.appendChild(clone);
-            currentHeight = 0;
+
+            // Si l'élément est VRAIMENT trop gros pour tenir sur une page entière, on le laisse
+            // pour ne pas entrer dans une boucle infinie de création de pages.
         }
+        i++;
+    }
 
-        currentHeight = currentPageContent.scrollHeight;
-    });
-
-    // Ajouter la dernière page
-    pagesWrapper.appendChild(currentPage);
-
-    // Nettoyer
+    // Nettoyer tempDiv
     document.body.removeChild(tempDiv);
-
-    // Ajouter au conteneur
-    container.appendChild(pagesWrapper);
 
     if (typeof lucide !== 'undefined') lucide.createIcons();
 }
@@ -219,6 +347,7 @@ function createPreviewPage(dims, pageNumber) {
         border: 1px solid #ddd;
         position: relative;
         overflow: hidden;
+        flex-shrink: 0;
     `;
 
     const pageText = document.createElement('div');
@@ -260,9 +389,22 @@ function createPreviewPage(dims, pageNumber) {
  */
 function changePreviewFormat(format) {
     currentPreviewFormat = format;
-    const activeEditor = document.querySelector('.editor-textarea');
-    if (activeEditor) {
-        generatePagePreview(activeEditor.innerHTML, format);
+    const content = getPreviewContent(currentPreviewScope);
+    if (content) {
+        generatePagePreview(content, format);
+    }
+}
+
+/**
+ * Change la portée de prévisualisation
+ */
+function changePreviewScope(scope) {
+    currentPreviewScope = scope;
+    const content = getPreviewContent(scope);
+    if (content) {
+        generatePagePreview(content, currentPreviewFormat);
+    } else {
+        alert(Localization.t('preview.no_content') || 'Aucun contenu à prévisualiser');
     }
 }
 
@@ -280,12 +422,13 @@ function changePreviewPagesPerRow(count) {
 /**
  * Zoom de la prévisualisation
  */
-let currentZoom = 100;
 function zoomPreview(delta) {
-    currentZoom = Math.max(50, Math.min(200, currentZoom + delta));
-    const container = document.getElementById('pagePreviewContainer');
-    container.style.transform = `scale(${currentZoom / 100})`;
-    container.style.transformOrigin = 'top center';
+    currentZoom = Math.max(25, Math.min(200, currentZoom + delta));
+    const wrapper = document.getElementById('previewPagesWrapper');
+    if (wrapper) {
+        wrapper.style.zoom = currentZoom / 100;
+        wrapper.style.MozTransform = `scale(${currentZoom / 100})`;
+    }
     document.getElementById('previewZoomLevel').textContent = currentZoom + '%';
 }
 

@@ -8,6 +8,12 @@ let activeStatusFilters = ['draft', 'progress', 'complete', 'review'];
 let currentStatusMenu = null;
 let chapterScrollTrackingHandler = null;
 let currentPageFormat = localStorage.getItem('plume_page_format') || 'none';
+let isMobile = window.innerWidth <= 900;
+
+// Update isMobile on resize
+window.addEventListener('resize', () => {
+    isMobile = window.innerWidth <= 900;
+});
 
 // --- DISPATCHER DE REPOSITORY ---
 
@@ -563,7 +569,9 @@ function refreshAllViews() {
         }
     }
 
-    if (isMobile && sidebarViewsWithConfig.includes(currentView) && typeof renderMobileSidebarView === 'function') {
+    const isMobileView = window.innerWidth <= 900;
+    const sidebarViewsWithConfig = ['editor', 'characters', 'world', 'notes', 'codex', 'arcs', 'thriller', 'map', 'investigation', 'globalnotes'];
+    if (isMobileView && sidebarViewsWithConfig.includes(currentView) && typeof renderMobileSidebarView === 'function') {
         renderMobileSidebarView(currentView);
     }
 
@@ -970,7 +978,6 @@ function setActiveScene(actId, chapterId, sceneId) {
             }
         });
     }
-
     // Mettre à jour les indicateurs visuels des sidebars si ouverts
 
     // 1. Versions

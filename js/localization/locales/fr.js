@@ -236,6 +236,10 @@ const LOCALE_FR = {
     "preview.zoom_in": "Zoom avant",
     "preview.zoom_out": "Zoom arrière",
     "preview.print": "Imprimer",
+    "preview.scope": "Portée",
+    "preview.scope_all": "Histoire complète",
+    "preview.scope_scene": "Scène actuelle",
+    "preview.no_content": "Aucun contenu à prévisualiser",
 
     // --- Editor View ---
     "editor.focus_mode": "Focus",
@@ -2405,5 +2409,16 @@ const LOCALE_FR = {
     "globalnotes.prompt.map_url": "Lien Google Maps :",
     "globalnotes.prompt.map_title": "Titre de la carte :",
     "globalnotes.prompt.latitude": "Latitude :",
-    "globalnotes.prompt.longitude": "Longitude :"
+    "globalnotes.prompt.longitude": "Longitude :",
+
+    // --- Page Preview ---
+    "preview.title": "Aperçu avant impression",
+    "preview.scope": "Portée",
+    "preview.scope_all": "Histoire complète",
+    "preview.scope_scene": "Scène actuelle",
+    "preview.pages_per_row": "Pages par ligne",
+    "preview.zoom_in": "Zoom avant",
+    "preview.zoom_out": "Zoom arrière",
+    "preview.print": "Imprimer / PDF",
+    "preview.no_content": "Aucun contenu à prévisualiser"
 };
