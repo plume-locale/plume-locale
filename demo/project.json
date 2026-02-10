@@ -758,17 +758,37 @@
                             {
                                 "id": "arc_card_a2",
                                 "type": "note",
-                                "content": "<b>Le fil rubis</b><br>Découverte du fil de soie. Premier lien concret."
-                            },
+                                "content": "Découverte du fil de soie. Premier lien concret avec l'organisation."
+                            }
+                        ]
+                    },
+                    {
+                        "id": "col_a_ev3",
+                        "type": "column",
+                        "x": 710,
+                        "y": 50,
+                        "title": "3. L'Architecte",
+                        "width": 260,
+                        "cards": [
                             {
                                 "id": "arc_card_a7",
                                 "type": "note",
-                                "content": "<b>L'architecte</b><br>Révélation : Blackwood a tout orchestré."
-                            },
+                                "content": "Révélation : Blackwood a tout orchestré."
+                            }
+                        ]
+                    },
+                    {
+                        "id": "col_a_ev4",
+                        "type": "column",
+                        "x": 1040,
+                        "y": 50,
+                        "title": "4. Sabotage",
+                        "width": 260,
+                        "cards": [
                             {
                                 "id": "arc_card_a8",
                                 "type": "note",
-                                "content": "<b>Coupure de courant</b><br>Marc sabote le signal du phare."
+                                "content": "Marc sabote le signal du phare, neutralisant le réseau."
                             }
                         ]
                     }
@@ -776,13 +796,18 @@
                 "connections": [
                     {
                         "id": "conn_a1_a2",
-                        "from": "arc_card_a1",
-                        "to": "arc_card_a2"
+                        "from": "col_a_ev1",
+                        "to": "col_a_ev2"
                     },
                     {
-                        "id": "conn_a7_a8",
-                        "from": "arc_card_a7",
-                        "to": "arc_card_a8"
+                        "id": "conn_a2_a3",
+                        "from": "col_a_ev2",
+                        "to": "col_a_ev3"
+                    },
+                    {
+                        "id": "conn_a3_a4",
+                        "from": "col_a_ev3",
+                        "to": "col_a_ev4"
                     }
                 ]
             },
@@ -816,41 +841,61 @@
             "board": {
                 "items": [
                     {
-                        "id": "col_tear",
+                        "id": "col_b_ev1",
                         "type": "column",
                         "x": 50,
                         "y": 50,
-                        "title": "Technologie",
+                        "title": "1. L'Âme de Verre",
                         "width": 260,
                         "cards": [
                             {
                                 "id": "arc_card_b4",
                                 "type": "note",
-                                "content": "<b>L'âme de verre</b><br>Elena révèle la fibre optique militaire."
-                            },
+                                "content": "Elena révèle que le fil contient de la fibre optique militaire."
+                            }
+                        ]
+                    },
+                    {
+                        "id": "col_b_ev2",
+                        "type": "column",
+                        "x": 380,
+                        "y": 50,
+                        "title": "2. Projet Impérial",
+                        "width": 260,
+                        "cards": [
                             {
                                 "id": "arc_card_b5",
                                 "type": "note",
-                                "content": "<b>Le projet impérial</b><br>Origine de la Larme : système de prisme."
-                            },
+                                "content": "Origine de la Larme : un système de communication par prisme."
+                            }
+                        ]
+                    },
+                    {
+                        "id": "col_b_ev3",
+                        "type": "column",
+                        "x": 710,
+                        "y": 50,
+                        "title": "3. Le Prototype",
+                        "width": 260,
+                        "cards": [
                             {
                                 "id": "arc_card_b6",
                                 "type": "note",
-                                "content": "<b>Le prototype</b><br>Marc trouve la sphère active dans l'usine."
+                                "content": "Marc trouve la sphère active dans l'usine désaffectée."
                             }
                         ]
                     }
                 ],
                 "connections": [
                     {
-                        "id": "conn_b4_b5",
-                        "from": "arc_card_b4",
-                        "to": "arc_card_b5"
+                        "id": "conn_b1_b2",
+                        "from": "col_b_ev1",
+                        "to": "col_b_ev2"
                     },
                     {
-                        "id": "conn_b5_b6",
-                        "from": "arc_card_b5",
-                        "to": "arc_card_b6"
+                        "id": "conn_b2_b3",
+                        "from": "col_b_ev2",
+                        "to": "col_b_ev3"
                     }
                 ]
             },
@@ -874,23 +919,23 @@
             "title": "Arc C : Marc & Elena",
             "category": "relationship",
             "color": "#e91e63",
-            "description": "Leur relation passée et présente.",
+            "description": "Leurs retrouvailles et l'évolution de leur dynamique.",
             "type": "relationship",
             "importance": "minor",
             "board": {
                 "items": [
                     {
-                        "id": "col_chars",
+                        "id": "col_c_ev1",
                         "type": "column",
                         "x": 50,
                         "y": 50,
-                        "title": "Relation",
+                        "title": "1. Blessures Passées",
                         "width": 260,
                         "cards": [
                             {
                                 "id": "arc_card_c3",
                                 "type": "note",
-                                "content": "<b>Vieilles blessures</b><br>Retrouvailles tendues et aveux sur leur passé."
+                                "content": "Elena et Marc évoquent leur passé commun et la raison de leur rupture."
                             }
                         ]
                     }
@@ -915,7 +960,7 @@
             "toItemId": "arc_card_b4",
             "toSide": "left",
             "type": "cause",
-            "label": "Déclenche l'expertise"
+            "label": "Besoin d'expertise"
         },
         {
             "id": "inter_b6_a7",
@@ -937,7 +982,7 @@
             "toItemId": "arc_card_b4",
             "toSide": "left",
             "type": "parallel",
-            "label": "Tension émotionnelle"
+            "label": "Tension partagée"
         }
     ],
     "arcCategories": {},
