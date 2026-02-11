@@ -352,9 +352,15 @@ const LOCALE_EN = {
 
     "modal.project.genre.none": "None",
     "modal.project.template.empty": "Empty Project",
-    "modal.project.template.fantasy_desc": "Fantasy (3 acts + archetypal characters)",
-    "modal.project.template.thriller_desc": "Thriller (Suspense structure)",
+    "modal.project.template.acts3_desc": "3-Act Structure (Setup, Confrontation, Resolution)",
+    "modal.project.template.hero_journey_desc": "The Hero's Journey (12 mythical stages)",
+    "modal.project.template.save_the_cat_desc": "Save the Cat! (Snyder's 15 beats)",
+    "modal.project.template.thriller_desc": "Thriller / Investigation (Suspense & Mystery)",
+    "modal.project.template.romance_desc": "Romance (Meeting, Tension & Union)",
+    "modal.project.template.snowflake_desc": "Snowflake Method (Iterative building)",
     "modal.project.template.scifi_desc": "Sci-Fi (Advanced worldbuilding)",
+    "modal.project.template.story_circle_desc": "Story Circle (Dan Harmon's 8 steps)",
+    "modal.project.template.fichtean_curve_desc": "Fichtean Curve (Action & Successive Crises)",
 
     // --- Split View ---
     "split.toggle_active": "Split active",

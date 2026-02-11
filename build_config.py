@@ -64,6 +64,7 @@ JS_ORDER = [
     'js/storage/storage.main.js',
     'js/project/project.model.js',
     'js/project/project.repository.js',
+    'js/project/project.templates.js',
     'js/project/project.viewmodel.js',
     'js/project/project.view.js',
     'js/project/project.handlers.js',
