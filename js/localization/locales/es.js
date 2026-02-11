@@ -166,6 +166,7 @@ const LOCALE_ES = {
     "btn.add_project": "+ Nuevo Proyecto",
     "btn.import_project": "Importar Proyecto",
     "btn.import_demo": "Importar Demo",
+    "btn.google_drive": "Google Drive",
     "project.viewmodel.import_success": "¡Proyecto de demostración \"{0}\" importado con éxito!",
     "project.viewmodel.import_error": "Error al importar la demo: {0}",
 

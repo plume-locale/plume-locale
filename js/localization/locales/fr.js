@@ -182,6 +182,7 @@ const LOCALE_FR = {
     "btn.add_project": "+ Nouveau Projet",
     "btn.import_project": "Importer un projet",
     "btn.import_demo": "Importer la démo",
+    "btn.google_drive": "Google Drive",
     "project.viewmodel.import_success": "Projet de démo \"{0}\" importé avec succès !",
     "project.viewmodel.import_error": "Erreur lors de l'import de la démo : {0}",
 
