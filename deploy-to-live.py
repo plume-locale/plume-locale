@@ -115,6 +115,8 @@ def get_all_files_to_deploy():
             files.append(f'js/{filename}')
             processed_js.add(filename)
     
+    files.append('landing.html')
+    
     return files
 
 def get_dest_path(file_path):
@@ -140,6 +142,10 @@ def get_dest_path(file_path):
     # HTML
     if file_path.startswith('html/'):
          return file_path
+    
+    # Landing page -> index.html
+    if file_path == 'landing.html':
+        return 'index.html'
          
     return file_path
 

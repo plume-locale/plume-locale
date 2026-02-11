@@ -13,7 +13,7 @@ except ImportError:
 # Configuration paths
 BUILD_DIR = os.path.dirname(os.path.abspath(__file__))
 LIVE_DIR = os.path.join(BUILD_DIR, 'live')
-OUTPUT_FILE = os.path.join(LIVE_DIR, 'index.html')
+OUTPUT_FILE = os.path.join(LIVE_DIR, 'app.html')
 
 def read_file(path):
     full_path = os.path.join(BUILD_DIR, path)
@@ -62,7 +62,7 @@ def generate_index():
     local_css_dir = os.path.join(BUILD_DIR, 'css')
     for filepath in glob.glob(os.path.join(local_css_dir, '*.css')):
         filename = os.path.basename(filepath)
-        if filename not in processed_css and filename != '11.storygrid.css':
+        if filename not in processed_css and filename not in ['11.storygrid.css', 'landing-page.css']:
             link = f'<link rel="stylesheet" href="./css/{filename}">'
             css_links.append(link)
 
