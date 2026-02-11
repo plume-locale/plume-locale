@@ -10,6 +10,31 @@ const LOCALE_DE = {
     "nav.thriller": "Thriller",
     "nav.storygrid": "StoryGrid",
     "nav.investigation": "Ermittlung",
+
+    // Front Matter / Titelei
+    "nav.front_matter": "Titelei",
+    "front_matter.add_btn": "Element hinzufügen",
+    "front_matter.empty_list": "Keine Titelei- oder Anhang-Elemente.",
+    "front_matter.title_placeholder": "Abschnittstitel",
+    "front_matter.content_placeholder": "Inhalt...",
+    "front_matter.confirm_delete": "Möchten Sie dieses Element wirklich löschen?",
+    "front_matter.auto_save": "Automatische Speicherung...",
+    "front_matter.add_modal_title": "Abschnittstyp wählen",
+
+    // Types
+    "front_matter.type.preface": "Vorwort",
+    "front_matter.type.foreword": "Geleitwort",
+    "front_matter.type.introduction": "Einleitung",
+    "front_matter.type.prologue": "Prolog",
+    "front_matter.type.epigraph": "Epigraph",
+    "front_matter.type.dedication": "Widmung",
+    "front_matter.type.copyright": "Impressum / Rechtliches",
+    "front_matter.type.acknowledgements": "Danksagung",
+    "front_matter.type.postface": "Nachwort",
+    "front_matter.type.epilogue": "Epilog",
+    "front_matter.type.appendix": "Anhang",
+    "front_matter.type.glossary": "Glossar",
+
     "nav.characters": "Charaktere",
     "nav.world": "Welt",
     "nav.codex": "Kodex",
@@ -54,6 +79,7 @@ const LOCALE_DE = {
     "mobile.action.undo": "Rückgängig",
     "mobile.action.redo": "Wiederholen",
     "mobile.action.backup": "Sicherung/Export",
+    "mobile.action.interface": "Benutzeroberfläche anpassen",
     "mobile.toolbar.hide": "Formatierungswerkzeuge ausblenden",
     "mobile.toolbar.show": "Formatierungswerkzeuge anzeigen",
     "mobile.links.hide": "Verknüpfte Charaktere & Orte ausblenden",
@@ -109,6 +135,7 @@ const LOCALE_DE = {
     "header.lang.switch": "Sprache wechseln (FR/EN)",
     "header.focus": "Fokusmodus",
     "header.split_text": "Teilen",
+    "header.interface": "Benutzeroberfläche anpassen",
     "pomodoro.popup.title": "Pomodoro",
     "pomodoro.stats.sessions": "Sitzungen",
 

@@ -179,6 +179,13 @@
                     <span class="mobile-nav-item-icon"><i data-lucide="timer"></i></span>
                     <span data-i18n="mobile.action.pomodoro">Timer Pomodoro</span>
                 </button>
+                <button class="mobile-nav-item" onclick="
+                        InterfaceCustomizerViewModel.startEditing();
+                        toggleMobileNav();
+                    ">
+                    <span class="mobile-nav-item-icon"><i data-lucide="settings-2"></i></span>
+                    <span data-i18n="mobile.action.interface">Personnaliser l'interface</span>
+                </button>
             </div>
         </div>
         <div class="mobile-nav-section">
@@ -242,6 +249,10 @@
                     <button class="nav-btn" onclick="switchView('editor')" id="header-tab-editor">
                         <span class="nav-btn-icon"><i data-lucide="pen-line"></i></span>
                         <span class="nav-btn-text" data-i18n="nav.structure">Structure</span>
+                    </button>
+                    <button class="nav-btn" onclick="switchView('front_matter')" id="header-tab-front_matter">
+                        <span class="nav-btn-icon"><i data-lucide="book-open-check"></i></span>
+                        <span class="nav-btn-text" data-i18n="nav.front_matter">Liminaires</span>
                     </button>
                     <button class="nav-btn" onclick="switchView('corkboard')" id="header-tab-corkboard">
                         <span class="nav-btn-icon"><i data-lucide="layout-grid"></i></span>
@@ -372,6 +383,10 @@
                 <button class="header-action-btn" onclick="openThemeManager()" title="Gérer les thèmes"
                     data-i18n-title="header.themes" id="headerThemesBtn">
                     <i data-lucide="palette"></i>
+                </button>
+                <button class="header-action-btn" onclick="InterfaceCustomizerViewModel.startEditing()" title="Personnaliser l'interface"
+                    data-i18n-title="header.interface" id="headerInterfaceBtn">
+                    <i data-lucide="settings-2"></i>
                 </button>
 
                 <div class="doc-dropdown" id="docDropdown">
@@ -570,6 +585,9 @@
                 </div>
                 <div class="chapters-list" id="chaptersList">
                     <!-- Structure will be dynamically inserted here -->
+                </div>
+                <div class="database-list" id="frontMatterList" style="display: none">
+                    <!-- Front Matter elements will be dynamically inserted here -->
                 </div>
                 <div class="database-list" id="charactersList" style="display: none">
                     <!-- Characters will be dynamically inserted here -->

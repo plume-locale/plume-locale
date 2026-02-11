@@ -77,6 +77,11 @@ JS_ORDER = [
     'js/floating-editor/floating-editor.viewmodel.js',
     'js/floating-editor/floating-editor.handlers.js',
     'js/floating-editor/floating-editor.main.js',
+    # Interface Customizer Module
+    'js/interface-customizer/interface-customizer.model.js',
+    'js/interface-customizer/interface-customizer.repository.js',
+    'js/interface-customizer/interface-customizer.viewmodel.js',
+    'js/interface-customizer/interface-customizer.view.js',
     'js/04.init.js',
     'js/undo-redo/undo-redo.model.js',
     'js/undo-redo/undo-redo.repository.js',
@@ -269,6 +274,12 @@ JS_ORDER = [
     'js/import-export/import-export.view.js',
     'js/import-export/import-export.handlers.js',
     'js/import-export/import-export.main.js',
+    # Front Matter Module
+    'js/front-matter/front-matter.model.js',
+    'js/front-matter/front-matter.repository.js',
+    'js/front-matter/front-matter.viewmodel.js',
+    'js/front-matter/front-matter.view.js',
+    'js/front-matter/front-matter.main.js',
     # Sidebar View Module
     'js/sidebar-view/sidebar-view.model.js',
     'js/sidebar-view/sidebar-view.repository.js',

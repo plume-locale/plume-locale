@@ -35,6 +35,41 @@ const LOCALE_FR = {
     "nav.arcs_narratifs": "Arcs Narratifs",
     "nav.investigation": "Enquête",
 
+    // Front Matter / Liminaires et Annexes
+    "nav.front_matter": "Liminaires",
+    "front_matter.add_btn": "Ajouter un élément",
+    "front_matter.empty_list": "Aucun élément liminaire ou annexe.",
+    "front_matter.title_placeholder": "Titre de la section",
+    "front_matter.content_placeholder": "Contenu...",
+    "front_matter.confirm_delete": "Êtes-vous sûr de vouloir supprimer cet élément ?",
+    "front_matter.auto_save": "Sauvegarde automatique...",
+    "front_matter.add_modal_title": "Choisir un type de section",
+
+    // Types
+    "front_matter.type.preface": "Préface",
+    "front_matter.type.foreword": "Avant-propos",
+    "front_matter.type.introduction": "Introduction",
+    "front_matter.type.prologue": "Prologue",
+    "front_matter.type.epigraph": "Épigraphe",
+    "front_matter.type.dedication": "Dédicace",
+    "front_matter.type.copyright": "Copyright / Mentions légales",
+    "front_matter.type.acknowledgements": "Remerciements",
+    "front_matter.type.postface": "Postface",
+    "front_matter.type.epilogue": "Épilogue",
+    "front_matter.type.appendix": "Annexe",
+    "front_matter.type.glossary": "Glossaire",
+    "front_matter.type.bibliography": "Bibliographie",
+    "front_matter.type.about_author": "À propos de l'auteur",
+    "front_matter.type.other": "Autre section",
+
+    // Sidebar View Config
+    "sidebar_view.front_matter.title": "Liminaires et Annexes",
+    "sidebar_view.front_matter.description": "Gérez les textes qui entourent votre récit (préface, remerciements, etc.).",
+    "sidebar_view.front_matter.empty_message": "Aucune section définie",
+    "sidebar_view.front_matter.empty_sub_message": "Ajoutez des préfaces, postfaces ou autres annexes.",
+    "sidebar_view.front_matter.action_btn": "Ajouter une section",
+    "sidebar_view.front_matter.hint": "Ces sections sont généralement exportées au début ou à la fin de votre livre.",
+
     // --- Common Buttons ---
     "btn.close": "Fermer",
     "btn.analyze": "Analyser",
@@ -69,6 +104,7 @@ const LOCALE_FR = {
     "mobile.action.documentation": "Documentation",
     "mobile.action.languages": "Changer la langue",
     "mobile.action.pomodoro": "Timer Pomodoro",
+    "mobile.action.interface": "Personnaliser l'interface",
     "mobile.group.help": "Aide & Langue",
     "mobile.toolbar.hide": "Masquer les outils de formatage",
     "mobile.toolbar.show": "Afficher les outils de formatage",
@@ -125,6 +161,7 @@ const LOCALE_FR = {
     "header.lang.switch": "Changer la langue (FR/EN)",
     "header.focus": "Mode Focus",
     "header.split_text": "Split",
+    "header.interface": "Personnaliser l'interface",
     "pomodoro.popup.title": "Pomodoro",
     "pomodoro.stats.sessions": "sessions",
 
