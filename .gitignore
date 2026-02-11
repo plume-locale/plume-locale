@@ -2,4 +2,4 @@
 build.log
 *.log
 /build
-/live/*
+/live/

@@ -193,36 +193,12 @@ def deploy():
             log(f"   [ERREUR] Impossible de supprimer index.html: {e}")
 
     # Créer le répertoire /live s'il n'existe pas
-    if os.path.exists(LIVE_DIR):
-        log(f"--- Nettoyage du répertoire /live existant ---")
-        try:
-            # Sur Windows, rmtree peut échouer si des fichiers sont ouverts ou indexés.
-            # On essaie une approche plus permissive.
-            import time
-            def remove_readonly(func, path, excinfo):
-                import os, stat
-                os.chmod(path, stat.S_IWRITE)
-                func(path)
-
-            for i in range(3):
-                try:
-                    shutil.rmtree(LIVE_DIR, onerror=remove_readonly)
-                    log(f"   [OK] Répertoire /live supprimé (tentative {i+1})")
-                    break
-                except Exception as e:
-                    if i == 2: # Dernière tentative
-                        log(f"   [ATTENTION] Impossible de supprimer complètement /live: {e}. On continue quand même...")
-                    else:
-                        time.sleep(1)
-        except Exception as e:
-            log(f"   [ATTENTION] Erreur lors du nettoyage de /live: {e}")
-    
-    log(f"--- Création/Vérification du répertoire /live ---")
+    log(f"--- Vérification du répertoire /live ---")
     try:
         os.makedirs(LIVE_DIR, exist_ok=True)
-        log(f"   [OK] Répertoire /live créé")
+        log(f"   [OK] Répertoire /live prêt")
     except Exception as e:
-        log(f"   [ERREUR] Impossible de créer /live: {e}")
+        log(f"   [ERREUR] Impossible d'accéder à /live: {e}")
         log_handle.close()
         return False
     
@@ -238,12 +214,14 @@ def deploy():
     for file_path in files_to_deploy:
         src_path = os.path.join(BUILD_DIR, file_path)
         dest_rel_path = get_dest_path(file_path)
+        dest_full_path = os.path.join(LIVE_DIR, dest_rel_path.replace('/', os.sep).replace('\\', os.sep))
         
         if not os.path.exists(src_path):
             log(f"   [!] Fichier manquant: {file_path}")
             missing_count += 1
             continue
         
+        # log(f"   [COPY] {file_path} -> {dest_rel_path}")
         if copy_file(src_path, dest_rel_path):
             copied_count += 1
         else:
