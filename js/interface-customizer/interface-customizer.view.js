@@ -55,7 +55,10 @@ const InterfaceCustomizerView = {
         components.forEach(comp => {
             const el = document.getElementById(comp.id);
             if (el) {
-                el.setAttribute('data-original-onclick', el.getAttribute('onclick'));
+                const currentOnClick = el.getAttribute('onclick');
+                if (currentOnClick) {
+                    el.setAttribute('data-original-onclick', currentOnClick);
+                }
                 el.onclick = (e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -64,9 +67,13 @@ const InterfaceCustomizerView = {
             }
 
             // Mobile items
-            const mobileItem = document.querySelector(`.mobile-nav-item[data-view="${comp.id.replace('header-tab-', '')}"]`);
+            const viewKey = comp.id.replace('header-tab-', '');
+            const mobileItem = document.querySelector(`.mobile-nav-item[data-view="${viewKey}"]`);
             if (mobileItem) {
-                mobileItem.setAttribute('data-original-onclick', mobileItem.getAttribute('onclick'));
+                const mobileOnClick = mobileItem.getAttribute('onclick');
+                if (mobileOnClick) {
+                    mobileItem.setAttribute('data-original-onclick', mobileOnClick);
+                }
                 mobileItem.onclick = (e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -83,21 +90,28 @@ const InterfaceCustomizerView = {
         const components = InterfaceCustomizerModel.components;
         components.forEach(comp => {
             const el = document.getElementById(comp.id);
-            if (el && el.hasAttribute('data-original-onclick')) {
-                const originalOnClick = el.getAttribute('data-original-onclick');
-                // On restaure via setAttribute car c'est du code string dans le HTML
-                el.setAttribute('onclick', originalOnClick);
-                el.removeAttribute('data-original-onclick');
-                // Re-init the function property correctly if needed
-                el.onclick = new Function('event', originalOnClick);
+            if (el) {
+                if (el.hasAttribute('data-original-onclick')) {
+                    const originalOnClick = el.getAttribute('data-original-onclick');
+                    el.setAttribute('onclick', originalOnClick);
+                    el.removeAttribute('data-original-onclick');
+                    el.onclick = new Function('event', originalOnClick);
+                } else {
+                    el.onclick = null;
+                }
             }
 
-            const mobileItem = document.querySelector(`.mobile-nav-item[data-view="${comp.id.replace('header-tab-', '')}"]`);
-            if (mobileItem && mobileItem.hasAttribute('data-original-onclick')) {
-                const originalOnClick = mobileItem.getAttribute('data-original-onclick');
-                mobileItem.setAttribute('onclick', originalOnClick);
-                mobileItem.removeAttribute('data-original-onclick');
-                mobileItem.onclick = new Function('event', originalOnClick);
+            const viewKey = comp.id.replace('header-tab-', '');
+            const mobileItem = document.querySelector(`.mobile-nav-item[data-view="${viewKey}"]`);
+            if (mobileItem) {
+                if (mobileItem.hasAttribute('data-original-onclick')) {
+                    const originalOnClick = mobileItem.getAttribute('data-original-onclick');
+                    mobileItem.setAttribute('onclick', originalOnClick);
+                    mobileItem.removeAttribute('data-original-onclick');
+                    mobileItem.onclick = new Function('event', originalOnClick);
+                } else {
+                    mobileItem.onclick = null;
+                }
             }
         });
     }

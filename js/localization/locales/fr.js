@@ -162,6 +162,7 @@ const LOCALE_FR = {
     "header.focus": "Mode Focus",
     "header.split_text": "Split",
     "header.interface": "Personnaliser l'interface",
+    "header.stats_summary": "Compteur de mots (Header)",
     "pomodoro.popup.title": "Pomodoro",
     "pomodoro.stats.sessions": "sessions",
 

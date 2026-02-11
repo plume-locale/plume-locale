@@ -416,3 +416,12 @@
     outline: 2px solid var(--accent-gold);
     outline-offset: -2px;
 }
+
+.interface-edit-mode .nav-btn,
+.interface-edit-mode .header-action-btn,
+.interface-edit-mode #headerStatsContainer,
+.interface-edit-mode .split-mode-toggle,
+.interface-edit-mode .storage-badge-header,
+.interface-edit-mode .mobile-nav-item {
+    cursor: pointer !important;
+}

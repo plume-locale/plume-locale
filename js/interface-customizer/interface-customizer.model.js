@@ -33,7 +33,8 @@ const InterfaceCustomizerModel = {
         { id: 'pomodoroHeaderBtn', icon: 'timer', label: 'header.pomodoro', category: 'actions' },
         { id: 'headerImportBtn', icon: 'download', label: 'header.import', category: 'actions' },
         { id: 'headerShortcutsBtn', icon: 'keyboard', label: 'header.shortcuts', category: 'actions' },
-        { id: 'headerThemesBtn', icon: 'palette', label: 'header.themes', category: 'actions' }
+        { id: 'headerThemesBtn', icon: 'palette', label: 'header.themes', category: 'actions' },
+        { id: 'headerStatsContainer', icon: 'bar-chart', label: 'header.stats_summary', category: 'actions' }
     ],
 
     // État par défaut (tout visible)

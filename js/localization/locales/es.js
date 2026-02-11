@@ -136,6 +136,7 @@ const LOCALE_ES = {
     "header.focus": "Modo Foco",
     "header.split_text": "Dividir",
     "header.interface": "Personalizar interfaz",
+    "header.stats_summary": "Contador de palabras (Header)",
     "pomodoro.popup.title": "Pomodoro",
     "pomodoro.stats.sessions": "sesiones",
 
