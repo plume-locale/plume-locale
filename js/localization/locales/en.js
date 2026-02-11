@@ -180,6 +180,9 @@ const LOCALE_EN = {
     "btn.apply": "Apply",
     "btn.add_project": "+ New Project",
     "btn.import_project": "Import Project",
+    "btn.import_demo": "Import Demo",
+    "project.viewmodel.import_success": "Demo project \"{0}\" successfully imported!",
+    "project.viewmodel.import_error": "Error importing demo: {0}",
 
     // --- Editor Toolbar & Color Palette ---
     "toolbar.bold": "Bold (Ctrl+B)",

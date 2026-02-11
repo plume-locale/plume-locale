@@ -42,6 +42,9 @@ const ProjectView = {
                                 <i data-lucide="list"></i>
                             </button>
                         </div>
+                        <button class="btn" onclick="ProjectViewModel.importDemo()">
+                            <i data-lucide="play"></i> ${Localization.t('btn.import_demo')}
+                        </button>
                         <button class="btn" onclick="ProjectViewModel.importHandler()">
                             <i data-lucide="download"></i> ${Localization.t('btn.import_project')}
                         </button>
