@@ -236,7 +236,7 @@ function renderActsList() {
         <div class="act-group" id="full-book-item">
             <div class="act-header ${isFullBookActive ? 'active' : ''}" onclick="openFullBook()" style="margin-bottom: 0.5rem; border-left: 3px solid var(--accent-gold);">
                 <span class="act-icon"><i data-lucide="book" style="width:14px;height:14px;vertical-align:middle;"></i></span>
-                <span class="act-title" style="text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Tout le livre</span>
+                <span class="act-title" style="text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">${Localization.t('structure.all_book')}</span>
             </div>
         </div>`;
 

@@ -4,6 +4,7 @@
 const LOCALE_FR = {
     "nav.projects": "Projets",
     "nav.structure": "Structure",
+    "structure.all_book": "Tout le livre",
     "nav.corkboard": "Tableau",
     "nav.plot": "Intrigue",
     "nav.arcs": "Arcs",
