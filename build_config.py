@@ -268,6 +268,7 @@ JS_ORDER = [
     'js/theme-manager/theme-manager.main.js',
     # Import/Export Module
     'js/import-export/import-export.model.js',
+    'js/import-export/docx-export.config.js',
     'js/import-export/import-export.repository.js',
     'js/import-export/google-drive.service.js',
     'js/import-export/import-export.viewmodel.js',

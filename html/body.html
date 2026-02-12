@@ -1763,15 +1763,188 @@
                     <option value="txt">Texte brut (.txt)</option>
                     <option value="html">HTML (.html)</option>
                     <option value="epub">EPUB (.epub)</option>
+                    <option value="docx">DOCX (.docx)</option>
                 </select>
                 <div id="formatInfoBox"
                     style="margin-top: 0.75rem; padding: 0.75rem; background: rgba(212, 175, 55, 0.1); border-radius: 4px; border: 1px solid var(--accent-gold); font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5">
-                    <strong style="color: var(--text-primary)">Note :</strong>
-                    Toutes les fonctionnalités ne sont pas supportées en format DOCX. Le texte exporté pourrait
-                    ne
-                    pas
-                    ressembler exactement à l'éditeur. Pour une compatibilité complète, utilisez un autre
-                    format.
+                    <strong style="color: var(--text-primary)" data-i18n="modal.export.note.title">Note :</strong>
+                    <span data-i18n="modal.export.note.docx_warning">Toutes les fonctionnalités ne sont pas supportées
+                        en format DOCX. Le texte exporté pourrait
+                        ne pas ressembler exactement à l'éditeur. Pour une compatibilité complète, utilisez un autre
+                        format.</span>
+                </div>
+            </div>
+            <!-- DOCX Advanced Settings Panel (auto-show when DOCX selected) -->
+            <div id="docxSettingsPanel"
+                style="display: none; margin-bottom: 1.5rem; padding: 1rem; background: var(--bg-secondary); border-radius: 8px; border: 1px solid var(--border-color);">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; cursor: pointer;"
+                    onclick="document.getElementById('docxSettingsInner').style.display = document.getElementById('docxSettingsInner').style.display === 'none' ? 'block' : 'none'">
+                    <label style="font-weight: 600; color: var(--text-primary); cursor: pointer;">
+                        <i data-lucide="settings-2"
+                            style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"></i>
+                        <span data-i18n="modal.export.docx.settings_title">Paramètres DOCX avancés</span>
+                    </label>
+                    <span style="font-size: 0.8rem; color: var(--text-muted);"
+                        data-i18n="modal.export.docx.collapse_hint">cliquer pour déplier</span>
+                </div>
+                <div id="docxSettingsInner" style="display: none;">
+                    <!-- Row 1: Page format & Margins -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+                        <div>
+                            <label style="font-size: 0.85rem; font-weight: 500; display: block; margin-bottom: 0.3rem;"
+                                data-i18n="modal.export.docx.page_format">Format de page</label>
+                            <select id="docxPageFormat"
+                                style="width: 100%; padding: 0.5rem; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-primary); font-size: 0.9rem;">
+                                <option value="a4" data-i18n="modal.export.docx.page_format.a4">A4 (210 × 297 mm)
+                                </option>
+                                <option value="letter" data-i18n="modal.export.docx.page_format.letter">Letter (8.5 × 11
+                                    in)</option>
+                                <option value="a5" data-i18n="modal.export.docx.page_format.a5">A5 (148 × 210 mm)
+                                </option>
+                                <option value="b5" data-i18n="modal.export.docx.page_format.b5">B5 (176 × 250 mm)
+                                </option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="font-size: 0.85rem; font-weight: 500; display: block; margin-bottom: 0.3rem;"
+                                data-i18n="modal.export.docx.margins">Marges</label>
+                            <select id="docxMargins"
+                                style="width: 100%; padding: 0.5rem; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-primary); font-size: 0.9rem;">
+                                <option value="narrow" data-i18n="modal.export.docx.margins.narrow">Étroites (~1.27 cm)
+                                </option>
+                                <option value="normal" data-i18n="modal.export.docx.margins.normal">Normales (~2.54 cm)
+                                </option>
+                                <option value="wide" selected data-i18n="modal.export.docx.margins.wide">Larges (~3 cm)
+                                </option>
+                                <option value="editorial" data-i18n="modal.export.docx.margins.editorial">Éditoriales
+                                    (gauche 4 cm)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <!-- Row 2: Font & Size -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+                        <div>
+                            <label style="font-size: 0.85rem; font-weight: 500; display: block; margin-bottom: 0.3rem;"
+                                data-i18n="modal.export.docx.font">Police</label>
+                            <select id="docxFont"
+                                style="width: 100%; padding: 0.5rem; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-primary); font-size: 0.9rem;">
+                                <option value="Times New Roman" selected>Times New Roman</option>
+                                <option value="Georgia">Georgia</option>
+                                <option value="Garamond">Garamond</option>
+                                <option value="Palatino Linotype">Palatino Linotype</option>
+                                <option value="Book Antiqua">Book Antiqua</option>
+                                <option value="Crimson Pro">Crimson Pro</option>
+                                <option value="Arial">Arial</option>
+                                <option value="Calibri">Calibri</option>
+                                <option value="Cambria">Cambria</option>
+                                <option value="Courier New">Courier New</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="font-size: 0.85rem; font-weight: 500; display: block; margin-bottom: 0.3rem;"
+                                data-i18n="modal.export.docx.body_size">Taille du corps</label>
+                            <select id="docxBodySize"
+                                style="width: 100%; padding: 0.5rem; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-primary); font-size: 0.9rem;">
+                                <option value="20">10 pt</option>
+                                <option value="22">11 pt</option>
+                                <option value="24" selected>12 pt</option>
+                                <option value="26">13 pt</option>
+                                <option value="28">14 pt</option>
+                            </select>
+                        </div>
+                    </div>
+                    <!-- Row 3: Line spacing & Indent -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+                        <div>
+                            <label style="font-size: 0.85rem; font-weight: 500; display: block; margin-bottom: 0.3rem;"
+                                data-i18n="modal.export.docx.line_spacing">Interligne</label>
+                            <select id="docxLineSpacing"
+                                style="width: 100%; padding: 0.5rem; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-primary); font-size: 0.9rem;">
+                                <option value="240" data-i18n="modal.export.docx.spacing.single">Simple (1.0)</option>
+                                <option value="276" data-i18n="modal.export.docx.spacing.1_15">1.15</option>
+                                <option value="360" selected data-i18n="modal.export.docx.spacing.1_5">1.5</option>
+                                <option value="480" data-i18n="modal.export.docx.spacing.double">Double (2.0)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="font-size: 0.85rem; font-weight: 500; display: block; margin-bottom: 0.3rem;"
+                                data-i18n="modal.export.docx.indent">Alinéa (1ère ligne)</label>
+                            <select id="docxIndent"
+                                style="width: 100%; padding: 0.5rem; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-primary); font-size: 0.9rem;">
+                                <option value="0" data-i18n="modal.export.docx.indent.none">Aucun</option>
+                                <option value="360" data-i18n="modal.export.docx.indent.small">~0.63 cm</option>
+                                <option value="709" selected data-i18n="modal.export.docx.indent.standard">~1.25 cm
+                                    (Standard)</option>
+                                <option value="1440" data-i18n="modal.export.docx.indent.large">~2.54 cm</option>
+                            </select>
+                        </div>
+                    </div>
+                    <!-- Row 4: Header & Footer -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+                        <div>
+                            <label style="font-size: 0.85rem; font-weight: 500; display: block; margin-bottom: 0.3rem;"
+                                data-i18n="modal.export.docx.header_content">En-tête</label>
+                            <select id="docxHeaderContent"
+                                style="width: 100%; padding: 0.5rem; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-primary); font-size: 0.9rem;">
+                                <option value="title" selected data-i18n="modal.export.docx.header.title">Titre du roman
+                                </option>
+                                <option value="author" data-i18n="modal.export.docx.header.author">Nom de l'auteur
+                                </option>
+                                <option value="title_author" data-i18n="modal.export.docx.header.both">Titre — Auteur
+                                </option>
+                                <option value="none" data-i18n="modal.export.docx.header.none">Aucun</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="font-size: 0.85rem; font-weight: 500; display: block; margin-bottom: 0.3rem;"
+                                data-i18n="modal.export.docx.footer">Pied de page</label>
+                            <select id="docxFooter"
+                                style="width: 100%; padding: 0.5rem; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-primary); font-size: 0.9rem;">
+                                <option value="pagenum" selected data-i18n="modal.export.docx.footer.pagenum">Numéro de
+                                    page</option>
+                                <option value="none" data-i18n="modal.export.docx.footer.none">Aucun</option>
+                            </select>
+                        </div>
+                    </div>
+                    <!-- Row 5: Page Breaks -->
+                    <div style="margin-bottom: 0.75rem;">
+                        <label style="font-size: 0.85rem; font-weight: 500; display: block; margin-bottom: 0.3rem;"
+                            data-i18n="modal.export.docx.page_breaks">Sauts de page</label>
+                        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                            <label
+                                style="display: flex; align-items: center; gap: 0.4rem; cursor: pointer; font-size: 0.9rem;">
+                                <input type="checkbox" id="docxBreakBeforeAct" checked style="cursor: pointer;" />
+                                <span data-i18n="modal.export.docx.break_act">Avant chaque acte</span>
+                            </label>
+                            <label
+                                style="display: flex; align-items: center; gap: 0.4rem; cursor: pointer; font-size: 0.9rem;">
+                                <input type="checkbox" id="docxBreakBeforeChapter" checked style="cursor: pointer;" />
+                                <span data-i18n="modal.export.docx.break_chapter">Avant chaque chapitre</span>
+                            </label>
+                            <label
+                                style="display: flex; align-items: center; gap: 0.4rem; cursor: pointer; font-size: 0.9rem;">
+                                <input type="checkbox" id="docxBreakBeforeScene" style="cursor: pointer;" />
+                                <span data-i18n="modal.export.docx.break_scene">Avant chaque scène</span>
+                            </label>
+                        </div>
+                    </div>
+                    <!-- Row 6: Front Matter -->
+                    <div style="margin-bottom: 0.5rem;">
+                        <label style="font-size: 0.85rem; font-weight: 500; display: block; margin-bottom: 0.3rem;"
+                            data-i18n="modal.export.docx.front_matter_title">Pages liminaires</label>
+                        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                            <label
+                                style="display: flex; align-items: center; gap: 0.4rem; cursor: pointer; font-size: 0.9rem;">
+                                <input type="checkbox" id="docxIncludeTitlePage" checked style="cursor: pointer;" />
+                                <span data-i18n="modal.export.docx.title_page">Page de titre</span>
+                            </label>
+                            <label
+                                style="display: flex; align-items: center; gap: 0.4rem; cursor: pointer; font-size: 0.9rem;">
+                                <input type="checkbox" id="docxIncludeFrontMatter" checked style="cursor: pointer;" />
+                                <span data-i18n="modal.export.docx.front_matter">Dédicace, épigraphe…</span>
+                            </label>
+                        </div>
+                    </div>
                 </div>
             </div>
             <!-- General Options -->
