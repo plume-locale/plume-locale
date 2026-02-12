@@ -39,6 +39,7 @@ MODULE_CSS_FILES = [
 JS_ORDER = [
     # Vendor libraries (bundled)
     'vendor/driver.js.iife.js',
+    'vendor/docx.js',
     'vendor/idb.js',
     'js/01.app.refactor.js',
     # Localization Module
