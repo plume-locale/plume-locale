@@ -51,7 +51,55 @@ function executeRepositorySideEffect(repoSideEffect) {
 
 // --- NAVIGATION & ROUTING ---
 
-/**
+const NAVIGATION_ITEMS = [
+    { id: 'projects', icon: 'folder-open', label: 'nav.projects' },
+    { id: 'editor', icon: 'pen-line', label: 'nav.structure' },
+    { id: 'corkboard', icon: 'layout-grid', label: 'nav.corkboard' },
+    { id: 'plot', icon: 'trending-up', label: 'nav.plot' },
+    { id: 'arcs', icon: 'git-commit-horizontal', label: 'nav.arcs' },
+    { id: 'characters', icon: 'users', label: 'nav.characters' },
+    { id: 'world', icon: 'globe', label: 'nav.world' },
+    { id: 'codex', icon: 'book-open', label: 'nav.codex' },
+    { id: 'notes', icon: 'sticky-note', label: 'nav.notes' },
+    { id: 'mindmap', icon: 'git-branch', label: 'nav.mindmap' },
+    { id: 'relations', icon: 'link', label: 'nav.relations' },
+    { id: 'map', icon: 'map', label: 'nav.map' },
+    { id: 'timelineviz', icon: 'clock', label: 'nav.timeline' },
+    { id: 'stats', icon: 'bar-chart-3', label: 'nav.stats' },
+    { id: 'analysis', icon: 'scan-search', label: 'nav.analysis' },
+    { id: 'versions', icon: 'history', label: 'nav.snapshots' },
+    { id: 'thriller', icon: 'hat-glasses', label: 'nav.thriller' },
+    { id: 'storygrid', icon: 'grid-3x3', label: 'nav.storygrid' },
+    { id: 'investigation', icon: 'search', label: 'nav.investigation' },
+    { id: 'globalnotes', icon: 'layout', label: 'nav.globalnotes' },
+    { id: 'front_matter', icon: 'book-open-check', label: 'nav.front_matter' }
+];
+
+function renderSidebarAccordion() {
+    const container = document.getElementById('sidebarAccordionContent');
+    if (!container) return;
+
+    container.innerHTML = NAVIGATION_ITEMS.map(item => `
+        <div class="accordion-nav-item" onclick="switchView('${item.id}')" id="nav-item-${item.id}">
+            <i data-lucide="${item.icon}"></i>
+            <span data-i18n="${item.label}">${Localization.t(item.label)}</span>
+        </div>
+    `).join('');
+
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+function toggleSidebarAccordion() {
+    const accordion = document.getElementById('sidebarAccordion');
+    if (accordion) accordion.classList.toggle('open');
+}
+
+// Initial Render
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(renderSidebarAccordion, 100);
+});
+
+/*
  * Ferme tous les panneaux du toolsSidebar (versions, annotations, todos, arcs, plot).
  */
 function closeAllToolsSidebarPanels() {
@@ -128,14 +176,24 @@ function switchView(view) {
 
     currentView = view;
 
-    // Update header nav buttons
+    // Update Navigation Accordion
+    document.querySelectorAll('.accordion-nav-item').forEach(item => item.classList.remove('active'));
+    const navItem = document.getElementById(`nav-item-${view}`);
+    if (navItem) navItem.classList.add('active');
+
+    // Update Accordion Title
+    const currentNavItem = NAVIGATION_ITEMS.find(item => item.id === view);
+    const titleEl = document.getElementById('currentViewTitle');
+    if (titleEl && currentNavItem) {
+        titleEl.textContent = Localization.t(currentNavItem.label);
+    } else if (titleEl) {
+        titleEl.textContent = Localization.t('nav.' + view) || view;
+    }
+
+    // Legacy header cleanup (optional, keeping for safety if referenced elsewhere)
     document.querySelectorAll('[id^="header-tab-"]').forEach(btn => {
         btn.classList.remove('active');
     });
-    const headerBtn = document.getElementById(`header-tab-${view}`);
-    if (headerBtn) {
-        headerBtn.classList.add('active');
-    }
 
     // Éléments spécifiques à la vue Structure (Editor)
     const structureOnlyElements = [
@@ -675,6 +733,31 @@ function applyFont(fontName, panel = null) {
 
 
 /**
+ * Ouvre tout le livre et affiche tous les actes, chapitres et scènes de manière séquentielle.
+ */
+function openFullBook() {
+    if (window.innerWidth <= 900 && typeof closeMobileSidebar === 'function') {
+        closeMobileSidebar();
+    }
+
+    if (typeof saveToHistoryImmediate === 'function') saveToHistoryImmediate();
+
+    currentActId = 'all';
+    currentChapterId = null;
+    currentSceneId = null;
+
+    // Mise à jour visuelle sidebar
+    document.querySelectorAll('.act-header, .chapter-header, .scene-item').forEach(el => el.classList.remove('active'));
+    const fullBookItem = document.querySelector('#full-book-item .act-header');
+    if (fullBookItem) fullBookItem.classList.add('active');
+
+    // Rendu de l'éditeur complet
+    if (typeof renderFullBookEditor === 'function') {
+        renderFullBookEditor();
+    }
+}
+
+/**
  * Ouvre un acte complet et affiche tous ses chapitres et scènes de manière séquentielle.
  */
 function openAct(actId) {
@@ -960,9 +1043,26 @@ function setActiveScene(actId, chapterId, sceneId) {
     currentSceneId = sceneId;
 
     // Mettre à jour les titres et breadcrumbs si on est en vue Acte ou Chapitre
-    const act = project.acts.find(a => a.id === actId);
-    const chapter = act?.chapters.find(c => c.id === chapterId);
-    const scene = chapter?.scenes.find(s => s.id === sceneId);
+    let act = null;
+    let chapter = null;
+    let scene = null;
+
+    if (actId === 'all') {
+        project.acts.some(a => {
+            const ch = a.chapters.find(c => c.id === chapterId);
+            if (ch) {
+                act = a;
+                chapter = ch;
+                scene = ch.scenes.find(s => s.id === sceneId);
+                return true;
+            }
+            return false;
+        });
+    } else {
+        act = project.acts.find(a => a.id === actId);
+        chapter = act?.chapters.find(c => c.id === chapterId);
+        scene = chapter?.scenes.find(s => s.id === sceneId);
+    }
 
     if (scene) {
         // En vue chapitre
@@ -1220,25 +1320,40 @@ function renderEditor(act, chapter, scene) {
 
     editorView.innerHTML = `
         <div class="editor-header">
-            <div class="editor-breadcrumb">${act.title} > ${chapter.title}</div>
-            <div style="display: flex; align-items: center; gap: 1rem;">
-                <div class="editor-title" style="flex: 1;">${scene.title}${finalVersionBadge}</div>
-                <button class="btn btn-small" onclick="toggleFocusMode()" title="${Localization.t('editor.focus_mode_title')}" style="white-space: nowrap;">
-                    <i data-lucide="maximize" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>${Localization.t('editor.focus_mode')}
-                </button>
+            <div class="header-main-row">
+                <div class="editor-breadcrumb">
+                    <span class="breadcrumb-item">${act.title}</span>
+                    <span class="breadcrumb-separator">></span>
+                    <span class="breadcrumb-item">${chapter.title}</span>
+                    <span class="breadcrumb-separator">></span>
+                    <span class="breadcrumb-item scene-title-item">${scene.title}${finalVersionBadge}</span>
+                </div>
+                
+                <div class="header-right-tools">
+                    <div class="header-status" onclick="toggleSceneStatus(${act.id}, ${chapter.id}, ${scene.id}, event)">
+                        <span class="status-indicator status-${scene.status || 'draft'}"></span>
+                        <span class="status-label">${Localization.t('sidebar.status.' + (scene.status || 'draft'))}</span>
+                    </div>
+                    <div class="header-stats">
+                        <span id="sceneWordCount">${Localization.t('editor.word_count', [wordCount])}</span>
+                    </div>
+                    <button class="btn-focus-toggle" onclick="toggleFocusMode()" title="${Localization.t('editor.focus_mode_title')}">
+                        <i data-lucide="maximize" style="width:14px;height:14px;"></i>
+                    </button>
+                </div>
             </div>
-            <div class="editor-meta">
-                <span id="sceneWordCount">${Localization.t('editor.word_count', [wordCount])}</span>
-                <span>${Localization.t('editor.last_modified', [new Date(scene.updatedAt || Date.now()).toLocaleDateString(Localization.currentLocale === 'fr' ? 'fr-FR' : 'en-US')])}</span>
-            </div>
-            <div class="editor-synopsis">
-                <span class="synopsis-label"><i data-lucide="file-text" style="width:12px;height:12px;"></i> ${Localization.t('editor.synopsis_label')}</span>
-                <input type="text" 
-                       class="synopsis-input" 
-                       value="${(scene.synopsis || '').replace(/"/g, '&quot;')}" 
-                       placeholder="${Localization.t('editor.synopsis_placeholder')}"
-                       onchange="updateSceneSynopsis(${act.id}, ${chapter.id}, ${scene.id}, this.value)"
-                       oninput="this.style.width = Math.max(200, this.scrollWidth) + 'px'">
+            
+            <div class="header-summary-row">
+                <div class="summary-container">
+                    <div class="synopsis-label-box">
+                        <i data-lucide="file-text" style="width:14px;height:14px;color:var(--text-muted);"></i>
+                        <span class="synopsis-header-label">${Localization.t('editor.synopsis_label')}</span>
+                    </div>
+                    <textarea class="synopsis-input" 
+                              placeholder="${Localization.t('editor.synopsis_placeholder')}"
+                              onchange="updateSceneSynopsis(${act.id}, ${chapter.id}, ${scene.id}, this.value)"
+                              oninput="this.style.height = 'auto'; this.style.height = this.scrollHeight + 'px';">${(scene.synopsis || '')}</textarea>
+                </div>
             </div>
         </div>
 
@@ -1257,6 +1372,13 @@ function renderEditor(act, chapter, scene) {
     if (typeof lucide !== 'undefined') lucide.createIcons();
     if (typeof initializeColorPickers === 'function') initializeColorPickers();
 
+    // Auto-resize summary textarea on load
+    const synInput = document.querySelector('.synopsis-input');
+    if (synInput) {
+        synInput.style.height = 'auto';
+        synInput.style.height = synInput.scrollHeight + 'px';
+    }
+
     // Focus if empty
     setTimeout(() => {
         const editor = document.querySelector('.editor-textarea');
@@ -1264,11 +1386,28 @@ function renderEditor(act, chapter, scene) {
 
     }, 100);
 
-    // Initialize scene navigation toolbar
     setTimeout(() => {
         if (typeof initSceneNavigation === 'function') initSceneNavigation();
         if (typeof updateLiveTensionMeter === 'function') updateLiveTensionMeter(scene.content || '', { actId: act.id, chapterId: chapter.id, sceneId: scene.id });
     }, 200);
+}
+
+/**
+ * [MVVM : View]
+ * Met à jour uniquement l'indicateur de statut dans le header de l'éditeur.
+ */
+function updateEditorHeaderStatus(status, sceneId) {
+    // On met à jour tous les indicateurs de statut trouvés dans les headers d'éditeur
+    const statusDots = document.querySelectorAll('.editor-header .status-indicator');
+    const statusLabels = document.querySelectorAll('.editor-header .status-label');
+
+    statusDots.forEach(dot => {
+        dot.className = `status-indicator status-${status || 'draft'}`;
+    });
+
+    statusLabels.forEach(label => {
+        label.textContent = Localization.t('sidebar.status.' + (status || 'draft'));
+    });
 }
 
 /**
@@ -1358,18 +1497,31 @@ function renderActEditor(act) {
 
     editorView.innerHTML = `
         <div class="editor-header">
-            <div class="editor-breadcrumb">${act.title}</div>
-            <div style="display: flex; align-items: center; gap: 1rem;">
-                <div class="editor-title" id="actEditorTitle" style="flex: 1;">${act.title} - Tous les chapitres</div>
-                <button class="btn btn-small" onclick="toggleFocusMode()" title="Mode Focus (F11)" style="white-space: nowrap;">
-                    <i data-lucide="maximize" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Focus
-                </button>
+            <div class="header-main-row">
+                <div class="editor-breadcrumb">
+                    <span class="breadcrumb-item scene-title-item">${act.title}</span>
+                </div>
+                
+                <div class="header-right-tools">
+                    <div class="header-stats">
+                        <span>${totalWords.toLocaleString()} mots au total</span>
+                    </div>
+                    <button class="btn-focus-toggle" onclick="toggleFocusMode()" title="${Localization.t('editor.focus_mode_title')}">
+                        <i data-lucide="maximize" style="width:14px;height:14px;"></i>
+                    </button>
+                </div>
             </div>
-            <div class="editor-meta">
-                <span>${totalWords} mots au total</span>
-                <span>${act.chapters.length} chapitre${act.chapters.length > 1 ? 's' : ''}</span>
-                <span>${allScenes.length} scène${allScenes.length > 1 ? 's' : ''}</span>
-                <span>Dernière modification : ${new Date(act.updatedAt || Date.now()).toLocaleDateString('fr-FR')}</span>
+            
+            <div class="header-summary-row">
+                <div class="summary-container">
+                    <div class="synopsis-label-box">
+                        <i data-lucide="info" style="width:14px;height:14px;color:var(--text-muted);"></i>
+                        <span class="synopsis-header-label">INFOS</span>
+                    </div>
+                    <div class="synopsis-input" style="font-style: normal;">
+                        ${act.chapters.length} chapitre${act.chapters.length > 1 ? 's' : ''}, ${allScenes.length} scène${allScenes.length > 1 ? 's' : ''}
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -1385,7 +1537,7 @@ function renderActEditor(act) {
         <div class="chapter-progress-indicator" id="actProgressIndicator">
             ${allScenes.map((sceneData, index) => {
         const heightPercent = totalWords > 0 ? (sceneData.wordCount / totalWords) * 100 : (100 / allScenes.length);
-        return `<div class="progress-scene-segment"
+        return `<div class="progress-scene-segment status-${sceneData.scene.status || 'draft'}"
                             data-scene-id="${sceneData.scene.id}"
                             data-scene-index="${index}"
                             style="height: ${heightPercent}%"
@@ -1419,6 +1571,169 @@ function renderActEditor(act) {
         if (typeof initSceneNavigation === 'function') initSceneNavigation();
         if (typeof updateLiveTensionMeter === 'function' && allScenes.length > 0) {
             updateLiveTensionMeter(allScenes[0].scene.content || '', { actId: act.id, chapterId: allScenes[0].chapterId, sceneId: allScenes[0].scene.id });
+        }
+    }, 200);
+}
+
+/**
+ * [MVVM : View]
+ * Génère et affiche l'éditeur complet pour TOUT le livre.
+ */
+function renderFullBookEditor() {
+    const editorView = document.getElementById('editorView');
+    if (!editorView) return;
+
+    let totalWords = 0;
+    let totalChaptersCount = 0;
+    let totalScenesCount = 0;
+    let allScenes = [];
+    let contentHTML = '';
+
+    project.acts.forEach(act => {
+        contentHTML += `
+            <div class="act-separator" style="background: var(--bg-secondary); padding: 1rem 1.5rem; margin-top: 2rem; border-radius: 8px; border-left: 4px solid var(--accent-gold);">
+                <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 1px; margin-bottom: 0.25rem;">Acte</div>
+                <div style="font-size: 1.2rem; font-weight: 700; color: var(--text-primary);">${act.title}</div>
+            </div>`;
+
+        act.chapters.forEach((chapter, chapterIndex) => {
+            if (chapter.scenes.length === 0) return;
+            totalChaptersCount++;
+
+            let chapterWords = 0;
+            let chapterHTML = '';
+
+            chapter.scenes.forEach((scene, sceneIndex) => {
+                totalScenesCount++;
+                const wc = typeof getWordCount === 'function' ? getWordCount(scene.content) : (scene.wordCount || 0);
+                chapterWords += wc;
+                totalWords += wc;
+
+                const hasFinalVersion = scene.versions && scene.versions.some(v => v.isFinal === true);
+                const finalVersion = hasFinalVersion ? scene.versions.find(v => v.isFinal === true) : null;
+                const finalVersionBadge = hasFinalVersion
+                    ? `<span style="display: inline-flex; align-items: center; gap: 0.25rem; background: var(--accent-gold); color: var(--bg-accent); font-size: 0.7rem; font-weight: 600; padding: 0.2rem 0.5rem; border-radius: 10px; margin-left: 0.5rem;" title="Version finale : ${finalVersion.number}"><i data-lucide="star" style="width:10px;height:10px;fill:currentColor;"></i> ${finalVersion.number}</span>`
+                    : '';
+
+                allScenes.push({ scene, wordCount: wc, chapterId: chapter.id, chapterTitle: chapter.title, actId: act.id });
+
+                chapterHTML += `
+                    <div class="act-scene-block" data-scene-id="${scene.id}" data-chapter-id="${chapter.id}" data-scene-index="${allScenes.length - 1}">
+                        <div class="scene-separator">
+                            <div class="scene-separator-title">${scene.title}${finalVersionBadge}</div>
+                            <div class="scene-separator-meta">
+                                <span>${wc} mots</span>
+                                <textarea class="scene-separator-synopsis" placeholder="Ajouter un résumé..." onblur="saveSceneSynopsis(${act.id}, ${chapter.id}, ${scene.id}, this)" onkeydown="handleSynopsisKeydown(event, this)" rows="1" oninput="autoResizeSynopsis(this)">${scene.synopsis || ''}</textarea>
+                            </div>
+                        </div>
+                        <div class="editor-textarea" contenteditable="true" spellcheck="true"
+                             data-scene-id="${scene.id}"
+                             data-chapter-id="${chapter.id}"
+                             data-act-id="${act.id}"
+                             onfocus="setActiveScene(${act.id}, ${chapter.id}, ${scene.id})"
+                             oninput="updateActSceneContent(${act.id}, ${chapter.id}, ${scene.id})">${scene.content || ''}</div>
+                    </div>`;
+            });
+
+            contentHTML += `
+                <div class="act-chapter-block" data-chapter-id="${chapter.id}">
+                    <div class="chapter-separator">
+                        <div class="chapter-separator-title">${chapter.title}</div>
+                        <div class="chapter-separator-meta">
+                            <span>${chapterWords} mots</span>
+                            <span>${chapter.scenes.length} scène${chapter.scenes.length > 1 ? 's' : ''}</span>
+                        </div>
+                    </div>
+                    ${chapterHTML}
+                </div>`;
+        });
+    });
+
+    editorView.innerHTML = `
+        <div class="editor-header">
+            <div class="header-main-row">
+                <div class="editor-breadcrumb">
+                    <span class="breadcrumb-item scene-title-item">TOUT LE LIVRE</span>
+                </div>
+                
+                <div class="header-right-tools">
+                    <div class="header-stats">
+                        <span>${totalWords.toLocaleString()} mots au total</span>
+                    </div>
+                    <button class="btn-focus-toggle" onclick="toggleFocusMode()" title="${Localization.t('editor.focus_mode_title')}">
+                        <i data-lucide="maximize" style="width:14px;height:14px;"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="header-summary-row">
+                <div class="summary-container">
+                    <div class="synopsis-label-box">
+                        <i data-lucide="info" style="width:14px;height:14px;color:var(--text-muted);"></i>
+                        <span class="synopsis-header-label">INFOS</span>
+                    </div>
+                    <div class="synopsis-input" style="font-style: normal;">
+                        ${project.acts.length} actes, ${totalChaptersCount} chapitres, ${totalScenesCount} scènes
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button class="toolbar-mobile-toggle" onclick="toggleEditorToolbar()">
+            <span id="toolbarToggleText"><i data-lucide="pen-line" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Afficher les outils</span>
+        </button>
+        
+        <div class="editor-toolbar" id="editorToolbar">
+            ${getEditorToolbarHTML()}
+        </div>
+
+        <!-- Indicateur de position vertical -->
+        <div class="chapter-progress-indicator" id="actProgressIndicator">
+            ${(() => {
+            let indicatorHTML = '';
+            let lastActId = null;
+            allScenes.forEach((sceneData, index) => {
+                if (lastActId !== null && lastActId !== sceneData.actId) {
+                    indicatorHTML += `<div class="progress-act-separator" title="Séparateur d'acte"></div>`;
+                }
+                lastActId = sceneData.actId;
+                const heightPercent = totalWords > 0 ? (sceneData.wordCount / totalWords) * 100 : (100 / allScenes.length);
+                const status = sceneData.scene.status || 'draft';
+                const actName = project.acts.find(a => a.id === sceneData.actId)?.title || '';
+                indicatorHTML += `<div class="progress-scene-segment status-${status}"
+                                            data-scene-id="${sceneData.scene.id}"
+                                            data-scene-index="${index}"
+                                            style="height: ${heightPercent}%"
+                                            title="${actName} : ${sceneData.chapterTitle} - ${sceneData.scene.title} (${sceneData.wordCount} mots)"
+                                            onclick="scrollToActScene(${index})"></div>`;
+            });
+            return indicatorHTML;
+        })()}
+            <div class="progress-current-indicator" id="progressCurrentIndicator"></div>
+        </div>
+
+        <div class="editor-content" id="actEditorContent">
+            ${contentHTML}
+        </div>`;
+
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+    if (typeof initializeColorPickers === 'function') initializeColorPickers();
+
+    // Initialiser le tracking de scroll
+    setTimeout(() => {
+        initActScrollTracking('all', allScenes);
+        document.querySelectorAll('.scene-separator-synopsis').forEach(autoResizeSynopsis);
+
+        if (typeof RevisionViewModel !== 'undefined' && RevisionViewModel.updateAnnotationsButton) {
+            RevisionViewModel.updateAnnotationsButton();
+        }
+    }, 100);
+
+    // Initialize scene navigation toolbar
+    setTimeout(() => {
+        if (typeof initSceneNavigation === 'function') initSceneNavigation();
+        if (typeof updateLiveTensionMeter === 'function' && allScenes.length > 0) {
+            updateLiveTensionMeter(allScenes[0].scene.content || '', { actId: allScenes[0].actId, chapterId: allScenes[0].chapterId, sceneId: allScenes[0].scene.id });
         }
     }, 200);
 }
@@ -1470,17 +1785,33 @@ function renderChapterEditor(act, chapter) {
 
     editorView.innerHTML = `
         <div class="editor-header">
-            <div class="editor-breadcrumb">${act.title} > ${chapter.title}</div>
-            <div style="display: flex; align-items: center; gap: 1rem;">
-                <div class="editor-title" id="chapterEditorTitle" style="flex: 1;">${chapter.title} - Toutes les scènes</div>
-                <button class="btn btn-small" onclick="toggleFocusMode()" title="Mode Focus (F11)" style="white-space: nowrap;">
-                    <i data-lucide="maximize" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Focus
-                </button>
+            <div class="header-main-row">
+                <div class="editor-breadcrumb">
+                    <span class="breadcrumb-item">${act.title}</span>
+                    <span class="breadcrumb-separator">></span>
+                    <span class="breadcrumb-item scene-title-item">${chapter.title}</span>
+                </div>
+                
+                <div class="header-right-tools">
+                    <div class="header-stats">
+                        <span>${totalWords.toLocaleString()} mots au total</span>
+                    </div>
+                    <button class="btn-focus-toggle" onclick="toggleFocusMode()" title="${Localization.t('editor.focus_mode_title')}">
+                        <i data-lucide="maximize" style="width:14px;height:14px;"></i>
+                    </button>
+                </div>
             </div>
-            <div class="editor-meta">
-                <span>${totalWords} mots au total</span>
-                <span>${chapter.scenes.length} scène${chapter.scenes.length > 1 ? 's' : ''}</span>
-                <span>Dernière modification : ${new Date(chapter.updatedAt || Date.now()).toLocaleDateString('fr-FR')}</span>
+            
+            <div class="header-summary-row">
+                <div class="summary-container">
+                    <div class="synopsis-label-box">
+                        <i data-lucide="info" style="width:14px;height:14px;color:var(--text-muted);"></i>
+                        <span class="synopsis-header-label">INFOS</span>
+                    </div>
+                    <div class="synopsis-input" style="font-style: normal;">
+                        ${chapter.scenes.length} scène${chapter.scenes.length > 1 ? 's' : ''}
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -1497,7 +1828,7 @@ function renderChapterEditor(act, chapter) {
             ${chapter.scenes.map((scene, index) => {
         const wordCount = sceneWordCounts[index];
         const heightPercent = totalWords > 0 ? (wordCount / totalWords) * 100 : (100 / chapter.scenes.length);
-        return `<div class="progress-scene-segment"
+        return `<div class="progress-scene-segment status-${scene.status || 'draft'}"
                             data-scene-id="${scene.id}"
                             data-scene-index="${index}"
                             style="height: ${heightPercent}%"
@@ -1579,9 +1910,12 @@ function updateChapterSceneContent(actId, chapterId, sceneId) {
     const editor = document.querySelector(`.editor-textarea[data-scene-id="${sceneId}"]`);
     if (!editor) return;
 
-    const act = project.acts.find(a => a.id === actId);
-    const chapter = act?.chapters.find(c => c.id === chapterId);
-    const scene = chapter?.scenes.find(s => s.id === sceneId);
+    const act = project.acts.find(a => a.id == actId);
+    if (!act || !act.chapters) return;
+    const chapter = act.chapters.find(c => c.id == chapterId);
+    if (!chapter) return;
+
+    const scene = chapter.scenes.find(s => s.id == sceneId);
     if (!scene) return;
 
     scene.content = editor.innerHTML;
@@ -1601,7 +1935,9 @@ function updateChapterSceneContent(actId, chapterId, sceneId) {
     if (typeof trackWritingSession === 'function') trackWritingSession();
 
     // Recalculer les proportions de l'indicateur
-    updateChapterProgressIndicator(chapter);
+    if (typeof updateEditorProgressIndicator === 'function') {
+        updateEditorProgressIndicator();
+    }
 
     if (typeof updateLiveTensionMeter === 'function') {
         updateLiveTensionMeter(editor.innerHTML, { actId, chapterId, sceneId });
@@ -1838,9 +2174,9 @@ function updateActSceneContent(actId, chapterId, sceneId) {
     const editor = document.querySelector(`.editor-textarea[data-scene-id="${sceneId}"][data-chapter-id="${chapterId}"]`);
     if (!editor) return;
 
-    const act = project.acts.find(a => a.id === actId);
-    const chapter = act?.chapters.find(c => c.id === chapterId);
-    const scene = chapter?.scenes.find(s => s.id === sceneId);
+    const act = project.acts.find(a => a.id == actId);
+    const chapter = act?.chapters.find(c => c.id == chapterId);
+    const scene = chapter?.scenes.find(s => s.id == sceneId);
     if (!scene) return;
 
     scene.content = editor.innerHTML;
@@ -1860,13 +2196,46 @@ function updateActSceneContent(actId, chapterId, sceneId) {
     if (typeof trackWritingSession === 'function') trackWritingSession();
 
     // Recalculer les proportions de l'indicateur
-    updateActProgressIndicator(act);
+    if (typeof updateEditorProgressIndicator === 'function') {
+        updateEditorProgressIndicator();
+    }
 
     if (typeof updateLiveTensionMeter === 'function') {
         updateLiveTensionMeter(editor.innerHTML);
     }
 
     if (typeof autoDetectLinksDebounced === 'function') autoDetectLinksDebounced();
+}
+
+/**
+ * [MVVM : View]
+ * Met à jour les proportions de l'indicateur de progression pour tout le livre.
+ */
+function updateFullBookProgressIndicator() {
+    let totalWords = 0;
+    const allScenes = [];
+
+    project.acts.forEach(act => {
+        act.chapters.forEach(chapter => {
+            chapter.scenes.forEach(scene => {
+                const wc = typeof getWordCount === 'function' ? getWordCount(scene.content) : (scene.wordCount || 0);
+                allScenes.push({ scene, wordCount: wc, chapterTitle: chapter.title });
+                totalWords += wc;
+            });
+        });
+    });
+
+    allScenes.forEach((sceneData, index) => {
+        const segment = document.querySelector(`.progress-scene-segment[data-scene-index="${index}"]`);
+        if (segment) {
+            const heightPercent = totalWords > 0 ? (sceneData.wordCount / totalWords) * 100 : (100 / allScenes.length);
+            const status = sceneData.scene.status || 'draft';
+            segment.style.height = `${heightPercent}%`;
+            segment.className = `progress-scene-segment status-${status}${segment.classList.contains('active') ? ' active' : ''}`;
+            const actName = project.acts.find(a => a.chapters.some(ch => ch.id === sceneData.chapterId))?.title || '';
+            segment.title = `${actName} : ${sceneData.chapterTitle} - ${sceneData.scene.title} (${sceneData.wordCount} mots)`;
+        }
+    });
 }
 
 /**
@@ -1889,8 +2258,60 @@ function updateActProgressIndicator(act) {
         const segment = document.querySelector(`.progress-scene-segment[data-scene-index="${index}"]`);
         if (segment) {
             const heightPercent = totalWords > 0 ? (sceneData.wordCount / totalWords) * 100 : (100 / allScenes.length);
+            const status = sceneData.scene.status || 'draft';
             segment.style.height = `${heightPercent}%`;
+            segment.className = `progress-scene-segment status-${status}${segment.classList.contains('active') ? ' active' : ''}`;
             segment.title = `${sceneData.chapterTitle} - ${sceneData.scene.title} (${sceneData.wordCount} mots)`;
+        }
+    });
+}
+
+/**
+ * [MVVM : View]
+ * Met à jour dynamiquement l'indicateur de progression actif.
+ */
+function updateEditorProgressIndicator() {
+    if (typeof currentActId !== 'undefined' && currentActId === 'all') {
+        updateFullBookProgressIndicator();
+    } else if (typeof currentActId !== 'undefined' && currentActId !== null) {
+        const act = project.acts.find(a => a.id === currentActId);
+        if (!act) return;
+
+        // Si on est en vue chapitre (un seul indicateur pour le chapitre)
+        const chapterIndicator = document.getElementById('chapterProgressIndicator');
+        if (chapterIndicator && typeof currentChapterId !== 'undefined') {
+            const chapter = act.chapters.find(c => c.id === currentChapterId);
+            if (chapter) updateChapterProgressIndicator(chapter);
+        } else {
+            // Vue Acte
+            updateActProgressIndicator(act);
+        }
+    }
+}
+
+/**
+ * [MVVM : View]
+ * Met à jour les proportions de l'indicateur de progression du chapitre.
+ */
+function updateChapterProgressIndicator(chapter) {
+    let totalWords = 0;
+    const sceneWordCounts = [];
+
+    chapter.scenes.forEach(scene => {
+        const wc = typeof getWordCount === 'function' ? getWordCount(scene.content) : (scene.wordCount || 0);
+        sceneWordCounts.push(wc);
+        totalWords += wc;
+    });
+
+    chapter.scenes.forEach((scene, index) => {
+        const segment = document.querySelector(`#chapterProgressIndicator .progress-scene-segment[data-scene-index="${index}"]`);
+        if (segment) {
+            const wc = sceneWordCounts[index];
+            const heightPercent = totalWords > 0 ? (wc / totalWords) * 100 : (100 / chapter.scenes.length);
+            const status = scene.status || 'draft';
+            segment.style.height = `${heightPercent}%`;
+            segment.className = `progress-scene-segment status-${status}${segment.classList.contains('active') ? ' active' : ''}`;
+            segment.title = `${scene.title} (${wc} mots)`;
         }
     });
 }
@@ -1914,7 +2335,7 @@ function initActScrollTracking(actId, allScenes) {
 
     if (!editorContent || !indicator) return;
 
-    const act = project.acts.find(a => a.id === actId);
+    const act = actId === 'all' ? { title: 'Tout le livre' } : project.acts.find(a => a.id === actId);
     if (!act) return;
 
     let currentSceneIndex = 0;

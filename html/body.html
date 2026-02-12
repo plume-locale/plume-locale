@@ -239,107 +239,32 @@
             <button class="mobile-nav-toggle-btn" onclick="toggleMobileNav()" id="mobileNavToggleBtn">
                 <i data-lucide="menu"></i>
             </button>
-            <nav class="header-nav">
-                <!-- Section 1 : Structure, Tableau, Intrigue -->
-                <div class="nav-group">
-                    <button class="nav-btn active" onclick="switchView('projects')" id="header-tab-projects">
-                        <span class="nav-btn-icon"><i data-lucide="folder-open"></i></span>
-                        <span class="nav-btn-text" data-i18n="nav.projects">Projets</span>
+
+            <!-- Navigation déplacée dans l'accordéon latérale -->
+            <div class="header-nav" style="display: none;"></div>
+
+            <!-- Search Bar + Global Actions -->
+            <div class="search-container header-search">
+                <div class="header-global-actions">
+                    <button class="header-action-btn" onclick="undo()" id="headerUndoBtn" title="Annuler (Ctrl+Z)"
+                        data-i18n-title="header.undo" disabled>
+                        <i data-lucide="undo-2"></i>
                     </button>
-                    <button class="nav-btn" onclick="switchView('editor')" id="header-tab-editor">
-                        <span class="nav-btn-icon"><i data-lucide="pen-line"></i></span>
-                        <span class="nav-btn-text" data-i18n="nav.structure">Structure</span>
-                    </button>
-                    <button class="nav-btn" onclick="switchView('front_matter')" id="header-tab-front_matter">
-                        <span class="nav-btn-icon"><i data-lucide="book-open-check"></i></span>
-                        <span class="nav-btn-text" data-i18n="nav.front_matter">Liminaires</span>
-                    </button>
-                    <button class="nav-btn" onclick="switchView('corkboard')" id="header-tab-corkboard">
-                        <span class="nav-btn-icon"><i data-lucide="layout-grid"></i></span>
-                        <span class="nav-btn-text" data-i18n="nav.corkboard">Tableau</span>
-                    </button>
-                    <button class="nav-btn" onclick="switchView('plot')" id="header-tab-plot">
-                        <span class="nav-btn-icon"><i data-lucide="trending-up"></i></span>
-                        <span class="nav-btn-text" data-i18n="nav.plot">Intrigue</span>
-                    </button>
-                    <button class="nav-btn" onclick="switchView('arcs')" id="header-tab-arcs">
-                        <span class="nav-btn-icon"><i data-lucide="git-commit-horizontal"></i></span>
-                        <span class="nav-btn-text" data-i18n="nav.arcs">Arcs</span>
-                    </button>
-                    <button class="nav-btn" onclick="switchView('thriller')" id="header-tab-thriller">
-                        <span class="nav-btn-icon"><i data-lucide="hat-glasses"></i></span>
-                        <span class="nav-btn-text" data-i18n="nav.thriller">Thriller</span>
-                    </button>
-                    <button class="nav-btn" onclick="switchView('storygrid')" id="header-tab-storygrid">
-                        <span class="nav-btn-icon"><i data-lucide="grid-3x3"></i></span>
-                        <span class="nav-btn-text" data-i18n="nav.storygrid">StoryGrid</span>
-                    </button>
-                    <button class="nav-btn" onclick="switchView('investigation')" id="header-tab-investigation">
-                        <span class="nav-btn-icon"><i data-lucide="search"></i></span>
-                        <span class="nav-btn-text" data-i18n="nav.investigation">Enquête</span>
-                    </button>
-                    <button class="nav-btn" onclick="switchView('globalnotes')" id="header-tab-globalnotes">
-                        <span class="nav-btn-icon"><i data-lucide="layout"></i></span>
-                        <span class="nav-btn-text" data-i18n="nav.globalnotes">globalnotes</span>
+                    <button class="header-action-btn" onclick="redo()" id="headerRedoBtn" title="Rétablir (Ctrl+Y)"
+                        data-i18n-title="header.redo" disabled>
+                        <i data-lucide="redo-2"></i>
                     </button>
                 </div>
-                <!-- Section 2 : Personnages, Univers, Codex, Notes -->
-                <div class="nav-group">
-                    <button class="nav-btn" onclick="switchView('characters')" id="header-tab-characters">
-                        <span class="nav-btn-icon"><i data-lucide="users"></i></span>
-                        <span class="nav-btn-text" data-i18n="nav.characters">Personnages</span>
-                    </button>
-                    <button class="nav-btn" onclick="switchView('world')" id="header-tab-world">
-                        <span class="nav-btn-icon"><i data-lucide="globe"></i></span>
-                        <span class="nav-btn-text" data-i18n="nav.world">Univers</span>
-                    </button>
-                    <button class="nav-btn" onclick="switchView('codex')" id="header-tab-codex">
-                        <span class="nav-btn-icon"><i data-lucide="book-open"></i></span>
-                        <span class="nav-btn-text" data-i18n="nav.codex">Codex</span>
-                    </button>
-                    <button class="nav-btn" onclick="switchView('notes')" id="header-tab-notes">
-                        <span class="nav-btn-icon"><i data-lucide="sticky-note"></i></span>
-                        <span class="nav-btn-text" data-i18n="nav.notes">Notes</span>
-                    </button>
+                <div class="search-input-wrapper">
+                    <input type="text" class="search-input" id="globalSearch"
+                        placeholder="Rechercher dans tout le projet..."
+                        data-i18n-placeholder="sidebar.search.placeholder" oninput="performGlobalSearch(this.value)"
+                        onfocus="this.select()" />
+                    <i data-lucide="search" class="search-icon"></i>
                 </div>
-                <!-- Section 3 : Mindmap, Relations, Carte, Timeline -->
-                <div class="nav-group">
-                    <button class="nav-btn" onclick="switchView('mindmap')" id="header-tab-mindmap">
-                        <span class="nav-btn-icon"><i data-lucide="git-branch"></i></span>
-                        <span class="nav-btn-text" data-i18n="nav.mindmap">Mindmap</span>
-                    </button>
-                    <button class="nav-btn" onclick="switchView('relations')" id="header-tab-relations">
-                        <span class="nav-btn-icon"><i data-lucide="link"></i></span>
-                        <span class="nav-btn-text" data-i18n="nav.relations">Relations</span>
-                    </button>
-                    <button class="nav-btn" onclick="switchView('map')" id="header-tab-map">
-                        <span class="nav-btn-icon"><i data-lucide="map"></i></span>
-                        <span class="nav-btn-text" data-i18n="nav.map">Carte</span>
-                    </button>
-                    <button class="nav-btn" onclick="switchView('timelineviz')" id="header-tab-timeline-viz">
-                        <span class="nav-btn-icon"><i data-lucide="clock"></i></span>
-                        <span class="nav-btn-text" data-i18n="nav.timeline">Timeline</span>
-                    </button>
-                </div>
-                <!-- Section 4 : Stats, Analyse -->
-                <div class="nav-group">
-                    <button class="nav-btn" onclick="switchView('stats')" id="header-tab-stats">
-                        <span class="nav-btn-icon"><i data-lucide="bar-chart-3"></i></span>
-                        <span class="nav-btn-text" data-i18n="nav.stats">Stats</span>
-                    </button>
-                    <button class="nav-btn" onclick="switchView('analysis')" id="header-tab-analysis">
-                        <span class="nav-btn-icon"><i data-lucide="scan-search"></i></span>
-                        <span class="nav-btn-text" data-i18n="nav.analysis">Analyse</span>
-                    </button>
-                </div>
-                <!-- Section 5 : Snapshots -->
-                <div class="nav-group">
-                    <button class="nav-btn" onclick="switchView('versions')" id="header-tab-versions">
-                        <span class="nav-btn-icon"><i data-lucide="history"></i></span>
-                        <span class="nav-btn-text" data-i18n="nav.snapshots">Snapshots</span>
-                    </button>
-                </div>
-            </nav>
+                <div class="search-results" id="searchResults"></div>
+            </div>
+
             <!-- Actions à droite -->
             <div class="header-actions">
                 <div id="headerStatsContainer"
@@ -360,14 +285,6 @@
                     <span class="storage-icon"><i data-lucide="hard-drive"></i></span>
                     <span id="storage-percentage">...</span>
                 </div>
-                <button class="header-action-btn" onclick="undo()" id="headerUndoBtn" title="Annuler (Ctrl+Z)"
-                    data-i18n-title="header.undo" disabled>
-                    <i data-lucide="undo-2"></i>
-                </button>
-                <button class="header-action-btn" onclick="redo()" id="headerRedoBtn" title="Rétablir (Ctrl+Y)"
-                    data-i18n-title="header.redo" disabled>
-                    <i data-lucide="redo-2"></i>
-                </button>
                 <button class="header-action-btn" onclick="togglePomodoroPopup()" id="pomodoroHeaderBtn"
                     title="Timer Pomodoro" data-i18n-title="header.pomodoro">
                     <i data-lucide="timer"></i>
@@ -384,8 +301,8 @@
                     data-i18n-title="header.themes" id="headerThemesBtn">
                     <i data-lucide="palette"></i>
                 </button>
-                <button class="header-action-btn" onclick="InterfaceCustomizerViewModel.startEditing()" title="Personnaliser l'interface"
-                    data-i18n-title="header.interface" id="headerInterfaceBtn">
+                <button class="header-action-btn" onclick="InterfaceCustomizerViewModel.startEditing()"
+                    title="Personnaliser l'interface" data-i18n-title="header.interface" id="headerInterfaceBtn">
                     <i data-lucide="settings-2"></i>
                 </button>
 
@@ -473,188 +390,197 @@
         </div>
         <!-- Conteneur principal (sidebar + versions + éditeur) -->
         <div class="app-content">
-            <!-- Sidebar Navigation -->
-            <div class="sidebar" id="sidebar">
-                <!-- Poignée de redimensionnement -->
-                <div class="sidebar-resize-handle" id="sidebarResizeHandle">
-                    <div class="resize-handle-line"></div>
-                </div>
-                <div class="sidebar-header">
-                    <div class="search-container">
-                        <input type="text" class="search-input" id="globalSearch"
-                            placeholder="Rechercher dans tout le projet..."
-                            data-i18n-placeholder="sidebar.search.placeholder" oninput="performGlobalSearch(this.value)"
-                            onfocus="this.select()" />
-                        <i data-lucide="search" class="search-icon"></i>
-                        <div class="search-results" id="searchResults"></div>
+            <!-- Sidebar Wrapper (Column) -->
+            <div class="sidebar-column">
+                <!-- Sidebar Accordion (New Navigation) -->
+                <div class="sidebar-accordion open" id="sidebarAccordion">
+                    <div class="sidebar-accordion-header" onclick="toggleSidebarAccordion()">
+                        <div class="sidebar-accordion-title">
+                            <i data-lucide="menu" class="accordion-icon"></i>
+                            <span id="currentViewTitle">Navigation</span>
+                        </div>
+                        <i data-lucide="chevron-down" class="accordion-chevron"></i>
+                    </div>
+                    <div class="sidebar-accordion-content" id="sidebarAccordionContent">
+                        <!-- Navigation Items will be injected here via JS -->
                     </div>
                 </div>
-                <!-- Barre de progression globale -->
-                <div class="project-progress-bar" id="projectProgressBar">
-                    <div class="progress-stats">
-                        <span id="progressStatsText">0 scènes</span>
-                        <span id="progressPercent">0%</span>
+
+                <!-- Sidebar Navigation -->
+                <div class="sidebar" id="sidebar">
+                    <!-- Poignée de redimensionnement -->
+                    <div class="sidebar-resize-handle" id="sidebarResizeHandle">
+                        <div class="resize-handle-line"></div>
                     </div>
-                    <div class="progress-track">
-                        <div class="progress-segment complete" id="progressComplete" style="width: 0%"></div>
-                        <div class="progress-segment review" id="progressReview" style="width: 0%"></div>
-                        <div class="progress-segment progress" id="progressProgress" style="width: 0%"></div>
-                        <div class="progress-segment draft" id="progressDraft" style="width: 0%"></div>
+
+                    <!-- Barre de progression globale -->
+                    <div class="project-progress-bar" id="projectProgressBar">
+                        <div class="progress-stats">
+                            <span id="progressStatsText">0 scènes</span>
+                            <span id="progressPercent">0%</span>
+                        </div>
+                        <div class="progress-track">
+                            <div class="progress-segment complete" id="progressComplete" style="width: 0%"></div>
+                            <div class="progress-segment review" id="progressReview" style="width: 0%"></div>
+                            <div class="progress-segment progress" id="progressProgress" style="width: 0%"></div>
+                            <div class="progress-segment draft" id="progressDraft" style="width: 0%"></div>
+                        </div>
                     </div>
-                </div>
-                <!-- Filtres de statut -->
-                <div class="status-filters" id="statusFilters">
-                    <button class="status-filter-btn draft active" onclick="toggleStatusFilter('draft')"
-                        data-status="draft">
-                        <span class="status-filter-dot draft"></span>
-                        <span data-i18n="sidebar.status.draft">Brouillon</span>
-                        <span class="status-filter-count" id="countDraft">0</span>
-                    </button>
-                    <button class="status-filter-btn progress active" onclick="toggleStatusFilter('progress')"
-                        data-status="progress">
-                        <span class="status-filter-dot progress"></span>
-                        <span data-i18n="sidebar.status.progress">En cours</span>
-                        <span class="status-filter-count" id="countProgress">0</span>
-                    </button>
-                    <button class="status-filter-btn complete active" onclick="toggleStatusFilter('complete')"
-                        data-status="complete">
-                        <span class="status-filter-dot complete"></span>
-                        <span data-i18n="sidebar.status.complete">Terminé</span>
-                        <span class="status-filter-count" id="countComplete">0</span>
-                    </button>
-                    <button class="status-filter-btn review active" onclick="toggleStatusFilter('review')"
-                        data-status="review">
-                        <span class="status-filter-dot review"></span>
-                        <span data-i18n="sidebar.status.review">À réviser</span>
-                        <span class="status-filter-count" id="countReview">0</span>
-                    </button>
-                </div>
-                <!-- Outils de scène -->
-                <div class="scene-tools" id="sceneTools">
-                    <button class="scene-tool-btn" onclick="toggleVersionsSidebar()" id="headerVersionsToggle"
-                        title="Afficher/masquer les versions de scène">
-                        <i data-lucide="git-branch"></i>
-                        <span data-i18n="tool.versions">Versions</span>
-                    </button>
-                    <button class="scene-tool-btn" onclick="toggleAnnotationsPanel()" id="sidebarAnnotationsBtn"
-                        title="Afficher/masquer les annotations" data-i18n-title="tool.annotations">
-                        <i data-lucide="message-square"></i>
-                        <span data-i18n="tool.annotations">Annotations</span>
-                        <span class="scene-tool-badge" id="annotationsBadge" style="display: none">0</span>
-                    </button>
-                    <button class="scene-tool-btn" onclick="toggleTodosPanel()" id="sidebarTodosBtn"
-                        title="Afficher/masquer les TODOs" data-i18n-title="tool.todos">
-                        <i data-lucide="check-square"></i>
-                        <span data-i18n="tool.todos">TODOs</span>
-                        <span class="scene-tool-badge" id="todosBadge" style="display: none">0</span>
-                    </button>
-                    <button class="scene-tool-btn" onclick="toggleArcScenePanel()" id="sidebarArcsBtn"
-                        title="Afficher/masquer les Arcs Narratifs" data-i18n-title="tool.arcs">
-                        <i data-lucide="git-commit-horizontal"></i>
-                        <span data-i18n="tool.arcs">Arcs</span>
-                    </button>
-                    <button class="scene-tool-btn" onclick="PlotGridUI.toggleSidebar()" id="sidebarPlotBtn"
-                        title="Afficher/masquer l'Intrigue" data-i18n-title="tool.plot">
-                        <i data-lucide="trending-up"></i>
-                        <span data-i18n="tool.plot">Intrigue</span>
-                    </button>
-                    <button class="scene-tool-btn" onclick="InvestigationSidebarUI.toggleSidebar()"
-                        id="sidebarInvestigationBtn" title="Afficher/masquer l'Enquête"
-                        data-i18n-title="tool.investigation">
-                        <i data-lucide="search"></i>
-                        <span data-i18n="tool.investigation">Enquête</span>
-                    </button>
-                </div>
-                <!-- Boutons déplier/replier tout -->
-                <div class="tree-collapse-toolbar" id="treeCollapseToolbar">
-                    <button class="tree-collapse-btn" onclick="expandAllTree()" title="Tout déplier"
-                        data-i18n-title="tool.tree.expand">
-                        <i data-lucide="unfold-vertical" style="width: 12px; height: 12px"></i>
-                        <span data-i18n="tool.tree.expand">Déplier</span>
-                    </button>
-                    <button class="tree-collapse-btn" onclick="collapseAllTree()" title="Tout replier"
-                        data-i18n-title="tool.tree.collapse">
-                        <i data-lucide="fold-vertical" style="width: 12px; height: 12px"></i>
-                        <span data-i18n="tool.tree.collapse">Replier</span>
-                    </button>
-                    <button class="tree-collapse-btn" onclick="openStructureOrganizer()"
-                        title="Réorganiser la structure (vue globale)" data-i18n-title="tool.tree.organize">
-                        <i data-lucide="layout-list" style="width: 12px; height: 12px"></i>
-                        <span data-i18n="tool.tree.organize">Organiser</span>
-                    </button>
-                </div>
-                <div class="chapters-list" id="chaptersList">
-                    <!-- Structure will be dynamically inserted here -->
-                </div>
-                <div class="database-list" id="frontMatterList" style="display: none">
-                    <!-- Front Matter elements will be dynamically inserted here -->
-                </div>
-                <div class="database-list" id="charactersList" style="display: none">
-                    <!-- Characters will be dynamically inserted here -->
-                </div>
-                <div class="database-list" id="worldList" style="display: none">
-                    <!-- World elements will be dynamically inserted here -->
-                </div>
-                <div class="database-list" id="timelineList" style="display: none">
-                    <!-- Timeline events will be dynamically inserted here -->
-                </div>
-                <div class="database-list" id="notesList" style="display: none">
-                    <!-- Notes will be dynamically inserted here -->
-                </div>
-                <div class="database-list" id="codexList" style="display: none">
-                    <!-- Codex entries will be dynamically inserted here -->
-                </div>
-                <div class="database-list" id="arcsList" style="display: none">
-                    <!-- Narrative arcs will be dynamically inserted here -->
-                </div>
-                <div class="database-list" id="statsList" style="display: none">
-                    <!-- Statistics will be dynamically inserted here -->
-                </div>
-                <div class="database-list" id="versionsList" style="display: none">
-                    <!-- Versions will be dynamically inserted here -->
-                </div>
-                <div class="database-list" id="analysisList" style="display: none">
-                    <!-- Analysis will be dynamically inserted here -->
-                </div>
-                <div class="database-list" id="corkboardList" style="display: none">
-                    <!-- Cork Board info will be here -->
-                </div>
-                <div class="database-list" id="mindmapList" style="display: none">
-                    <!-- Mindmap will be here -->
-                </div>
-                <div class="database-list" id="plotList" style="display: none">
-                    <!-- Plot graph will be here -->
-                </div>
-                <div class="database-list" id="relationsList" style="display: none">
-                    <!-- Relations graph will be here -->
-                </div>
-                <div class="database-list" id="mapList" style="display: none">
-                    <!-- World map will be here -->
-                </div>
-                <div class="database-list" id="timelineVizList" style="display: none">
-                    <!-- Visual timeline will be here -->
-                </div>
-                <div class="database-list" id="investigationList" style="display: none">
-                    <!-- Investigation cases will be here -->
-                </div>
-                <div class="database-list" id="globalnotesList" style="display: none">
-                    <!-- globalnotes boards will be here -->
-                </div>
-                <div class="database-list" id="todosList" style="display: none">
-                    <!-- TODOs list will be here -->
-                </div>
-                <div class="database-list" id="thrillerList" style="display: none">
-                    <!-- Thriller elements will be here -->
-                </div>
-                <div class="database-list" id="noSidebarMessage" style="display: none">
-                    <!-- Message for views without sidebar -->
-                </div>
-                <div class="sidebar-actions" id="sidebarActions">
-                    <button class="btn btn-primary" onclick="openAddActModal()" data-i18n="btn.add_act">+ Acte</button>
-                    <button class="btn btn-primary" onclick="openAddChapterModal()" data-i18n="btn.add_chapter">+
-                        Chapitre</button>
-                    <button class="btn btn-primary" onclick="openAddSceneModalQuick()" data-i18n="btn.add_scene">+
-                        Scène</button>
+                    <!-- Filtres de statut -->
+                    <div class="status-filters" id="statusFilters">
+                        <button class="status-filter-btn draft active" onclick="toggleStatusFilter('draft')"
+                            data-status="draft" title="Brouillon">
+                            <span class="status-filter-dot draft"></span>
+                            <span data-i18n="sidebar.status.draft">Brouillon</span>
+                            <span class="status-filter-count" id="countDraft">0</span>
+                        </button>
+                        <button class="status-filter-btn progress active" onclick="toggleStatusFilter('progress')"
+                            data-status="progress" title="En cours">
+                            <span class="status-filter-dot progress"></span>
+                            <span data-i18n="sidebar.status.progress">En cours</span>
+                            <span class="status-filter-count" id="countProgress">0</span>
+                        </button>
+                        <button class="status-filter-btn complete active" onclick="toggleStatusFilter('complete')"
+                            data-status="complete" title="Terminé">
+                            <span class="status-filter-dot complete"></span>
+                            <span data-i18n="sidebar.status.complete">Terminé</span>
+                            <span class="status-filter-count" id="countComplete">0</span>
+                        </button>
+                        <button class="status-filter-btn review active" onclick="toggleStatusFilter('review')"
+                            data-status="review" title="À réviser">
+                            <span class="status-filter-dot review"></span>
+                            <span data-i18n="sidebar.status.review">À réviser</span>
+                            <span class="status-filter-count" id="countReview">0</span>
+                        </button>
+                    </div>
+                    <!-- Outils de scène -->
+                    <div class="scene-tools" id="sceneTools">
+                        <button class="scene-tool-btn" onclick="toggleVersionsSidebar()" id="headerVersionsToggle"
+                            title="Afficher/masquer les versions de scène">
+                            <i data-lucide="git-branch"></i>
+                            <span data-i18n="tool.versions">Versions</span>
+                        </button>
+                        <button class="scene-tool-btn" onclick="toggleAnnotationsPanel()" id="sidebarAnnotationsBtn"
+                            title="Afficher/masquer les annotations" data-i18n-title="tool.annotations">
+                            <i data-lucide="message-square"></i>
+                            <span data-i18n="tool.annotations">Annotations</span>
+                            <span class="scene-tool-badge" id="annotationsBadge" style="display: none">0</span>
+                        </button>
+                        <button class="scene-tool-btn" onclick="toggleTodosPanel()" id="sidebarTodosBtn"
+                            title="Afficher/masquer les TODOs" data-i18n-title="tool.todos">
+                            <i data-lucide="check-square"></i>
+                            <span data-i18n="tool.todos">TODOs</span>
+                            <span class="scene-tool-badge" id="todosBadge" style="display: none">0</span>
+                        </button>
+                        <button class="scene-tool-btn" onclick="toggleArcScenePanel()" id="sidebarArcsBtn"
+                            title="Afficher/masquer les Arcs Narratifs" data-i18n-title="tool.arcs">
+                            <i data-lucide="git-commit-horizontal"></i>
+                            <span data-i18n="tool.arcs">Arcs</span>
+                        </button>
+                        <button class="scene-tool-btn" onclick="PlotGridUI.toggleSidebar()" id="sidebarPlotBtn"
+                            title="Afficher/masquer l'Intrigue" data-i18n-title="tool.plot">
+                            <i data-lucide="trending-up"></i>
+                            <span data-i18n="tool.plot">Intrigue</span>
+                        </button>
+                        <button class="scene-tool-btn" onclick="InvestigationSidebarUI.toggleSidebar()"
+                            id="sidebarInvestigationBtn" title="Afficher/masquer l'Enquête"
+                            data-i18n-title="tool.investigation">
+                            <i data-lucide="search"></i>
+                            <span data-i18n="tool.investigation">Enquête</span>
+                        </button>
+                    </div>
+                    <!-- Boutons déplier/replier tout -->
+                    <div class="tree-collapse-toolbar" id="treeCollapseToolbar">
+                        <button class="tree-collapse-btn" onclick="expandAllTree()" title="Tout déplier"
+                            data-i18n-title="tool.tree.expand">
+                            <i data-lucide="unfold-vertical" style="width: 12px; height: 12px"></i>
+                            <span data-i18n="tool.tree.expand">Déplier</span>
+                        </button>
+                        <button class="tree-collapse-btn" onclick="collapseAllTree()" title="Tout replier"
+                            data-i18n-title="tool.tree.collapse">
+                            <i data-lucide="fold-vertical" style="width: 12px; height: 12px"></i>
+                            <span data-i18n="tool.tree.collapse">Replier</span>
+                        </button>
+                        <button class="tree-collapse-btn" onclick="openStructureOrganizer()"
+                            title="Réorganiser la structure (vue globale)" data-i18n-title="tool.tree.organize">
+                            <i data-lucide="layout-list" style="width: 12px; height: 12px"></i>
+                            <span data-i18n="tool.tree.organize">Organiser</span>
+                        </button>
+                    </div>
+                    <div class="chapters-list" id="chaptersList">
+                        <!-- Structure will be dynamically inserted here -->
+                    </div>
+                    <div class="database-list" id="frontMatterList" style="display: none">
+                        <!-- Front Matter elements will be dynamically inserted here -->
+                    </div>
+                    <div class="database-list" id="charactersList" style="display: none">
+                        <!-- Characters will be dynamically inserted here -->
+                    </div>
+                    <div class="database-list" id="worldList" style="display: none">
+                        <!-- World elements will be dynamically inserted here -->
+                    </div>
+                    <div class="database-list" id="timelineList" style="display: none">
+                        <!-- Timeline events will be dynamically inserted here -->
+                    </div>
+                    <div class="database-list" id="notesList" style="display: none">
+                        <!-- Notes will be dynamically inserted here -->
+                    </div>
+                    <div class="database-list" id="codexList" style="display: none">
+                        <!-- Codex entries will be dynamically inserted here -->
+                    </div>
+                    <div class="database-list" id="arcsList" style="display: none">
+                        <!-- Narrative arcs will be dynamically inserted here -->
+                    </div>
+                    <div class="database-list" id="statsList" style="display: none">
+                        <!-- Statistics will be dynamically inserted here -->
+                    </div>
+                    <div class="database-list" id="versionsList" style="display: none">
+                        <!-- Versions will be dynamically inserted here -->
+                    </div>
+                    <div class="database-list" id="analysisList" style="display: none">
+                        <!-- Analysis will be dynamically inserted here -->
+                    </div>
+                    <div class="database-list" id="corkboardList" style="display: none">
+                        <!-- Cork Board info will be here -->
+                    </div>
+                    <div class="database-list" id="mindmapList" style="display: none">
+                        <!-- Mindmap will be here -->
+                    </div>
+                    <div class="database-list" id="plotList" style="display: none">
+                        <!-- Plot graph will be here -->
+                    </div>
+                    <div class="database-list" id="relationsList" style="display: none">
+                        <!-- Relations graph will be here -->
+                    </div>
+                    <div class="database-list" id="mapList" style="display: none">
+                        <!-- World map will be here -->
+                    </div>
+                    <div class="database-list" id="timelineVizList" style="display: none">
+                        <!-- Visual timeline will be here -->
+                    </div>
+                    <div class="database-list" id="investigationList" style="display: none">
+                        <!-- Investigation cases will be here -->
+                    </div>
+                    <div class="database-list" id="globalnotesList" style="display: none">
+                        <!-- globalnotes boards will be here -->
+                    </div>
+                    <div class="database-list" id="todosList" style="display: none">
+                        <!-- TODOs list will be here -->
+                    </div>
+                    <div class="database-list" id="thrillerList" style="display: none">
+                        <!-- Thriller elements will be here -->
+                    </div>
+                    <div class="database-list" id="noSidebarMessage" style="display: none">
+                        <!-- Message for views without sidebar -->
+                    </div>
+                    <div class="sidebar-actions" id="sidebarActions">
+                        <button class="btn btn-primary" onclick="openAddActModal()" data-i18n="btn.add_act">+
+                            Acte</button>
+                        <button class="btn btn-primary" onclick="openAddChapterModal()" data-i18n="btn.add_chapter">+
+                            Chapitre</button>
+                        <button class="btn btn-primary" onclick="openAddSceneModalQuick()" data-i18n="btn.add_scene">+
+                            Scène</button>
+                    </div>
                 </div>
             </div>
             <!-- Vertical Tools Sidebar -->
@@ -707,7 +633,8 @@
                             <i data-lucide="x" style="width: 14px; height: 14px"></i>
                         </button>
                     </div>
-                    <div class="sidebar-versions-scene" id="versionsSceneName" data-i18n="sidebar.no_scene">Aucune scène
+                    <div class="sidebar-versions-scene" id="versionsSceneName" data-i18n="sidebar.no_scene">Aucune
+                        scène
                         sélectionnée</div>
                 </div>
                 <div class="sidebar-versions-actions" id="versionsActionsArea">
@@ -738,7 +665,8 @@
                             <i data-lucide="x" style="width: 14px; height: 14px"></i>
                         </button>
                     </div>
-                    <div class="sidebar-plot-scene" id="plotSidebarSceneName" data-i18n="sidebar.no_scene">Aucune scène
+                    <div class="sidebar-plot-scene" id="plotSidebarSceneName" data-i18n="sidebar.no_scene">Aucune
+                        scène
                         sélectionnée</div>
                 </div>
                 <div class="sidebar-plot-list" id="plotSidebarList">
@@ -790,7 +718,8 @@
             <div id="linksPanel" class="links-panel-sidebar hidden">
                 <div class="links-panel-header">
                     <h3 data-i18n="tools.links_title"><i data-lucide="link-2"
-                            style="width: 16px; height: 16px; vertical-align: middle; margin-right: 6px"></i>Liens</h3>
+                            style="width: 16px; height: 16px; vertical-align: middle; margin-right: 6px"></i>Liens
+                    </h3>
                     <button class="links-panel-close" onclick="toggleLinksPanelVisibility()" data-i18n-title="btn.hide">
                         <i data-lucide="x" style="width: 14px; height: 14px"></i>
                     </button>
@@ -1298,7 +1227,8 @@
                             <option value="">Aucune scène</option>
                             <!-- Populated dynamically -->
                         </select>
-                        <small style="color: var(--text-muted); display: block; margin-top: 4px">Associez cet événement
+                        <small style="color: var(--text-muted); display: block; margin-top: 4px">Associez cet
+                            événement
                             à une scène de votre roman</small>
                     </div>
 
@@ -1351,7 +1281,8 @@
                             style="width: 24px; height: 24px; flex-shrink: 0; color: var(--accent-green)"></i>
                         <div>
                             <div style="font-weight: 600; margin-bottom: 0.25rem">Split-view</div>
-                            <div style="font-size: 0.85rem; color: var(--text-muted)">Ouvrir la Timeline en vue séparée
+                            <div style="font-size: 0.85rem; color: var(--text-muted)">Ouvrir la Timeline en vue
+                                séparée
                                 (conserve l'éditeur)</div>
                         </div>
                     </button>
@@ -1552,19 +1483,24 @@
                     <option value="" data-i18n="modal.project.template.empty">Projet vide</option>
                     <option value="acts3" data-i18n="modal.project.template.acts3_desc">Structure en 3 Actes
                         (Exposition, Confrontation, Résolution)</option>
-                    <option value="hero_journey" data-i18n="modal.project.template.hero_journey_desc">Le Voyage du Héros
+                    <option value="hero_journey" data-i18n="modal.project.template.hero_journey_desc">Le Voyage du
+                        Héros
                         (12 étapes mythiques)</option>
-                    <option value="save_the_cat" data-i18n="modal.project.template.save_the_cat_desc">Save the Cat! (Les
+                    <option value="save_the_cat" data-i18n="modal.project.template.save_the_cat_desc">Save the Cat!
+                        (Les
                         15 beats de Snyder)</option>
                     <option value="thriller" data-i18n="modal.project.template.thriller_desc">Thriller / Enquête
                         (Suspense & Mystère)</option>
-                    <option value="romance" data-i18n="modal.project.template.romance_desc">Romance (Rencontre, Tension
+                    <option value="romance" data-i18n="modal.project.template.romance_desc">Romance (Rencontre,
+                        Tension
                         & Union)</option>
                     <option value="snowflake" data-i18n="modal.project.template.snowflake_desc">Méthode Snowflake
                         (Construction itérative)</option>
-                    <option value="scifi" data-i18n="modal.project.template.scifi_desc">Science-Fiction (Worldbuilding
+                    <option value="scifi" data-i18n="modal.project.template.scifi_desc">Science-Fiction
+                        (Worldbuilding
                         avancé)</option>
-                    <option value="story_circle" data-i18n="modal.project.template.story_circle_desc">Story Circle (Les
+                    <option value="story_circle" data-i18n="modal.project.template.story_circle_desc">Story Circle
+                        (Les
                         8 étapes de Dan Harmon)</option>
                     <option value="fichtean_curve" data-i18n="modal.project.template.fichtean_curve_desc">Courbe de
                         Fichte (Action & Crises successives)</option>
@@ -1632,14 +1568,16 @@
             <div style="margin-bottom: 2rem">
                 <div style="font-size: 1rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-primary)"><i
                         data-lucide="cloud"
-                        style="width: 16px; height: 16px; vertical-align: middle; margin-right: 6px"></i>Google Drive
+                        style="width: 16px; height: 16px; vertical-align: middle; margin-right: 6px"></i>Google
+                    Drive
                     (Automatique)</div>
                 <div id="gdrive-container"
                     style="padding: 1rem; background: var(--bg-secondary); border-radius: 4px; border: 1px solid var(--border-color)">
                     <div id="gdrive-logged-out">
                         <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.6"
                             data-i18n="modal.backup.gdrive_desc">
-                            Connectez votre compte Google Drive pour sauvegarder automatiquement votre projet dans le
+                            Connectez votre compte Google Drive pour sauvegarder automatiquement votre projet dans
+                            le
                             cloud.</p>
                         <button class="btn btn-primary" onclick="handleAuthClick()" style="width: 100%">
                             <i data-lucide="log-in"
@@ -1722,7 +1660,8 @@
                         style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.8; padding-left: 1.5rem">
                         <li data-i18n="modal.backup.cloud.manual_step1">Clique sur "Télécharger en JSON"</li>
                         <li data-i18n="modal.backup.cloud.manual_step2">Le fichier contient TOUTES tes données</li>
-                        <li data-i18n="modal.backup.cloud.manual_step3">Uploade-le manuellement sur ton service cloud
+                        <li data-i18n="modal.backup.cloud.manual_step3">Uploade-le manuellement sur ton service
+                            cloud
                             préféré</li>
                         <li data-i18n="modal.backup.cloud.manual_step4">Pour restaurer : télécharge le fichier et
                             utilise "Importer depuis un fichier"</li>
@@ -1738,7 +1677,8 @@
                 </div>
                 <p style="font-size: 0.8rem; color: #b71c1c; line-height: 1.6" data-i18n="modal.backup.important_text">
                     Le stockage local (IndexedDB) peut être
-                    effacé par le navigateur. L'utilisation du Cloud (Google Drive) est fortement recommandée pour ne
+                    effacé par le navigateur. L'utilisation du Cloud (Google Drive) est fortement recommandée pour
+                    ne
                     jamais perdre votre travail.</p>
             </div>
             <div class="modal-actions" style="margin-top: 1.5rem">
@@ -1749,7 +1689,8 @@
     <!-- Import Chapter Modal (multi-format) -->
     <div class="modal" id="importChapterModal">
         <div class="modal-content" style="max-width: 650px; max-height: 85vh; overflow-y: auto">
-            <div class="modal-title"><i data-lucide="file-plus"></i> <span data-i18n="modal.import.title">Importer un
+            <div class="modal-title"><i data-lucide="file-plus"></i> <span data-i18n="modal.import.title">Importer
+                    un
                     texte</span></div>
             <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.5"
                 data-i18n="modal.import.desc">Importez
@@ -1766,7 +1707,8 @@
     <!-- Export Novel Modal -->
     <div class="modal" id="exportNovelModal">
         <div class="modal-content" style="max-width: 700px; max-height: 90vh; overflow-y: auto">
-            <div class="modal-title"><i data-lucide="book-open"></i> <span data-i18n="modal.export.title">Exporter votre
+            <div class="modal-title"><i data-lucide="book-open"></i> <span data-i18n="modal.export.title">Exporter
+                    votre
                     roman</span></div>
             <p style="font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6"
                 data-i18n="modal.export.desc">Vous
@@ -1798,7 +1740,8 @@
                 <div id="formatInfoBox"
                     style="margin-top: 0.75rem; padding: 0.75rem; background: rgba(212, 175, 55, 0.1); border-radius: 4px; border: 1px solid var(--accent-gold); font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5">
                     <strong style="color: var(--text-primary)">Note :</strong>
-                    Toutes les fonctionnalités ne sont pas supportées en format DOCX. Le texte exporté pourrait ne pas
+                    Toutes les fonctionnalités ne sont pas supportées en format DOCX. Le texte exporté pourrait ne
+                    pas
                     ressembler exactement à l'éditeur. Pour une compatibilité complète, utilisez un autre format.
                 </div>
             </div>
@@ -1900,12 +1843,15 @@
     <!-- Tension Words Editor Modal -->
     <div class="modal" id="tensionWordsModal">
         <div class="modal-content" style="max-width: 900px">
-            <div class="modal-title" data-i18n="modal.tension.title"><i data-lucide="pencil"></i> Personnaliser les mots
+            <div class="modal-title" data-i18n="modal.tension.title"><i data-lucide="pencil"></i> Personnaliser les
+                mots
                 de tension</div>
             <div
                 style="margin-bottom: 1.5rem; padding: 1rem; background: var(--bg-secondary); border-radius: 6px; border: 1px solid var(--border-color)">
-                <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6; margin: 0">Ces mots sont
-                    utilisés pour calculer automatiquement la tension narrative de vos scènes. Personnalisez-les selon
+                <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6; margin: 0">Ces mots
+                    sont
+                    utilisés pour calculer automatiquement la tension narrative de vos scènes. Personnalisez-les
+                    selon
                     votre style d'écriture et le genre de votre roman.</p>
             </div>
             <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem">
@@ -2020,7 +1966,8 @@
                 <textarea id="bulkImportText"
                     placeholder="Ex: combat, bataille, mort&#10;tuer, danger, peur&#10;terreur, cri, hurler"
                     style="width: 100%; min-height: 200px; padding: 0.75rem; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-primary); font-size: 0.85rem; font-family: monospace; resize: vertical"> </textarea>
-                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem">Formats acceptés : un mot
+                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem">Formats acceptés : un
+                    mot
                     par ligne, ou plusieurs mots séparés par des virgules</div>
             </div>
             <div style="margin-bottom: 1.5rem">
@@ -2030,7 +1977,8 @@
             </div>
             <div
                 style="padding: 1rem; background: rgba(74, 144, 226, 0.1); border-radius: 4px; border: 1px solid var(--accent-blue); margin-bottom: 1.5rem">
-                <div style="font-size: 0.85rem; font-weight: 600; color: var(--accent-blue); margin-bottom: 0.5rem">Mode
+                <div style="font-size: 0.85rem; font-weight: 600; color: var(--accent-blue); margin-bottom: 0.5rem">
+                    Mode
                     de fusion</div>
                 <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; margin-bottom: 0.5rem">
                     <input type="radio" name="importMode" value="add" checked />
@@ -2045,7 +1993,8 @@
             </div>
             <div class="modal-actions">
                 <button class="btn" onclick="closeModal('bulkImportModal')">Annuler</button>
-                <button class="btn btn-primary" onclick="processBulkImport()"><i data-lucide="download"></i> Importer
+                <button class="btn btn-primary" onclick="processBulkImport()"><i data-lucide="download"></i>
+                    Importer
                     les mots</button>
             </div>
         </div>
@@ -2053,7 +2002,8 @@
     <!-- References Panel Modal -->
     <div class="modal" id="referencesModal">
         <div class="modal-content" style="max-width: 700px">
-            <div class="modal-title" id="referencesModalTitle" data-i18n="tools.links_title">Références et Liens</div>
+            <div class="modal-title" id="referencesModalTitle" data-i18n="tools.links_title">Références et Liens
+            </div>
             <div id="referencesModalContent"></div>
             <div class="modal-actions">
                 <button class="btn" onclick="closeModal('referencesModal')">Fermer</button>
@@ -2078,7 +2028,8 @@
             </div>
             <div class="guide-item">
                 <span class="guide-tag todo" data-i18n="revision.type.todo">TODO</span>
-                <p data-i18n="revision.guide.todo_desc">Tâche concrète à réaliser (corriger, supprimer, réécrire).</p>
+                <p data-i18n="revision.guide.todo_desc">Tâche concrète à réaliser (corriger, supprimer, réécrire).
+                </p>
             </div>
             <div class="guide-item">
                 <span class="guide-tag note" data-i18n="revision.type.note">Note</span>
@@ -2092,7 +2043,8 @@
 
         <div class="annotation-type-selector">
             <div class="annotation-type-btn comment active" onclick="selectAnnotationType('comment')"><i
-                    data-lucide="message-circle"></i><span data-i18n="revision.type.comment">Commentaire</span></div>
+                    data-lucide="message-circle"></i><span data-i18n="revision.type.comment">Commentaire</span>
+            </div>
             <div class="annotation-type-btn todo" onclick="selectAnnotationType('todo')"><i
                     data-lucide="check-square"></i><span data-i18n="revision.type.todo">TODO</span></div>
             <div class="annotation-type-btn note" onclick="selectAnnotationType('note')"><i
@@ -2112,7 +2064,8 @@
         data-i18n-title="floating.title.toggle"><i data-lucide="pen-line"></i></button>
     <!-- Floating Editor Menu (Mobile) -->
     <div id="floatingEditorMenu">
-        <div id="floatingMenuHandle" title="Faire glisser pour déplacer" data-i18n-title="floating.title.drag"></div>
+        <div id="floatingMenuHandle" title="Faire glisser pour déplacer" data-i18n-title="floating.title.drag">
+        </div>
         <div id="floatingMenuContent">
             <!-- Annuler/Rétablir -->
             <button class="floating-btn-mini" onmousedown="event.preventDefault()" onclick="undo()" title="Annuler"
@@ -2257,7 +2210,8 @@
                             </div>
                         </div>
                         <div class="shortcut-item">
-                            <span class="shortcut-description" data-i18n="shortcuts.desc.save_project">Sauvegarder le
+                            <span class="shortcut-description" data-i18n="shortcuts.desc.save_project">Sauvegarder
+                                le
                                 projet</span>
                             <div class="shortcut-keys">
                                 <span class="shortcut-key">Ctrl</span>
@@ -2266,7 +2220,8 @@
                             </div>
                         </div>
                         <div class="shortcut-item">
-                            <span class="shortcut-description" data-i18n="shortcuts.desc.focus_mode">Mode Focus (Plein
+                            <span class="shortcut-description" data-i18n="shortcuts.desc.focus_mode">Mode Focus
+                                (Plein
                                 écran)</span>
                             <div class="shortcut-keys">
                                 <span class="shortcut-key">F11</span>
@@ -2432,7 +2387,8 @@
                             </div>
                         </div>
                         <div class="shortcut-item">
-                            <span class="shortcut-description" data-i18n="shortcuts.desc.paste_no_format">Coller sans
+                            <span class="shortcut-description" data-i18n="shortcuts.desc.paste_no_format">Coller
+                                sans
                                 mise en forme</span>
                             <div class="shortcut-keys">
                                 <span class="shortcut-key">Maj</span>
@@ -2453,7 +2409,8 @@
                     </div>
                     <div class="shortcut-list">
                         <div class="shortcut-item">
-                            <span class="shortcut-description" data-i18n="shortcuts.desc.close_cancel">Fermer la fenêtre
+                            <span class="shortcut-description" data-i18n="shortcuts.desc.close_cancel">Fermer la
+                                fenêtre
                                 / Annuler</span>
                             <div class="shortcut-keys">
                                 <span class="shortcut-key">Échap</span>
@@ -2467,7 +2424,8 @@
                             </div>
                         </div>
                         <div class="shortcut-item">
-                            <span class="shortcut-description" data-i18n="shortcuts.desc.line_start_end">Début / Fin de
+                            <span class="shortcut-description" data-i18n="shortcuts.desc.line_start_end">Début / Fin
+                                de
                                 ligne</span>
                             <div class="shortcut-keys">
                                 <span class="shortcut-key">Origine</span>
@@ -2476,7 +2434,8 @@
                             </div>
                         </div>
                         <div class="shortcut-item">
-                            <span class="shortcut-description" data-i18n="shortcuts.desc.doc_start_end">Début / Fin du
+                            <span class="shortcut-description" data-i18n="shortcuts.desc.doc_start_end">Début / Fin
+                                du
                                 document</span>
                             <div class="shortcut-keys">
                                 <span class="shortcut-key">Ctrl</span>
