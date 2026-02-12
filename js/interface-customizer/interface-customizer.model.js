@@ -39,7 +39,9 @@ const InterfaceCustomizerModel = {
 
     // État par défaut (tout visible)
     getDefaultSettings: () => {
-        const settings = {};
+        const settings = {
+            shortcuts: ['projects', 'editor', 'corkboard', 'notes', 'characters', 'world']
+        };
         InterfaceCustomizerModel.components.forEach(c => {
             settings[c.id] = true;
         });

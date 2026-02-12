@@ -144,6 +144,10 @@ const LOCALE_FR = {
     "sidebar.btn.add_scene": "+ Ajouter une scène",
     "sidebar.empty.no_chapters": "Aucun chapitre",
     "sidebar.no_scene": "Aucune scène sélectionnée",
+    "sidebar.group.write": "Ecriture",
+    "sidebar.group.analyze": "Analyse",
+    "sidebar.group.construction": "Construction",
+    "nav.ecriture": "Ecriture",
 
     // --- Header Tools ---
     "header.logo.title": "Cliquer pour renommer le projet",

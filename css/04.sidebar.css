@@ -23,7 +23,7 @@
 }
 
 .sidebar-accordion.open {
-    max-height: 50vh;
+    max-height: 90vh;
     /* Max expansion height */
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
@@ -92,7 +92,7 @@
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    padding: 0.6rem 1rem;
+    padding: 0.3rem 1rem;
     color: var(--text-secondary);
     text-decoration: none;
     border-radius: 6px;
@@ -708,4 +708,202 @@
     display: flex;
     flex-direction: column;
     padding-bottom: 2rem;
+}
+
+/* Sidebar Accordion Groups */
+.accordion-group {
+    padding-top: 0.5rem;
+}
+
+.accordion-group:first-child {
+    padding-top: 0;
+}
+
+.accordion-group:not(:last-child) {
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.5rem;
+}
+
+.accordion-group-title {
+    padding: 0.5rem 1rem 0.25rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.accordion-group-items {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+/* Sidebar Shortcuts Bar */
+.sidebar-shortcuts {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+    overflow-x: auto;
+    /* Allow scrolling if too many items in expanded mode */
+    min-height: 48px;
+    /* Consistent height */
+    position: relative;
+    z-index: 50;
+    cursor: default;
+}
+
+/* Hide scrollbar for shortcuts */
+.sidebar-shortcuts::-webkit-scrollbar {
+    display: none;
+}
+
+.sidebar-shortcut-item {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    position: relative;
+}
+
+.sidebar-shortcut-item:hover {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+.sidebar-shortcut-item.active {
+    background: rgba(var(--primary-color-rgb), 0.1);
+    color: var(--primary-color);
+}
+
+.sidebar-shortcut-item i {
+    width: 18px;
+    height: 18px;
+}
+
+/* Collapsed Sidebar State */
+.sidebar-column.collapsed {
+    width: 60px !important;
+    min-width: 60px !important;
+}
+
+/* Hide Accordion in Collapsed Mode (Keep shortcuts visible) */
+.sidebar-column.collapsed .sidebar-accordion {
+    display: none;
+}
+
+/* Hide Sidebar Content (Lists) in Collapsed Mode */
+.sidebar-column.collapsed .sidebar {
+    display: none;
+}
+
+/* Shortcuts in Collapsed Mode */
+.sidebar-column.collapsed .sidebar-shortcuts {
+    flex-direction: column;
+    padding: 16px 0;
+    gap: 16px;
+    border-bottom: none;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    align-items: center;
+    background: var(--bg-secondary);
+    /* Ensure background */
+}
+
+.sidebar-column.collapsed .sidebar-shortcut-item {
+    width: 40px;
+    height: 40px;
+}
+
+.sidebar-column.collapsed .sidebar-shortcut-item i {
+    width: 20px;
+    height: 20px;
+}
+
+/* Toggle Button Style */
+.sidebar-collapse-btn {
+    width: 32px;
+    /* Fixed size */
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s;
+    margin-left: auto;
+    /* Push to right in header */
+    border: none;
+    background: transparent;
+}
+
+.sidebar-collapse-btn:hover {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+/* Drag and Drop Styles */
+.sidebar-shortcut-item.dragging {
+    opacity: 0.5;
+    transform: scale(0.9);
+}
+
+.sidebar-shortcuts.can-drop {
+    background: rgba(0, 122, 255, 0.08) !important;
+    border: 1px dashed rgba(0, 122, 255, 0.3) !important;
+}
+
+.sidebar-shortcuts.can-drop * {
+    pointer-events: none !important;
+}
+
+.sidebar-shortcuts.drag-over {
+    background: rgba(0, 122, 255, 0.15) !important;
+    border: 2px dashed #007aff !important;
+    box-shadow: inset 0 0 10px rgba(0, 122, 255, 0.2);
+}
+
+.accordion-nav-item.dragging {
+    opacity: 0.6;
+    background: rgba(0, 122, 255, 0.05) !important;
+    border: 1px dashed #007aff !important;
+}
+
+.shortcut-remove-btn {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 14px;
+    height: 14px;
+    background: var(--accent-red);
+    color: white;
+    border-radius: 50%;
+    font-size: 10px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.shortcut-remove-btn:hover {
+    transform: scale(1.1);
 }

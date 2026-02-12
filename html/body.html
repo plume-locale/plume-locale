@@ -31,14 +31,7 @@
                     <span class="mobile-nav-item-icon"><i data-lucide="git-commit-horizontal"></i></span>
                     <span data-i18n="nav.arcs">Arcs Narratifs</span>
                 </button>
-                <button class="mobile-nav-item" onclick="switchViewMobile('thriller')" data-view="thriller">
-                    <span class="mobile-nav-item-icon"><i data-lucide="hat-glasses"></i></span>
-                    <span data-i18n="nav.thriller">Thriller</span>
-                </button>
-                <button class="mobile-nav-item" onclick="switchViewMobile('storygrid')" data-view="storygrid">
-                    <span class="mobile-nav-item-icon"><i data-lucide="grid-3x3"></i></span>
-                    <span data-i18n="nav.storygrid">Storygrid</span>
-                </button>
+
                 <button class="mobile-nav-item" onclick="switchViewMobile('globalnotes')" data-view="globalnotes">
                     <span class="mobile-nav-item-icon"><i data-lucide="layout"></i></span>
                     <span data-i18n="nav.globalnotes">globalnotes</span>
@@ -279,83 +272,89 @@
                     <i data-lucide="columns-2" style="width: 14px; height: 14px"></i>
                     <span data-i18n="header.split_text">Split</span>
                 </button>
-                <!-- Storage badge intégré dans le header -->
-                <div class="storage-badge-header status-ok" id="storage-badge" onclick="showStorageDetails()"
-                    title="Espace de stockage" data-i18n-title="header.storage">
-                    <span class="storage-icon"><i data-lucide="hard-drive"></i></span>
-                    <span id="storage-percentage">...</span>
-                </div>
+
                 <button class="header-action-btn" onclick="togglePomodoroPopup()" id="pomodoroHeaderBtn"
                     title="Timer Pomodoro" data-i18n-title="header.pomodoro">
                     <i data-lucide="timer"></i>
                 </button>
-                <button class="header-action-btn" onclick="openImportChapterModal()" title="Importer un texte"
-                    data-i18n-title="header.import" id="headerImportBtn">
-                    <i data-lucide="download"></i>
-                </button>
-                <button class="header-action-btn" onclick="KeyboardShortcutsHandlers.openShortcutsModal()"
-                    title="Raccourcis clavier" data-i18n-title="header.shortcuts" id="headerShortcutsBtn">
-                    <i data-lucide="keyboard"></i>
-                </button>
-                <button class="header-action-btn" onclick="openThemeManager()" title="Gérer les thèmes"
-                    data-i18n-title="header.themes" id="headerThemesBtn">
-                    <i data-lucide="palette"></i>
-                </button>
-                <button class="header-action-btn" onclick="InterfaceCustomizerViewModel.startEditing()"
-                    title="Personnaliser l'interface" data-i18n-title="header.interface" id="headerInterfaceBtn">
-                    <i data-lucide="settings-2"></i>
-                </button>
 
-                <div class="doc-dropdown" id="docDropdown">
-                    <button class="header-action-btn" title="Documentation" data-i18n-title="header.documentation"
+
+
+
+                <!-- Extra Menu Dropdown -->
+                <div class="extra-menu-dropdown" id="extraMenuDropdown">
+                    <button class="header-action-btn" title="Menu supplémentaire" data-i18n-title="header.extra_menu"
                         onclick="this.parentElement.classList.toggle('open'); event.stopPropagation();">
-                        <i data-lucide="book-open-text"></i>
+                        <i data-lucide="more-horizontal"></i>
                     </button>
-                    <div class="doc-dropdown-menu">
-                        <a href="doc/fr/" class="doc-option">
-                            <span class="doc-flag">🇫🇷</span>
-                            <span class="doc-name">Français</span>
-                        </a>
-                        <a href="doc/en/" class="doc-option">
-                            <span class="doc-flag">🇬🇧</span>
-                            <span class="doc-name">English</span>
-                        </a>
-                        <a href="doc/de/" class="doc-option">
-                            <span class="doc-flag">🇩🇪</span>
-                            <span class="doc-name">Deutsch</span>
-                        </a>
-                        <a href="doc/es/" class="doc-option">
-                            <span class="doc-flag">🇪🇸</span>
-                            <span class="doc-name">Español</span>
-                        </a>
-                    </div>
-                </div>
-                <div class="lang-dropdown" id="langDropdown">
-                    <button class="header-action-btn" title="Changer la langue" data-i18n-title="header.lang.switch"
-                        onclick="this.parentElement.classList.toggle('open'); event.stopPropagation();">
-                        <i data-lucide="languages"></i>
-                    </button>
-                    <div class="lang-dropdown-menu">
-                        <button class="lang-option" data-lang="fr"
-                            onclick="Localization.setLocale('fr'); this.closest('.lang-dropdown').classList.remove('open');">
-                            <span class="lang-flag">🇫🇷</span>
-                            <span class="lang-name">Français</span>
+                    <div class="extra-menu-dropdown-content">
+                        <!-- Storage -->
+                        <button class="extra-menu-item" id="storage-badge" onclick="showStorageDetails()">
+                            <i data-lucide="hard-drive" class="storage-icon"></i>
+                            <span data-i18n="header.storage">Stockage</span>
+                            <span id="storage-percentage"
+                                style="margin-left: auto; font-size: 0.8em; opacity: 0.7;">...</span>
                         </button>
-                        <button class="lang-option" data-lang="en"
-                            onclick="Localization.setLocale('en'); this.closest('.lang-dropdown').classList.remove('open');">
-                            <span class="lang-flag">🇬🇧</span>
-                            <span class="lang-name">English</span>
+                        <!-- Import -->
+                        <button class="extra-menu-item" onclick="openImportChapterModal()" id="headerImportBtn">
+                            <i data-lucide="download"></i>
+                            <span data-i18n="header.import">Importer un texte</span>
                         </button>
-                        <button class="lang-option" data-lang="de"
-                            onclick="Localization.setLocale('de'); this.closest('.lang-dropdown').classList.remove('open');">
-                            <span class="lang-flag">🇩🇪</span>
-                            <span class="lang-name">Deutsch</span>
+                        <!-- Shortcuts -->
+                        <button class="extra-menu-item" onclick="KeyboardShortcutsHandlers.openShortcutsModal()"
+                            id="headerShortcutsBtn">
+                            <i data-lucide="keyboard"></i>
+                            <span data-i18n="header.shortcuts">Raccourcis clavier</span>
                         </button>
-                        <button class="lang-option" data-lang="es"
-                            onclick="Localization.setLocale('es'); this.closest('.lang-dropdown').classList.remove('open');">
-                            <span class="lang-flag">🇪🇸</span>
-                            <span class="lang-name">Español</span>
+                        <!-- Themes -->
+                        <button class="extra-menu-item" onclick="openThemeManager()" id="headerThemesBtn">
+                            <i data-lucide="palette"></i>
+                            <span data-i18n="header.themes">Thèmes</span>
                         </button>
+                        <!-- Interface -->
+                        <button class="extra-menu-item" onclick="InterfaceCustomizerViewModel.startEditing()"
+                            id="headerInterfaceBtn">
+                            <i data-lucide="settings-2"></i>
+                            <span data-i18n="header.interface">Interface</span>
+                        </button>
+
+                        <div class="extra-menu-separator"></div>
+
+                        <!-- Language -->
+                        <div class="extra-menu-item-group" id="langDropdown">
+                            <div class="extra-menu-label">
+                                <i data-lucide="languages"></i>
+                                <span data-i18n="header.lang.switch">Langue</span>
+                            </div>
+                            <div class="extra-menu-row-flags">
+                                <button class="extra-menu-flag-btn"
+                                    onclick="Localization.setLocale('fr'); this.closest('.extra-menu-dropdown').classList.remove('open');"
+                                    title="Français">🇫🇷</button>
+                                <button class="extra-menu-flag-btn"
+                                    onclick="Localization.setLocale('en'); this.closest('.extra-menu-dropdown').classList.remove('open');"
+                                    title="English">🇬🇧</button>
+                                <button class="extra-menu-flag-btn"
+                                    onclick="Localization.setLocale('de'); this.closest('.extra-menu-dropdown').classList.remove('open');"
+                                    title="Deutsch">🇩🇪</button>
+                                <button class="extra-menu-flag-btn"
+                                    onclick="Localization.setLocale('es'); this.closest('.extra-menu-dropdown').classList.remove('open');"
+                                    title="Español">🇪🇸</button>
+                            </div>
+                        </div>
+
+                        <!-- Documentation -->
+                        <div class="extra-menu-item-group" id="docDropdown">
+                            <div class="extra-menu-label">
+                                <i data-lucide="book-open-text"></i>
+                                <span data-i18n="header.documentation">Documentation</span>
+                            </div>
+                            <div class="extra-menu-row-flags">
+                                <a href="doc/fr/" class="extra-menu-flag-btn" target="_blank" title="Français">🇫🇷</a>
+                                <a href="doc/en/" class="extra-menu-flag-btn" target="_blank" title="English">🇬🇧</a>
+                                <a href="doc/de/" class="extra-menu-flag-btn" target="_blank" title="Deutsch">🇩🇪</a>
+                                <a href="doc/es/" class="extra-menu-flag-btn" target="_blank" title="Español">🇪🇸</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -391,7 +390,10 @@
         <!-- Conteneur principal (sidebar + versions + éditeur) -->
         <div class="app-content">
             <!-- Sidebar Wrapper (Column) -->
-            <div class="sidebar-column">
+            <div class="sidebar-column" id="sidebarColumn">
+                <!-- Sidebar Shortcuts (Customize Interface) -->
+                <div class="sidebar-shortcuts" id="sidebarShortcuts"></div>
+
                 <!-- Sidebar Accordion (New Navigation) -->
                 <div class="sidebar-accordion open" id="sidebarAccordion">
                     <div class="sidebar-accordion-header" onclick="toggleSidebarAccordion()">
@@ -420,9 +422,11 @@
                             <span id="progressPercent">0%</span>
                         </div>
                         <div class="progress-track">
-                            <div class="progress-segment complete" id="progressComplete" style="width: 0%"></div>
+                            <div class="progress-segment complete" id="progressComplete" style="width: 0%">
+                            </div>
                             <div class="progress-segment review" id="progressReview" style="width: 0%"></div>
-                            <div class="progress-segment progress" id="progressProgress" style="width: 0%"></div>
+                            <div class="progress-segment progress" id="progressProgress" style="width: 0%">
+                            </div>
                             <div class="progress-segment draft" id="progressDraft" style="width: 0%"></div>
                         </div>
                     </div>
@@ -633,7 +637,8 @@
                             <i data-lucide="x" style="width: 14px; height: 14px"></i>
                         </button>
                     </div>
-                    <div class="sidebar-versions-scene" id="versionsSceneName" data-i18n="sidebar.no_scene">Aucune
+                    <div class="sidebar-versions-scene" id="versionsSceneName" data-i18n="sidebar.no_scene">
+                        Aucune
                         scène
                         sélectionnée</div>
                 </div>
@@ -665,7 +670,8 @@
                             <i data-lucide="x" style="width: 14px; height: 14px"></i>
                         </button>
                     </div>
-                    <div class="sidebar-plot-scene" id="plotSidebarSceneName" data-i18n="sidebar.no_scene">Aucune
+                    <div class="sidebar-plot-scene" id="plotSidebarSceneName" data-i18n="sidebar.no_scene">
+                        Aucune
                         scène
                         sélectionnée</div>
                 </div>
@@ -762,7 +768,8 @@
                 <div class="empty-state">
                     <div class="empty-state-icon"><i data-lucide="pen-tool"></i></div>
                     <div class="empty-state-title" data-i18n="empty.start">Commencez votre histoire</div>
-                    <div class="empty-state-text" data-i18n="empty.create_chapter">Créez votre premier chapitre pour
+                    <div class="empty-state-text" data-i18n="empty.create_chapter">Créez votre premier chapitre
+                        pour
                         commencer à écrire.</div>
                     <button class="btn btn-primary" onclick="openAddChapterModal()" data-i18n="btn.create_chapter">+
                         Créer un
@@ -974,7 +981,8 @@
     <div class="modal" id="splitSelectorModal">
         <div class="modal-content" style="max-width: 600px">
             <div class="modal-title" data-i18n="modal.split_selector.title"><i data-lucide="layout"
-                    style="width: 20px; height: 20px; vertical-align: middle; margin-right: 8px"></i>Choisir la vue
+                    style="width: 20px; height: 20px; vertical-align: middle; margin-right: 8px"></i>Choisir la
+                vue
             </div>
             <div id="splitSelectorContent" style="max-height: 600px; overflow-y: auto">
                 <!-- Content will be populated by JavaScript -->
@@ -1262,7 +1270,8 @@
             <div class="modal-title">Ouvrir l'événement Timeline</div>
             <input type="hidden" id="metroViewChoiceEventId" />
             <div style="padding: 1rem 0">
-                <p style="color: var(--text-secondary); margin-bottom: 1.5rem">Comment souhaitez-vous visualiser cet
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem">Comment souhaitez-vous visualiser
+                    cet
                     événement ?</p>
                 <div style="display: flex; flex-direction: column; gap: 1rem">
                     <button class="btn" onclick="openMetroEventFullView()"
@@ -1271,7 +1280,8 @@
                             style="width: 24px; height: 24px; flex-shrink: 0; color: var(--accent-blue)"></i>
                         <div>
                             <div style="font-weight: 600; margin-bottom: 0.25rem">Vue complète</div>
-                            <div style="font-size: 0.85rem; color: var(--text-muted)">Basculer vers la vue Timeline
+                            <div style="font-size: 0.85rem; color: var(--text-muted)">Basculer vers la vue
+                                Timeline
                                 Métro (quitte la vue actuelle)</div>
                         </div>
                     </button>
@@ -1397,7 +1407,8 @@
                 </select>
             </div>
             <div class="form-group">
-                <label class="form-label" data-i18n="modal.note.label_tags">Tags (séparés par des virgules)</label>
+                <label class="form-label" data-i18n="modal.note.label_tags">Tags (séparés par des
+                    virgules)</label>
                 <input type="text" class="form-input" id="noteTagsInput" placeholder="shinto, religion, japon"
                     data-i18n-placeholder="modal.note.placeholder_tags" />
             </div>
@@ -1429,7 +1440,8 @@
                     <option value="Technologie" data-i18n="codex.category.Technologie">Technologie</option>
                     <option value="Géographie" data-i18n="codex.category.Géographie">Géographie</option>
                     <option value="Politique" data-i18n="codex.category.Politique">Politique</option>
-                    <option value="Magie/Pouvoir" data-i18n="codex.category.Magie/Pouvoir">Magie/Pouvoir</option>
+                    <option value="Magie/Pouvoir" data-i18n="codex.category.Magie/Pouvoir">Magie/Pouvoir
+                    </option>
                     <option value="Religion" data-i18n="codex.category.Religion">Religion</option>
                     <option value="Société" data-i18n="codex.category.Société">Société</option>
                     <option value="Autre" data-i18n="codex.category.Autre">Autre</option>
@@ -1478,15 +1490,18 @@
                 </select>
             </div>
             <div class="form-group">
-                <label class="form-label" data-i18n="modal.project.label_template">Utiliser un template ?</label>
+                <label class="form-label" data-i18n="modal.project.label_template">Utiliser un template
+                    ?</label>
                 <select class="form-input" id="newProjectTemplate">
                     <option value="" data-i18n="modal.project.template.empty">Projet vide</option>
                     <option value="acts3" data-i18n="modal.project.template.acts3_desc">Structure en 3 Actes
                         (Exposition, Confrontation, Résolution)</option>
-                    <option value="hero_journey" data-i18n="modal.project.template.hero_journey_desc">Le Voyage du
+                    <option value="hero_journey" data-i18n="modal.project.template.hero_journey_desc">Le Voyage
+                        du
                         Héros
                         (12 étapes mythiques)</option>
-                    <option value="save_the_cat" data-i18n="modal.project.template.save_the_cat_desc">Save the Cat!
+                    <option value="save_the_cat" data-i18n="modal.project.template.save_the_cat_desc">Save the
+                        Cat!
                         (Les
                         15 beats de Snyder)</option>
                     <option value="thriller" data-i18n="modal.project.template.thriller_desc">Thriller / Enquête
@@ -1494,15 +1509,18 @@
                     <option value="romance" data-i18n="modal.project.template.romance_desc">Romance (Rencontre,
                         Tension
                         & Union)</option>
-                    <option value="snowflake" data-i18n="modal.project.template.snowflake_desc">Méthode Snowflake
+                    <option value="snowflake" data-i18n="modal.project.template.snowflake_desc">Méthode
+                        Snowflake
                         (Construction itérative)</option>
                     <option value="scifi" data-i18n="modal.project.template.scifi_desc">Science-Fiction
                         (Worldbuilding
                         avancé)</option>
-                    <option value="story_circle" data-i18n="modal.project.template.story_circle_desc">Story Circle
+                    <option value="story_circle" data-i18n="modal.project.template.story_circle_desc">Story
+                        Circle
                         (Les
                         8 étapes de Dan Harmon)</option>
-                    <option value="fichtean_curve" data-i18n="modal.project.template.fichtean_curve_desc">Courbe de
+                    <option value="fichtean_curve" data-i18n="modal.project.template.fichtean_curve_desc">Courbe
+                        de
                         Fichte (Action & Crises successives)</option>
                 </select>
             </div>
@@ -1517,14 +1535,16 @@
     <!-- Backup Menu Modal -->
     <div class="modal" id="backupModal">
         <div class="modal-content" style="max-width: 600px; max-height: 90vh; overflow-y: auto">
-            <div class="modal-title" data-i18n="modal.backup.title"><i data-lucide="hard-drive"></i> Sauvegardes et
+            <div class="modal-title" data-i18n="modal.backup.title"><i data-lucide="hard-drive"></i> Sauvegardes
+                et
                 Exports</div>
             <div style="margin-bottom: 2rem">
-                <div style="font-size: 1rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-primary)"><i
-                        data-lucide="download"
+                <div style="font-size: 1rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-primary)">
+                    <i data-lucide="download"
                         style="width: 16px; height: 16px; vertical-align: middle; margin-right: 6px"></i><span
                         data-i18n="modal.backup.import_section">Importer des
-                        données</span></div>
+                        données</span>
+                </div>
                 <div style="display: flex; flex-direction: column; gap: 0.75rem">
                     <button class="btn btn-primary" onclick="
                             openImportChapterModal();
@@ -1544,11 +1564,12 @@
                 </div>
             </div>
             <div style="margin-bottom: 2rem">
-                <div style="font-size: 1rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-primary)"><i
-                        data-lucide="upload"
+                <div style="font-size: 1rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-primary)">
+                    <i data-lucide="upload"
                         style="width: 16px; height: 16px; vertical-align: middle; margin-right: 6px"></i><span
                         data-i18n="modal.backup.export_section">Exporter les
-                        données</span></div>
+                        données</span>
+                </div>
                 <div style="display: flex; flex-direction: column; gap: 0.75rem">
                     <button class="btn btn-primary" onclick="openExportNovelModal()" style="font-weight: 600"><i
                             data-lucide="book-open"
@@ -1566,17 +1587,19 @@
                 </div>
             </div>
             <div style="margin-bottom: 2rem">
-                <div style="font-size: 1rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-primary)"><i
-                        data-lucide="cloud"
+                <div style="font-size: 1rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-primary)">
+                    <i data-lucide="cloud"
                         style="width: 16px; height: 16px; vertical-align: middle; margin-right: 6px"></i>Google
                     Drive
-                    (Automatique)</div>
+                    (Automatique)
+                </div>
                 <div id="gdrive-container"
                     style="padding: 1rem; background: var(--bg-secondary); border-radius: 4px; border: 1px solid var(--border-color)">
                     <div id="gdrive-logged-out">
                         <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.6"
                             data-i18n="modal.backup.gdrive_desc">
-                            Connectez votre compte Google Drive pour sauvegarder automatiquement votre projet dans
+                            Connectez votre compte Google Drive pour sauvegarder automatiquement votre projet
+                            dans
                             le
                             cloud.</p>
                         <button class="btn btn-primary" onclick="handleAuthClick()" style="width: 100%">
@@ -1646,8 +1669,8 @@
                 </div>
             </div>
             <div style="margin-bottom: 2rem">
-                <div style="font-size: 1rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-primary)"><i
-                        data-lucide="help-circle"
+                <div style="font-size: 1rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-primary)">
+                    <i data-lucide="help-circle"
                         style="width: 16px; height: 16px; vertical-align: middle; margin-right: 6px"></i><span
                         data-i18n="modal.backup.cloud.manual_title">Cloud (manuel)</span>
                 </div>
@@ -1659,11 +1682,13 @@
                     <ol
                         style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.8; padding-left: 1.5rem">
                         <li data-i18n="modal.backup.cloud.manual_step1">Clique sur "Télécharger en JSON"</li>
-                        <li data-i18n="modal.backup.cloud.manual_step2">Le fichier contient TOUTES tes données</li>
+                        <li data-i18n="modal.backup.cloud.manual_step2">Le fichier contient TOUTES tes données
+                        </li>
                         <li data-i18n="modal.backup.cloud.manual_step3">Uploade-le manuellement sur ton service
                             cloud
                             préféré</li>
-                        <li data-i18n="modal.backup.cloud.manual_step4">Pour restaurer : télécharge le fichier et
+                        <li data-i18n="modal.backup.cloud.manual_step4">Pour restaurer : télécharge le fichier
+                            et
                             utilise "Importer depuis un fichier"</li>
                     </ol>
                 </div>
@@ -1677,7 +1702,8 @@
                 </div>
                 <p style="font-size: 0.8rem; color: #b71c1c; line-height: 1.6" data-i18n="modal.backup.important_text">
                     Le stockage local (IndexedDB) peut être
-                    effacé par le navigateur. L'utilisation du Cloud (Google Drive) est fortement recommandée pour
+                    effacé par le navigateur. L'utilisation du Cloud (Google Drive) est fortement recommandée
+                    pour
                     ne
                     jamais perdre votre travail.</p>
             </div>
@@ -1712,7 +1738,8 @@
                     roman</span></div>
             <p style="font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6"
                 data-i18n="modal.export.desc">Vous
-                pouvez exporter votre roman dans plusieurs formats. Vous pouvez ensuite importer les données dans
+                pouvez exporter votre roman dans plusieurs formats. Vous pouvez ensuite importer les données
+                dans
                 d'autres logiciels d'écriture.</p>
             <!-- Toggle All Button -->
             <div style="margin-bottom: 1.5rem">
@@ -1740,9 +1767,11 @@
                 <div id="formatInfoBox"
                     style="margin-top: 0.75rem; padding: 0.75rem; background: rgba(212, 175, 55, 0.1); border-radius: 4px; border: 1px solid var(--accent-gold); font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5">
                     <strong style="color: var(--text-primary)">Note :</strong>
-                    Toutes les fonctionnalités ne sont pas supportées en format DOCX. Le texte exporté pourrait ne
+                    Toutes les fonctionnalités ne sont pas supportées en format DOCX. Le texte exporté pourrait
+                    ne
                     pas
-                    ressembler exactement à l'éditeur. Pour une compatibilité complète, utilisez un autre format.
+                    ressembler exactement à l'éditeur. Pour une compatibilité complète, utilisez un autre
+                    format.
                 </div>
             </div>
             <!-- General Options -->
@@ -1762,7 +1791,8 @@
                     <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.95rem">
                         <input type="checkbox" id="includeActTitlesCheck" checked style="cursor: pointer" />
                         <span data-i18n="modal.export.act_titles">Inclure les titres d'actes <span
-                                style="color: var(--text-muted); font-size: 0.85rem">(désactiver pour ex. Vellum,
+                                style="color: var(--text-muted); font-size: 0.85rem">(désactiver pour ex.
+                                Vellum,
                                 Atticus)</span></span>
                     </label>
                     <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.95rem">
@@ -1793,7 +1823,8 @@
                     Export du projet complet </label>
                 <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.5"
                     data-i18n="modal.export.full_project_desc">En
-                    exportant le projet complet, le fichier résultant sera une archive ZIP contenant tout le contenu
+                    exportant le projet complet, le fichier résultant sera une archive ZIP contenant tout le
+                    contenu
                     sélectionné.</p>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem">
                     <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.95rem">
@@ -1843,7 +1874,8 @@
     <!-- Tension Words Editor Modal -->
     <div class="modal" id="tensionWordsModal">
         <div class="modal-content" style="max-width: 900px">
-            <div class="modal-title" data-i18n="modal.tension.title"><i data-lucide="pencil"></i> Personnaliser les
+            <div class="modal-title" data-i18n="modal.tension.title"><i data-lucide="pencil"></i> Personnaliser
+                les
                 mots
                 de tension</div>
             <div
@@ -1886,7 +1918,8 @@
                     <h3
                         style="margin: 0 0 0.75rem 0; font-size: 1rem; color: #e6a23c; display: flex; align-items: center; gap: 0.5rem">
                         Tension moyenne
-                        <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal">(+1.5 pts
+                        <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal">(+1.5
+                            pts
                             chacun)</span>
                     </h3>
                     <div style="margin-bottom: 0.75rem">
@@ -1966,7 +1999,8 @@
                 <textarea id="bulkImportText"
                     placeholder="Ex: combat, bataille, mort&#10;tuer, danger, peur&#10;terreur, cri, hurler"
                     style="width: 100%; min-height: 200px; padding: 0.75rem; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-primary); font-size: 0.85rem; font-family: monospace; resize: vertical"> </textarea>
-                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem">Formats acceptés : un
+                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem">Formats acceptés :
+                    un
                     mot
                     par ligne, ou plusieurs mots séparés par des virgules</div>
             </div>
@@ -2028,7 +2062,8 @@
             </div>
             <div class="guide-item">
                 <span class="guide-tag todo" data-i18n="revision.type.todo">TODO</span>
-                <p data-i18n="revision.guide.todo_desc">Tâche concrète à réaliser (corriger, supprimer, réécrire).
+                <p data-i18n="revision.guide.todo_desc">Tâche concrète à réaliser (corriger, supprimer,
+                    réécrire).
                 </p>
             </div>
             <div class="guide-item">
@@ -2292,7 +2327,8 @@
                             </div>
                         </div>
                         <div class="shortcut-item">
-                            <span class="shortcut-description" data-i18n="shortcuts.desc.em_dash">Tiret cadratin ( —
+                            <span class="shortcut-description" data-i18n="shortcuts.desc.em_dash">Tiret cadratin
+                                ( —
                                 )</span>
                             <div class="shortcut-keys">
                                 <span class="shortcut-key">Ctrl</span>
@@ -2312,7 +2348,8 @@
                         Style du texte</div>
                     <div class="shortcut-list">
                         <div class="shortcut-item">
-                            <span class="shortcut-description" data-i18n="shortcuts.desc.bold">Mettre en gras</span>
+                            <span class="shortcut-description" data-i18n="shortcuts.desc.bold">Mettre en
+                                gras</span>
                             <div class="shortcut-keys">
                                 <span class="shortcut-key">Ctrl</span>
                                 <span class="shortcut-plus">+</span>
@@ -2424,7 +2461,8 @@
                             </div>
                         </div>
                         <div class="shortcut-item">
-                            <span class="shortcut-description" data-i18n="shortcuts.desc.line_start_end">Début / Fin
+                            <span class="shortcut-description" data-i18n="shortcuts.desc.line_start_end">Début /
+                                Fin
                                 de
                                 ligne</span>
                             <div class="shortcut-keys">
@@ -2434,7 +2472,8 @@
                             </div>
                         </div>
                         <div class="shortcut-item">
-                            <span class="shortcut-description" data-i18n="shortcuts.desc.doc_start_end">Début / Fin
+                            <span class="shortcut-description" data-i18n="shortcuts.desc.doc_start_end">Début /
+                                Fin
                                 du
                                 document</span>
                             <div class="shortcut-keys">
@@ -2461,7 +2500,8 @@
                                 <i data-lucide="arrow-right-to-line"></i>
                             </div>
                             <div class="gesture-info">
-                                <span class="gesture-name" data-i18n="shortcuts.desc.open_sidebar">Ouvrir la barre
+                                <span class="gesture-name" data-i18n="shortcuts.desc.open_sidebar">Ouvrir la
+                                    barre
                                     latérale</span>
                                 <span class="gesture-description" data-i18n="shortcuts.desc.open_sidebar_detail">Glisser
                                     depuis le bord gauche vers la droite</span>
@@ -2472,10 +2512,12 @@
                                 <i data-lucide="arrow-left-to-line"></i>
                             </div>
                             <div class="gesture-info">
-                                <span class="gesture-name" data-i18n="shortcuts.desc.close_sidebar">Fermer la barre
+                                <span class="gesture-name" data-i18n="shortcuts.desc.close_sidebar">Fermer la
+                                    barre
                                     latérale</span>
                                 <span class="gesture-description"
-                                    data-i18n="shortcuts.desc.close_sidebar_detail">Glisser vers la gauche n'importe
+                                    data-i18n="shortcuts.desc.close_sidebar_detail">Glisser vers la gauche
+                                    n'importe
                                     où</span>
                             </div>
                         </div>

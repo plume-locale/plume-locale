@@ -71,6 +71,11 @@ const InterfaceCustomizerViewModel = {
             : InterfaceCustomizerViewModel.state.settings;
         const isEditing = InterfaceCustomizerViewModel.state.isEditing;
 
+        // Render Shortcuts if defined (or use default inside function)
+        if (typeof renderSidebarShortcuts === 'function') {
+            renderSidebarShortcuts(settings.shortcuts, isEditing);
+        }
+
         // 1. Appliquer aux éléments du header (via ID)
         Object.entries(settings).forEach(([id, isVisible]) => {
             // Sécurité absolue

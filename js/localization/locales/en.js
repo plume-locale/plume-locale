@@ -133,6 +133,10 @@ const LOCALE_EN = {
     "sidebar.btn.add_scene": "+ Add scene",
     "sidebar.empty.no_chapters": "No chapters",
     "sidebar.no_scene": "No scene selected",
+    "sidebar.group.write": "Writing",
+    "sidebar.group.analyze": "Analysis",
+    "sidebar.group.construction": "Construction",
+    "nav.ecriture": "Writing",
 
     // --- Header Tools ---
     "header.logo.title": "Click to rename project",

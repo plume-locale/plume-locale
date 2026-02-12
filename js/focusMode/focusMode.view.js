@@ -6,11 +6,15 @@ const FocusModeView = {
     renderFocusMode(isActive) {
         const appContainer = document.querySelector('.app-container');
         const sidebar = document.querySelector('.sidebar');
+        const sidebarAccordion = document.querySelector('.sidebar-accordion');
+        const sidebarColumn = document.querySelector('.sidebar-column');
         const toolsSidebar = document.getElementById('toolsSidebar');
 
         if (isActive) {
             if (appContainer) appContainer.classList.add('focus-mode');
             if (sidebar) sidebar.style.display = 'none';
+            if (sidebarAccordion) sidebarAccordion.style.display = 'none';
+            if (sidebarColumn) sidebarColumn.style.display = 'none';
             if (toolsSidebar) {
                 toolsSidebar.style.display = 'flex';
                 toolsSidebar.style.zIndex = '105';
@@ -28,6 +32,8 @@ const FocusModeView = {
             if (appContainer) appContainer.classList.remove('focus-mode');
 
             if (sidebar) sidebar.style.cssText = '';
+            if (sidebarAccordion) sidebarAccordion.style.cssText = '';
+            if (sidebarColumn) sidebarColumn.style.cssText = '';
             if (toolsSidebar) toolsSidebar.style.cssText = '';
 
             this.setPanelsFocusStyle(false);
