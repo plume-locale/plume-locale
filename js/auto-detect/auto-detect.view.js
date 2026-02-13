@@ -342,6 +342,13 @@ const AutoDetectView = {
             value = '<' + value + '>';
         }
 
+        // Privilégier les balises HTML sémantiques (<strong>, <em>, <u>)
+        // sauf pour les couleurs qui n'ont pas d'équivalent HTML
+        const colorCommands = ['foreColor', 'hiliteColor', 'backColor'];
+        try {
+            document.execCommand('styleWithCSS', false, colorCommands.includes(command));
+        } catch (e) { }
+
         document.execCommand(command, false, value);
 
         // Update last range after command (selection might have changed)

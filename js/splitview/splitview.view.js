@@ -400,12 +400,12 @@ function formatTextInPanel(panel, command, value = null) {
         value = '<' + value + '>';
     }
 
-    // S'assurer que le rendu se fait via CSS (uniquement pour les commandes inline)
-    if (command !== 'formatBlock') {
-        try {
-            document.execCommand('styleWithCSS', false, true);
-        } catch (e) { }
-    }
+    // Privilégier les balises HTML sémantiques (<strong>, <em>, <u>)
+    // sauf pour les couleurs qui n'ont pas d'équivalent HTML
+    const colorCommands = ['foreColor', 'hiliteColor', 'backColor'];
+    try {
+        document.execCommand('styleWithCSS', false, colorCommands.includes(command));
+    } catch (e) { }
 
     // Execute the command
     document.execCommand(command, false, value);
