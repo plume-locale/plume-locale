@@ -1166,46 +1166,13 @@
     transform: scale(1.2);
 }
 
-/* Context menu - submenu style (panneau "Style") */
-.ctx-submenu-trigger {
-    position: relative;
-}
-
-.ctx-submenu-trigger .ctx-chevron {
-    margin-left: auto;
+.ctx-color-preview {
     width: 14px;
     height: 14px;
-    color: #94a3b8;
-    transition: transform 0.2s;
-}
-
-.ctx-submenu {
-    display: none;
-    padding: 4px 0;
-    border-top: 1px solid #f1f5f9;
-    margin-top: 6px;
-}
-
-.ctx-submenu.open {
-    display: block;
-}
-
-.ctx-submenu-trigger:has(.ctx-submenu.open) .ctx-chevron {
-    transform: rotate(90deg);
-}
-
-.ctx-submenu .context-menu-title {
-    padding: 4px 0 2px;
-}
-
-.ctx-submenu .context-color-grid {
-    padding: 4px 0;
-}
-
-.ctx-border-dot {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    margin-left: auto;
+    flex-shrink: 0;
 }
 
 .context-menu-item.delete {

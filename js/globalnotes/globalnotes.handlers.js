@@ -155,32 +155,9 @@ const GlobalNotesHandlers = {
             ${item.type !== 'color' ? `
             <div class="context-menu-divider"></div>
             <div class="context-menu-group">
-                <div class="context-menu-item ctx-submenu-trigger" onclick="this.querySelector('.ctx-submenu').classList.toggle('open')">
-                    <i data-lucide="palette"></i> ${Localization.t('globalnotes.menu.style') || 'Style'}
-                    <i data-lucide="chevron-right" class="ctx-chevron"></i>
-                    <div class="ctx-submenu" onclick="event.stopPropagation()">
-                        <div class="context-menu-title">${Localization.t('globalnotes.menu.bg_color') || 'Background'}</div>
-                        <div class="context-color-grid">
-                            <div class="color-dot" style="background:#ffffff" onclick="GlobalNotesHandlers.setItemColor('${itemId}', '#ffffff')"></div>
-                            <div class="color-dot" style="background:#fff9c4" onclick="GlobalNotesHandlers.setItemColor('${itemId}', '#fff9c4')"></div>
-                            <div class="color-dot" style="background:#e3f2fd" onclick="GlobalNotesHandlers.setItemColor('${itemId}', '#e3f2fd')"></div>
-                            <div class="color-dot" style="background:#e8f5e9" onclick="GlobalNotesHandlers.setItemColor('${itemId}', '#e8f5e9')"></div>
-                            <div class="color-dot" style="background:#fce4ec" onclick="GlobalNotesHandlers.setItemColor('${itemId}', '#fce4ec')"></div>
-                            <div class="color-dot" style="background:#f3e5f5" onclick="GlobalNotesHandlers.setItemColor('${itemId}', '#f3e5f5')"></div>
-                            <div class="color-dot" style="background:#e0f2f1" onclick="GlobalNotesHandlers.setItemColor('${itemId}', '#e0f2f1')"></div>
-                            <div class="color-dot" style="background:#334155" onclick="GlobalNotesHandlers.setItemColor('${itemId}', '#334155')"></div>
-                        </div>
-                        <div class="context-menu-divider"></div>
-                        <div class="context-menu-title">${Localization.t('globalnotes.menu.border_style') || 'Border'}</div>
-                        <div class="context-color-grid">
-                            <div class="color-dot ctx-border-dot" style="background:transparent" onclick="GlobalNotesHandlers.setItemBorderColor('${itemId}', 'transparent'); GlobalNotesHandlers.setItemBorderThickness('${itemId}', 0)"><i data-lucide="x" style="width:10px;height:10px;color:#94a3b8;"></i></div>
-                            <div class="color-dot" style="border:2px solid #cbd5e1" onclick="GlobalNotesHandlers.setItemBorderColor('${itemId}', '#cbd5e1'); GlobalNotesHandlers.setItemBorderThickness('${itemId}', 2)"></div>
-                            <div class="color-dot" style="border:2px solid #000" onclick="GlobalNotesHandlers.setItemBorderColor('${itemId}', '#000000'); GlobalNotesHandlers.setItemBorderThickness('${itemId}', 2)"></div>
-                            <div class="color-dot" style="border:2px solid #ef4444" onclick="GlobalNotesHandlers.setItemBorderColor('${itemId}', '#ef4444'); GlobalNotesHandlers.setItemBorderThickness('${itemId}', 2)"></div>
-                            <div class="color-dot" style="border:2px solid #3b82f6" onclick="GlobalNotesHandlers.setItemBorderColor('${itemId}', '#3b82f6'); GlobalNotesHandlers.setItemBorderThickness('${itemId}', 2)"></div>
-                            <div class="color-dot" style="border:2px solid #10b981" onclick="GlobalNotesHandlers.setItemBorderColor('${itemId}', '#10b981'); GlobalNotesHandlers.setItemBorderThickness('${itemId}', 2)"></div>
-                        </div>
-                    </div>
+                <div class="context-menu-item" onclick="GlobalNotesHandlers.hideContextMenu(); GlobalNotesHandlers.openColorPalette('${itemId}')">
+                    <i data-lucide="palette"></i> ${Localization.t('globalnotes.menu.color') || 'Color'}
+                    <span class="ctx-color-preview" style="background: ${item.config.color || '#ffffff'};"></span>
                 </div>
             </div>
             ` : ''}
@@ -1264,10 +1241,15 @@ const GlobalNotesHandlers = {
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
         const dpr = window.devicePixelRatio || 1;
+        const zoom = (typeof GlobalNotesViewModel !== 'undefined') ? GlobalNotesViewModel.state.zoom : 1;
         const rect = canvas.getBoundingClientRect();
 
-        canvas.width = rect.width * dpr;
-        canvas.height = rect.height * dpr;
+        // getBoundingClientRect returns dimensions scaled by zoom, so divide to get CSS size
+        const cssWidth = rect.width / zoom;
+        const cssHeight = rect.height / zoom;
+
+        canvas.width = cssWidth * dpr;
+        canvas.height = cssHeight * dpr;
         ctx.scale(dpr, dpr);
 
         ctx.strokeStyle = canvas.getAttribute('data-color') || '#333';
@@ -1285,7 +1267,7 @@ const GlobalNotesHandlers = {
         const item = GlobalNotesRepository.getItems().find(i => i.id == itemId);
         if (item && item.data.image) {
             const img = new Image();
-            img.onload = () => ctx.drawImage(img, 0, 0, rect.width, rect.height);
+            img.onload = () => ctx.drawImage(img, 0, 0, cssWidth, cssHeight);
             img.src = item.data.image;
         }
     },
@@ -1318,9 +1300,10 @@ const GlobalNotesHandlers = {
         if (!data) return;
 
         data.isDrawing = true;
+        const zoom = (typeof GlobalNotesViewModel !== 'undefined') ? GlobalNotesViewModel.state.zoom : 1;
         const rect = e.target.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
+        const x = (e.clientX - rect.left) / zoom;
+        const y = (e.clientY - rect.top) / zoom;
         data.points = [{ x, y }];
     },
 
@@ -1329,9 +1312,10 @@ const GlobalNotesHandlers = {
         const data = this.sketchData[itemId];
         if (!data || !data.isDrawing) return;
 
+        const zoom = (typeof GlobalNotesViewModel !== 'undefined') ? GlobalNotesViewModel.state.zoom : 1;
         const rect = e.target.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
+        const x = (e.clientX - rect.left) / zoom;
+        const y = (e.clientY - rect.top) / zoom;
 
         data.points.push({ x, y });
 
