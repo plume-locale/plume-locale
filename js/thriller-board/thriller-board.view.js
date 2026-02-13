@@ -14,6 +14,16 @@ console.log('📋 Thriller Board View loaded');
  */
 function renderThrillerBoard() {
     console.log('=== RENDER THRILLER BOARD ===');
+
+    // When tabs are active, delegate to tab system
+    if (typeof tabsState !== 'undefined' && tabsState.panes.left.tabs.length > 0 && typeof renderTabs === 'function') {
+        if (!document.getElementById('editorView-backup')) {
+            renderThrillerList();
+            renderTabs();
+            return;
+        }
+    }
+
     const container = document.getElementById('editorView');
     if (!container) {
         console.log('Editor view container not found!');
