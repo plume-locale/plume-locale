@@ -99,43 +99,51 @@ const CodexView = {
 
         // Générer les options de catégorie
         const categories = getCodexCategories();
+        const catIcon = getCodexCategoryIcon(entry.category);
         const categoryOptions = categories.map(cat =>
             `<option value="${cat}" ${entry.category === cat ? 'selected' : ''}>${Localization.t('codex.category.' + cat)}</option>`
         ).join('');
 
         editorView.innerHTML = `
             <div class="detail-view">
-                <div class="detail-header">
+                <div class="detail-header" style="display:flex; align-items:center; justify-content:space-between; gap:1rem;">
                     <div style="display: flex; align-items: center; gap: 1rem; flex: 1;">
-                        <input type="text" class="form-input" value="${entry.title}" 
-                               style="font-size: 1.8rem; font-weight: 600; font-family: 'Noto Serif JP', serif; padding: 0.5rem;"
+                        <div style="width:42px; height:42px; border-radius:10px; background:var(--accent-gold); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                            <i data-lucide="${catIcon}" style="width:20px;height:20px;color:var(--bg-primary);"></i>
+                        </div>
+                        <input type="text" class="form-input" value="${entry.title}"
+                               style="font-size: 1.6rem; font-weight: 600; font-family: 'Noto Serif JP', serif; padding: 0.5rem; border:none; background:transparent;"
                                onchange="updateCodexField('${id}', 'title', this.value)"
                                placeholder="${Localization.t('codex.detail.placeholder.title')}">
-                        <span style="font-size: 0.8rem; padding: 0.4rem 0.8rem; background: var(--accent-gold); color: var(--bg-primary); border-radius: 2px;">${Localization.t('codex.category.' + entry.category)}</span>
+                        <span style="font-size: 0.75rem; padding: 0.35rem 0.75rem; background: var(--accent-gold); color: var(--bg-primary); border-radius: 12px; font-weight:600; white-space:nowrap;">${Localization.t('codex.category.' + entry.category)}</span>
                     </div>
-                    <button class="btn" onclick="switchView('editor')">${Localization.t('codex.detail.btn.back_editor')}</button>
+                    <div style="display:flex; gap:0.5rem;">
+                        <button class="btn btn-small" onclick="showReferencesForElement('${id}')"><i data-lucide="link" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>${Localization.t('codex.refs.manage_links')}</button>
+                        <button class="btn" onclick="switchView('editor')"><i data-lucide="arrow-left" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>${Localization.t('codex.detail.btn.back_editor')}</button>
+                    </div>
                 </div>
-                
+
                 <div class="detail-section">
-                    <div class="detail-section-title">${Localization.t('codex.detail.category')}</div>
-                    <select class="form-input" onchange="updateCodexField('${id}', 'category', this.value)">
+                    <div class="detail-section-title"><i data-lucide="tag" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;"></i>${Localization.t('codex.detail.category')}</div>
+                    <select class="form-input" onchange="updateCodexField('${id}', 'category', this.value)" style="width:100%;">
                         ${categoryOptions}
                     </select>
                 </div>
 
                 <div class="detail-section">
-                    <div class="detail-section-title">${Localization.t('codex.detail.summary')}</div>
-                    <textarea class="form-input" rows="3" 
-                               onchange="updateCodexField('${id}', 'summary', this.value)">${entry.summary}</textarea>
+                    <div class="detail-section-title"><i data-lucide="file-text" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;"></i>${Localization.t('codex.detail.summary')}</div>
+                    <textarea class="form-input" rows="4" style="width:100%; resize:vertical; line-height:1.6;"
+                               oninput="updateCodexField('${id}', 'summary', this.value)">${entry.summary || ''}</textarea>
                 </div>
 
                 <div class="detail-section">
-                    <div class="detail-section-title">${Localization.t('codex.detail.content')}</div>
-                    <textarea class="form-input" rows="20" 
-                              onchange="updateCodexField('${id}', 'content', this.value)">${entry.content}</textarea>
+                    <div class="detail-section-title"><i data-lucide="book-open" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;"></i>${Localization.t('codex.detail.content')}</div>
+                    <textarea class="form-input" rows="20" style="width:100%; resize:vertical; line-height:1.7; font-size:1rem;"
+                              oninput="updateCodexField('${id}', 'content', this.value)">${entry.content || ''}</textarea>
                 </div>
             </div>
         `;
+        if (typeof lucide !== 'undefined') lucide.createIcons();
     },
 
     /**
