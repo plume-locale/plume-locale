@@ -1306,6 +1306,16 @@ function getEditorToolbarHTML(panel = null, hideExtraTools = false) {
             </button>
         </div>
         
+        <!-- AI & Corrector -->
+        <div class="toolbar-group">
+            <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="if(typeof CorrectorView !== 'undefined') CorrectorView.check()" title="${Localization.t('toolbar.corrector')}">
+                <i data-lucide="check-circle" style="width:14px;height:14px;"></i>
+            </button>
+            <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="if(typeof AiAssistantView !== 'undefined') AiAssistantView.toggle()" title="${Localization.t('toolbar.ai_assistant')}">
+                <i data-lucide="bot" style="width:14px;height:14px;"></i>
+            </button>
+        </div>
+        
         <!-- Other -->
         <div class="toolbar-group">
             <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="${fnName}(${fnPrefix}'insertHorizontalRule')" title="${Localization.t('toolbar.horizontal_rule')}"><i data-lucide="minus" style="width:14px;height:14px;"></i></button>

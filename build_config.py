@@ -338,6 +338,12 @@ JS_ORDER = [
     'js/synonyms/synonyms.repository.js',
     'js/synonyms/synonyms.viewmodel.js',
     'js/synonyms/synonyms.view.js',
+    # AI Assistant
+    'js/ai-assistant/ai-assistant.service.js',
+    'js/ai-assistant/ai-assistant.view.js',
+    # Corrector
+    'js/corrector/corrector.service.js',
+    'js/corrector/corrector.view.js',
     # Import Chapter
     'js/import-chapter/import-chapter.model.js',
     'js/import-chapter/import-chapter.viewmodel.js',
