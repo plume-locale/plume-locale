@@ -117,13 +117,19 @@ def generate_index():
         # On échappe les backticks et on s'assure que c'est du JSON valide pour du JS
         demo_script = f'<script>window.PLUME_DEMO_PROJECT = {demo_json};</script>'
 
+    # Insert JS scripts before </body> (body.html already contains </body>)
+    # We strip the closing </body> from body content, add scripts, then close properly
+    body_stripped = body.rstrip()
+    if body_stripped.endswith('</body>'):
+        body_stripped = body_stripped[:-len('</body>')]
+
     # Construct HTML
     html_content = f"""{head}
     <!-- Generated CSS Links -->
     {chr(10).join(css_links)}
     {demo_script}
 </head>
-{body}
+{body_stripped}
     <!-- Generated JS Scripts -->
     {chr(10).join(js_scripts)}
 {footer}"""

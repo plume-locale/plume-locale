@@ -191,12 +191,17 @@ def build(output_file=None):
     css = collect_css()
     js = collect_js()
     
+    # Insert JS before </body> (body.html already contains </body>)
+    body_stripped = body.rstrip()
+    if body_stripped.endswith('</body>'):
+        body_stripped = body_stripped[:-len('</body>')]
+
     output = f"""{head}
     <style>
 {css}
     </style>
 </head>
-{body}
+{body_stripped}
     <script>
 {js}
     </script>
