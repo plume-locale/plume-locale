@@ -59,7 +59,11 @@ class NotesView {
                                 <div class="treeview-item" onclick="notesViewModel.openDetail(${note.id})">
                                     <span class="treeview-item-title">${note.title}</span>
                                     ${mediaIcon ? `<span class="treeview-media-icon"><i data-lucide="${mediaIcon}" style="width:14px; height:14px;"></i></span>` : ''}
-                                    <button class="btn btn-icon btn-small delete-btn" onclick="event.stopPropagation(); notesViewModel.deleteNote(${note.id})" title="${Localization.t('btn.delete')}">×</button>
+                                    <div class="treeview-item-actions">
+                                        <button class="treeview-action-btn" onclick="event.stopPropagation(); notesViewModel.openDetail(${note.id}, { forceNew: true })" title="${Localization.t('tabs.open_new')}"><i data-lucide="plus-square" style="width:12px;height:12px;"></i></button>
+                                        <button class="treeview-action-btn" onclick="event.stopPropagation(); notesViewModel.openDetail(${note.id}, { replaceCurrent: true })" title="${Localization.t('tabs.replace')}"><i data-lucide="maximize-2" style="width:12px;height:12px;"></i></button>
+                                        <button class="treeview-action-btn delete" onclick="event.stopPropagation(); notesViewModel.deleteNote(${note.id})" title="${Localization.t('btn.delete')}">×</button>
+                                    </div>
                                 </div>
                             `;
             }).join('')}

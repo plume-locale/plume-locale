@@ -63,6 +63,16 @@ const InterfaceCustomizerViewModel = {
     },
 
     /**
+     * Met à jour un réglage spécifique (couleur, largeur, etc)
+     */
+    updateSetting: (key, value) => {
+        if (InterfaceCustomizerViewModel.state.isEditing) {
+            InterfaceCustomizerViewModel.state.tempSettings[key] = value;
+            InterfaceCustomizerViewModel.applySettings();
+        }
+    },
+
+    /**
      * Applique les réglages actuels au DOM
      */
     applySettings: () => {
@@ -75,6 +85,14 @@ const InterfaceCustomizerViewModel = {
         if (typeof renderSidebarShortcuts === 'function') {
             renderSidebarShortcuts(settings.shortcuts, isEditing);
         }
+
+        // 0. Appliquer les variables CSS de personnalisation
+        const root = document.documentElement;
+        if (settings.progressBarWidth) root.style.setProperty('--progress-bar-width', `${settings.progressBarWidth}px`);
+        if (settings.statusDraftColor) root.style.setProperty('--status-draft-color', settings.statusDraftColor);
+        if (settings.statusProgressColor) root.style.setProperty('--status-progress-color', settings.statusProgressColor);
+        if (settings.statusCompleteColor) root.style.setProperty('--status-complete-color', settings.statusCompleteColor);
+        if (settings.statusReviewColor) root.style.setProperty('--status-review-color', settings.statusReviewColor);
 
         // 1. Appliquer aux éléments du header (via ID)
         Object.entries(settings).forEach(([id, isVisible]) => {

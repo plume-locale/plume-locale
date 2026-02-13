@@ -106,6 +106,8 @@ const LOCALE_FR = {
     "mobile.action.languages": "Changer la langue",
     "mobile.action.pomodoro": "Timer Pomodoro",
     "mobile.action.interface": "Personnaliser l'interface",
+    "tabs.open_new": "Ouvrir dans un nouvel onglet",
+    "tabs.replace": "Ouvrir dans l'onglet courant",
     "mobile.group.help": "Aide & Langue",
     "mobile.toolbar.hide": "Masquer les outils de formatage",
     "mobile.toolbar.show": "Afficher les outils de formatage",
@@ -2556,5 +2558,19 @@ const LOCALE_FR = {
     "stats.target_date_label": "Date cible de fin",
     "stats.days_off": "Jours de repos",
     "stats.words_remaining_per_day": "mots / jour à écrire",
-    "stats.history_chart": "Progression sur la période"
+    "stats.history_chart": "Progression sur la période",
+    // --- Undo/Redo ---
+    "undoredo.default_label": "Changement",
+    "undoredo.label.edit": "Édition de texte",
+    "undoredo.label.edit-end": "Fin de modification",
+    "undoredo.label.text-edit-start": "Début d'édition",
+    "undoredo.label.change": "Changement",
+    "undoredo.label.select-change": "Sélection modifiée",
+    "undoredo.label.before-undo": "État avant annulation",
+    "undoredo.label.before-redo": "État avant rétablissement",
+    "undoredo.label.Scene.update": "Mise à jour de scène",
+    "undoredo.label.Chapter.update": "Mise à jour de chapitre",
+    "undoredo.label.Act.update": "Mise à jour d'acte",
+    "undoredo.label.Character.update": "Mise à jour de personnage",
+    "undoredo.label.World.update": "Mise à jour d'élément d'univers"
 };

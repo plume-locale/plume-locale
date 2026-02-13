@@ -12,6 +12,7 @@ CSS_ORDER = [
     'modals.css',
     'editor.css',
     'focus-mode.css',
+    'tabs.css',
     'link-panel.css',
     'characters.css',
     'corkboard.css',
@@ -151,6 +152,10 @@ JS_ORDER = [
     'js/splitview/splitview.coordinator.js',
     'js/splitview/splitview.handlers.js',
     'js/splitview/splitview.main.js',
+    # Tabs System
+    'js/tabs/tabs.viewmodel.js',
+    'js/tabs/tabs.view.js',
+    'js/tabs/tabs.main.js',
     # World refactored files 
     'js/world/world.model.js',
     'js/world/world.repository.js',

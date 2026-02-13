@@ -327,6 +327,24 @@ const ProjectViewModel = {
         currentChapterId = null;
         currentSceneId = null;
 
+        // IMPORTANT: Fermer tous les onglets pour forcer le rechargement avec le nouveau projet
+        if (typeof tabsState !== 'undefined') {
+            tabsState.panes.left.tabs = [];
+            tabsState.panes.right.tabs = [];
+            tabsState.panes.left.activeTabId = null;
+            tabsState.panes.right.activeTabId = null;
+            tabsState.isSplit = false;
+            tabsState.activePane = 'left';
+
+            // Sauvegarder l'état vide
+            if (typeof saveTabsState === 'function') saveTabsState();
+        }
+
+        // Réinitialiser aussi le mode split view legacy
+        if (typeof splitViewActive !== 'undefined') {
+            window.splitViewActive = false;
+        }
+
         if (shouldSwitchView && typeof switchView === 'function') switchView('editor');
         if (typeof renderActsList === 'function') renderActsList();
         if (typeof refreshAllViews === 'function') refreshAllViews();

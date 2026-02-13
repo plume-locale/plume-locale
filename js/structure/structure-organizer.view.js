@@ -150,8 +150,6 @@ const ORGANIZER_STYLES = `
     /* BUTTONS */
     .org-icon-btn { padding: 4px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-muted); }
     .org-icon-btn:hover { background: var(--bg-tertiary); color: var(--text-primary); }
-    .toggle-icon { transition: transform 0.2s; transform: rotate(-90deg); }
-    .org-block.expanded .toggle-icon { transform: rotate(0deg); }
 
     /* SCENE ITEM */
     .org-scene {
@@ -197,16 +195,19 @@ const ORGANIZER_STYLES = `
         background: rgba(var(--accent-gold-rgb, 255, 217, 61), 0.2) !important;
         outline: 2px solid var(--accent-gold, #ffd93d);
     }
-    /* EMPTY STATES */
-    .empty-placeholder { opacity: 1 !important; margin: 12px 0 !important; height: 60px !important; border-radius: 8px; background: var(--bg-tertiary); border: 1px dashed var(--border-color) !important; color: var(--text-muted) !important; font-size: 0.9rem; }
 
     /* UTILS */
     .org-stats { font-size: 0.75rem; color: var(--text-muted); margin-left: auto; font-family: 'Source Code Pro', monospace; }
     .org-count { font-size: 0.7rem; background: var(--bg-tertiary); color: var(--text-secondary); padding: 2px 6px; border-radius: 10px; font-weight: 500; }
     
     /* ICONS in headers */
-    .drag-handle { opacity: 0.4; width: 14px; height: 14px; color: var(--text-muted); }
+    .organizer-modal .drag-handle { opacity: 0.4; width: 14px; height: 14px !important; color: var(--text-muted); position: static !important; }
     .org-header:hover .drag-handle { opacity: 1; color: var(--text-primary); }
+    
+    .organizer-modal .toggle-icon { transition: transform 0.2s; transform: rotate(-90deg); }
+    .org-block.expanded .toggle-icon { transform: rotate(0deg); }
+    
+    .organizer-modal .empty-placeholder { opacity: 1 !important; margin: 12px 0 !important; height: 60px !important; border-radius: 8px; background: var(--bg-tertiary); border: 1px dashed var(--border-color) !important; color: var(--text-muted) !important; font-size: 0.9rem; }
 `;;
 // --- UI HELPERS ---
 

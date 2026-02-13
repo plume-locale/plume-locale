@@ -543,9 +543,13 @@
 .chapters-list {
     flex: 1;
     overflow-y: auto;
+    overflow-x: hidden;
+    /* Empêche le scroll horizontal parasite */
     padding: 1rem 0;
     position: relative;
     z-index: 1;
+    width: 100%;
+    /* S'étend avec le resize */
 }
 
 .database-list {
@@ -725,6 +729,9 @@
 /* Acts Hierarchy */
 .act-group {
     margin-bottom: 0.25rem;
+    width: 100% !important;
+    display: flex;
+    flex-direction: column;
 }
 
 .act-header {
@@ -742,6 +749,8 @@
     text-transform: uppercase;
     color: var(--text-primary);
     margin-top: 0.4rem;
+    width: 100% !important;
+    box-sizing: border-box;
 }
 
 .act-header:hover {
@@ -788,14 +797,19 @@
 .act-chapters {
     display: none;
     padding-left: 0.6rem;
+    width: 100% !important;
 }
 
 .act-chapters.visible {
     display: block;
+    width: 100% !important;
 }
 
 .chapter-group {
     margin-bottom: 0.1rem;
+    width: 100% !important;
+    display: flex;
+    flex-direction: column;
 }
 
 .chapter-header {
@@ -810,6 +824,8 @@
     font-size: 0.8rem;
     font-weight: 600;
     color: var(--text-secondary);
+    width: 100% !important;
+    box-sizing: border-box;
 }
 
 .chapter-header:hover {

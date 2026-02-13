@@ -1225,6 +1225,9 @@
     cursor: pointer;
     position: relative;
     border: 1px solid rgba(0, 0, 0, 0.1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .status-badge:hover {
@@ -1233,7 +1236,7 @@
 }
 
 .status-draft {
-    background: #ff6b6b;
+    background-color: var(--status-draft-color) !important;
 }
 
 .status-draft::after {
@@ -1241,7 +1244,7 @@
 }
 
 .status-progress {
-    background: #ffd93d;
+    background-color: var(--status-progress-color) !important;
 }
 
 .status-progress::after {
@@ -1249,15 +1252,26 @@
 }
 
 .status-complete {
-    background: #51cf66;
+    background-color: var(--status-complete-color) !important;
 }
 
 .status-complete::after {
-    content: "";
+    content: "\2713";
+    color: var(--bg-primary);
+    font-size: 7px;
+    font-weight: 900;
+    line-height: 1;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .status-review {
-    background: #4a9eff;
+    background-color: var(--status-review-color) !important;
 }
 
 .status-review::after {
@@ -1306,22 +1320,23 @@
     height: 12px;
     border-radius: 50%;
     flex-shrink: 0;
+    position: relative;
 }
 
 .status-menu-dot.draft {
-    background: #ff6b6b;
+    background: var(--status-draft-color);
 }
 
 .status-menu-dot.progress {
-    background: #ffd93d;
+    background: var(--status-progress-color);
 }
 
 .status-menu-dot.complete {
-    background: #51cf66;
+    background: var(--status-complete-color);
 }
 
 .status-menu-dot.review {
-    background: #4a9eff;
+    background: var(--status-review-color);
 }
 
 /* Barre de progression globale */
@@ -1354,19 +1369,19 @@
 }
 
 .progress-segment.complete {
-    background: #51cf66;
+    background: var(--status-complete-color);
 }
 
 .progress-segment.review {
-    background: #4a9eff;
+    background: var(--status-review-color);
 }
 
 .progress-segment.progress {
-    background: #ffd93d;
+    background: var(--status-progress-color);
 }
 
 .progress-segment.draft {
-    background: #ff6b6b;
+    background: var(--status-draft-color);
 }
 
 /* Filtres de statut */
@@ -1447,22 +1462,23 @@
     width: 8px;
     height: 8px;
     border-radius: 50%;
+    position: relative;
 }
 
 .status-filter-dot.draft {
-    background: #ff6b6b;
+    background: var(--status-draft-color);
 }
 
 .status-filter-dot.progress {
-    background: #ffd93d;
+    background: var(--status-progress-color);
 }
 
 .status-filter-dot.complete {
-    background: #51cf66;
+    background: var(--status-complete-color);
 }
 
 .status-filter-dot.review {
-    background: #4a9eff;
+    background: var(--status-review-color);
 }
 
 .status-filter-count {

@@ -2,12 +2,22 @@
 .sidebar-column {
     display: flex;
     flex-direction: column;
-    width: 280px;
     flex-shrink: 0;
     border-right: 2px solid var(--border-color);
     background: var(--bg-secondary);
     height: 100%;
-    overflow: hidden;
+    overflow: visible !important;
+    /* Indispensable pour laisser sortir le menu radial */
+    position: relative;
+    z-index: 100;
+    /* Passe au-dessus de l'éditeur lors du déploiement */
+    width: auto;
+    /* Laisser le resize JS gérer la largeur */
+    /* Largeur par défaut */
+    min-width: 250px;
+    /* Empêche de devenir trop petite */
+    max-width: 800px;
+    /* Sécurité pour ne pas tout envahir */
 }
 
 /* Sidebar Accordion (Navigation) */
@@ -112,6 +122,29 @@
     font-weight: 500;
 }
 
+.accordion-item-actions {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    gap: 4px;
+    opacity: 0;
+    transition: opacity 0.2s;
+    background: var(--bg-secondary);
+    border-radius: 4px;
+    padding: 2px;
+}
+
+.accordion-nav-item:hover .accordion-item-actions {
+    opacity: 1;
+}
+
+.accordion-item-actions .treeview-action-btn i {
+    width: 14px;
+    height: 14px;
+}
+
 .accordion-nav-item i {
     width: 18px;
     height: 18px;
@@ -124,9 +157,15 @@
     border-right: none;
     display: flex;
     flex-direction: column;
+    align-items: stretch !important;
+    /* Force les enfants à prendre toute la largeur */
+    justify-content: flex-start;
     position: relative;
-    overflow: hidden;
+    overflow: visible !important;
+    /* Ne pas couper les éléments qui dépassent à droite */
     flex: 1;
+    width: 100% !important;
+    /* Force le contenu à suivre l'agrandissement */
     /* Take remaining space */
     min-height: 0;
     /* Important for flex scrolling */
@@ -906,4 +945,176 @@
 
 .shortcut-remove-btn:hover {
     transform: scale(1.1);
+}
+
+/* ==========================================
+   STATUS & PROGRESS BAR STYLES
+   (Copied from characters.css for structure sidebar)
+   ========================================== */
+
+/* Project Progress Bar */
+.project-progress-bar {
+    padding: 0.15rem 0.75rem;
+    background: var(--bg-primary);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.progress-stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.15rem;
+    font-size: 0.65rem;
+    color: var(--text-secondary);
+}
+
+.progress-track {
+    height: 3px;
+    background: var(--bg-tertiary);
+    border-radius: 1.5px;
+    overflow: hidden;
+    display: flex;
+}
+
+.progress-segment {
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
+.progress-segment.complete {
+    background: var(--status-complete-color);
+}
+
+.progress-segment.review {
+    background: var(--status-review-color);
+}
+
+.progress-segment.progress {
+    background: var(--status-progress-color);
+}
+
+.progress-segment.draft {
+    background: var(--status-draft-color);
+}
+
+/* Global status classes */
+.status-draft {
+    background-color: var(--status-draft-color) !important;
+}
+
+.status-progress {
+    background-color: var(--status-progress-color) !important;
+}
+
+.status-complete {
+    background-color: var(--status-complete-color) !important;
+}
+
+.status-review {
+    background-color: var(--status-review-color) !important;
+}
+
+/* Status Filters */
+.status-filters {
+    display: flex;
+    padding: 0.2rem 0.75rem;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.status-filter-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    padding: 0.15rem 0;
+    border: 1px solid var(--border-color);
+    border-right: none;
+    background: var(--bg-primary);
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--text-muted);
+}
+
+.status-filter-btn:first-child {
+    border-radius: 4px 0 0 4px;
+}
+
+.status-filter-btn:last-child {
+    border-radius: 0 4px 4px 0;
+    border-right: 1px solid var(--border-color);
+}
+
+.status-filter-btn [data-i18n] {
+    display: none;
+}
+
+.status-filter-btn:hover {
+    border-color: var(--text-muted);
+}
+
+.status-filter-btn.active {
+    border-color: currentColor;
+    font-weight: 600;
+}
+
+.status-filter-btn.draft.active {
+    background: rgba(255, 107, 107, 0.1);
+    color: #e55a5a;
+    border-color: rgba(255, 107, 107, 0.3);
+    border-right-color: var(--border-color);
+}
+
+.status-filter-btn.progress.active {
+    background: rgba(255, 217, 61, 0.1);
+    color: #c9a82e;
+    border-color: rgba(255, 217, 61, 0.3);
+    border-right-color: var(--border-color);
+}
+
+.status-filter-btn.complete.active {
+    background: rgba(81, 207, 102, 0.1);
+    color: #3db854;
+    border-color: rgba(81, 207, 102, 0.3);
+    border-right-color: var(--border-color);
+}
+
+.status-filter-btn.review.active {
+    background: rgba(74, 158, 255, 0.1);
+    color: #3a8ae6;
+    border-color: rgba(74, 158, 255, 0.3);
+    border-right-color: var(--border-color);
+}
+
+.status-filter-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+}
+
+.status-filter-dot.draft {
+    background: var(--status-draft-color);
+}
+
+.status-filter-dot.progress {
+    background: var(--status-progress-color);
+}
+
+.status-filter-dot.complete {
+    background: var(--status-complete-color);
+}
+
+.status-filter-dot.review {
+    background: var(--status-review-color);
+}
+
+.status-filter-count {
+    font-weight: 600;
+}
+
+/* Filtered Items */
+.filtered-out {
+    display: none !important;
 }

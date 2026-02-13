@@ -96,6 +96,8 @@ const LOCALE_EN = {
     "mobile.action.pomodoro": "Pomodoro Timer",
     "mobile.action.interface": "Customize Interface",
     "mobile.group.help": "Help & Language",
+    "tabs.open_new": "Open in new tab",
+    "tabs.replace": "Open in current tab",
     "mobile.toolbar.hide": "Hide formatting tools",
     "mobile.toolbar.show": "Show formatting tools",
     "mobile.links.hide": "Hide linked characters & locations",

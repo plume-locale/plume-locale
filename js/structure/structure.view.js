@@ -234,9 +234,13 @@ function renderActsList() {
     const isFullBookActive = (typeof currentActId !== 'undefined' && currentActId === 'all');
     html += `
         <div class="act-group" id="full-book-item">
-            <div class="act-header ${isFullBookActive ? 'active' : ''}" onclick="openFullBook()" style="margin-bottom: 0.5rem; border-left: 3px solid var(--accent-gold);">
+            <div class="act-header ${isFullBookActive ? 'active' : ''}" onclick="openFullBook()" style="margin-bottom: 0.5rem; border-left: 3px solid var(--accent-gold); position: relative;">
                 <span class="act-icon"><i data-lucide="book" style="width:14px;height:14px;vertical-align:middle;"></i></span>
                 <span class="act-title" style="text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">${Localization.t('structure.all_book')}</span>
+                <div class="treeview-item-actions">
+                    <button class="treeview-action-btn" onclick="event.stopPropagation(); openFullBook({ forceNew: true })" title="${Localization.t('tabs.open_new')}"><i data-lucide="plus-square" style="width:12px;height:12px;"></i></button>
+                    <button class="treeview-action-btn" onclick="event.stopPropagation(); openFullBook({ replaceCurrent: true })" title="${Localization.t('tabs.replace')}"><i data-lucide="maximize-2" style="width:12px;height:12px;"></i></button>
+                </div>
             </div>
         </div>`;
 
@@ -247,12 +251,16 @@ function renderActsList() {
 
         html += `
             <div class="act-group" id="act-${act.id}" data-act-id="${act.id}">
-                <div class="act-header ${typeof currentActId !== 'undefined' && currentActId === act.id ? 'active' : ''}" data-act-id="${act.id}">
+                <div class="act-header ${typeof currentActId !== 'undefined' && currentActId === act.id ? 'active' : ''}" data-act-id="${act.id}" style="position: relative; display: flex; align-items: center;">
                     <span class="act-icon ${isActExpanded ? 'expanded' : ''}" onclick="toggleAct(${act.id}); event.stopPropagation();" style="cursor: pointer;"><i data-lucide="${isActExpanded ? 'chevron-down' : 'chevron-right'}" style="width:14px;height:14px;vertical-align:middle;"></i></span>
                     <span class="act-title" ondblclick="event.stopPropagation(); startEditingAct(${act.id}, this)" onclick="${act.chapters.length > 0 ? `openAct(${act.id})` : ''}">${act.title}</span>
-                    <span class="word-count-badge" title="${actStats.totalWords.toLocaleString()} mots">${sAct}</span>
+                    <span class="word-count-badge" style="margin-left: auto; margin-right: 55px;" title="${actStats.totalWords.toLocaleString()} mots">${sAct}</span>
                     <span class="drag-handle" draggable="true" onclick="event.stopPropagation()"><i data-lucide="grip-vertical" style="width:12px;height:12px;vertical-align:middle;"></i></span>
-                    <button class="btn btn-icon btn-small delete-btn" onclick="event.stopPropagation(); deleteAct(${act.id})"><i data-lucide="x" style="width:12px;height:12px;"></i></button>
+                    <div class="treeview-item-actions">
+                        <button class="treeview-action-btn" onclick="event.stopPropagation(); openAct(${act.id}, { forceNew: true })" title="${Localization.t('tabs.open_new')}"><i data-lucide="plus-square" style="width:12px;height:12px;"></i></button>
+                        <button class="treeview-action-btn" onclick="event.stopPropagation(); openAct(${act.id}, { replaceCurrent: true })" title="${Localization.t('tabs.replace')}"><i data-lucide="maximize-2" style="width:12px;height:12px;"></i></button>
+                        <button class="treeview-action-btn delete" onclick="event.stopPropagation(); deleteAct(${act.id})"><i data-lucide="x" style="width:12px;height:12px;"></i></button>
+                    </div>
                 </div>
                 <div class="act-chapters ${isActExpanded ? 'visible' : ''}">`;
 
@@ -263,12 +271,16 @@ function renderActsList() {
 
             html += `
                 <div class="chapter-group" id="chapter-${chapter.id}" data-chapter-id="${chapter.id}" data-act-id="${act.id}">
-                    <div class="chapter-header ${typeof currentChapterId !== 'undefined' && currentChapterId === chapter.id ? 'active' : ''}" data-chapter-id="${chapter.id}" data-act-id="${act.id}">
+                    <div class="chapter-header ${typeof currentChapterId !== 'undefined' && currentChapterId === chapter.id ? 'active' : ''}" data-chapter-id="${chapter.id}" data-act-id="${act.id}" style="position: relative; display: flex; align-items: center;">
                         <span class="chapter-icon ${isChExpanded ? 'expanded' : ''}" onclick="toggleChapter(${act.id}, ${chapter.id}); event.stopPropagation();" style="cursor: pointer;"><i data-lucide="${isChExpanded ? 'chevron-down' : 'chevron-right'}" style="width:14px;height:14px;vertical-align:middle;"></i></span>
                         <span class="chapter-title" ondblclick="event.stopPropagation(); startEditingChapter(${act.id}, ${chapter.id}, this)" onclick="${chapter.scenes.length > 0 ? `openChapter(${act.id}, ${chapter.id})` : ''}">${chapter.title}</span>
-                        <span class="word-count-badge" title="${chStats.totalWords.toLocaleString()} mots">${sCh}</span>
+                        <span class="word-count-badge" style="margin-left: auto; margin-right: 55px;" title="${chStats.totalWords.toLocaleString()} mots">${sCh}</span>
                         <span class="drag-handle" draggable="true" onclick="event.stopPropagation()"><i data-lucide="grip-vertical" style="width:12px;height:12px;vertical-align:middle;"></i></span>
-                        <button class="btn btn-icon btn-small delete-btn" onclick="event.stopPropagation(); deleteChapter(${act.id}, ${chapter.id})"><i data-lucide="x" style="width:12px;height:12px;"></i></button>
+                        <div class="treeview-item-actions">
+                            <button class="treeview-action-btn" onclick="event.stopPropagation(); openChapter(${act.id}, ${chapter.id}, { forceNew: true })" title="${Localization.t('tabs.open_new')}"><i data-lucide="plus-square" style="width:12px;height:12px;"></i></button>
+                            <button class="treeview-action-btn" onclick="event.stopPropagation(); openChapter(${act.id}, ${chapter.id}, { replaceCurrent: true })" title="${Localization.t('tabs.replace')}"><i data-lucide="maximize-2" style="width:12px;height:12px;"></i></button>
+                            <button class="treeview-action-btn delete" onclick="event.stopPropagation(); deleteChapter(${act.id}, ${chapter.id})"><i data-lucide="x" style="width:12px;height:12px;"></i></button>
+                        </div>
                     </div>
                     <div class="scenes-list ${isChExpanded ? 'visible' : ''}">`;
 
@@ -281,7 +293,7 @@ function renderActsList() {
                 const sLabel = formatWordCount(sWords);
 
                 html += `
-                    <div class="scene-item ${isActive ? 'active' : ''}" data-scene-id="${scene.id}" data-chapter-id="${chapter.id}" data-act-id="${act.id}" onclick="openScene(${act.id}, ${chapter.id}, ${scene.id})" ${tooltip ? `title="${tooltip}"` : ''}>
+                    <div class="scene-item ${isActive ? 'active' : ''}" data-scene-id="${scene.id}" data-chapter-id="${chapter.id}" data-act-id="${act.id}" onclick="openScene(${act.id}, ${chapter.id}, ${scene.id})" ${tooltip ? `title="${tooltip}"` : ''} style="position: relative; display: flex; align-items: center;">
                         <div style="display: flex; align-items: center; gap: 0.6rem; flex: 1; min-width: 0;">
                             <span class="status-badge status-${sStatus}" onclick="event.stopPropagation(); toggleSceneStatus(${act.id}, ${chapter.id}, ${scene.id}, event)" style="cursor: pointer;" title="Cliquez pour changer le statut"></span>
                             <div style="flex: 1; min-width: 0; overflow: hidden;">
@@ -289,9 +301,13 @@ function renderActsList() {
                                 ${synopsis ? `<span class="scene-synopsis">${synopsis}</span>` : ''}
                             </div>
                         </div>
-                        <span class="word-count-badge" title="${sWords.toLocaleString()} mots">${sLabel}</span>
+                        <span class="word-count-badge" style="margin-left: auto; margin-right: 55px; flex-shrink: 0; min-width: 30px; text-align: right;">${sLabel}</span>
                         <span class="drag-handle" draggable="true" onclick="event.stopPropagation()"><i data-lucide="grip-vertical" style="width:12px;height:12px;vertical-align:middle;"></i></span>
-                        <button class="btn btn-icon btn-small delete-btn" onclick="event.stopPropagation(); deleteScene(${act.id}, ${chapter.id}, ${scene.id})"><i data-lucide="x" style="width:12px;height:12px;"></i></button>
+                        <div class="treeview-item-actions">
+                            <button class="treeview-action-btn" onclick="event.stopPropagation(); openScene(${act.id}, ${chapter.id}, ${scene.id}, { forceNew: true })" title="${Localization.t('tabs.open_new')}"><i data-lucide="plus-square" style="width:12px;height:12px;"></i></button>
+                            <button class="treeview-action-btn" onclick="event.stopPropagation(); openScene(${act.id}, ${chapter.id}, ${scene.id}, { replaceCurrent: true })" title="${Localization.t('tabs.replace')}"><i data-lucide="maximize-2" style="width:12px;height:12px;"></i></button>
+                            <button class="treeview-action-btn delete" onclick="event.stopPropagation(); deleteScene(${act.id}, ${chapter.id}, ${scene.id})"><i data-lucide="x" style="width:12px;height:12px;"></i></button>
+                        </div>
                     </div>`;
             });
 

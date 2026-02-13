@@ -10,7 +10,7 @@ function renderViewInSplitPanel(view, container, state, panel) {
     // Créer un conteneur temporaire avec l'ID editorView
     const tempContainer = document.createElement('div');
     tempContainer.id = 'editorView';
-    tempContainer.style.cssText = 'height: 100%; overflow: auto;';
+    tempContainer.style.cssText = 'height: 100%; display: flex; flex-direction: column; overflow: hidden; position: relative;';
     container.innerHTML = '';
     container.appendChild(tempContainer);
 
@@ -31,24 +31,53 @@ function renderViewInSplitPanel(view, container, state, panel) {
 
     switch (view) {
         case 'editor':
+            // 1. Scene Editor
             if (state.sceneId) {
-                const act = project.acts.find(a => a.id === state.actId);
-                const chapter = act?.chapters.find(c => c.id === state.chapterId);
-                const scene = chapter?.scenes.find(s => s.id === state.sceneId);
+                const act = project.acts.find(a => a.id == state.actId);
+                const chapter = act?.chapters.find(c => c.id == state.chapterId);
+                const scene = chapter?.scenes.find(s => s.id == state.sceneId);
                 if (act && chapter && scene) {
                     renderEditorInContainer(act, chapter, scene, container, panel);
                     restoreEditorView();
-                    return; // On sort car renderEditorInContainer gère tout
+                    return;
                 }
-            } else {
-                tempContainer.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon"><i data-lucide="pencil" style="width:48px;height:48px;stroke-width:1;"></i></div>
-                        <div class="empty-state-title">${Localization.t('split.empty_state_select_scene')}</div>
-                        <div class="empty-state-text">${Localization.t('split.empty_state_select_sidebar')}</div>
-                    </div>
-                `;
             }
+            // 2. Full Book Editor
+            else if (state.actId === 'all') {
+                if (typeof renderFullBookEditor === 'function') {
+                    renderFullBookEditor();
+                    restoreEditorView();
+                    return;
+                }
+            }
+            // 3. Chapter Editor
+            else if (state.chapterId) {
+                const act = project.acts.find(a => a.id == state.actId);
+                const chapter = act?.chapters.find(c => c.id == state.chapterId);
+                if (act && chapter && typeof renderChapterEditor === 'function') {
+                    renderChapterEditor(act, chapter);
+                    restoreEditorView();
+                    return;
+                }
+            }
+            // 4. Act Editor
+            else if (state.actId) {
+                const act = project.acts.find(a => a.id === state.actId);
+                if (act && typeof renderActEditor === 'function') {
+                    renderActEditor(act);
+                    restoreEditorView();
+                    return;
+                }
+            }
+
+            // 5. Fallback / Empty State
+            tempContainer.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon"><i data-lucide="pencil" style="width:48px;height:48px;stroke-width:1;"></i></div>
+                    <div class="empty-state-title">${Localization.t('split.empty_state_select_scene')}</div>
+                    <div class="empty-state-text">${Localization.t('split.empty_state_select_sidebar')}</div>
+                </div>
+            `;
             break;
 
         case 'characters':
@@ -79,7 +108,7 @@ function renderViewInSplitPanel(view, container, state, panel) {
 
         case 'world':
             if (state.worldId) {
-                const elem = project.world?.find(e => e.id === state.worldId);
+                const elem = project.world?.find(e => e.id == state.worldId);
                 if (elem) {
                     if (typeof renderWorldDetailFull === 'function') {
                         renderWorldDetailFull(elem, tempContainer);
@@ -100,7 +129,7 @@ function renderViewInSplitPanel(view, container, state, panel) {
 
         case 'notes':
             if (state.noteId) {
-                const note = project.notes?.find(n => n.id === state.noteId);
+                const note = project.notes?.find(n => n.id == state.noteId);
                 if (note) {
                     if (typeof renderNoteDetailInContainer === 'function') {
                         renderNoteDetailInContainer(note, tempContainer);
@@ -153,7 +182,7 @@ function renderViewInSplitPanel(view, container, state, panel) {
 
         case 'codex':
             if (state.codexId) {
-                const entry = project.codex?.find(c => c.id === state.codexId);
+                const entry = project.codex?.find(c => c.id == state.codexId);
                 if (entry) {
                     tempContainer.innerHTML = `
                         <div class="detail-view">
@@ -281,9 +310,37 @@ function renderViewInSplitPanel(view, container, state, panel) {
         case 'timeline':
             if (typeof renderTimelineList === 'function') {
                 renderTimelineList();
-            } else if (typeof renderTimelineInSplitPanel === 'function') {
+            }
+            if (typeof renderTimelineInSplitPanel === 'function') {
                 renderTimelineInSplitPanel(tempContainer);
             }
+            break;
+
+        case 'globalnotes':
+            if (typeof renderGlobalNotes === 'function') {
+                renderGlobalNotes();
+            }
+            break;
+
+        case 'front_matter':
+            if (window.FrontMatterView) {
+                window.FrontMatterView.render('editorView');
+            }
+            break;
+
+        case 'projects':
+            if (typeof ProjectView !== 'undefined' && typeof ProjectView.renderLandingPage === 'function') {
+                ProjectView.renderLandingPage(projects);
+            }
+            break;
+
+        case 'arcs':
+            if (typeof renderArcsList === 'function') renderArcsList();
+            if (typeof renderArcsWelcome === 'function') renderArcsWelcome();
+            break;
+
+        case 'investigation':
+            if (typeof renderInvestigationBoard === 'function') renderInvestigationBoard();
             break;
 
         default:

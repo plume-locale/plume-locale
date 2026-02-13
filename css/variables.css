@@ -53,4 +53,11 @@
             --cork-bg-orange: #ffb56b;
             --cork-bg-red: #ff6b6b;
             --cork-bg-teal: #6bffd9;
+
+            /* Customization Variables */
+            --progress-bar-width: 8px;
+            --status-draft-color: #ff6b6b;
+            --status-progress-color: #ffd93d;
+            --status-complete-color: #51cf66;
+            --status-review-color: #4a9eff;
         }

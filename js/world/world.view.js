@@ -124,7 +124,11 @@ function renderWorldList() {
                             <div class="treeview-item" onclick="openWorldDetail('${elem.id}')">
                                 <span class="treeview-item-icon"><i data-lucide="${iconName}" style="width:14px;height:14px;vertical-align:middle;"></i></span>
                                 <span class="treeview-item-label">${elem.name}</span>
-                                <button class="treeview-item-delete" onclick="event.stopPropagation(); handleDeleteWorldElement('${elem.id}')" title="${Localization.t('world.action.delete')}"><i data-lucide="x" style="width:12px;height:12px;"></i></button>
+                                <div class="treeview-item-actions">
+                                    <button class="treeview-action-btn" onclick="event.stopPropagation(); openWorldDetail('${elem.id}', { forceNew: true })" title="${Localization.t('tabs.open_new')}"><i data-lucide="plus-square" style="width:12px;height:12px;"></i></button>
+                                    <button class="treeview-action-btn" onclick="event.stopPropagation(); openWorldDetail('${elem.id}', { replaceCurrent: true })" title="${Localization.t('tabs.replace')}"><i data-lucide="maximize-2" style="width:12px;height:12px;"></i></button>
+                                    <button class="treeview-action-btn delete" onclick="event.stopPropagation(); handleDeleteWorldElement('${elem.id}')" title="${Localization.t('world.action.delete')}"><i data-lucide="x" style="width:12px;height:12px;"></i></button>
+                                </div>
                             </div>
                         `;
         }).join('')}
@@ -140,23 +144,19 @@ function renderWorldList() {
 /**
  * Opens the detail view for a world element.
  */
-function openWorldDetail(id) {
+function openWorldDetail(id, options = {}) {
     const data = getWorldDetailViewModel(id);
     if (!data) return;
 
-    // Handle split view mode
+    // Orchestration Onglets (Préféré)
+    if (typeof openTab === 'function') {
+        openTab('world', { worldId: id }, options);
+        return;
+    }
+
+    // Handle split view mode (Legacy)
     if (typeof splitViewActive !== 'undefined' && splitViewActive) {
-        const state = splitActivePanel === 'left' ? splitViewState.left : splitViewState.right;
-        if (state.view === 'world') {
-            state.worldId = id;
-            if (typeof renderSplitPanelViewContent === 'function') {
-                renderSplitPanelViewContent(splitActivePanel);
-            }
-            if (typeof saveSplitViewState === 'function') {
-                saveSplitViewState();
-            }
-            return;
-        }
+        // ... handled by splitview system if needed
     }
 
     const editorView = document.getElementById('editorView');

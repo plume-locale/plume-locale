@@ -33,7 +33,21 @@ const FocusModeView = {
 
             if (sidebar) sidebar.style.cssText = '';
             if (sidebarAccordion) sidebarAccordion.style.cssText = '';
-            if (sidebarColumn) sidebarColumn.style.cssText = '';
+
+            if (sidebarColumn) {
+                sidebarColumn.style.cssText = '';
+                // Restore saved width if available
+                if (typeof ColorPaletteViewModel !== 'undefined' && typeof ColorPaletteViewModel.getSavedSidebarWidth === 'function') {
+                    const savedWidth = ColorPaletteViewModel.getSavedSidebarWidth();
+                    if (savedWidth && savedWidth >= 200) {
+                        sidebarColumn.style.width = savedWidth + 'px';
+                        if (appContainer && getComputedStyle(appContainer).display === 'grid') {
+                            appContainer.style.gridTemplateColumns = `${savedWidth}px 1fr`;
+                        }
+                    }
+                }
+            }
+
             if (toolsSidebar) toolsSidebar.style.cssText = '';
 
             this.setPanelsFocusStyle(false);

@@ -45,7 +45,11 @@ const CodexView = {
                                 <div class="treeview-item" onclick="openCodexDetail('${entry.id}')">
                                     <span class="treeview-item-icon"><i data-lucide="${iconName}" style="width:14px;height:14px;vertical-align:middle;"></i></span>
                                     <span class="treeview-item-label">${entry.title}</span>
-                                    <button class="treeview-item-delete" onclick="event.stopPropagation(); deleteCodexEntry('${entry.id}')" title="${Localization.t('codex.action.delete')}">×</button>
+                                    <div class="treeview-item-actions">
+                                        <button class="treeview-action-btn" onclick="event.stopPropagation(); openCodexDetail('${entry.id}', { forceNew: true })" title="${Localization.t('tabs.open_new')}"><i data-lucide="plus-square" style="width:12px;height:12px;"></i></button>
+                                        <button class="treeview-action-btn" onclick="event.stopPropagation(); openCodexDetail('${entry.id}', { replaceCurrent: true })" title="${Localization.t('tabs.replace')}"><i data-lucide="maximize-2" style="width:12px;height:12px;"></i></button>
+                                        <button class="treeview-action-btn delete" onclick="event.stopPropagation(); deleteCodexEntry('${entry.id}')" title="${Localization.t('codex.action.delete')}">×</button>
+                                    </div>
                                 </div>
                             `;
             }).join('')}
@@ -75,19 +79,19 @@ const CodexView = {
     /**
      * Affiche le détail d'une entrée dans l'éditeur.
      */
-    openDetail(id) {
+    openDetail(id, options = {}) {
         const entry = CodexViewModel.getDetail(id);
         if (!entry) return;
 
-        // Handle split view mode
+        // Handle tabs system (Preferred)
+        if (typeof openTab === 'function') {
+            openTab('codex', { codexId: id }, options);
+            return;
+        }
+
+        // Handle split view mode (Legacy)
         if (typeof splitViewActive !== 'undefined' && splitViewActive) {
-            const state = splitActivePanel === 'left' ? splitViewState.left : splitViewState.right;
-            if (state.view === 'codex') {
-                state.codexId = id;
-                if (typeof renderSplitPanelViewContent === 'function') renderSplitPanelViewContent(splitActivePanel);
-                if (typeof saveSplitViewState === 'function') saveSplitViewState();
-                return;
-            }
+            // ... handled by splitview system if needed
         }
 
         const editorView = document.getElementById('editorView');
@@ -264,8 +268,8 @@ function renderCodexList() {
     CodexView.renderList();
 }
 
-function openCodexDetail(id) {
-    CodexView.openDetail(id);
+function openCodexDetail(id, options = {}) {
+    CodexView.openDetail(id, options);
 }
 
 function updateCodexField(id, field, value) {

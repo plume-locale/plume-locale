@@ -1502,8 +1502,9 @@ body.force-mobile-nav .split-mode-toggle span {
     .sidebar {
         position: static !important;
         left: auto !important;
-        width: 240px !important;
-        max-width: 240px !important;
+        width: auto !important;
+        min-width: 250px !important;
+        max-width: none !important;
         height: auto !important;
         z-index: auto !important;
         transition: none !important;
@@ -1556,12 +1557,14 @@ body.force-mobile-nav .split-mode-toggle span {
         flex-wrap: wrap !important;
     }
 
-    /* SIDEBAR DESKTOP - CRITIQUE */
+    /* SIDEBAR DESKTOP - LIBÉRATION DES CONTRAINTES */
     .sidebar {
         position: static;
         left: auto;
-        width: 350px;
-        max-width: 350px;
+        width: auto;
+        /* Laisser le style inline (le resize JS) piloter la largeur */
+        min-width: 250px;
+        max-width: none;
         height: auto;
         z-index: auto;
         transition: none;

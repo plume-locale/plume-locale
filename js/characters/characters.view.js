@@ -114,7 +114,11 @@ function renderCharactersList() {
                             <i data-lucide="user" style="width:14px;height:14px;vertical-align:middle;"></i>
                         </span>
                         <span class="treeview-item-label">${displayName}</span>
-                        <button class="treeview-item-delete" onclick="event.stopPropagation(); deleteCharacter('${char.id}')" title="${Localization.t('char.action.delete')}"><i data-lucide="x" style="width:12px;height:12px;"></i></button>
+                        <div class="treeview-item-actions">
+                            <button class="treeview-action-btn" onclick="event.stopPropagation(); openCharacterDetail('${char.id}', { forceNew: true })" title="${Localization.t('tabs.open_new')}"><i data-lucide="plus-square" style="width:12px;height:12px;"></i></button>
+                            <button class="treeview-action-btn" onclick="event.stopPropagation(); openCharacterDetail('${char.id}', { replaceCurrent: true })" title="${Localization.t('tabs.replace')}"><i data-lucide="maximize-2" style="width:12px;height:12px;"></i></button>
+                            <button class="treeview-action-btn delete" onclick="event.stopPropagation(); deleteCharacter('${char.id}')" title="${Localization.t('char.action.delete')}"><i data-lucide="x" style="width:12px;height:12px;"></i></button>
+                        </div>
                     </div>
                 `;
             });
@@ -141,23 +145,21 @@ function renderCharactersList() {
  * [MVVM : View]
  * Ouvre la fiche détaillée d'un personnage.
  */
-function openCharacterDetail(id) {
+function openCharacterDetail(id, options = {}) {
     const data = getCharacterDetailViewModel(id);
     if (!data) return;
 
     const { character, races, groups, linkedScenes } = data;
 
-    // Orchestration globale si on est en split view
+    // Orchestration Onglets (Préféré)
+    if (typeof openTab === 'function') {
+        openTab('characters', { characterId: id }, options);
+        return;
+    }
+
+    // Orchestration globale si on est en split view (Legacy)
     if (typeof splitViewActive !== 'undefined' && splitViewActive) {
-        const state = splitActivePanel === 'left' ? splitViewState.left : splitViewState.right;
-        if (state.view === 'characters') {
-            state.characterId = id;
-            if (typeof renderSplitPanelViewContent === 'function') {
-                renderSplitPanelViewContent(splitActivePanel);
-            }
-            if (typeof saveSplitViewState === 'function') saveSplitViewState();
-            return;
-        }
+        // ... handled by splitview system if needed
     }
 
     const editorView = document.getElementById('editorView');
