@@ -456,7 +456,7 @@ function renderCharacterSheet(character, racesList, groupsList, linkedScenes) {
                     
                     <!-- Catégories de traits -->
                     <div class="traits-categories">
-                        ${renderTraitsCategories('${character.id}', character.traits || [])}
+                        ${renderTraitsCategories(character.id, character.traits || [])}
                     </div>
                     
                     <div class="character-field" style="margin-top: 1rem;">
