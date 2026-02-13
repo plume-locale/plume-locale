@@ -254,7 +254,7 @@ function renderViewInSplitPanel(view, container, state, panel) {
             break;
 
         case 'timelineviz':
-            if (typeof renderTimelineVizList === 'function' && typeof renderMetroSVG === 'function') {
+            if (typeof MetroTimelineView !== 'undefined') {
                 const charCount = project.characters?.length || 0;
                 if (charCount === 0) {
                     tempContainer.innerHTML = `
@@ -277,18 +277,20 @@ function renderViewInSplitPanel(view, container, state, panel) {
                                     ${Localization.t('split.metro_sort_date')}
                                 </button>
                             </div>
-                            
+
                             <div class="metro-timeline-container" id="metroTimelineContainer-split-${panel}">
-                                ${renderMetroSVG()}
+                                ${MetroTimelineView.renderMetroSVG()}
                             </div>
-                            
+
                             <div class="metro-legend" style="margin-top: 1rem;">
-                                ${project.characters.map(char => `
+                                ${project.characters.map(char => {
+                                    const color = typeof MetroTimelineRepository !== 'undefined' ? MetroTimelineRepository.getCharacterColor(char.id) : '#999';
+                                    return `
                                     <div class="metro-legend-item" onclick="typeof openMetroColorPicker === 'function' ? openMetroColorPicker(${char.id}) : null" style="cursor: pointer;" title="${Localization.t('split.metro_legend_hint')}">
-                                        <div class="metro-legend-line" style="background: ${project.characterColors[char.id] || '#999'};"></div>
+                                        <div class="metro-legend-line" style="background: ${color};"></div>
                                         <span>${char.name}</span>
                                     </div>
-                                `).join('')}
+                                `}).join('')}
                             </div>
                         </div>
                     `;
