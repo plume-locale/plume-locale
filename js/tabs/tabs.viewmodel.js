@@ -291,6 +291,62 @@ function toggleTabsSplit() {
     saveTabsState();
 }
 
+/** [MVVM : ViewModel] - Sauvegarde la disposition actuelle comme preset */
+function saveTabsPreset() {
+    const name = prompt(Localization.t('tabs.preset_prompt_name'));
+    if (!name || !name.trim()) return;
+
+    const snapshot = {
+        panes: {
+            left: { tabs: tabsState.panes.left.tabs.map(t => ({ ...t })), activeTabId: tabsState.panes.left.activeTabId },
+            right: { tabs: tabsState.panes.right.tabs.map(t => ({ ...t })), activeTabId: tabsState.panes.right.activeTabId }
+        },
+        isSplit: tabsState.isSplit,
+        activePane: tabsState.activePane
+    };
+
+    TabsRepository.savePreset(name.trim(), snapshot);
+    if (typeof showNotification === 'function') showNotification(Localization.t('tabs.preset_saved', [name.trim()]));
+    renderTabs();
+}
+
+/** [MVVM : ViewModel] - Charge un preset de disposition d'onglets */
+function loadTabsPreset(name) {
+    const presets = TabsRepository.getPresets();
+    const preset = presets.find(p => p.name === name);
+    if (!preset) return;
+
+    const snapshot = preset.tabs;
+    tabsState.panes.left.tabs = snapshot.panes.left.tabs.map(t => ({ ...t }));
+    tabsState.panes.left.activeTabId = snapshot.panes.left.activeTabId;
+    tabsState.panes.right.tabs = snapshot.panes.right.tabs.map(t => ({ ...t }));
+    tabsState.panes.right.activeTabId = snapshot.panes.right.activeTabId;
+    tabsState.isSplit = snapshot.isSplit;
+    tabsState.activePane = snapshot.activePane;
+
+    // Rafraîchir les titres avec les données du projet courant
+    ['left', 'right'].forEach(paneId => {
+        tabsState.panes[paneId].tabs.forEach(tab => {
+            tab.title = getTabTitle(tab.view, tab.params);
+        });
+    });
+
+    saveTabsState();
+    renderTabs();
+
+    // Synchroniser l'état global avec l'onglet actif
+    const activePane = tabsState.panes[tabsState.activePane];
+    const activeTab = activePane.tabs.find(t => t.id === activePane.activeTabId);
+    if (activeTab) syncGlobalStateWithTab(activeTab);
+}
+
+/** [MVVM : ViewModel] - Supprime un preset */
+function deleteTabsPreset(name) {
+    TabsRepository.deletePreset(name);
+    if (typeof showNotification === 'function') showNotification(Localization.t('tabs.preset_deleted', [name]));
+    renderTabs();
+}
+
 /** [MVVM : ViewModel] - Utilitaire pour trouver une scène */
 function findSceneById(sceneId) {
     if (!project || !project.acts) return null;

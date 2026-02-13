@@ -25,6 +25,65 @@ function renderTabs() {
     if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
+/** [MVVM : View] - Génère le HTML du bouton preset dans la barre d'onglets */
+function renderTabsPresetButtonHTML() {
+    return `
+        <div class="tab-preset-wrapper">
+            <button class="tab-preset-btn" onclick="toggleTabsPresetMenu(event)" title="${Localization.t('tabs.preset_tooltip')}">
+                <i data-lucide="bookmark" style="width:14px;height:14px;"></i>
+            </button>
+        </div>
+    `;
+}
+
+/** [MVVM : View] - Affiche/masque le menu de presets */
+function toggleTabsPresetMenu(event) {
+    event.stopPropagation();
+    const existing = document.querySelector('.tab-preset-menu');
+    if (existing) { existing.remove(); return; }
+
+    const btn = event.currentTarget;
+    const rect = btn.getBoundingClientRect();
+    const presets = typeof TabsRepository !== 'undefined' ? TabsRepository.getPresets() : [];
+
+    const menu = document.createElement('div');
+    menu.className = 'tab-preset-menu';
+    menu.style.top = (rect.bottom + 4) + 'px';
+    menu.style.left = rect.left + 'px';
+
+    const hasTabs = tabsState.panes.left.tabs.length > 0 || tabsState.panes.right.tabs.length > 0;
+
+    menu.innerHTML = `
+        ${hasTabs ? `<div class="tab-preset-menu-item tab-preset-save" onclick="saveTabsPreset(); document.querySelector('.tab-preset-menu')?.remove();">
+            <i data-lucide="save" style="width:14px;height:14px;"></i>
+            <span>${Localization.t('tabs.preset_save')}</span>
+        </div>` : ''}
+        ${presets.length > 0 ? `<div class="tab-preset-menu-divider"></div>` : ''}
+        ${presets.map(p => `
+            <div class="tab-preset-menu-item" onclick="loadTabsPreset('${p.name.replace(/'/g, "\\'")}'); document.querySelector('.tab-preset-menu')?.remove();">
+                <i data-lucide="layout" style="width:14px;height:14px;"></i>
+                <span>${p.name}</span>
+                <button class="tab-preset-delete" onclick="event.stopPropagation(); deleteTabsPreset('${p.name.replace(/'/g, "\\'")}'); document.querySelector('.tab-preset-menu')?.remove();">
+                    <i data-lucide="trash-2" style="width:12px;height:12px;"></i>
+                </button>
+            </div>
+        `).join('')}
+        ${presets.length === 0 ? `<div class="tab-preset-menu-empty">${Localization.t('tabs.preset_empty')}</div>` : ''}
+    `;
+
+    document.body.appendChild(menu);
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+
+    // Fermer au clic extérieur
+    const closeMenu = (e) => {
+        if (!menu.contains(e.target) && e.target !== btn) {
+            menu.remove();
+            document.removeEventListener('click', closeMenu);
+        }
+    };
+    setTimeout(() => document.addEventListener('click', closeMenu), 0);
+}
+
 /** [MVVM : View] - Rendu d'un panneau unique d'onglets */
 function renderSinglePaneTabs(container) {
     const pane = tabsState.panes.left;
@@ -34,6 +93,7 @@ function renderSinglePaneTabs(container) {
         <div class="tabs-container">
             <div class="tab-strip" id="tab-strip-left" ondragover="allowDrop(event)" ondrop="dropTab(event, 'left')">
                 ${pane.tabs.map(tab => renderTabItemHTML(tab, pane.activeTabId)).join('')}
+                ${renderTabsPresetButtonHTML()}
             </div>
             <div class="tab-content-area" id="tab-content-left">
                 <!-- Content will be injected here -->
@@ -65,6 +125,7 @@ function renderSplitTabs(container) {
                  id="splitPanelLeft" style="flex: ${ratio};" onclick="switchActivePane('left')">
                 <div class="tab-strip" id="tab-strip-left" ondragover="allowDrop(event)" ondrop="dropTab(event, 'left')">
                     ${tabsState.panes.left.tabs.map(tab => renderTabItemHTML(tab, tabsState.panes.left.activeTabId)).join('')}
+                    ${renderTabsPresetButtonHTML()}
                 </div>
                 <div class="tab-content-area" id="tab-content-left"></div>
             </div>

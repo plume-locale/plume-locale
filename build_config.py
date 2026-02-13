@@ -153,6 +153,7 @@ JS_ORDER = [
     'js/splitview/splitview.handlers.js',
     'js/splitview/splitview.main.js',
     # Tabs System
+    'js/tabs/tabs.repository.js',
     'js/tabs/tabs.viewmodel.js',
     'js/tabs/tabs.view.js',
     'js/tabs/tabs.main.js',
