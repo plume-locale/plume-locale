@@ -131,7 +131,7 @@ class FrontMatterView {
                 ${typeof getEditorToolbarHTML === 'function' ? getEditorToolbarHTML(null, true) : ''}
             </div>
 
-            <div class="front-matter-editor" style="padding: 2rem; max-width: 800px; margin: 0 auto;">
+            <div class="front-matter-editor" style="padding: 2rem; max-width: 800px; width: 100%; margin: 0 auto;">
                 <div class="front-matter-content" style="margin-top: 2rem;">
                     <div id="fm-editor-container" style="background: var(--bg-secondary); border-radius: 8px; padding: 2rem; min-height: 500px; box-shadow: var(--shadow-sm);">
                         <div id="fm-content-editor" contenteditable="true" class="editor-textarea"
