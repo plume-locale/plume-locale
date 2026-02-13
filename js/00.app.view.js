@@ -370,6 +370,16 @@ function syncSidebarWithView(view) {
             tensionMeter = document.getElementById('liveTensionMeter');
         }
         if (tensionMeter) tensionMeter.style.display = 'flex';
+    } else if (view === 'globalnotes') {
+        if (progressBar) progressBar.style.display = 'none';
+        if (statusFilters) statusFilters.style.display = 'none';
+        if (treeCollapseToolbar) treeCollapseToolbar.style.display = 'none';
+        if (sceneTools) sceneTools.style.display = 'none';
+        if (tensionMeter) tensionMeter.style.display = 'none';
+        if (toolsSidebar) {
+            toolsSidebar.style.display = 'flex';
+            if (typeof updateGNToolsSidebar === 'function') updateGNToolsSidebar();
+        }
     } else {
         if (progressBar) progressBar.style.display = 'none';
         if (statusFilters) statusFilters.style.display = 'none';
