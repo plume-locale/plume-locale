@@ -775,8 +775,8 @@ function renderTraitsCategories(charId, selectedTraits) {
                         <div class="trait-category-header">${Localization.t(`char.trait.category.${catKey}`)}</div>
                         <div class="trait-category-content">
                             ${category.traits.map(trait => `
-                                <span class="trait-option ${selectedTraits.includes(trait) ? 'selected' : ''}" 
-                                    onclick="toggleCharacterTrait(${charId}, '${trait.replace(/'/g, "\\'")}')">${Localization.t(trait)}</span>
+                                <span class="trait-option ${selectedTraits.includes(trait) ? 'selected' : ''}"
+                                    onclick="toggleCharacterTrait(${charId}, '${trait.replace(/'/g, "&#39;")}')">${Localization.t(trait)}</span>
                             `).join('')}
                         </div>
                     </div>
@@ -802,7 +802,7 @@ function refreshTraitsDisplay(character) {
 
     if (container) {
         container.innerHTML = traits.length > 0
-            ? traits.map((t, i) => `<span class="selected-trait">${Localization.t(t)}<span class="trait-remove" onclick="removeCharacterTrait(${character.id}, '${t.replace(/'/g, "\\'")}')"><i data-lucide="x" style="width:10px;height:10px;"></i></span></span>`).join('')
+            ? traits.map((t, i) => `<span class="selected-trait">${Localization.t(t)}<span class="trait-remove" onclick="removeCharacterTrait(${character.id}, '${t.replace(/'/g, "&#39;")}')"><i data-lucide="x" style="width:10px;height:10px;"></i></span></span>`).join('')
             : `<span class="no-traits">${Localization.t('char.field.traits_hint')}</span>`;
     }
 
