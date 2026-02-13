@@ -3,3 +3,4 @@ build.log
 *.log
 /build
 /live/
+__pycache__/
