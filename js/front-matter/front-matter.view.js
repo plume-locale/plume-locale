@@ -95,6 +95,17 @@ class FrontMatterView {
      */
     openItem(id) {
         this.currentId = id;
+
+        // Quand le système d'onglets est actif, déléguer le rendu aux onglets
+        // (sauf si on est déjà dans un cycle de rendu d'onglet, détecté par editorView-backup)
+        if (typeof tabsState !== 'undefined' && tabsState.panes.left.tabs.length > 0 && typeof renderTabs === 'function') {
+            if (!document.getElementById('editorView-backup')) {
+                this.renderSidebar();
+                renderTabs();
+                return;
+            }
+        }
+
         const item = this.viewModel.getItemDetails(id);
         if (!item) return;
 
@@ -166,9 +177,15 @@ class FrontMatterView {
             this.viewModel.deleteItem(id);
             if (this.currentId === id) {
                 this.currentId = null;
-                document.getElementById(this.editorContainerId).innerHTML = ''; // Vider l'éditeur
             }
             this.renderSidebar();
+
+            if (typeof tabsState !== 'undefined' && tabsState.panes.left.tabs.length > 0 && typeof renderTabs === 'function') {
+                renderTabs();
+            } else {
+                const container = document.getElementById(this.editorContainerId);
+                if (container) container.innerHTML = '';
+            }
         }
     }
 
