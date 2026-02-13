@@ -395,10 +395,17 @@ function formatTextInPanel(panel, command, value = null) {
     // Focus the editor
     editor.focus();
 
-    // S'assurer que le rendu se fait via CSS
-    try {
-        document.execCommand('styleWithCSS', false, true);
-    } catch (e) { }
+    // Normalize formatBlock values to <tag> format for cross-browser compatibility
+    if (command === 'formatBlock' && value && !value.startsWith('<')) {
+        value = '<' + value + '>';
+    }
+
+    // S'assurer que le rendu se fait via CSS (uniquement pour les commandes inline)
+    if (command !== 'formatBlock') {
+        try {
+            document.execCommand('styleWithCSS', false, true);
+        } catch (e) { }
+    }
 
     // Execute the command
     document.execCommand(command, false, value);

@@ -337,6 +337,11 @@ const AutoDetectView = {
             editor.focus();
         }
 
+        // Normalize formatBlock values to <tag> format for cross-browser compatibility
+        if (command === 'formatBlock' && value && !value.startsWith('<')) {
+            value = '<' + value + '>';
+        }
+
         document.execCommand(command, false, value);
 
         // Update last range after command (selection might have changed)
