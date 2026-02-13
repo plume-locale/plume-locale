@@ -53,8 +53,8 @@ const InterfaceCustomizerViewModel = {
      * Bascule la visibilité d'un composant (en mode tempo ou réel)
      */
     toggleComponent: (componentId) => {
-        // Sécurité : ne jamais masquer le bouton d'entrée lui-même
-        if (componentId === 'headerInterfaceBtn') return;
+        // Sécurité : ne jamais masquer les boutons d'entrée du customizer
+        if (componentId === 'headerInterfaceBtn' || componentId === 'sidebarCustomizeBtn') return;
 
         if (InterfaceCustomizerViewModel.state.isEditing) {
             InterfaceCustomizerViewModel.state.tempSettings[componentId] = !InterfaceCustomizerViewModel.state.tempSettings[componentId];
@@ -63,13 +63,22 @@ const InterfaceCustomizerViewModel = {
     },
 
     /**
-     * Met à jour un réglage spécifique (couleur, largeur, etc)
+     * Met à jour un réglage spécifique (couleur, largeur, etc) - mode édition
      */
     updateSetting: (key, value) => {
         if (InterfaceCustomizerViewModel.state.isEditing) {
             InterfaceCustomizerViewModel.state.tempSettings[key] = value;
             InterfaceCustomizerViewModel.applySettings();
         }
+    },
+
+    /**
+     * Met à jour un réglage structure et sauvegarde immédiatement (hors mode édition)
+     */
+    updateStructureSetting: (key, value) => {
+        InterfaceCustomizerViewModel.state.settings[key] = value;
+        InterfaceCustomizerRepository.saveSettings(InterfaceCustomizerViewModel.state.settings);
+        InterfaceCustomizerViewModel.applySettings();
     },
 
     /**
@@ -97,7 +106,7 @@ const InterfaceCustomizerViewModel = {
         // 1. Appliquer aux éléments du header (via ID)
         Object.entries(settings).forEach(([id, isVisible]) => {
             // Sécurité absolue
-            if (id === 'headerInterfaceBtn') return;
+            if (id === 'headerInterfaceBtn' || id === 'sidebarCustomizeBtn') return;
 
             const el = document.getElementById(id);
             if (!el) return;

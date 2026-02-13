@@ -1094,3 +1094,77 @@
     color: var(--bg-accent);
     border-color: var(--accent-gold);
 }
+
+/* Structure Advanced Panel - inline dans la sidebar */
+.structure-advanced-panel {
+    background: var(--bg-primary);
+    border-bottom: 1px solid var(--border-color);
+    padding: 0.75rem;
+    animation: structPanelSlide 0.2s ease;
+}
+
+@keyframes structPanelSlide {
+    from { opacity: 0; max-height: 0; padding: 0 0.75rem; }
+    to { opacity: 1; max-height: 400px; padding: 0.75rem; }
+}
+
+.structure-advanced-panel .advanced-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+.structure-panel-close {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 2px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.structure-panel-close:hover {
+    color: var(--text-primary);
+    background: var(--bg-secondary);
+}
+
+.structure-advanced-panel .setting-group {
+    margin-bottom: 0.75rem;
+}
+
+.structure-advanced-panel .setting-label {
+    font-size: 0.8rem;
+    margin-bottom: 0.2rem;
+}
+
+.structure-advanced-panel .setting-hint {
+    font-size: 0.7rem;
+    margin-bottom: 0.5rem;
+}
+
+.structure-advanced-panel .setting-row {
+    gap: 8px;
+    margin-bottom: 0.5rem;
+}
+
+.structure-advanced-panel .setting-row span {
+    font-size: 0.8rem !important;
+}
+
+.tree-customize-btn {
+    margin-left: auto;
+}
+
+.tree-customize-btn.active {
+    color: var(--accent-gold);
+    background: rgba(var(--accent-gold-rgb, 212, 175, 55), 0.1);
+}

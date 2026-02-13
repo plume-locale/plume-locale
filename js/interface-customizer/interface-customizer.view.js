@@ -12,31 +12,34 @@ const InterfaceCustomizerView = {
         if (active) {
             document.body.classList.add('interface-edit-mode');
             if (!bar) {
+                // Insert the edit bar right after sidebarShortcuts
+                const shortcuts = document.getElementById('sidebarShortcuts');
                 bar = document.createElement('div');
                 bar.id = 'interfaceEditBar';
                 bar.className = 'interface-edit-bar';
                 bar.innerHTML = `
                     <div class="edit-bar-content">
-                        <button class="btn btn-secondary" onclick="InterfaceCustomizerViewModel.cancelEditing()">
-                            <i data-lucide="x"></i> ${Localization.t('btn.cancel')}
-                        </button>
-                        <div class="edit-bar-center">
+                        <div class="edit-bar-left">
                             <div class="edit-bar-title">
-                                <i data-lucide="mouse-pointer-click"></i> <span>${Localization.t('customizer.bar.title')}</span>
+                                <i data-lucide="grip-vertical"></i> <span>${Localization.t('customizer.bar.title')}</span>
                             </div>
                             <div class="edit-bar-hint">${Localization.t('customizer.bar.hint')}</div>
                         </div>
-                        <div style="display: flex; gap: 8px;">
-                            <button class="btn btn-secondary" onclick="InterfaceCustomizerView.toggleAdvancedSettings()" id="advancedSettingsBtn">
-                                <i data-lucide="palette"></i> ${Localization.t('customizer.bar.advanced')}
+                        <div class="edit-bar-actions">
+                            <button class="btn btn-secondary btn-sm" onclick="InterfaceCustomizerViewModel.cancelEditing()">
+                                <i data-lucide="x" style="width:14px;height:14px;"></i> ${Localization.t('btn.cancel')}
                             </button>
-                            <button class="btn btn-primary" onclick="InterfaceCustomizerViewModel.saveAndExit()">
-                                <i data-lucide="check"></i> ${Localization.t('btn.apply')}
+                            <button class="btn btn-primary btn-sm" onclick="InterfaceCustomizerViewModel.saveAndExit()">
+                                <i data-lucide="check" style="width:14px;height:14px;"></i> ${Localization.t('btn.apply')}
                             </button>
                         </div>
                     </div>
                 `;
-                document.body.appendChild(bar);
+                if (shortcuts && shortcuts.parentNode) {
+                    shortcuts.parentNode.insertBefore(bar, shortcuts.nextSibling);
+                } else {
+                    document.body.appendChild(bar);
+                }
                 if (typeof lucide !== 'undefined') lucide.createIcons({ root: bar });
             }
             // Intercepter les clics sur les éléments du header
@@ -46,42 +49,53 @@ const InterfaceCustomizerView = {
             if (bar) bar.remove();
             const panel = document.getElementById('interfaceAdvancedPanel');
             if (panel) panel.remove();
+            const structPanel = document.getElementById('structureAdvancedPanel');
+            if (structPanel) structPanel.remove();
             InterfaceCustomizerView._unbindInteraction();
         }
     },
 
     /**
-     * Affiche/masque le panneau latéral de réglages avancés
+     * Affiche/masque le panneau de personnalisation de la vue structure
      */
-    toggleAdvancedSettings: () => {
-        let panel = document.getElementById('interfaceAdvancedPanel');
+    toggleStructureSettings: () => {
+        let panel = document.getElementById('structureAdvancedPanel');
         if (!panel) {
-            panel = InterfaceCustomizerView._renderAdvancedPanel();
-            document.body.appendChild(panel);
+            panel = InterfaceCustomizerView._renderStructurePanel();
+            const toolbar = document.getElementById('treeCollapseToolbar');
+            if (toolbar && toolbar.parentNode) {
+                toolbar.parentNode.insertBefore(panel, toolbar.nextSibling);
+            } else {
+                document.body.appendChild(panel);
+            }
             if (typeof lucide !== 'undefined') lucide.createIcons({ root: panel });
         }
 
-        const isVisible = panel.style.display === 'block';
+        const isVisible = panel.style.display !== 'none';
         panel.style.display = isVisible ? 'none' : 'block';
 
-        const btn = document.getElementById('advancedSettingsBtn');
+        const btn = document.getElementById('structureCustomizeBtn');
         if (btn) btn.classList.toggle('active', !isVisible);
     },
 
     /**
-     * Génère le HTML du panneau avancé
+     * Génère le panneau de personnalisation structure (barres, couleurs)
      */
-    _renderAdvancedPanel: () => {
-        const settings = InterfaceCustomizerViewModel.state.tempSettings;
+    _renderStructurePanel: () => {
+        const settings = InterfaceCustomizerViewModel.state.isEditing
+            ? InterfaceCustomizerViewModel.state.tempSettings
+            : InterfaceCustomizerViewModel.state.settings;
         const panel = document.createElement('div');
-        panel.id = 'interfaceAdvancedPanel';
-        panel.className = 'interface-advanced-panel';
+        panel.id = 'structureAdvancedPanel';
+        panel.className = 'structure-advanced-panel';
         panel.style.display = 'none';
 
         panel.innerHTML = `
             <div class="advanced-panel-header">
-                <span>${Localization.t('customizer.panel.title')}</span>
-                <i data-lucide="palette" style="width:16px;height:16px;opacity:0.5;"></i>
+                <span>${Localization.t('customizer.structure.title')}</span>
+                <button class="structure-panel-close" onclick="InterfaceCustomizerView.toggleStructureSettings()">
+                    <i data-lucide="x" style="width:14px;height:14px;"></i>
+                </button>
             </div>
 
             <div class="setting-group">
@@ -92,7 +106,7 @@ const InterfaceCustomizerView = {
                 <div class="setting-hint">${Localization.t('customizer.panel.progress_width_hint')}</div>
                 <div class="setting-row">
                     <input type="range" min="4" max="24" value="${settings.progressBarWidth || 8}"
-                           oninput="InterfaceCustomizerViewModel.updateSetting('progressBarWidth', parseInt(this.value)); this.nextElementSibling.textContent = this.value + 'px'"
+                           oninput="InterfaceCustomizerViewModel.updateStructureSetting('progressBarWidth', parseInt(this.value)); this.nextElementSibling.textContent = this.value + 'px'"
                            style="flex:1;">
                     <span style="min-width: 35px; font-size: 0.8rem;">${settings.progressBarWidth || 8}px</span>
                 </div>
@@ -108,7 +122,7 @@ const InterfaceCustomizerView = {
                 <div class="setting-row">
                     <div class="color-input-wrapper">
                         <input type="color" value="${settings.statusDraftColor || '#ff6b6b'}"
-                               oninput="InterfaceCustomizerViewModel.updateSetting('statusDraftColor', this.value)">
+                               oninput="InterfaceCustomizerViewModel.updateStructureSetting('statusDraftColor', this.value)">
                     </div>
                     <span style="font-size: 0.85rem;">${Localization.t('customizer.status.draft')}</span>
                 </div>
@@ -116,7 +130,7 @@ const InterfaceCustomizerView = {
                 <div class="setting-row">
                     <div class="color-input-wrapper">
                         <input type="color" value="${settings.statusProgressColor || '#ffd93d'}"
-                               oninput="InterfaceCustomizerViewModel.updateSetting('statusProgressColor', this.value)">
+                               oninput="InterfaceCustomizerViewModel.updateStructureSetting('statusProgressColor', this.value)">
                     </div>
                     <span style="font-size: 0.85rem;">${Localization.t('customizer.status.progress')}</span>
                 </div>
@@ -124,7 +138,7 @@ const InterfaceCustomizerView = {
                 <div class="setting-row">
                     <div class="color-input-wrapper">
                         <input type="color" value="${settings.statusCompleteColor || '#51cf66'}"
-                               oninput="InterfaceCustomizerViewModel.updateSetting('statusCompleteColor', this.value)">
+                               oninput="InterfaceCustomizerViewModel.updateStructureSetting('statusCompleteColor', this.value)">
                     </div>
                     <span style="font-size: 0.85rem;">${Localization.t('customizer.status.complete')}</span>
                 </div>
@@ -132,7 +146,7 @@ const InterfaceCustomizerView = {
                 <div class="setting-row">
                     <div class="color-input-wrapper">
                         <input type="color" value="${settings.statusReviewColor || '#4a9eff'}"
-                               oninput="InterfaceCustomizerViewModel.updateSetting('statusReviewColor', this.value)">
+                               oninput="InterfaceCustomizerViewModel.updateStructureSetting('statusReviewColor', this.value)">
                     </div>
                     <span style="font-size: 0.85rem;">${Localization.t('customizer.status.review')}</span>
                 </div>

@@ -311,12 +311,12 @@
                             <i data-lucide="palette"></i>
                             <span data-i18n="header.themes">Thèmes</span>
                         </button>
-                        <!-- Interface -->
-                        <button class="extra-menu-item" onclick="InterfaceCustomizerViewModel.startEditing()"
+                        <!-- Interface (déplacé dans la sidebar, bouton désactivé ici) -->
+                        <!-- <button class="extra-menu-item" onclick="InterfaceCustomizerViewModel.startEditing()"
                             id="headerInterfaceBtn">
                             <i data-lucide="settings-2"></i>
                             <span data-i18n="header.interface">Interface</span>
-                        </button>
+                        </button> -->
 
                         <div class="extra-menu-separator"></div>
 
@@ -509,6 +509,11 @@
                             title="Réorganiser la structure (vue globale)" data-i18n-title="tool.tree.organize">
                             <i data-lucide="layout-list" style="width: 12px; height: 12px"></i>
                             <span data-i18n="tool.tree.organize">Organiser</span>
+                        </button>
+                        <button class="tree-collapse-btn tree-customize-btn" onclick="InterfaceCustomizerView.toggleStructureSettings()"
+                            title="Personnaliser la vue structure" data-i18n-title="customizer.structure.btn_title"
+                            id="structureCustomizeBtn">
+                            <i data-lucide="settings-2" style="width: 12px; height: 12px"></i>
                         </button>
                     </div>
                     <div class="chapters-list" id="chaptersList">

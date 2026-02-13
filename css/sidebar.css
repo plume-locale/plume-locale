@@ -874,10 +874,9 @@
     height: 20px;
 }
 
-/* Toggle Button Style */
-.sidebar-collapse-btn {
+/* Customize Button in Shortcuts Bar */
+.sidebar-customize-btn {
     width: 32px;
-    /* Fixed size */
     height: 32px;
     display: flex;
     align-items: center;
@@ -886,10 +885,36 @@
     cursor: pointer;
     border-radius: 4px;
     transition: all 0.2s;
-    margin-left: auto;
-    /* Push to right in header */
     border: none;
     background: transparent;
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+.sidebar-customize-btn:hover {
+    background: var(--bg-primary);
+    color: var(--accent-gold);
+}
+
+.sidebar-customize-btn i {
+    width: 16px;
+    height: 16px;
+}
+
+/* Toggle Button Style */
+.sidebar-collapse-btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s;
+    border: none;
+    background: transparent;
+    flex-shrink: 0;
 }
 
 .sidebar-collapse-btn:hover {

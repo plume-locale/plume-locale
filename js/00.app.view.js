@@ -2711,9 +2711,14 @@ function renderSidebarShortcuts(shortcuts = null, isEditing = false) {
         `;
     }).join('');
 
-    // 3. Add Collapse/Expand Toggle
+    // 3. Add Customize + Collapse/Expand buttons
     const col = document.getElementById('sidebarColumn');
     const isCollapsed = col ? col.classList.contains('collapsed') : false;
+    const customizeBtn = `
+        <button class="sidebar-customize-btn" onclick="InterfaceCustomizerViewModel.startEditing()" title="${Localization.t('customizer.sidebar.btn_title')}" id="sidebarCustomizeBtn">
+            <i data-lucide="settings-2"></i>
+        </button>
+    `;
     const toggleBtn = `
         <button class="sidebar-collapse-btn" onclick="toggleSidebarCollapse()" title="${isCollapsed ? 'Déplier' : 'Replier'}">
             <i data-lucide="${isCollapsed ? 'panel-left-open' : 'panel-left-close'}"></i>
@@ -2721,7 +2726,7 @@ function renderSidebarShortcuts(shortcuts = null, isEditing = false) {
     `;
 
     // 4. Inject and Process Icons
-    container.innerHTML = html + toggleBtn;
+    container.innerHTML = html + customizeBtn + toggleBtn;
 
     if (typeof lucide !== 'undefined') {
         lucide.createIcons({ root: container });
