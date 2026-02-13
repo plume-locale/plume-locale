@@ -145,6 +145,7 @@ const LOCALE_EN = {
     "sidebar.group.write": "Writing",
     "sidebar.group.analyze": "Analysis",
     "sidebar.group.construction": "Construction",
+    "sidebar.no_info": "No information for this view",
     "nav.ecriture": "Writing",
 
     // --- Header Tools ---

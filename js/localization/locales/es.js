@@ -119,6 +119,7 @@ const LOCALE_ES = {
     "sidebar.btn.add_scene": "+ Añadir escena",
     "sidebar.empty.no_chapters": "Sin capítulos",
     "sidebar.no_scene": "Ninguna escena seleccionada",
+    "sidebar.no_info": "Sin información para esta vista",
 
     // --- Header Tools ---
     "header.logo.title": "Clic para renombrar proyecto",
