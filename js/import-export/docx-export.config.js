@@ -114,31 +114,36 @@ const DocxExportConfig = {
     //  FORMATS DE PAGE PRÉDÉFINIS
     // =====================================================================
     pageSizes: {
-        a4:     { width: 11906, height: 16838 },   // 210 × 297 mm
+        a4: { width: 11906, height: 16838 },   // 210 × 297 mm
         letter: { width: 12240, height: 15840 },   // 8.5 × 11 in
-        a5:     { width: 8391,  height: 11906 },   // 148 × 210 mm
-        b5:     { width: 9977,  height: 14175 }     // 176 × 250 mm
+        a5: { width: 8391, height: 11906 },   // 148 × 210 mm
+        b5: { width: 9977, height: 14175 },    // 176 × 250 mm
+        poche_11_18: { width: 6237, height: 10206 }, // 110 x 180 mm
+        broche_13_20: { width: 7371, height: 11340 }, // 130 x 200 mm
+        broche_14_22: { width: 7938, height: 12474 },  // 140 x 220 mm
+        us_trade: { width: 8640, height: 12960 }, // 6 x 9 in (152 x 229 mm)
+        us_digest: { width: 7920, height: 12240 } // 5.5 x 8.5 in (140 x 216 mm)
     },
 
     // =====================================================================
     //  PRESETS D'INTERLIGNE
     // =====================================================================
     lineSpacingPresets: {
-        'simple':   240,   // 1.0
-        '1.15':     276,   // 1.15
-        '1.5':      360,   // 1.5
-        'double':   480    // 2.0
+        'simple': 240,   // 1.0
+        '1.15': 276,   // 1.15
+        '1.5': 360,   // 1.5
+        'double': 480    // 2.0
     },
 
     // =====================================================================
     //  PRESETS MARGES (en twips)
     // =====================================================================
     marginPresets: {
-        'narrow':  { top: 720,  bottom: 720,  left: 720,  right: 720 },   // ~1.27 cm
-        'normal':  { top: 1440, bottom: 1440, left: 1440, right: 1440 },  // ~2.54 cm
-        'wide':    { top: 1700, bottom: 1700, left: 1700, right: 1700 },  // ~3 cm
-        'editorial':{ top: 1700, bottom: 1700, left: 2268, right: 1700 }, // gauche ~4cm
-        'custom':  null // sera rempli par l'utilisateur
+        'narrow': { top: 720, bottom: 720, left: 720, right: 720 },   // ~1.27 cm
+        'normal': { top: 1440, bottom: 1440, left: 1440, right: 1440 },  // ~2.54 cm
+        'wide': { top: 1700, bottom: 1700, left: 1700, right: 1700 },  // ~3 cm
+        'editorial': { top: 1700, bottom: 1700, left: 2268, right: 1700 }, // gauche ~4cm
+        'custom': null // sera rempli par l'utilisateur
     },
 
     // =====================================================================
