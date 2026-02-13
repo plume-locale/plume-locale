@@ -60,7 +60,9 @@ const GlobalNotesViewModel = {
         const projectId = window.project?.id;
         localStorage.setItem(`globalnotes_active_board_${projectId}`, boardId);
 
-        if (window.GlobalNotesView) {
+        if (typeof tabsState !== 'undefined' && tabsState.panes.left.tabs.length > 0 && typeof renderTabs === 'function') {
+            renderTabs();
+        } else if (window.GlobalNotesView) {
             window.GlobalNotesView.render();
         }
 

@@ -224,7 +224,8 @@ function syncGlobalStateWithTab(tab, deferRender = false) {
     // Mettre à jour la sidebar (Synchronisation complète des listes)
     if (typeof syncSidebarWithView === 'function') {
         syncSidebarWithView(tab.view);
-    } else if (typeof updateSidebarActions === 'function') {
+    }
+    if (typeof updateSidebarActions === 'function') {
         updateSidebarActions(tab.view);
     }
 
