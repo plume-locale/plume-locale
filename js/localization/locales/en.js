@@ -235,7 +235,7 @@ const LOCALE_EN = {
     "btn.add_project": "+ New Project",
     "btn.import_project": "Import Project",
     "btn.import_demo": "Import Demo",
-    "btn.google_drive": "Google Drive",
+    "btn.google_drive": "Import/Export & Google Drive",
     "project.viewmodel.import_success": "Demo project \"{0}\" successfully imported!",
     "project.viewmodel.import_error": "Error importing demo: {0}",
 

@@ -97,7 +97,6 @@ JS_ORDER = [
     'js/undo-redo/undo-redo.view.js',
     'js/undo-redo/undo-redo.handlers.js',
     'js/undo-redo/undo-redo.main.js',
-    'js/page-preview.js',
     'js/pagination.js',
     # Structure refactored files 1/2
     'js/structure/structure.model.js',
@@ -105,6 +104,7 @@ JS_ORDER = [
     'js/structure/structure.viewmodel.js',
     # App
     'js/00.app.view.js',
+    'js/tools-sidebar.viewmodel.js',
     # Structure refactored files 2/2
     'js/structure/structure.view.js',
     'js/structure/structure-organizer.view.js',
@@ -344,12 +344,6 @@ JS_ORDER = [
     'js/synonyms/synonyms.repository.js',
     'js/synonyms/synonyms.viewmodel.js',
     'js/synonyms/synonyms.view.js',
-    # AI Assistant
-    'js/ai-assistant/ai-assistant.service.js',
-    'js/ai-assistant/ai-assistant.view.js',
-    # Corrector
-    'js/corrector/corrector.service.js',
-    'js/corrector/corrector.view.js',
     # Import Chapter
     'js/import-chapter/import-chapter.model.js',
     'js/import-chapter/import-chapter.viewmodel.js',

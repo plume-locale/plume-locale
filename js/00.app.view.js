@@ -258,9 +258,12 @@ function switchView(view, options = {}) {
         tensionMeter.style.display = (view === 'editor') ? 'flex' : 'none';
     }
 
-    // Refresh icons
+    // Refresh icons and sidebar badges
     setTimeout(() => {
         if (typeof lucide !== 'undefined') lucide.createIcons();
+        if (typeof ToolsSidebarViewModel !== 'undefined' && view === 'editor') {
+            ToolsSidebarViewModel.updateAllBadges();
+        }
     }, 50);
 }
 
@@ -362,7 +365,10 @@ function syncSidebarWithView(view) {
         if (statusFilters) statusFilters.style.display = 'flex';
         if (treeCollapseToolbar) treeCollapseToolbar.style.display = 'flex';
         if (sceneTools) sceneTools.style.display = 'flex';
-        if (toolsSidebar) toolsSidebar.style.display = 'flex';
+        if (toolsSidebar) {
+            toolsSidebar.style.display = 'flex';
+            if (typeof updateEditorToolsSidebar === 'function') updateEditorToolsSidebar();
+        }
 
         // Ensure tension meter is visible and properly displayed
         if (!tensionMeter && typeof window.injectTensionMeter === 'function') {
@@ -434,13 +440,10 @@ function updateSidebarActions(view) {
             break;
         case 'globalnotes':
             html = `
-                <div class="sidebar-gn-tools-container" style="padding: 16px 0;">
-                    <div class="gn-sidebar-section">
-                        <div class="gn-section-header" style="margin: 0 16px 8px 16px;">${Localization.t('globalnotes.sidebar.group.boards') || 'Mes Tableaux'}</div>
-                        <div class="gn-boards-list">
-                            ${renderGlobalNotesTree()}
-                        </div>
-                    </div>
+                <div class="sidebar-actions-container" style="padding: 8px 16px;">
+                    <button class="btn btn-primary" style="width: 100%;" onclick="GlobalNotesView.addNewItem('board')">
+                        <i data-lucide="plus"></i> ${Localization.t('globalnotes.action.add_board') || '+ Tableau'}
+                    </button>
                 </div>
             `;
             break;
@@ -511,6 +514,64 @@ function updateGNToolsSidebar() {
         </div>
     `;
     if (typeof lucide !== 'undefined') lucide.createIcons({ root: toolsSidebar });
+}
+
+/**
+ * Resets the vertical tools sidebar with standard Editor tools.
+ */
+function updateEditorToolsSidebar() {
+    const toolsSidebar = document.getElementById('toolsSidebar');
+    if (!toolsSidebar) return;
+
+    toolsSidebar.innerHTML = `
+        <button class="tool-btn" onclick="toggleVersionsSidebar()" id="toolVersionsBtn" 
+            title="${Localization.t('tools.versions') || 'Versions de scène'}">
+            <i data-lucide="git-branch"></i>
+            <span class="tool-badge" id="toolVersionsBadge" style="display: none">0</span>
+        </button>
+        <button class="tool-btn" onclick="toggleAnnotationsPanel()" id="toolAnnotationsBtn" 
+            title="${Localization.t('tools.annotations') || 'Annotations'}">
+            <i data-lucide="message-square"></i>
+            <span class="tool-badge" id="toolAnnotationsBadge" style="display: none">0</span>
+        </button>
+        <button class="tool-btn" onclick="toggleTodosPanel()" id="toolTodosBtn" 
+            title="${Localization.t('tools.todos') || 'TODOs'}">
+            <i data-lucide="check-square"></i>
+            <span class="tool-badge" id="toolTodosBadge" style="display: none">0</span>
+        </button>
+        <button class="tool-btn" onclick="toggleArcScenePanel()" id="toolArcsBtn" 
+            title="${Localization.t('tools.arcs') || 'Arcs Narratifs'}">
+            <i data-lucide="git-commit-horizontal"></i>
+            <span class="tool-badge" id="toolArcsBadge" style="display: none">0</span>
+        </button>
+        <button class="tool-btn" onclick="PlotGridUI.toggleSidebar()" id="toolPlotBtn" 
+            title="${Localization.t('tools.plot') || 'Plot Grid'}">
+            <i data-lucide="layout-grid"></i>
+            <span class="tool-badge" id="toolPlotBadge" style="display: none">0</span>
+        </button>
+        <button class="tool-btn" onclick="InvestigationSidebarUI.toggleSidebar()" id="toolInvestigationBtn"
+            title="${Localization.t('tools.investigation') || 'Enquête'}">
+            <i data-lucide="search"></i>
+            <span class="tool-badge" id="toolInvestigationBadge" style="display: none">0</span>
+        </button>
+        <div style="width: 100%; height: 1px; background: var(--border-color); margin: 0.5rem 0"></div>
+        <button class="tool-btn" onclick="toggleLinksPanelVisibility()" id="toolLinksPanelBtn"
+            title="${Localization.t('tools.links') || 'Lien (Personnages, Univers, Timeline)'}">
+            <i data-lucide="link-2"></i>
+            <span class="tool-badge" id="toolLinksBadge" style="display: none">0</span>
+        </button>
+        <button class="tool-btn" onclick="toggleWordRepetitionPanel()" id="toolRepetitionBtn"
+            title="${Localization.t('tools.repetition') || 'Analyseur de répétitions'}">
+            <i data-lucide="repeat"></i>
+        </button>
+    `;
+
+    if (typeof lucide !== 'undefined') lucide.createIcons({ root: toolsSidebar });
+
+    // Immediately refresh badges
+    if (typeof ToolsSidebarViewModel !== 'undefined') {
+        ToolsSidebarViewModel.updateAllBadges();
+    }
 }
 
 /**
@@ -1012,9 +1073,47 @@ function openScene(actId, chapterId, sceneId, options = {}) {
         if (typeof expandedChapters !== 'undefined') expandedChapters.add(chapterId);
     }
 
+    const orchestratePostOpen = (s) => {
+        if (typeof autoDetectLinks === 'function') autoDetectLinks();
+        if (typeof refreshLinksPanel === 'function') refreshLinksPanel();
+        if (typeof renderSceneVersionsList === 'function') renderSceneVersionsList();
+
+        // Update arc scene panel if it's visible
+        const arcPanel = document.getElementById('arcScenePanel');
+        if (arcPanel && !arcPanel.classList.contains('hidden') && typeof renderArcScenePanel === 'function') {
+            renderArcScenePanel();
+        }
+
+        // Refresh plot sidebar if open
+        if (typeof PlotGridUI !== 'undefined' && !document.getElementById('sidebarPlot').classList.contains('hidden')) {
+            PlotGridUI.renderSidebar(sceneId);
+        }
+
+        // Refresh investigation sidebar if open
+        if (typeof InvestigationSidebarUI !== 'undefined' && !document.getElementById('sidebarInvestigation').classList.contains('hidden')) {
+            InvestigationSidebarUI.renderSidebar(sceneId);
+        }
+
+        // Annotations automatic opening
+        const annotations = typeof getVersionAnnotations === 'function' ? getVersionAnnotations(s) : [];
+        if (annotations && annotations.length > 0 && window.innerWidth > 900) {
+            if (typeof renderAnnotationsPanel === 'function') renderAnnotationsPanel();
+            if (typeof updateAnnotationsButton === 'function') updateAnnotationsButton(true);
+        } else {
+            document.getElementById('annotationsPanel')?.classList.add('hidden');
+            if (typeof updateAnnotationsButton === 'function') updateAnnotationsButton(false);
+        }
+
+        // Always update all tools sidebar badges on scene open
+        if (typeof ToolsSidebarViewModel !== 'undefined') {
+            ToolsSidebarViewModel.updateAllBadges();
+        }
+    };
+
     // Gestion Onglets (Préféré)
     if (typeof openTab === 'function') {
         openTab('editor', { actId, chapterId, sceneId }, options);
+        orchestratePostOpen(scene);
         return;
     }
 
@@ -1032,36 +1131,7 @@ function openScene(actId, chapterId, sceneId, options = {}) {
         renderEditor(act, chapter, scene);
     }
 
-    // Post-open orchestrations
-    if (typeof autoDetectLinks === 'function') autoDetectLinks();
-    if (typeof refreshLinksPanel === 'function') refreshLinksPanel();
-    if (typeof renderSceneVersionsList === 'function') renderSceneVersionsList();
-
-    // Update arc scene panel if it's visible
-    const arcPanel = document.getElementById('arcScenePanel');
-    if (arcPanel && !arcPanel.classList.contains('hidden') && typeof renderArcScenePanel === 'function') {
-        renderArcScenePanel();
-    }
-
-    // Refresh plot sidebar if open
-    if (typeof PlotGridUI !== 'undefined' && !document.getElementById('sidebarPlot').classList.contains('hidden')) {
-        PlotGridUI.renderSidebar(sceneId);
-    }
-
-    // Refresh investigation sidebar if open
-    if (typeof InvestigationSidebarUI !== 'undefined' && !document.getElementById('sidebarInvestigation').classList.contains('hidden')) {
-        InvestigationSidebarUI.renderSidebar(sceneId);
-    }
-
-    // Annotations automatic opening
-    const annotations = typeof getVersionAnnotations === 'function' ? getVersionAnnotations(scene) : [];
-    if (annotations && annotations.length > 0 && window.innerWidth > 900) {
-        if (typeof renderAnnotationsPanel === 'function') renderAnnotationsPanel();
-        if (typeof updateAnnotationsButton === 'function') updateAnnotationsButton(true);
-    } else {
-        document.getElementById('annotationsPanel')?.classList.add('hidden');
-        if (typeof updateAnnotationsButton === 'function') updateAnnotationsButton(false);
-    }
+    orchestratePostOpen(scene);
 }
 
 // --- UTILITAIRES DE L'ARBORESCENCE (TREEVIEW) ---
@@ -1243,6 +1313,11 @@ function setActiveScene(actId, chapterId, sceneId) {
     // 4. Plot Grid Sidebar
     if (typeof PlotGridUI !== 'undefined' && typeof PlotGridUI.renderSidebar === 'function' && !document.getElementById('sidebarPlot').classList.contains('hidden')) {
         PlotGridUI.renderSidebar(sceneId);
+    }
+
+    // Always update all tools sidebar badges
+    if (typeof ToolsSidebarViewModel !== 'undefined') {
+        ToolsSidebarViewModel.updateAllBadges();
     }
 
     // 5. Liens (Characters, World, etc.)

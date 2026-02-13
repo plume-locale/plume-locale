@@ -748,6 +748,7 @@
 
 .mobile-nav-toggle-btn {
     display: none;
+    /* Changed from flex to none by default */
     position: absolute;
     right: 1rem;
     top: 50%;
@@ -762,7 +763,6 @@
     font-size: 1.2rem;
     cursor: pointer;
     z-index: 10011;
-    display: flex;
     align-items: center;
     justify-content: center;
 }
@@ -953,8 +953,8 @@ body.force-mobile-nav .split-mode-toggle span {
     /* Header Mobile */
     .app-header {
         height: 56px;
-        padding: 0 1rem;
-        gap: 1rem;
+        padding: 0 0.75rem;
+        gap: 0.5rem;
     }
 
     .app-logo {
@@ -989,18 +989,8 @@ body.force-mobile-nav .split-mode-toggle span {
         display: block;
     }
 
-    /* Cacher stats et boutons secondaires sur mobile */
-    #headerStatsContainer,
-    #headerUndoBtn,
-    #headerRedoBtn,
-    #storage-badge,
-    #pomodoroHeaderBtn,
-    #headerImportBtn,
-    #headerShortcutsBtn,
-    #headerThemesBtn,
-    #headerProjectsBtn,
-    #docDropdown,
-    #langDropdown {
+    /* Cacher stats sur mobile pour gagner de la place (optionnel, mais recommandé) */
+    #headerStatsContainer {
         display: none !important;
     }
 
@@ -1513,7 +1503,9 @@ body.force-mobile-nav .split-mode-toggle span {
     }
 
     .mobile-menu-handle,
-    .sidebar-overlay {
+    .sidebar-overlay,
+    .mobile-nav-toggle-btn,
+    .mobile-nav-dropdown {
         display: none !important;
     }
 

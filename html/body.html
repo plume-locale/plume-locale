@@ -5,13 +5,14 @@
     <div class="sidebar-overlay" onclick="toggleMobileSidebar()"></div>
     <!-- Mobile Navigation Dropdown (déplacé hors du grid) -->
     <div class="mobile-nav-dropdown" id="mobileNavDropdown">
+        <!-- Section Écriture -->
         <div class="mobile-nav-section">
             <div class="mobile-nav-section-title">
                 <i data-lucide="pen-tool"></i>
-                <span data-i18n="mobile.group.write">écriture</span>
+                <span data-i18n="sidebar.group.write">Ecriture</span>
             </div>
             <div class="mobile-nav-grid">
-                <button class="mobile-nav-item active" onclick="switchViewMobile('projects')" data-view="projects">
+                <button class="mobile-nav-item" onclick="switchViewMobile('projects')" data-view="projects">
                     <span class="mobile-nav-item-icon"><i data-lucide="folder-open"></i></span>
                     <span data-i18n="nav.projects">Projets</span>
                 </button>
@@ -23,31 +24,50 @@
                     <span class="mobile-nav-item-icon"><i data-lucide="layout-grid"></i></span>
                     <span data-i18n="nav.corkboard">Tableau</span>
                 </button>
-                <button class="mobile-nav-item" onclick="switchViewMobile('plot')" data-view="plot">
-                    <span class="mobile-nav-item-icon"><i data-lucide="trending-up"></i></span>
-                    <span data-i18n="nav.plot">Intrigue</span>
-                </button>
-                <button class="mobile-nav-item" onclick="switchViewMobile('arcs')" data-view="arcs">
-                    <span class="mobile-nav-item-icon"><i data-lucide="git-commit-horizontal"></i></span>
-                    <span data-i18n="nav.arcs">Arcs Narratifs</span>
-                </button>
-
-                <button class="mobile-nav-item" onclick="switchViewMobile('globalnotes')" data-view="globalnotes">
-                    <span class="mobile-nav-item-icon"><i data-lucide="layout"></i></span>
-                    <span data-i18n="nav.globalnotes">globalnotes</span>
-                </button>
-            </div>
-        </div>
-        <div class="mobile-nav-section">
-            <div class="mobile-nav-section-title">
-                <i data-lucide="database"></i>
-                <span data-i18n="mobile.group.db">Base de données</span>
-            </div>
-            <div class="mobile-nav-grid">
                 <button class="mobile-nav-item" onclick="switchViewMobile('characters')" data-view="characters">
                     <span class="mobile-nav-item-icon"><i data-lucide="users"></i></span>
                     <span data-i18n="nav.characters">Personnages</span>
                 </button>
+                <button class="mobile-nav-item" onclick="switchViewMobile('globalnotes')" data-view="globalnotes">
+                    <span class="mobile-nav-item-icon"><i data-lucide="layout"></i></span>
+                    <span data-i18n="nav.globalnotes">Notes Globales</span>
+                </button>
+                <button class="mobile-nav-item" onclick="switchViewMobile('front_matter')" data-view="front_matter">
+                    <span class="mobile-nav-item-icon"><i data-lucide="book-open-check"></i></span>
+                    <span data-i18n="nav.front_matter">Liminaires</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Section Analyse -->
+        <div class="mobile-nav-section">
+            <div class="mobile-nav-section-title">
+                <i data-lucide="scan-search"></i>
+                <span data-i18n="sidebar.group.analyze">Analyse</span>
+            </div>
+            <div class="mobile-nav-grid">
+                <button class="mobile-nav-item" onclick="switchViewMobile('plot')" data-view="plot">
+                    <span class="mobile-nav-item-icon"><i data-lucide="trending-up"></i></span>
+                    <span data-i18n="nav.plot">Intrigue</span>
+                </button>
+                <button class="mobile-nav-item" onclick="switchViewMobile('analysis')" data-view="analysis">
+                    <span class="mobile-nav-item-icon"><i data-lucide="scan-search"></i></span>
+                    <span data-i18n="nav.analysis">Analyse</span>
+                </button>
+                <button class="mobile-nav-item" onclick="switchViewMobile('stats')" data-view="stats">
+                    <span class="mobile-nav-item-icon"><i data-lucide="bar-chart-3"></i></span>
+                    <span data-i18n="nav.stats">Stats</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Section Construction -->
+        <div class="mobile-nav-section">
+            <div class="mobile-nav-section-title">
+                <i data-lucide="wrench"></i>
+                <span data-i18n="sidebar.group.construction">Construction</span>
+            </div>
+            <div class="mobile-nav-grid">
                 <button class="mobile-nav-item" onclick="switchViewMobile('world')" data-view="world">
                     <span class="mobile-nav-item-icon"><i data-lucide="globe"></i></span>
                     <span data-i18n="nav.world">Univers</span>
@@ -60,14 +80,14 @@
                     <span class="mobile-nav-item-icon"><i data-lucide="sticky-note"></i></span>
                     <span data-i18n="nav.notes">Notes</span>
                 </button>
-            </div>
-        </div>
-        <div class="mobile-nav-section">
-            <div class="mobile-nav-section-title">
-                <i data-lucide="eye"></i>
-                <span data-i18n="mobile.group.viz">Visualisation</span>
-            </div>
-            <div class="mobile-nav-grid">
+                <button class="mobile-nav-item" onclick="switchViewMobile('arcs')" data-view="arcs">
+                    <span class="mobile-nav-item-icon"><i data-lucide="git-commit-horizontal"></i></span>
+                    <span data-i18n="nav.arcs">Arcs</span>
+                </button>
+                <button class="mobile-nav-item" onclick="switchViewMobile('investigation')" data-view="investigation">
+                    <span class="mobile-nav-item-icon"><i data-lucide="search"></i></span>
+                    <span data-i18n="nav.investigation">Enquête</span>
+                </button>
                 <button class="mobile-nav-item" onclick="switchViewMobile('mindmap')" data-view="mindmap">
                     <span class="mobile-nav-item-icon"><i data-lucide="git-branch"></i></span>
                     <span data-i18n="nav.mindmap">Mindmap</span>
@@ -84,133 +104,10 @@
                     <span class="mobile-nav-item-icon"><i data-lucide="clock"></i></span>
                     <span data-i18n="nav.timeline">Timeline</span>
                 </button>
-            </div>
-        </div>
-        <div class="mobile-nav-section">
-            <div class="mobile-nav-section-title">
-                <i data-lucide="wrench"></i>
-                <span data-i18n="mobile.group.tools">Outils</span>
-            </div>
-            <div class="mobile-nav-grid">
-                <button class="mobile-nav-item" onclick="switchViewMobile('stats')" data-view="stats">
-                    <span class="mobile-nav-item-icon"><i data-lucide="bar-chart-3"></i></span>
-                    <span data-i18n="nav.stats">Stats</span>
+                <button class="mobile-nav-item" onclick="switchViewMobile('versions')" data-view="versions">
+                    <span class="mobile-nav-item-icon"><i data-lucide="history"></i></span>
+                    <span data-i18n="nav.snapshots">Snapshots</span>
                 </button>
-                <button class="mobile-nav-item" onclick="switchViewMobile('analysis')" data-view="analysis">
-                    <span class="mobile-nav-item-icon"><i data-lucide="scan-search"></i></span>
-                    <span data-i18n="nav.analysis">Analyse</span>
-                </button>
-            </div>
-        </div>
-        <div class="mobile-nav-section">
-            <div class="mobile-nav-section-title">
-                <i data-lucide="history"></i>
-                <span data-i18n="mobile.group.history">Historique</span>
-            </div>
-            <button class="mobile-nav-item" onclick="switchViewMobile('versions')" data-view="versions">
-                <span class="mobile-nav-item-icon"><i data-lucide="history"></i></span>
-                <span data-i18n="nav.snapshots">Snapshots</span>
-            </button>
-        </div>
-        <div class="mobile-nav-section">
-            <div class="mobile-nav-section-title">
-                <i data-lucide="settings"></i>
-                <span data-i18n="mobile.group.actions">Actions</span>
-            </div>
-            <div class="mobile-nav-grid">
-                <button class="mobile-nav-item" onclick="switchViewMobile('projects'); toggleMobileNav();"
-                    data-view="projects">
-                    <span class="mobile-nav-item-icon"><i data-lucide="folder-open"></i></span>
-                    <span data-i18n="mobile.action.projects">Mes Projets</span>
-                </button>
-                <button class="mobile-nav-item" onclick="
-                        openThemeManager();
-                        toggleMobileNav();
-                    ">
-                    <span class="mobile-nav-item-icon"><i data-lucide="palette"></i></span>
-                    <span data-i18n="mobile.action.themes">Thèmes</span>
-                </button>
-                <button class="mobile-nav-item" onclick="
-                        undo();
-                        toggleMobileNav();
-                    " id="mobileUndoBtn">
-                    <span class="mobile-nav-item-icon"><i data-lucide="undo-2"></i></span>
-                    <span data-i18n="mobile.action.undo">Annuler</span>
-                </button>
-                <button class="mobile-nav-item" onclick="
-                        redo();
-                        toggleMobileNav();
-                    " id="mobileRedoBtn">
-                    <span class="mobile-nav-item-icon"><i data-lucide="redo-2"></i></span>
-                    <span data-i18n="mobile.action.redo">Rétablir</span>
-                </button>
-                <button class="mobile-nav-item" onclick="
-                        showBackupMenu();
-                        toggleMobileNav();
-                    ">
-                    <span class="mobile-nav-item-icon"><i data-lucide="file-up"></i></span>
-                    <span data-i18n="mobile.action.backup">Sauvegarde/Export</span>
-                </button>
-                <button class="mobile-nav-item" onclick="
-                        openImportChapterModal();
-                        toggleMobileNav();
-                    ">
-                    <span class="mobile-nav-item-icon"><i data-lucide="download"></i></span>
-                    <span data-i18n="mobile.action.import">Importer un texte</span>
-                </button>
-                <button class="mobile-nav-item" onclick="
-                        KeyboardShortcutsHandlers.openShortcutsModal();
-                        toggleMobileNav();
-                    ">
-                    <span class="mobile-nav-item-icon"><i data-lucide="keyboard"></i></span>
-                    <span data-i18n="mobile.action.shortcuts">Raccourcis clavier</span>
-                </button>
-                <button class="mobile-nav-item" onclick="
-                        togglePomodoroPopup();
-                        toggleMobileNav();
-                    ">
-                    <span class="mobile-nav-item-icon"><i data-lucide="timer"></i></span>
-                    <span data-i18n="mobile.action.pomodoro">Timer Pomodoro</span>
-                </button>
-                <button class="mobile-nav-item" onclick="
-                        InterfaceCustomizerViewModel.startEditing();
-                        toggleMobileNav();
-                    ">
-                    <span class="mobile-nav-item-icon"><i data-lucide="settings-2"></i></span>
-                    <span data-i18n="mobile.action.interface">Personnaliser l'interface</span>
-                </button>
-            </div>
-        </div>
-        <div class="mobile-nav-section">
-            <div class="mobile-nav-section-title">
-                <i data-lucide="languages"></i>
-                <span data-i18n="mobile.group.help">Langue & Aide</span>
-            </div>
-
-            <div class="mobile-lang-container">
-                <div class="mobile-lang-row">
-                    <div class="mobile-lang-label">INTERFACE</div>
-                    <div class="mobile-lang-flags">
-                        <button class="mobile-lang-btn" onclick="Localization.setLocale('fr'); toggleMobileNav();"
-                            title="Français">🇫🇷</button>
-                        <button class="mobile-lang-btn" onclick="Localization.setLocale('en'); toggleMobileNav();"
-                            title="English">🇬🇧</button>
-                        <button class="mobile-lang-btn" onclick="Localization.setLocale('es'); toggleMobileNav();"
-                            title="Español">🇪🇸</button>
-                        <button class="mobile-lang-btn" onclick="Localization.setLocale('de'); toggleMobileNav();"
-                            title="Deutsch">🇩🇪</button>
-                    </div>
-                </div>
-
-                <div class="mobile-lang-row">
-                    <div class="mobile-lang-label">DOCS / AIDE</div>
-                    <div class="mobile-lang-flags">
-                        <a href="doc/fr/" class="mobile-lang-btn">🇫🇷</a>
-                        <a href="doc/en/" class="mobile-lang-btn">🇬🇧</a>
-                        <a href="doc/es/" class="mobile-lang-btn">🇪🇸</a>
-                        <a href="doc/de/" class="mobile-lang-btn">🇩🇪</a>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -299,6 +196,12 @@
                         <button class="extra-menu-item" onclick="openImportChapterModal()" id="headerImportBtn">
                             <i data-lucide="download"></i>
                             <span data-i18n="header.import">Importer un texte</span>
+                        </button>
+                        <!-- Backup / GDrive -->
+                        <button class="extra-menu-item" onclick="ImportExportViewModel.showBackupMenu()"
+                            id="headerBackupBtn">
+                            <i data-lucide="cloud"></i>
+                            <span data-i18n="btn.google_drive">Import/Export & Google Drive</span>
                         </button>
                         <!-- Shortcuts -->
                         <button class="extra-menu-item" onclick="KeyboardShortcutsHandlers.openShortcutsModal()"
@@ -510,7 +413,8 @@
                             <i data-lucide="layout-list" style="width: 12px; height: 12px"></i>
                             <span data-i18n="tool.tree.organize">Organiser</span>
                         </button>
-                        <button class="tree-collapse-btn tree-customize-btn" onclick="InterfaceCustomizerView.toggleStructureSettings()"
+                        <button class="tree-collapse-btn tree-customize-btn"
+                            onclick="InterfaceCustomizerView.toggleStructureSettings()"
                             title="Personnaliser la vue structure" data-i18n-title="customizer.structure.btn_title"
                             id="structureCustomizeBtn">
                             <i data-lucide="settings-2" style="width: 12px; height: 12px"></i>
@@ -597,6 +501,7 @@
                 <button class="tool-btn" onclick="toggleVersionsSidebar()" id="toolVersionsBtn"
                     title="Versions de scène" data-i18n-title="tools.versions">
                     <i data-lucide="git-branch"></i>
+                    <span class="tool-badge" id="toolVersionsBadge" style="display: none">0</span>
                 </button>
                 <button class="tool-btn" onclick="toggleAnnotationsPanel()" id="toolAnnotationsBtn" title="Annotations"
                     data-i18n-title="tools.annotations">
@@ -611,19 +516,23 @@
                 <button class="tool-btn" onclick="toggleArcScenePanel()" id="toolArcsBtn" title="Arcs Narratifs"
                     data-i18n-title="tools.arcs">
                     <i data-lucide="git-commit-horizontal"></i>
+                    <span class="tool-badge" id="toolArcsBadge" style="display: none">0</span>
                 </button>
                 <button class="tool-btn" onclick="PlotGridUI.toggleSidebar()" id="toolPlotBtn" title="Plot Grid"
                     data-i18n-title="tools.plot">
                     <i data-lucide="layout-grid"></i>
+                    <span class="tool-badge" id="toolPlotBadge" style="display: none">0</span>
                 </button>
                 <button class="tool-btn" onclick="InvestigationSidebarUI.toggleSidebar()" id="toolInvestigationBtn"
                     title="Enquête" data-i18n-title="tools.investigation">
                     <i data-lucide="search"></i>
+                    <span class="tool-badge" id="toolInvestigationBadge" style="display: none">0</span>
                 </button>
                 <div style="width: 100%; height: 1px; background: var(--border-color); margin: 0.5rem 0"></div>
                 <button class="tool-btn" onclick="toggleLinksPanelVisibility()" id="toolLinksPanelBtn"
                     title="Afficher/Masquer les liens (Personnages, Univers, Timeline)" data-i18n-title="tools.links">
                     <i data-lucide="link-2"></i>
+                    <span class="tool-badge" id="toolLinksBadge" style="display: none">0</span>
                 </button>
                 <button class="tool-btn" onclick="toggleWordRepetitionPanel()" id="toolRepetitionBtn"
                     title="Analyseur de répétitions de mots" data-i18n-title="tools.repetition">
@@ -1773,7 +1682,8 @@
                 <div id="formatInfoBox"
                     style="margin-top: 0.75rem; padding: 0.75rem; background: rgba(212, 175, 55, 0.1); border-radius: 4px; border: 1px solid var(--accent-gold); font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5">
                     <strong style="color: var(--text-primary)" data-i18n="modal.export.note.title">Note :</strong>
-                    <span data-i18n="modal.export.note.docx_warning">Toutes les fonctionnalités ne sont pas supportées
+                    <span data-i18n="modal.export.note.docx_warning">Toutes les fonctionnalités ne sont pas
+                        supportées
                         en format DOCX. Le texte exporté pourrait
                         ne pas ressembler exactement à l'éditeur. Pour une compatibilité complète, utilisez un autre
                         format.</span>
@@ -1802,21 +1712,25 @@
                                 style="width: 100%; padding: 0.5rem; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-primary); font-size: 0.9rem;">
                                 <option value="a4" data-i18n="modal.export.docx.page_format.a4">A4 (210 × 297 mm)
                                 </option>
-                                <option value="letter" data-i18n="modal.export.docx.page_format.letter">Letter (8.5 × 11
+                                <option value="letter" data-i18n="modal.export.docx.page_format.letter">Letter (8.5
+                                    × 11
                                     in)</option>
                                 <option value="a5" data-i18n="modal.export.docx.page_format.a5">A5 (148 × 210 mm)
                                 </option>
                                 <option value="b5" data-i18n="modal.export.docx.page_format.b5">B5 (176 × 250 mm)
                                 </option>
-                                <option value="poche_11_18" data-i18n="modal.export.docx.page_format.poche_11_18">Livre
+                                <option value="poche_11_18" data-i18n="modal.export.docx.page_format.poche_11_18">
+                                    Livre
                                     de poche (110 × 180 mm)</option>
                                 <option value="broche_13_20" data-i18n="modal.export.docx.page_format.broche_13_20">
                                     Broché (130 × 200 mm)</option>
                                 <option value="broche_14_22" data-i18n="modal.export.docx.page_format.broche_14_22">
                                     Broché (140 × 220 mm)</option>
-                                <option value="us_trade" data-i18n="modal.export.docx.page_format.us_trade">US Trade (6
+                                <option value="us_trade" data-i18n="modal.export.docx.page_format.us_trade">US Trade
+                                    (6
                                     × 9 in)</option>
-                                <option value="us_digest" data-i18n="modal.export.docx.page_format.us_digest">US Digest
+                                <option value="us_digest" data-i18n="modal.export.docx.page_format.us_digest">US
+                                    Digest
                                     (5.5 × 8.5 in)</option>
                             </select>
                         </div>
@@ -1825,13 +1739,17 @@
                                 data-i18n="modal.export.docx.margins">Marges</label>
                             <select id="docxMargins"
                                 style="width: 100%; padding: 0.5rem; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-primary); font-size: 0.9rem;">
-                                <option value="narrow" data-i18n="modal.export.docx.margins.narrow">Étroites (~1.27 cm)
+                                <option value="narrow" data-i18n="modal.export.docx.margins.narrow">Étroites (~1.27
+                                    cm)
                                 </option>
-                                <option value="normal" data-i18n="modal.export.docx.margins.normal">Normales (~2.54 cm)
+                                <option value="normal" data-i18n="modal.export.docx.margins.normal">Normales (~2.54
+                                    cm)
                                 </option>
-                                <option value="wide" selected data-i18n="modal.export.docx.margins.wide">Larges (~3 cm)
+                                <option value="wide" selected data-i18n="modal.export.docx.margins.wide">Larges (~3
+                                    cm)
                                 </option>
-                                <option value="editorial" data-i18n="modal.export.docx.margins.editorial">Éditoriales
+                                <option value="editorial" data-i18n="modal.export.docx.margins.editorial">
+                                    Éditoriales
                                     (gauche 4 cm)</option>
                             </select>
                         </div>
@@ -1875,10 +1793,12 @@
                                 data-i18n="modal.export.docx.line_spacing">Interligne</label>
                             <select id="docxLineSpacing"
                                 style="width: 100%; padding: 0.5rem; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-primary); font-size: 0.9rem;">
-                                <option value="240" data-i18n="modal.export.docx.spacing.single">Simple (1.0)</option>
+                                <option value="240" data-i18n="modal.export.docx.spacing.single">Simple (1.0)
+                                </option>
                                 <option value="276" data-i18n="modal.export.docx.spacing.1_15">1.15</option>
                                 <option value="360" selected data-i18n="modal.export.docx.spacing.1_5">1.5</option>
-                                <option value="480" data-i18n="modal.export.docx.spacing.double">Double (2.0)</option>
+                                <option value="480" data-i18n="modal.export.docx.spacing.double">Double (2.0)
+                                </option>
                             </select>
                         </div>
                         <div>
@@ -1901,11 +1821,13 @@
                                 data-i18n="modal.export.docx.header_content">En-tête</label>
                             <select id="docxHeaderContent"
                                 style="width: 100%; padding: 0.5rem; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-primary); font-size: 0.9rem;">
-                                <option value="title" selected data-i18n="modal.export.docx.header.title">Titre du roman
+                                <option value="title" selected data-i18n="modal.export.docx.header.title">Titre du
+                                    roman
                                 </option>
                                 <option value="author" data-i18n="modal.export.docx.header.author">Nom de l'auteur
                                 </option>
-                                <option value="title_author" data-i18n="modal.export.docx.header.both">Titre — Auteur
+                                <option value="title_author" data-i18n="modal.export.docx.header.both">Titre —
+                                    Auteur
                                 </option>
                                 <option value="none" data-i18n="modal.export.docx.header.none">Aucun</option>
                             </select>
@@ -1915,7 +1837,8 @@
                                 data-i18n="modal.export.docx.footer">Pied de page</label>
                             <select id="docxFooter"
                                 style="width: 100%; padding: 0.5rem; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-primary); font-size: 0.9rem;">
-                                <option value="pagenum" selected data-i18n="modal.export.docx.footer.pagenum">Numéro de
+                                <option value="pagenum" selected data-i18n="modal.export.docx.footer.pagenum">Numéro
+                                    de
                                     page</option>
                                 <option value="none" data-i18n="modal.export.docx.footer.none">Aucun</option>
                             </select>

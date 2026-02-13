@@ -66,6 +66,9 @@ const GlobalNotesViewModel = {
             window.GlobalNotesView.render();
         }
 
+        if (typeof syncSidebarWithView === 'function') {
+            syncSidebarWithView('globalnotes');
+        }
         if (typeof updateSidebarActions === 'function') {
             updateSidebarActions('globalnotes');
         }
@@ -96,6 +99,9 @@ const GlobalNotesViewModel = {
             window.GlobalNotesView.renderContent();
         }
 
+        if (typeof syncSidebarWithView === 'function') {
+            syncSidebarWithView('globalnotes');
+        }
         if (typeof updateSidebarActions === 'function') {
             updateSidebarActions('globalnotes');
         }
@@ -217,6 +223,9 @@ const GlobalNotesViewModel = {
             window.GlobalNotesView.renderContent();
         }
 
+        if (typeof syncSidebarWithView === 'function') {
+            syncSidebarWithView('globalnotes');
+        }
         if (typeof updateSidebarActions === 'function') {
             updateSidebarActions('globalnotes');
         }
