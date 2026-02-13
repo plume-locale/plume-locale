@@ -449,7 +449,7 @@ function renderCharacterSheet(character, racesList, groupsList, linkedScenes) {
                         <label class="character-field-label">${Localization.t('char.field.traits_selected')}</label>
                         <div class="selected-traits-container" id="selectedTraits-${character.id}">
                             ${(character.traits || []).map((t, i) => `
-                                <span class="selected-trait">${t}<span class="trait-remove" onclick="removeCharacterTrait('${character.id}', ${i})"><i data-lucide="x" style="width:10px;height:10px;"></i></span></span>
+                                <span class="selected-trait">${t}<span class="trait-remove" data-trait="${String(t).replace(/"/g, '&quot;')}" data-char-id="${character.id}" onclick="removeCharacterTrait(this.dataset.charId, this.dataset.trait)"><i data-lucide="x" style="width:10px;height:10px;"></i></span></span>
                             `).join('') || `<span class="no-traits">${Localization.t('char.field.traits_hint')}</span>`}
                         </div>
                     </div>
@@ -515,7 +515,7 @@ function renderCharacterSheet(character, racesList, groupsList, linkedScenes) {
                 </div>
                 <div class="character-section-content">
                     <div id="inventory-list-${character.id}">
-                        ${(character.inventory || []).map((item, i) => renderInventoryItem('${character.id}', 'inventory', item, i)).join('')}
+                        ${(character.inventory || []).map((item, i) => renderInventoryItem(character.id, 'inventory', item, i)).join('')}
                     </div>
                     <button class="inventory-add-btn" onclick="addInventoryItem('${character.id}', 'inventory')">
                         ${Localization.t('char.field.inventory_add')} <i data-lucide="plus-circle" style="width:16px;height:16px;"></i>
@@ -803,7 +803,7 @@ function refreshTraitsDisplay(character) {
 
     if (container) {
         container.innerHTML = traits.length > 0
-            ? traits.map((t, i) => `<span class="selected-trait">${Localization.t(t)}<span class="trait-remove" data-trait="${t.replace(/"/g, '&quot;')}" data-char-id="${character.id}" onclick="removeCharacterTrait(this.dataset.charId, this.dataset.trait)"><i data-lucide="x" style="width:10px;height:10px;"></i></span></span>`).join('')
+            ? traits.map((t, i) => `<span class="selected-trait">${Localization.t(String(t))}<span class="trait-remove" data-trait="${String(t).replace(/"/g, '&quot;')}" data-char-id="${character.id}" onclick="removeCharacterTrait(this.dataset.charId, this.dataset.trait)"><i data-lucide="x" style="width:10px;height:10px;"></i></span></span>`).join('')
             : `<span class="no-traits">${Localization.t('char.field.traits_hint')}</span>`;
     }
 
