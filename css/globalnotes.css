@@ -922,6 +922,7 @@
     width: 100%;
     border-collapse: collapse;
     background: white;
+    table-layout: fixed;
 }
 
 .globalnotes-table th {
@@ -984,9 +985,11 @@
     border: 1px solid #e2e8f0;
     padding: 8px;
     font-size: 13px;
-    min-width: 80px;
     color: #334155;
     outline: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-wrap: break-word;
 }
 
 .table-action-col {
