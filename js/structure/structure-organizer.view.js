@@ -298,7 +298,7 @@ function renderOrganizer() {
 
 function renderOrganizerAct(act, index) {
     const scenesCount = act.chapters.reduce((sum, ch) => sum + ch.scenes.length, 0);
-    const wordCount = act.chapters.reduce((sum, ch) => sum + ch.scenes.reduce((s, scene) => s + (scene.wordCount || 0), 0), 0);
+    const wordCount = act.chapters.reduce((sum, ch) => sum + ch.scenes.reduce((s, scene) => s + ((scene.content && typeof StatsModel !== 'undefined') ? StatsModel.getWordCount(scene.content) : (scene.wordCount || 0)), 0), 0);
 
     // Drop zone before act
     let html = `<div class="org-drop-zone" data-type="act-drop" data-index="${index}"></div>`;
@@ -335,7 +335,7 @@ function renderOrganizerAct(act, index) {
 }
 
 function renderOrganizerChapter(chapter, index, actId) {
-    const wordCount = chapter.scenes.reduce((sum, scene) => sum + (scene.wordCount || 0), 0);
+    const wordCount = chapter.scenes.reduce((sum, scene) => sum + ((scene.content && typeof StatsModel !== 'undefined') ? StatsModel.getWordCount(scene.content) : (scene.wordCount || 0)), 0);
 
     // Drop zone before chapter
     let html = `<div class="org-drop-zone" data-type="chapter-drop" data-parent-id="${actId}" data-index="${index}"></div>`;
@@ -382,7 +382,7 @@ function renderOrganizerScene(scene, index, actId, chapterId) {
             <div class="org-header ${isSelected ? 'selected' : ''}" onclick="handleOrganizerClick(event, 'scene', ${scene.id})" ondblclick="openSceneFromOrganizer(${actId}, ${chapterId}, ${scene.id})">
                 <i data-lucide="grip-vertical" class="drag-handle" style="cursor: grab;"></i>
                 <span>${scene.title}</span>
-                <span class="org-stats">${Localization.t('dragndrop.organizer.count_words', [scene.wordCount || 0])}</span>
+                <span class="org-stats">${Localization.t('dragndrop.organizer.count_words', [(scene.content && typeof StatsModel !== 'undefined') ? StatsModel.getWordCount(scene.content) : (scene.wordCount || 0)])}</span>
             </div>
         </div>
     `;

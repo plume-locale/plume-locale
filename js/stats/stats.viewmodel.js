@@ -24,7 +24,7 @@ const StatsViewModel = {
                     if (chapter.scenes) {
                         totalScenes += chapter.scenes.length;
                         chapter.scenes.forEach(scene => {
-                            totalWords += (scene.wordCount || (scene.content ? StatsModel.getWordCount(scene.content) : 0));
+                            totalWords += (scene.content ? StatsModel.getWordCount(scene.content) : (scene.wordCount || 0));
                         });
                     }
                 });
@@ -47,7 +47,7 @@ const StatsViewModel = {
                 act.chapters.forEach(chapter => {
                     if (chapter.scenes) {
                         chapter.scenes.forEach(scene => {
-                            actWords += (scene.wordCount || (scene.content ? StatsModel.getWordCount(scene.content) : 0));
+                            actWords += (scene.content ? StatsModel.getWordCount(scene.content) : (scene.wordCount || 0));
                         });
                     }
                 });

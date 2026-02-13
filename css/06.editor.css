@@ -1005,6 +1005,66 @@
     pointer-events: none;
 }
 
+/* --- ACT EDITOR (FULL BOOK) --- */
+
+.editor-act-separator {
+    margin: 6rem 0 3rem;
+    padding: 3rem 2rem;
+    background: linear-gradient(135deg, var(--bg-accent) 0%, #3e3832 100%);
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    color: var(--bg-primary);
+    /* White text on dark bg */
+    border-top: 6px solid var(--accent-gold);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Decorative element */
+.editor-act-separator::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
+    opacity: 0.3;
+}
+
+.editor-act-separator-label {
+    font-size: 0.9rem;
+    color: var(--accent-gold);
+    text-transform: uppercase;
+    font-weight: 800;
+    letter-spacing: 0.3em;
+    margin-bottom: 0.5rem;
+    display: block;
+    opacity: 0.9;
+}
+
+.editor-act-separator-title {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 3rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0;
+    line-height: 1.1;
+    text-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+@media (max-width: 600px) {
+    .editor-act-separator {
+        padding: 2rem 1.5rem;
+        margin: 4rem 0 2rem;
+    }
+
+    .editor-act-separator-title {
+        font-size: 2rem;
+    }
+}
+
 /* --- ACT EDITOR (SEQUENTIAL CHAPTERS & SCENES) --- */
 
 /* Séparateur de chapitre */

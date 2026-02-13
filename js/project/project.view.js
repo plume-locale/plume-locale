@@ -304,10 +304,15 @@ const ProjectView = {
                         if (chap.scenes) {
                             sceneCount += chap.scenes.length;
                             chap.scenes.forEach(scene => {
-                                const text = scene.content ? ProjectModel.stripHTML(scene.content) : '';
-                                if (text.trim().length > 0) {
-                                    const words = text.trim().match(/[\w\u00C0-\u00FF]+(?:[''’][\w\u00C0-\u00FF]+)*/g);
-                                    if (words) wordCount += words.length;
+                                if (typeof StatsModel !== 'undefined' && typeof StatsModel.getWordCount === 'function') {
+                                    wordCount += StatsModel.getWordCount(scene.content);
+                                } else {
+                                    // Fallback if StatsModel is not available
+                                    const text = scene.content ? ProjectModel.stripHTML(scene.content) : '';
+                                    if (text.trim().length > 0) {
+                                        const words = text.trim().match(/[\w\u00C0-\u00FF]+(?:[''’][\w\u00C0-\u00FF]+)*/g);
+                                        if (words) wordCount += words.length;
+                                    }
                                 }
                             });
                         }

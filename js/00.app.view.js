@@ -1456,7 +1456,7 @@ function renderActEditor(act) {
         const sceneWordCounts = [];
 
         chapter.scenes.forEach(scene => {
-            const wc = typeof getWordCount === 'function' ? getWordCount(scene.content) : (scene.wordCount || 0);
+            const wc = (scene.content && typeof StatsModel !== 'undefined') ? StatsModel.getWordCount(scene.content) : (scene.wordCount || 0);
             sceneWordCounts.push(wc);
             chapterWords += wc;
         });
@@ -1620,9 +1620,9 @@ function renderFullBookEditor() {
 
     project.acts.forEach(act => {
         contentHTML += `
-            <div class="act-separator" style="background: var(--bg-secondary); padding: 1rem 1.5rem; margin-top: 2rem; border-radius: 8px; border-left: 4px solid var(--accent-gold);">
-                <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 1px; margin-bottom: 0.25rem;">Acte</div>
-                <div style="font-size: 1.2rem; font-weight: 700; color: var(--text-primary);">${act.title}</div>
+            <div class="editor-act-separator">
+                <div class="editor-act-separator-label">${Localization.t('search.default.act') || 'Acte'}</div>
+                <div class="editor-act-separator-title">${act.title}</div>
             </div>`;
 
         act.chapters.forEach((chapter, chapterIndex) => {
@@ -1634,7 +1634,7 @@ function renderFullBookEditor() {
 
             chapter.scenes.forEach((scene, sceneIndex) => {
                 totalScenesCount++;
-                const wc = typeof getWordCount === 'function' ? getWordCount(scene.content) : (scene.wordCount || 0);
+                const wc = (scene.content && typeof StatsModel !== 'undefined') ? StatsModel.getWordCount(scene.content) : (scene.wordCount || 0);
                 chapterWords += wc;
                 totalWords += wc;
 
@@ -1779,7 +1779,7 @@ function renderChapterEditor(act, chapter) {
     let totalWords = 0;
     const sceneWordCounts = [];
     chapter.scenes.forEach(scene => {
-        const wc = typeof getWordCount === 'function' ? getWordCount(scene.content) : (scene.wordCount || 0);
+        const wc = (scene.content && typeof StatsModel !== 'undefined') ? StatsModel.getWordCount(scene.content) : (scene.wordCount || 0);
         sceneWordCounts.push(wc);
         totalWords += wc;
     });

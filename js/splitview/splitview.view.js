@@ -278,7 +278,7 @@ function renderSplitPanelViewContent(panel) {
 
 /** [MVVM : View] - Génère le HTML complet de l'éditeur pour un panneau split */
 function renderEditorInContainer(act, chapter, scene, container, panel) {
-    const wordCount = typeof getWordCount === 'function' ? getWordCount(scene.content || '') : 0;
+    const wordCount = (scene.content && typeof StatsModel !== 'undefined') ? StatsModel.getWordCount(scene.content) : (scene.wordCount || 0);
 
     // Vérifier si une version finale existe
     const hasFinalVersion = scene.versions && scene.versions.some(v => v.isFinal === true);

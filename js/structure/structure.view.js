@@ -274,7 +274,7 @@ function renderActsList() {
 
             chapter.scenes.forEach((scene) => {
                 const sStatus = scene.status || 'draft';
-                const sWords = scene.wordCount || (scene.content ? (typeof StatsModel !== 'undefined' ? StatsModel.getWordCount(scene.content) : 0) : 0);
+                const sWords = (scene.content && typeof StatsModel !== 'undefined') ? StatsModel.getWordCount(scene.content) : (scene.wordCount || 0);
                 const synopsis = scene.synopsis ? (scene.synopsis.substring(0, 100) + (scene.synopsis.length > 100 ? '...' : '')) : '';
                 const tooltip = scene.synopsis ? scene.synopsis.replace(/"/g, '&quot;').replace(/'/g, '&#39;') : '';
                 const isActive = typeof currentSceneId !== 'undefined' && currentSceneId == scene.id;
@@ -342,7 +342,7 @@ function getChapterStats(chapter) {
     let totalWords = 0;
     if (chapter.scenes) {
         chapter.scenes.forEach(scene => {
-            const words = scene.wordCount || (scene.content ? (typeof StatsModel !== 'undefined' ? StatsModel.getWordCount(scene.content) : 0) : 0);
+            const words = (scene.content && typeof StatsModel !== 'undefined') ? StatsModel.getWordCount(scene.content) : (scene.wordCount || 0);
             totalWords += words;
         });
     }
