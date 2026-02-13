@@ -4,3 +4,4 @@ build.log
 /build
 /live/
 __pycache__/
+__pycache__/build_config.cpython-314.pyc
