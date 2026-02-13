@@ -2641,5 +2641,15 @@ const LOCALE_ES = {
     "front_matter.type.glossary": "Glosario",
     "front_matter.type.bibliography": "Bibliografía",
     "front_matter.type.about_author": "Sobre el autor",
-    "front_matter.type.other": "Otro"
+    "front_matter.type.other": "Otro",
+
+    // --- Tabs Presets ---
+    "tabs.open_new": "Abrir en nueva pestaña",
+    "tabs.replace": "Abrir en la pestaña actual",
+    "tabs.preset_tooltip": "Disposiciones guardadas",
+    "tabs.preset_save": "Guardar esta disposición",
+    "tabs.preset_prompt_name": "Nombre de la disposición:",
+    "tabs.preset_saved": "Disposición « {0} » guardada",
+    "tabs.preset_deleted": "Disposición « {0} » eliminada",
+    "tabs.preset_empty": "No hay disposiciones guardadas"
 };

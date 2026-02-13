@@ -2660,5 +2660,15 @@ const LOCALE_DE = {
     "front_matter.type.glossary": "Glossar",
     "front_matter.type.bibliography": "Bibliografie",
     "front_matter.type.about_author": "Über den Autor",
-    "front_matter.type.other": "Sonstiges"
+    "front_matter.type.other": "Sonstiges",
+
+    // --- Tabs Presets ---
+    "tabs.open_new": "In neuem Tab öffnen",
+    "tabs.replace": "Im aktuellen Tab öffnen",
+    "tabs.preset_tooltip": "Gespeicherte Layouts",
+    "tabs.preset_save": "Dieses Layout speichern",
+    "tabs.preset_prompt_name": "Name des Layouts:",
+    "tabs.preset_saved": "Layout « {0} » gespeichert",
+    "tabs.preset_deleted": "Layout « {0} » gelöscht",
+    "tabs.preset_empty": "Keine gespeicherten Layouts"
 };
