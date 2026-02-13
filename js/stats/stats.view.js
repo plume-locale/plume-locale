@@ -35,6 +35,15 @@ const StatsView = {
      * Rendu de la vue complète des statistiques.
      */
     renderStatsPage() {
+        // When tabs are active, delegate rendering to the tab system
+        // (unless we're already inside a tab render cycle, detected by editorView-backup)
+        if (typeof tabsState !== 'undefined' && tabsState.panes.left.tabs.length > 0 && typeof renderTabs === 'function') {
+            if (!document.getElementById('editorView-backup')) {
+                renderTabs();
+                return;
+            }
+        }
+
         const editorView = document.getElementById('editorView');
         if (!editorView) return;
 
