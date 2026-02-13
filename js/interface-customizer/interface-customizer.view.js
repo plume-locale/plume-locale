@@ -20,12 +20,15 @@ const InterfaceCustomizerView = {
                         <button class="btn btn-secondary" onclick="InterfaceCustomizerViewModel.cancelEditing()">
                             <i data-lucide="x"></i> ${Localization.t('btn.cancel')}
                         </button>
-                        <div class="edit-bar-title">
-                            <i data-lucide="layers"></i> <span>Configuration de l'Interface</span>
+                        <div class="edit-bar-center">
+                            <div class="edit-bar-title">
+                                <i data-lucide="mouse-pointer-click"></i> <span>${Localization.t('customizer.bar.title')}</span>
+                            </div>
+                            <div class="edit-bar-hint">${Localization.t('customizer.bar.hint')}</div>
                         </div>
                         <div style="display: flex; gap: 8px;">
                             <button class="btn btn-secondary" onclick="InterfaceCustomizerView.toggleAdvancedSettings()" id="advancedSettingsBtn">
-                                <i data-lucide="settings-2"></i> Paramètres avancés
+                                <i data-lucide="palette"></i> ${Localization.t('customizer.bar.advanced')}
                             </button>
                             <button class="btn btn-primary" onclick="InterfaceCustomizerViewModel.saveAndExit()">
                                 <i data-lucide="check"></i> ${Localization.t('btn.apply')}
@@ -77,14 +80,18 @@ const InterfaceCustomizerView = {
 
         panel.innerHTML = `
             <div class="advanced-panel-header">
-                <span>PARAMÈTRES AVANCÉS</span>
-                <i data-lucide="settings-2" style="width:16px;height:16px;opacity:0.5;"></i>
+                <span>${Localization.t('customizer.panel.title')}</span>
+                <i data-lucide="palette" style="width:16px;height:16px;opacity:0.5;"></i>
             </div>
 
             <div class="setting-group">
-                <label class="setting-label">Largeur de la barre de progression</label>
+                <label class="setting-label">
+                    <i data-lucide="align-left" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;opacity:0.6;"></i>
+                    ${Localization.t('customizer.panel.progress_width')}
+                </label>
+                <div class="setting-hint">${Localization.t('customizer.panel.progress_width_hint')}</div>
                 <div class="setting-row">
-                    <input type="range" min="4" max="24" value="${settings.progressBarWidth || 8}" 
+                    <input type="range" min="4" max="24" value="${settings.progressBarWidth || 8}"
                            oninput="InterfaceCustomizerViewModel.updateSetting('progressBarWidth', parseInt(this.value)); this.nextElementSibling.textContent = this.value + 'px'"
                            style="flex:1;">
                     <span style="min-width: 35px; font-size: 0.8rem;">${settings.progressBarWidth || 8}px</span>
@@ -92,38 +99,42 @@ const InterfaceCustomizerView = {
             </div>
 
             <div class="setting-group">
-                <label class="setting-label">Couleurs des statuts</label>
-                
+                <label class="setting-label">
+                    <i data-lucide="droplets" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;opacity:0.6;"></i>
+                    ${Localization.t('customizer.panel.status_colors')}
+                </label>
+                <div class="setting-hint">${Localization.t('customizer.panel.status_colors_hint')}</div>
+
                 <div class="setting-row">
                     <div class="color-input-wrapper">
-                        <input type="color" value="${settings.statusDraftColor || '#ff6b6b'}" 
+                        <input type="color" value="${settings.statusDraftColor || '#ff6b6b'}"
                                oninput="InterfaceCustomizerViewModel.updateSetting('statusDraftColor', this.value)">
                     </div>
-                    <span style="font-size: 0.85rem;">Brouillon</span>
+                    <span style="font-size: 0.85rem;">${Localization.t('customizer.status.draft')}</span>
                 </div>
 
                 <div class="setting-row">
                     <div class="color-input-wrapper">
-                        <input type="color" value="${settings.statusProgressColor || '#ffd93d'}" 
+                        <input type="color" value="${settings.statusProgressColor || '#ffd93d'}"
                                oninput="InterfaceCustomizerViewModel.updateSetting('statusProgressColor', this.value)">
                     </div>
-                    <span style="font-size: 0.85rem;">En cours</span>
+                    <span style="font-size: 0.85rem;">${Localization.t('customizer.status.progress')}</span>
                 </div>
 
                 <div class="setting-row">
                     <div class="color-input-wrapper">
-                        <input type="color" value="${settings.statusCompleteColor || '#51cf66'}" 
+                        <input type="color" value="${settings.statusCompleteColor || '#51cf66'}"
                                oninput="InterfaceCustomizerViewModel.updateSetting('statusCompleteColor', this.value)">
                     </div>
-                    <span style="font-size: 0.85rem;">Terminé</span>
+                    <span style="font-size: 0.85rem;">${Localization.t('customizer.status.complete')}</span>
                 </div>
 
                 <div class="setting-row">
                     <div class="color-input-wrapper">
-                        <input type="color" value="${settings.statusReviewColor || '#4a9eff'}" 
+                        <input type="color" value="${settings.statusReviewColor || '#4a9eff'}"
                                oninput="InterfaceCustomizerViewModel.updateSetting('statusReviewColor', this.value)">
                     </div>
-                    <span style="font-size: 0.85rem;">À réviser</span>
+                    <span style="font-size: 0.85rem;">${Localization.t('customizer.status.review')}</span>
                 </div>
             </div>
         `;

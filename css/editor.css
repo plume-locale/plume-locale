@@ -1045,8 +1045,16 @@
     display: block;
     font-size: 0.85rem;
     font-weight: 600;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.25rem;
     color: var(--text-primary);
+}
+
+.setting-hint {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+    line-height: 1.4;
+    font-style: italic;
 }
 
 .setting-row {

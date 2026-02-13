@@ -492,6 +492,13 @@
     gap: 1.5rem;
 }
 
+.edit-bar-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.15rem;
+}
+
 .edit-bar-title {
     display: flex;
     align-items: center;
@@ -501,6 +508,13 @@
     font-size: 0.9rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+}
+
+.edit-bar-hint {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: 400;
+    letter-spacing: 0;
 }
 
 @keyframes slideUp {
