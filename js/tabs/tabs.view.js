@@ -49,7 +49,7 @@ function toggleTabsPresetMenu(event) {
     const menu = document.createElement('div');
     menu.className = 'tab-preset-menu';
     menu.style.top = (rect.bottom + 4) + 'px';
-    menu.style.left = rect.left + 'px';
+    menu.style.right = (window.innerWidth - rect.right) + 'px';
 
     const hasTabs = tabsState.panes.left.tabs.length > 0 || tabsState.panes.right.tabs.length > 0;
 
