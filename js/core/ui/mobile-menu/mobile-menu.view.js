@@ -193,18 +193,67 @@ const MobileMenuView = {
     },
 
     /**
+     * [MVVM: View] Met à jour la visibilité du bottom sheet outils.
+     * @param {boolean} isOpen
+     */
+    updateToolsSheet: function (isOpen) {
+        const sheet = document.getElementById('mobileToolsSheet');
+        if (!sheet) return;
+
+        if (isOpen) {
+            sheet.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        } else {
+            sheet.classList.remove('active');
+            // Ne restaurer overflow que si la sidebar est aussi fermée
+            if (!MobileMenuRepository.getState().isSidebarOpen) {
+                document.body.style.overflow = '';
+            }
+        }
+    },
+
+    /**
+     * [MVVM: View] Met à jour l'état actif de la barre de navigation basse.
+     * @param {string|null} activeItem - 'structure', 'tools', 'menu', 'format', ou null
+     */
+    updateBottomNavActiveState: function (activeItem) {
+        document.querySelectorAll('.mobile-bottom-nav-item').forEach(function (item) {
+            item.classList.remove('active');
+        });
+        if (activeItem) {
+            var selectorMap = {
+                'structure': '#mobileBottomStructure',
+                'tools': '#mobileBottomTools',
+                'menu': '#mobileBottomMenu',
+                'format': '#mobileBottomFormat'
+            };
+            var el = document.querySelector(selectorMap[activeItem]);
+            if (el) el.classList.add('active');
+        }
+    },
+
+    /**
      * Assure un état propre lors du repassage en mode desktop.
      */
     ensureDesktopState: function () {
         const sidebarColumn = document.getElementById('sidebarColumn');
         const overlay = document.querySelector('.sidebar-overlay');
         const menuBtn = document.querySelector('.mobile-menu-toggle');
+        const toolsSheet = document.getElementById('mobileToolsSheet');
 
         if (sidebarColumn) sidebarColumn.classList.remove('mobile-visible');
         if (overlay) {
             overlay.classList.remove('active');
             overlay.style.display = 'none';
         }
+        // Fermer le bottom sheet outils
+        if (toolsSheet) toolsSheet.classList.remove('active');
+
+        // Nettoyer les états actifs de la bottom nav
+        document.querySelectorAll('.mobile-bottom-nav-item').forEach(function (item) {
+            item.classList.remove('active');
+        });
+
         // Restaurer l'icône menu si elle a changé
         if (menuBtn) {
             menuBtn.innerHTML = `

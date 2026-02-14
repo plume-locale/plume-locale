@@ -61,6 +61,32 @@ window.toggleLinksPanel = function () {
     MobileMenuViewModel.toggleLinksPanel();
 };
 
+// [MVVM: Main] Bottom sheet outils mobile
+window.toggleMobileToolsSheet = function () {
+    MobileMenuViewModel.toggleToolsSheet();
+};
+
+window.closeMobileToolsSheet = function () {
+    MobileMenuViewModel.closeToolsSheet();
+};
+
+// [MVVM: Main] Délègue au floating editor menu existant
+window.toggleFloatingEditorMenu = function () {
+    var toggle = document.getElementById('floatingEditorToggle');
+    var menu = document.getElementById('floatingEditorMenu');
+    if (menu) {
+        if (menu.classList.contains('active')) {
+            menu.classList.remove('active');
+        } else {
+            menu.classList.add('active');
+            // Re-init lucide icons dans le menu
+            if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                lucide.createIcons();
+            }
+        }
+    }
+};
+
 // Expose internal components for debugging if needed
 window.checkHeaderOverflow = function () {
     MobileMenuView.checkHeaderOverflow();

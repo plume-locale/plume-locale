@@ -11,13 +11,19 @@ const MobileMenuViewModel = {
     toggleSidebar: function () {
         const currentState = MobileMenuRepository.getState().isSidebarOpen;
         const newState = !currentState;
-        MobileMenuRepository.updateState({ isSidebarOpen: newState });
+        MobileMenuRepository.updateState({
+            isSidebarOpen: newState,
+            activeBottomNavItem: newState ? 'structure' : null
+        });
 
         if (newState) {
             MobileMenuView.openSidebar();
         } else {
             MobileMenuView.closeSidebar();
         }
+        MobileMenuView.updateBottomNavActiveState(
+            MobileMenuRepository.getState().activeBottomNavItem
+        );
         return newState;
     },
 
@@ -27,8 +33,37 @@ const MobileMenuViewModel = {
     closeSidebar: function () {
         const state = MobileMenuRepository.getState();
         if (state.isSidebarOpen) {
-            MobileMenuRepository.updateState({ isSidebarOpen: false });
+            MobileMenuRepository.updateState({ isSidebarOpen: false, activeBottomNavItem: null });
             MobileMenuView.closeSidebar();
+            MobileMenuView.updateBottomNavActiveState(null);
+        }
+    },
+
+    /**
+     * [MVVM: ViewModel] Bascule l'état du bottom sheet outils.
+     */
+    toggleToolsSheet: function () {
+        const currentState = MobileMenuRepository.getState().isToolsSheetOpen;
+        const newState = !currentState;
+        MobileMenuRepository.updateState({
+            isToolsSheetOpen: newState,
+            activeBottomNavItem: newState ? 'tools' : null
+        });
+        MobileMenuView.updateToolsSheet(newState);
+        MobileMenuView.updateBottomNavActiveState(
+            MobileMenuRepository.getState().activeBottomNavItem
+        );
+    },
+
+    /**
+     * [MVVM: ViewModel] Ferme le bottom sheet outils si ouvert.
+     */
+    closeToolsSheet: function () {
+        const state = MobileMenuRepository.getState();
+        if (state.isToolsSheetOpen) {
+            MobileMenuRepository.updateState({ isToolsSheetOpen: false, activeBottomNavItem: null });
+            MobileMenuView.updateToolsSheet(false);
+            MobileMenuView.updateBottomNavActiveState(null);
         }
     },
 
@@ -106,8 +141,8 @@ const MobileMenuViewModel = {
         // Si on passe en desktop (> 900px), on reset certains états
         if (windowWidth > 900) {
             // Si on sort du mode "force mobile nav", on ferme sidebar et overlay
-            // Note: La logique exacte dépend de 'checkHeaderOverflow' mais ici on gère le resize simple
             this.closeSidebar();
+            this.closeToolsSheet();
 
             // On peut aussi vouloir fermer l'overlay explicitement si besoin
             MobileMenuView.ensureDesktopState();

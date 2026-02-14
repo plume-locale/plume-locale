@@ -2642,4 +2642,71 @@
     <!-- Hidden input for project import -->
     <input type="file" id="importProjectFile" style="display: none" onchange="ProjectViewModel.import(this.files[0])"
         accept=".json">
+
+    <!-- ========================================
+         MOBILE BOTTOM NAVIGATION BAR
+         ======================================== -->
+    <div class="mobile-bottom-nav" id="mobileBottomNav">
+        <button class="mobile-bottom-nav-item" onclick="toggleMobileSidebar()" id="mobileBottomStructure">
+            <i data-lucide="list-tree"></i>
+            <span data-i18n="mobile.nav.structure">Structure</span>
+        </button>
+        <button class="mobile-bottom-nav-item" onclick="toggleMobileToolsSheet()" id="mobileBottomTools">
+            <i data-lucide="wrench"></i>
+            <span data-i18n="mobile.nav.tools">Outils</span>
+        </button>
+        <button class="mobile-bottom-nav-item" onclick="toggleMobileNav()" id="mobileBottomMenu">
+            <i data-lucide="compass"></i>
+            <span data-i18n="mobile.nav.navigation">Navigation</span>
+        </button>
+        <button class="mobile-bottom-nav-item" onclick="toggleFloatingEditorMenu()" id="mobileBottomFormat">
+            <i data-lucide="pen-line"></i>
+            <span data-i18n="mobile.nav.format">Format</span>
+        </button>
+    </div>
+
+    <!-- ========================================
+         MOBILE TOOLS BOTTOM SHEET
+         ======================================== -->
+    <div class="mobile-tools-sheet" id="mobileToolsSheet">
+        <div class="mobile-tools-sheet-backdrop" onclick="closeMobileToolsSheet()"></div>
+        <div class="mobile-tools-sheet-content">
+            <div class="mobile-tools-sheet-handle"></div>
+            <div class="mobile-tools-sheet-title" data-i18n="mobile.tools.title">Outils de sc&egrave;ne</div>
+            <div class="mobile-tools-grid">
+                <button class="mobile-tool-item" onclick="toggleVersionsSidebar(); closeMobileToolsSheet();">
+                    <i data-lucide="git-branch"></i>
+                    <span data-i18n="tools.versions">Versions</span>
+                </button>
+                <button class="mobile-tool-item" onclick="toggleAnnotationsPanel(); closeMobileToolsSheet();">
+                    <i data-lucide="message-square"></i>
+                    <span data-i18n="tools.annotations">Annotations</span>
+                </button>
+                <button class="mobile-tool-item" onclick="toggleTodosPanel(); closeMobileToolsSheet();">
+                    <i data-lucide="check-square"></i>
+                    <span data-i18n="tools.todos">TODOs</span>
+                </button>
+                <button class="mobile-tool-item" onclick="toggleArcScenePanel(); closeMobileToolsSheet();">
+                    <i data-lucide="git-commit-horizontal"></i>
+                    <span data-i18n="tools.arcs">Arcs</span>
+                </button>
+                <button class="mobile-tool-item" onclick="PlotGridUI.toggleSidebar(); closeMobileToolsSheet();">
+                    <i data-lucide="layout-grid"></i>
+                    <span data-i18n="tools.plot">Plot</span>
+                </button>
+                <button class="mobile-tool-item" onclick="InvestigationSidebarUI.toggleSidebar(); closeMobileToolsSheet();">
+                    <i data-lucide="search"></i>
+                    <span data-i18n="tools.investigation">Recherche</span>
+                </button>
+                <button class="mobile-tool-item" onclick="toggleLinksPanelVisibility(); closeMobileToolsSheet();">
+                    <i data-lucide="link-2"></i>
+                    <span data-i18n="tools.links">Liens</span>
+                </button>
+                <button class="mobile-tool-item" onclick="toggleWordRepetitionPanel(); closeMobileToolsSheet();">
+                    <i data-lucide="repeat"></i>
+                    <span data-i18n="tools.repetition">R&eacute;p&eacute;titions</span>
+                </button>
+            </div>
+        </div>
+    </div>
 </body>

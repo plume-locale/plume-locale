@@ -12,6 +12,8 @@ const MobileMenuModel = {
         isNavDropdownActive: false,
         isEditorToolbarExpanded: false,
         isLinksPanelExpanded: false,
-        isMobileMode: false // Déterminé par la taille de la fenêtre/header
+        isMobileMode: false, // Déterminé par la taille de la fenêtre/header
+        isToolsSheetOpen: false,
+        activeBottomNavItem: null // 'structure' | 'tools' | 'menu' | 'format'
     }
 };
