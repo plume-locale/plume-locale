@@ -140,25 +140,42 @@ def collect_js():
                 found_count += 1
     
     # 2. Extra JS files (sans Storygrid ni Thriller)
-    js_dir = os.path.join(BUILD_DIR, 'js')
-    for filepath in glob.glob(os.path.join(js_dir, '*.js')):
-        filename = os.path.basename(filepath)
-        
-        is_in_order = False
-        for order_item in JS_ORDER:
-            if os.path.basename(order_item) == filename:
-                is_in_order = True
-                break
+    js_root = os.path.join(BUILD_DIR, 'js')
+    for root, dirs, files in os.walk(js_root):
+        # Skip certain directories if needed, but here we want to scan all
+        if 'demo' in root.split(os.sep): # Example: skip demo if it contains scripts we don't want to bundle
+             continue
+             
+        for filename in files:
+            if not filename.endswith('.js'):
+                continue
                 
-        if (not is_in_order and 
-            filename not in IGNORED_ORIGINALS and
-            not filename.startswith('_') and
-            'thriller' not in filename.lower() and
-            'storygrid' not in filename.lower()):
-            content = read_file(f'js/{filename}')
-            js_content.append(f'// ========== {filename} ==========')
-            js_content.append(content)
-            js_content.append('')
+            filepath = os.path.join(root, filename)
+            rel_path = os.path.relpath(filepath, BUILD_DIR).replace('\\', '/')
+            
+            is_in_order = False
+            for order_item in JS_ORDER:
+                if order_item.replace('\\', '/') == rel_path:
+                    is_in_order = True
+                    break
+            
+            # Additional check by basename for files moved but order still original (fallback)
+            if not is_in_order:
+                for order_item in JS_ORDER:
+                    if os.path.basename(order_item) == filename:
+                        is_in_order = True
+                        break
+                    
+            if (not is_in_order and 
+                filename not in IGNORED_ORIGINALS and
+                not filename.startswith('_') and
+                'thriller' not in filename.lower() and
+                'storygrid' not in filename.lower()):
+                
+                content = read_file(rel_path)
+                js_content.append(f'// ========== {rel_path} ==========')
+                js_content.append(content)
+                js_content.append('')
     
     log(f"   [OK] {found_count} fichiers JS trouves")
     return '\n'.join(js_content)

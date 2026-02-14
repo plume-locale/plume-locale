@@ -24,7 +24,7 @@ const ProductTourData = {
                 "onPrevious": null
             },
             {
-                "element": ".header-nav",
+                "element": "#sidebarAccordion",
                 "popover": {
                     "title": "📝 Outils d'Écriture",
                     "description": "<p>Organisez et visualisez votre histoire de différentes manières :</p><ul><li><span style=\"color: rgb(255, 152, 0); font-weight: 700;\">Groupe histoire</span></li><li><span style=\"color: rgb(255, 152, 0); font-weight: 700;\">Groupe construction de monde</span></li><li><span style=\"color: rgb(255, 152, 0); font-weight: 700;\">Groupe Visualisation</span></li><li><span style=\"color: rgb(255, 152, 0); font-weight: 700;\">Groupe Stats/analyse</span></li><li><span style=\"color: rgb(255, 152, 0); font-weight: 700;\">Groupe Sauvegarde</span></li></ul>",

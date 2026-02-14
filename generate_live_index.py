@@ -91,24 +91,38 @@ def generate_index():
          js_scripts.append(f'<script src="{src}"></script>')
              
     # 2. Extra JS files
-    local_js_dir = os.path.join(BUILD_DIR, 'js')
-    for filepath in glob.glob(os.path.join(local_js_dir, '*.js')):
-        filename = os.path.basename(filepath)
-        
-        is_in_order = False
-        for order_item in JS_ORDER:
-            if os.path.basename(order_item) == filename:
-                is_in_order = True
-                break
-        
-        if (not is_in_order and 
-            filename not in IGNORED_ORIGINALS and
-            not filename.startswith('_') and
-            'thriller' not in filename.lower() and
-            'storygrid' not in filename.lower()):
+    js_root = os.path.join(BUILD_DIR, 'js')
+    for root, dirs, files in os.walk(js_root):
+        if 'demo' in root.split(os.sep): 
+             continue
+             
+        for filename in files:
+            if not filename.endswith('.js'):
+                continue
+                
+            filepath = os.path.join(root, filename)
+            rel_path = os.path.relpath(filepath, BUILD_DIR).replace('\\', '/')
             
-            src = f'./js/{filename}'
-            js_scripts.append(f'<script src="{src}"></script>')
+            is_in_order = False
+            for order_item in JS_ORDER:
+                if order_item.replace('\\', '/') == rel_path:
+                    is_in_order = True
+                    break
+            
+            if not is_in_order:
+                for order_item in JS_ORDER:
+                    if os.path.basename(order_item) == filename:
+                        is_in_order = True
+                        break
+            
+            if (not is_in_order and 
+                filename not in IGNORED_ORIGINALS and
+                not filename.startswith('_') and
+                'thriller' not in filename.lower() and
+                'storygrid' not in filename.lower()):
+                
+                src = f'./js/{rel_path.replace("js/", "")}'
+                js_scripts.append(f'<script src="{src}"></script>')
 
     # Embed the demo project as a global variable to avoid fetch/CORS issues
     demo_json = read_file('demo/project.json')

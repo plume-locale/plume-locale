@@ -102,18 +102,27 @@ def get_all_files_to_deploy():
         processed_js.add(os.path.basename(rel_path))
     
     # Extra JS (loose files) - logic from build.light.py
-    js_dir = os.path.join(BUILD_DIR, 'js')
-    for filepath in glob.glob(os.path.join(js_dir, '*.js')):
-        filename = os.path.basename(filepath)
-        
-        if (filename not in processed_js and 
-            filename not in IGNORED_ORIGINALS and
-            not filename.startswith('_') and
-            'thriller' not in filename.lower() and
-            'storygrid' not in filename.lower()):
+    js_root = os.path.join(BUILD_DIR, 'js')
+    for root, dirs, filenames in os.walk(js_root):
+        if 'demo' in root.split(os.sep): 
+             continue
+             
+        for filename in filenames:
+            if not filename.endswith('.js'):
+                continue
+                
+            filepath = os.path.join(root, filename)
+            rel_path = os.path.relpath(filepath, BUILD_DIR).replace('\\', '/')
             
-            files.append(f'js/{filename}')
-            processed_js.add(filename)
+            if (rel_path not in files and 
+                filename not in processed_js and 
+                filename not in IGNORED_ORIGINALS and
+                not filename.startswith('_') and
+                'thriller' not in filename.lower() and
+                'storygrid' not in filename.lower()):
+                
+                files.append(rel_path)
+                processed_js.add(filename)
     
     files.append('landing.html')
     
