@@ -230,16 +230,16 @@
                             <div class="extra-menu-row-flags">
                                 <button class="extra-menu-flag-btn"
                                     onclick="Localization.setLocale('fr'); this.closest('.extra-menu-dropdown').classList.remove('open');"
-                                    title="Français">🇫🇷</button>
+                                    title="Français" data-i18n-title="lang.fr">🇫🇷</button>
                                 <button class="extra-menu-flag-btn"
                                     onclick="Localization.setLocale('en'); this.closest('.extra-menu-dropdown').classList.remove('open');"
-                                    title="English">🇬🇧</button>
+                                    title="English" data-i18n-title="lang.en">🇬🇧</button>
                                 <button class="extra-menu-flag-btn"
                                     onclick="Localization.setLocale('de'); this.closest('.extra-menu-dropdown').classList.remove('open');"
-                                    title="Deutsch">🇩🇪</button>
+                                    title="Deutsch" data-i18n-title="lang.de">🇩🇪</button>
                                 <button class="extra-menu-flag-btn"
                                     onclick="Localization.setLocale('es'); this.closest('.extra-menu-dropdown').classList.remove('open');"
-                                    title="Español">🇪🇸</button>
+                                    title="Español" data-i18n-title="lang.es">🇪🇸</button>
                             </div>
                         </div>
 
@@ -250,10 +250,14 @@
                                 <span data-i18n="header.documentation">Documentation</span>
                             </div>
                             <div class="extra-menu-row-flags">
-                                <a href="doc/fr/" class="extra-menu-flag-btn" target="_blank" title="Français">🇫🇷</a>
-                                <a href="doc/en/" class="extra-menu-flag-btn" target="_blank" title="English">🇬🇧</a>
-                                <a href="doc/de/" class="extra-menu-flag-btn" target="_blank" title="Deutsch">🇩🇪</a>
-                                <a href="doc/es/" class="extra-menu-flag-btn" target="_blank" title="Español">🇪🇸</a>
+                                <a href="doc/fr/" class="extra-menu-flag-btn" target="_blank" title="Français"
+                                    data-i18n-title="lang.fr">🇫🇷</a>
+                                <a href="doc/en/" class="extra-menu-flag-btn" target="_blank" title="English"
+                                    data-i18n-title="lang.en">🇬🇧</a>
+                                <a href="doc/de/" class="extra-menu-flag-btn" target="_blank" title="Deutsch"
+                                    data-i18n-title="lang.de">🇩🇪</a>
+                                <a href="doc/es/" class="extra-menu-flag-btn" target="_blank" title="Español"
+                                    data-i18n-title="lang.es">🇪🇸</a>
                             </div>
                         </div>
                     </div>
@@ -1108,7 +1112,7 @@
     <div class="modal" id="metroEventModal">
         <div class="modal-content" style="max-width: 600px">
             <div class="modal-header">
-                <h2 id="metroEventModalTitle">Nouvel événement</h2>
+                <h2 id="metroEventModalTitle" data-i18n="modal.event.title">Nouvel événement</h2>
                 <button class="modal-close" onclick="closeModal('metroEventModal')">&times;</button>
             </div>
 
@@ -1116,18 +1120,19 @@
                 <input type="hidden" id="metroEventId" />
                 <div class="metro-event-form">
                     <div class="form-group">
-                        <label class="form-label">Titre de l'événement *</label>
-                        <input type="text" class="form-input" id="metroEventTitle" placeholder="La grande bataille" />
+                        <label class="form-label" data-i18n="modal.event.label_title">Titre de l'événement *</label>
+                        <input type="text" class="form-input" id="metroEventTitle" placeholder="La grande bataille"
+                            data-i18n-placeholder="placeholder.event_title" />
                     </div>
 
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem">
                         <div class="form-group">
-                            <label class="form-label">Date / Moment</label>
+                            <label class="form-label" data-i18n="modal.event.label_date">Date / Moment</label>
                             <input type="text" class="form-input" id="metroEventDate"
-                                placeholder="An 2157, Printemps..." />
+                                placeholder="An 2157, Printemps..." data-i18n-placeholder="placeholder.event_date" />
                         </div>
                         <div class="form-group">
-                            <label class="form-label">Position sur la timeline</label>
+                            <label class="form-label" data-i18n="modal.event.label_pos">Position sur la timeline</label>
                             <select class="form-input" id="metroEventPosition">
                                 <!-- Populated dynamically -->
                             </select>
@@ -1136,15 +1141,15 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">Description</label>
+                        <label class="form-label" data-i18n="modal.event.label_desc">Description</label>
                         <textarea class="form-input" id="metroEventDesc" placeholder="Ce qui se passe..."
-                            rows="3"></textarea>
+                            data-i18n-placeholder="placeholder.event_desc" rows="3"></textarea>
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">Scène liée</label>
+                        <label class="form-label" data-i18n="modal.event.label_scene">Scène liée</label>
                         <select class="form-input" id="metroEventScene">
-                            <option value="">Aucune scène</option>
+                            <option value="" data-i18n="modal.event.no_scene">Aucune scène</option>
                             <!-- Populated dynamically -->
                         </select>
                         <small style="color: var(--text-muted); display: block; margin-top: 4px">Associez cet
@@ -1153,7 +1158,7 @@
                     </div>
 
                     <div class="form-group" style="margin-bottom: 0">
-                        <label class="form-label">Personnages impliqués</label>
+                        <label class="form-label" data-i18n="modal.event.label_chars">Personnages impliqués</label>
                         <div id="metroCharactersSelector" class="metro-characters-selector">
                             <!-- Populated dynamically -->
                         </div>
@@ -1179,10 +1184,11 @@
     <!-- Metro Event View Choice Modal -->
     <div class="modal" id="metroViewChoiceModal">
         <div class="modal-content" style="max-width: 500px">
-            <div class="modal-title">Ouvrir l'événement Timeline</div>
+            <div class="modal-title" data-i18n="modal.event.open_timeline">Ouvrir l'événement Timeline</div>
             <input type="hidden" id="metroViewChoiceEventId" />
             <div style="padding: 1rem 0">
-                <p style="color: var(--text-secondary); margin-bottom: 1.5rem">Comment souhaitez-vous visualiser
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem" data-i18n="modal.event.choose_view">
+                    Comment souhaitez-vous visualiser
                     cet
                     événement ?</p>
                 <div style="display: flex; flex-direction: column; gap: 1rem">
@@ -1191,8 +1197,10 @@
                         <i data-lucide="maximize-2"
                             style="width: 24px; height: 24px; flex-shrink: 0; color: var(--accent-blue)"></i>
                         <div>
-                            <div style="font-weight: 600; margin-bottom: 0.25rem">Vue complète</div>
-                            <div style="font-size: 0.85rem; color: var(--text-muted)">Basculer vers la vue
+                            <div style="font-weight: 600; margin-bottom: 0.25rem" data-i18n="modal.event.view_complete">
+                                Vue complète</div>
+                            <div style="font-size: 0.85rem; color: var(--text-muted)"
+                                data-i18n="modal.event.bascule_metro">Basculer vers la vue
                                 Timeline
                                 Métro (quitte la vue actuelle)</div>
                         </div>
@@ -1202,8 +1210,10 @@
                         <i data-lucide="columns-2"
                             style="width: 24px; height: 24px; flex-shrink: 0; color: var(--accent-green)"></i>
                         <div>
-                            <div style="font-weight: 600; margin-bottom: 0.25rem">Split-view</div>
-                            <div style="font-size: 0.85rem; color: var(--text-muted)">Ouvrir la Timeline en vue
+                            <div style="font-weight: 600; margin-bottom: 0.25rem" data-i18n="modal.event.view_split">
+                                Split-view</div>
+                            <div style="font-size: 0.85rem; color: var(--text-muted)"
+                                data-i18n="modal.event.open_split">Ouvrir la Timeline en vue
                                 séparée
                                 (conserve l'éditeur)</div>
                         </div>
@@ -1211,7 +1221,7 @@
                 </div>
             </div>
             <div class="modal-actions">
-                <button class="btn" onclick="closeModal('metroViewChoiceModal')">Annuler</button>
+                <button class="btn" onclick="closeModal('metroViewChoiceModal')" data-i18n="btn.cancel">Annuler</button>
             </div>
         </div>
     </div>
@@ -1499,7 +1509,8 @@
                 </div>
             </div>
             <div style="margin-bottom: 2rem">
-                <div style="font-size: 1rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-primary)">
+                <div style="font-size: 1rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-primary)"
+                    data-i18n="modal.backup.gdrive_auto">
                     <i data-lucide="cloud"
                         style="width: 16px; height: 16px; vertical-align: middle; margin-right: 6px"></i>Google
                     Drive
@@ -1530,7 +1541,8 @@
                                 </div>
                                 <div>
                                     <div id="gdrive-user-name"
-                                        style="font-size: 0.85rem; font-weight: 600; color: var(--text-primary)">
+                                        style="font-size: 0.85rem; font-weight: 600; color: var(--text-primary)"
+                                        data-i18n="modal.backup.gdrive_user">
                                         Utilisateur Google</div>
                                     <div id="gdrive-user-email" style="font-size: 0.75rem; color: var(--text-muted)">
                                         email@gmail.com</div>
@@ -1671,11 +1683,11 @@
                     Format du fichier </label>
                 <select id="exportFormatSelect" onchange="updateExportFormatInfo()"
                     style="width: 100%; padding: 0.75rem; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-primary); font-size: 0.95rem; font-family: &quot;Crimson Pro&quot;, serif">
-                    <option value="markdown">Markdown (.md)</option>
-                    <option value="txt">Texte brut (.txt)</option>
-                    <option value="html">HTML (.html)</option>
-                    <option value="epub">EPUB (.epub)</option>
-                    <option value="docx">DOCX (.docx)</option>
+                    <option value="markdown" data-i18n="modal.export.format.markdown">Markdown (.md)</option>
+                    <option value="txt" data-i18n="modal.export.format.txt">Texte brut (.txt)</option>
+                    <option value="html" data-i18n="modal.export.format.html">HTML (.html)</option>
+                    <option value="epub" data-i18n="modal.export.format.epub">EPUB (.epub)</option>
+                    <option value="docx" data-i18n="modal.export.format.docx">DOCX (.docx)</option>
                 </select>
                 <div id="formatInfoBox"
                     style="margin-top: 0.75rem; padding: 0.75rem; background: rgba(212, 175, 55, 0.1); border-radius: 4px; border: 1px solid var(--accent-gold); font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5">
@@ -1989,7 +2001,8 @@
                 de tension</div>
             <div
                 style="margin-bottom: 1.5rem; padding: 1rem; background: var(--bg-secondary); border-radius: 6px; border: 1px solid var(--border-color)">
-                <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6; margin: 0">Ces mots
+                <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6; margin: 0"
+                    data-i18n="modal.tension.desc">Ces mots
                     sont
                     utilisés pour calculer automatiquement la tension narrative de vos scènes. Personnalisez-les
                     selon
@@ -2001,19 +2014,22 @@
                     style="background: var(--bg-secondary); border-radius: 8px; padding: 1.25rem; border: 2px solid rgba(196, 69, 54, 0.3)">
                     <h3
                         style="margin: 0 0 0.75rem 0; font-size: 1rem; color: var(--accent-red); display: flex; align-items: center; gap: 0.5rem">
-                        Haute tension
-                        <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal">(+3 pts
+                        <span data-i18n="modal.tension.high.title">Haute tension</span>
+                        <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal"
+                            data-i18n="modal.tension.high.pts">(+3 pts
                             chacun)</span>
                     </h3>
                     <div style="margin-bottom: 0.75rem">
                         <input type="text" id="highTensionInput" placeholder="Ajouter un mot..."
+                            data-i18n-placeholder="btn.add_word"
                             style="width: 100%; padding: 0.5rem; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-primary); font-size: 0.85rem"
                             onkeypress="if (event.key === 'Enter') addTensionWord('high');" />
                         <button onclick="addTensionWord('high')"
                             style="width: 100%; margin-top: 0.5rem; padding: 0.5rem; background: var(--accent-red); color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-weight: 500">+
-                            Ajouter</button>
+                            <span data-i18n="btn.add">Ajouter</span></button>
                         <button onclick="openBulkImport('high')"
-                            style="width: 100%; margin-top: 0.5rem; padding: 0.5rem; background: rgba(196, 69, 54, 0.2); color: var(--accent-red); border: 1px solid var(--accent-red); border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-weight: 500">Import
+                            style="width: 100%; margin-top: 0.5rem; padding: 0.5rem; background: rgba(196, 69, 54, 0.2); color: var(--accent-red); border: 1px solid var(--accent-red); border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-weight: 500"
+                            data-i18n="modal.tension.bulk_import">Import
                             en masse</button>
                     </div>
                     <div id="highTensionList"
@@ -2026,20 +2042,23 @@
                     style="background: var(--bg-secondary); border-radius: 8px; padding: 1.25rem; border: 2px solid rgba(230, 162, 60, 0.3)">
                     <h3
                         style="margin: 0 0 0.75rem 0; font-size: 1rem; color: #e6a23c; display: flex; align-items: center; gap: 0.5rem">
-                        Tension moyenne
-                        <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal">(+1.5
+                        <span data-i18n="modal.tension.medium.title">Tension moyenne</span>
+                        <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal"
+                            data-i18n="modal.tension.medium.pts">(+1.5
                             pts
                             chacun)</span>
                     </h3>
                     <div style="margin-bottom: 0.75rem">
                         <input type="text" id="mediumTensionInput" placeholder="Ajouter un mot..."
+                            data-i18n-placeholder="btn.add_word"
                             style="width: 100%; padding: 0.5rem; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-primary); font-size: 0.85rem"
                             onkeypress="if (event.key === 'Enter') addTensionWord('medium');" />
                         <button onclick="addTensionWord('medium')"
                             style="width: 100%; margin-top: 0.5rem; padding: 0.5rem; background: #e6a23c; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-weight: 500">+
-                            Ajouter</button>
+                            <span data-i18n="btn.add">Ajouter</span></button>
                         <button onclick="openBulkImport('medium')"
-                            style="width: 100%; margin-top: 0.5rem; padding: 0.5rem; background: rgba(230, 162, 60, 0.2); color: #e6a23c; border: 1px solid #e6a23c; border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-weight: 500">Import
+                            style="width: 100%; margin-top: 0.5rem; padding: 0.5rem; background: rgba(230, 162, 60, 0.2); color: #e6a23c; border: 1px solid #e6a23c; border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-weight: 500"
+                            data-i18n="modal.tension.bulk_import">Import
                             en masse</button>
                     </div>
                     <div id="mediumTensionList"
@@ -2052,19 +2071,22 @@
                     style="background: var(--bg-secondary); border-radius: 8px; padding: 1.25rem; border: 2px solid rgba(74, 144, 226, 0.3)">
                     <h3
                         style="margin: 0 0 0.75rem 0; font-size: 1rem; color: var(--accent-blue); display: flex; align-items: center; gap: 0.5rem">
-                        Faible tension
-                        <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal">(-2 pts
+                        <span data-i18n="modal.tension.low.title">Baisse de tension</span>
+                        <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal"
+                            data-i18n="modal.tension.low.pts">(-2 pts
                             chacun)</span>
                     </h3>
                     <div style="margin-bottom: 0.75rem">
                         <input type="text" id="lowTensionInput" placeholder="Ajouter un mot..."
+                            data-i18n-placeholder="btn.add_word"
                             style="width: 100%; padding: 0.5rem; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-primary); font-size: 0.85rem"
                             onkeypress="if (event.key === 'Enter') addTensionWord('low');" />
                         <button onclick="addTensionWord('low')"
                             style="width: 100%; margin-top: 0.5rem; padding: 0.5rem; background: #2d6bb3; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-weight: 500">+
-                            Ajouter</button>
+                            <span data-i18n="btn.add">Ajouter</span></button>
                         <button onclick="openBulkImport('low')"
-                            style="width: 100%; margin-top: 0.5rem; padding: 0.5rem; background: rgba(45, 107, 179, 0.15); color: #2d6bb3; border: 1px solid #2d6bb3; border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-weight: 500">Import
+                            style="width: 100%; margin-top: 0.5rem; padding: 0.5rem; background: rgba(45, 107, 179, 0.15); color: #2d6bb3; border: 1px solid #2d6bb3; border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-weight: 500"
+                            data-i18n="modal.tension.bulk_import">Import
                             en masse</button>
                     </div>
                     <div id="lowTensionList"
@@ -2076,10 +2098,12 @@
             <div class="modal-actions" style="display: flex; justify-content: space-between; align-items: center">
                 <div style="display: flex; gap: 0.75rem">
                     <button class="btn" onclick="exportTensionWords()"
-                        style="background: #2d6bb3; color: white; border: 1px solid #2d6bb3">Exporter les
+                        style="background: #2d6bb3; color: white; border: 1px solid #2d6bb3"
+                        data-i18n="modal.tension.export_dicts">Exporter les
                         dictionnaires</button>
                     <button class="btn" onclick="resetTensionWordsToDefault()"
-                        style="background: var(--accent-red); color: white">Réinitialiser aux valeurs par
+                        style="background: var(--accent-red); color: white"
+                        data-i18n="modal.tension.reset_default">Réinitialiser aux valeurs par
                         défaut</button>
                 </div>
                 <div style="display: flex; gap: 0.75rem">
@@ -2094,43 +2118,52 @@
     <!-- Bulk Import Modal -->
     <div class="modal" id="bulkImportModal">
         <div class="modal-content" style="max-width: 700px">
-            <div class="modal-title" id="bulkImportTitle">Import en masse</div>
+            <div class="modal-title" id="bulkImportTitle" data-i18n="modal.bulk_import.title">Import en masse</div>
             <div style="margin-bottom: 1.5rem">
-                <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 1rem">
+                <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 1rem"
+                    data-i18n="modal.bulk_import.desc">
                     Importez une liste de mots en masse. Vous pouvez :</p>
                 <ul style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.8; padding-left: 1.5rem">
-                    <li><strong>Coller du texte</strong> : Un mot par ligne ou séparés par des virgules</li>
-                    <li><strong>Importer un fichier</strong> : Fichier .txt avec un mot par ligne</li>
+                    <li><strong data-i18n="modal.bulk_import.li_paste">Coller du texte</strong><span
+                            data-i18n="modal.bulk_import.li_paste_desc"> : Un mot par ligne ou séparés par des
+                            virgules</span></li>
+                    <li><strong data-i18n="modal.bulk_import.li_file">Importer un fichier</strong><span
+                            data-i18n="modal.bulk_import.li_file_desc"> : Fichier .txt avec un mot par ligne</span></li>
                 </ul>
             </div>
             <div style="margin-bottom: 1.5rem">
-                <label class="form-label">Collez vos mots ici :</label>
+                <label class="form-label" data-i18n="modal.bulk_import.label_paste">Collez vos mots ici :</label>
                 <textarea id="bulkImportText"
                     placeholder="Ex: combat, bataille, mort&#10;tuer, danger, peur&#10;terreur, cri, hurler"
+                    data-i18n-placeholder="modal.bulk_import.placeholder"
                     style="width: 100%; min-height: 200px; padding: 0.75rem; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-primary); font-size: 0.85rem; font-family: monospace; resize: vertical"> </textarea>
-                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem">Formats acceptés :
+                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem"
+                    data-i18n="modal.bulk_import.formats">Formats acceptés :
                     un
                     mot
                     par ligne, ou plusieurs mots séparés par des virgules</div>
             </div>
             <div style="margin-bottom: 1.5rem">
-                <label class="form-label">Ou importez un fichier .txt :</label>
+                <label class="form-label" data-i18n="modal.bulk_import.label_file">Ou importez un fichier .txt :</label>
                 <input type="file" id="bulkImportFile" accept=".txt"
                     style="width: 100%; padding: 0.5rem; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-primary); font-size: 0.85rem" />
             </div>
             <div
                 style="padding: 1rem; background: rgba(74, 144, 226, 0.1); border-radius: 4px; border: 1px solid var(--accent-blue); margin-bottom: 1.5rem">
-                <div style="font-size: 0.85rem; font-weight: 600; color: var(--accent-blue); margin-bottom: 0.5rem">
+                <div style="font-size: 0.85rem; font-weight: 600; color: var(--accent-blue); margin-bottom: 0.5rem"
+                    data-i18n="modal.bulk_import.fusion_mode">
                     Mode
                     de fusion</div>
                 <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; margin-bottom: 0.5rem">
                     <input type="radio" name="importMode" value="add" checked />
-                    <span style="font-size: 0.85rem; color: var(--text-primary)">Ajouter aux mots existants
+                    <span style="font-size: 0.85rem; color: var(--text-primary)"
+                        data-i18n="modal.bulk_import.mode_add">Ajouter aux mots existants
                         (recommandé)</span>
                 </label>
                 <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer">
                     <input type="radio" name="importMode" value="replace" />
-                    <span style="font-size: 0.85rem; color: var(--text-primary)">Remplacer tous les mots
+                    <span style="font-size: 0.85rem; color: var(--text-primary)"
+                        data-i18n="modal.bulk_import.mode_replace">Remplacer tous les mots
                         existants</span>
                 </label>
             </div>
@@ -2694,7 +2727,8 @@
                     <i data-lucide="layout-grid"></i>
                     <span data-i18n="tools.plot">Plot</span>
                 </button>
-                <button class="mobile-tool-item" onclick="InvestigationSidebarUI.toggleSidebar(); closeMobileToolsSheet();">
+                <button class="mobile-tool-item"
+                    onclick="InvestigationSidebarUI.toggleSidebar(); closeMobileToolsSheet();">
                     <i data-lucide="search"></i>
                     <span data-i18n="tools.investigation">Recherche</span>
                 </button>

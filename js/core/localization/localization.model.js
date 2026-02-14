@@ -6,10 +6,10 @@ class LocalizationModel {
     constructor() {
         this.currentLocale = 'fr'; // Default
         this.locales = {
-            'fr': typeof LOCALE_FR !== 'undefined' ? LOCALE_FR : {},
-            'en': typeof LOCALE_EN !== 'undefined' ? LOCALE_EN : {},
-            'de': typeof LOCALE_DE !== 'undefined' ? LOCALE_DE : {},
-            'es': typeof LOCALE_ES !== 'undefined' ? LOCALE_ES : {}
+            'fr': (typeof LOCALE_FR !== 'undefined' ? LOCALE_FR : (typeof window.LOCALE_FR !== 'undefined' ? window.LOCALE_FR : {})),
+            'en': (typeof LOCALE_EN !== 'undefined' ? LOCALE_EN : (typeof window.LOCALE_EN !== 'undefined' ? window.LOCALE_EN : {})),
+            'de': (typeof LOCALE_DE !== 'undefined' ? LOCALE_DE : (typeof window.LOCALE_DE !== 'undefined' ? window.LOCALE_DE : {})),
+            'es': (typeof LOCALE_ES !== 'undefined' ? LOCALE_ES : (typeof window.LOCALE_ES !== 'undefined' ? window.LOCALE_ES : {}))
         };
         this.observers = [];
     }

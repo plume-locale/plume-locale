@@ -23,7 +23,7 @@ async function init() {
     const dbReady = await initDB();
     if (!dbReady) {
         console.error('❌ Impossible d\'initialiser la base de données');
-        alert('Erreur critique : impossible d\'initialiser le stockage. Rechargez la page.');
+        alert(Localization.t('error.db_init'));
         return;
     }
 
@@ -173,19 +173,19 @@ async function saveProject() {
         }, historyDebounceDelay);
     } catch (error) {
         console.error('❌ Erreur de sauvegarde:', error);
-        alert('Erreur lors de la sauvegarde. Veuillez exporter votre projet par sécurité.');
+        alert(Localization.t('error.save'));
     }
 }
 
 // [MVVM : ViewModel]
 // Gère le renommage du projet (Input et mise à jour Modèle/Vue)
 function renameProject() {
-    const newName = prompt('Nouveau nom du projet :', project.title || 'Mon Roman');
+    const newName = prompt(Localization.t('prompt.rename_project'), project.title || Localization.t('prompt.rename_project_default'));
     if (newName === null) return; // Annulé
 
     const trimmedName = newName.trim();
     if (trimmedName === '') {
-        showNotification('Le nom ne peut pas être vide');
+        showNotification(Localization.t('notification.rename_empty'));
         return;
     }
 
@@ -201,7 +201,7 @@ function renameProject() {
     document.title = trimmedName + ' - Plume';
 
     saveProject();
-    showNotification('✓ Projet renommé');
+    showNotification(Localization.t('notification.rename_success'));
 }
 
 // Lancer l'initialisation au chargement de la page
