@@ -339,7 +339,6 @@
 /* Mobile: show tools-sidebar on small screens */
 @media (max-width: 900px) {
     .tools-sidebar {
-        display: flex !important;
         position: fixed;
         left: 0;
         top: 56px;
