@@ -28,9 +28,12 @@ const MobileMenuView = {
      * Ouvre la sidebar (ajoute classes CSS).
      */
     openSidebar: function () {
+<<<<<<< Updated upstream
         const sidebarColumn = document.querySelector('.sidebar-column');
+=======
+        const sidebarColumn = document.getElementById('sidebarColumn');
+>>>>>>> Stashed changes
         const overlay = document.querySelector('.sidebar-overlay');
-        const handle = document.querySelector('.mobile-menu-handle');
 
         if (sidebarColumn) sidebarColumn.classList.add('mobile-visible');
 
@@ -39,8 +42,6 @@ const MobileMenuView = {
             setTimeout(() => overlay.classList.add('active'), 10);
         }
 
-        if (handle) handle.classList.add('hidden');
-
         document.body.style.overflow = 'hidden';
     },
 
@@ -48,9 +49,12 @@ const MobileMenuView = {
      * Ferme la sidebar.
      */
     closeSidebar: function () {
+<<<<<<< Updated upstream
         const sidebarColumn = document.querySelector('.sidebar-column');
+=======
+        const sidebarColumn = document.getElementById('sidebarColumn');
+>>>>>>> Stashed changes
         const overlay = document.querySelector('.sidebar-overlay');
-        const handle = document.querySelector('.mobile-menu-handle');
 
         if (sidebarColumn) sidebarColumn.classList.remove('mobile-visible');
 
@@ -58,8 +62,6 @@ const MobileMenuView = {
             overlay.classList.remove('active');
             setTimeout(() => overlay.style.display = 'none', 300);
         }
-
-        if (handle) handle.classList.remove('hidden');
 
         document.body.style.overflow = '';
     },
@@ -202,7 +204,11 @@ const MobileMenuView = {
      * Assure un état propre lors du repassage en mode desktop.
      */
     ensureDesktopState: function () {
+<<<<<<< Updated upstream
         const sidebarColumn = document.querySelector('.sidebar-column');
+=======
+        const sidebarColumn = document.getElementById('sidebarColumn');
+>>>>>>> Stashed changes
         const overlay = document.querySelector('.sidebar-overlay');
         const menuBtn = document.querySelector('.mobile-menu-toggle');
 

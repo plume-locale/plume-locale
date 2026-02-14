@@ -1,6 +1,4 @@
 <body>
-    <!-- Mobile Menu Handle (poignée latérale) -->
-    <div class="mobile-menu-handle" onclick="toggleMobileSidebar()"></div>
     <!-- Mobile Sidebar Overlay -->
     <div class="sidebar-overlay" onclick="toggleMobileSidebar()"></div>
     <!-- Mobile Navigation Dropdown (déplacé hors du grid) -->
@@ -294,6 +292,10 @@
         <div class="app-content">
             <!-- Sidebar Wrapper (Column) -->
             <div class="sidebar-column" id="sidebarColumn">
+                <!-- Poignée de redimensionnement (Déplacé ici pour être visible même avec l'accordéon ouvert) -->
+                <div class="sidebar-resize-handle" id="sidebarResizeHandle">
+                    <div class="resize-handle-line"></div>
+                </div>
                 <!-- Sidebar Shortcuts (Customize Interface) -->
                 <div class="sidebar-shortcuts" id="sidebarShortcuts"></div>
 
@@ -313,10 +315,6 @@
 
                 <!-- Sidebar Navigation -->
                 <div class="sidebar" id="sidebar">
-                    <!-- Poignée de redimensionnement -->
-                    <div class="sidebar-resize-handle" id="sidebarResizeHandle">
-                        <div class="resize-handle-line"></div>
-                    </div>
 
                     <!-- Barre de progression globale -->
                     <div class="project-progress-bar" id="projectProgressBar">
