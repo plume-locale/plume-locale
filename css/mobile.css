@@ -906,9 +906,10 @@ body.force-mobile-nav .split-mode-toggle span {
 /* MOBILE (< 900px) */
 @media (max-width: 900px) {
 
-    /* Layout Mobile */
+    /* Layout Mobile - Same as tablet, sidebar always visible */
     .app-content {
-        flex-direction: column;
+        display: flex;
+        flex-direction: row;
         padding-left: 50px;
     }
 
@@ -970,23 +971,17 @@ body.force-mobile-nav .split-mode-toggle span {
         display: none !important;
     }
 
-    /* Afficher toggle navigation mobile */
-    .mobile-nav-toggle-btn {
-        display: flex;
+    /* Hide mobile navigation elements - sidebar always visible like tablet */
+    .mobile-nav-toggle-btn,
+    .mobile-nav-dropdown,
+    .mobile-menu-handle,
+    .sidebar-overlay {
+        display: none !important;
     }
 
     /* Afficher le bouton ✏️ flottant en mobile */
     #floatingEditorToggle {
         display: flex !important;
-    }
-
-    /* Afficher la poignée latérale sur mobile */
-    .mobile-menu-handle {
-        display: block;
-    }
-
-    .mobile-nav-dropdown {
-        display: block;
     }
 
     /* Cacher stats sur mobile pour gagner de la place (optionnel, mais recommandé) */
