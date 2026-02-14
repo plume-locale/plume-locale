@@ -1034,8 +1034,10 @@ body.force-mobile-nav .split-mode-toggle span {
         flex-shrink: 0;
     }
 
-    /* Sidebar Mobile - en overlay */
-    /* Sidebar Mobile - en overlay */
+    /* Sidebar Mobile - DÉSACTIVÉ - Géré par .sidebar-column dans css/sidebar.css */
+    /* Le positionnement mobile est maintenant géré au niveau du conteneur .sidebar-column */
+    /* pour éviter les conflits de positionnement fixed entre parent et enfant */
+    /*
     .sidebar {
         position: fixed;
         top: 56px;
@@ -1053,8 +1055,8 @@ body.force-mobile-nav .split-mode-toggle span {
 
     .sidebar.mobile-open {
         left: 50px;
-        /* Leave space for tools sidebar */
     }
+    */
 
     /* Padding pour les listes de la sidebar sur mobile */
     .chapters-list,

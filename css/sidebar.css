@@ -175,19 +175,47 @@
 @media (max-width: 900px) {
     .sidebar-column {
         position: fixed;
-        left: 0;
+        left: 50px;
+        /* Laisser l'espace pour tools-sidebar (50px) */
         top: 56px;
         bottom: 0;
-        z-index: 1000;
+        z-index: 10002;
+        /* Au-dessus de tools-sidebar (z-index: 990) */
         transform: translateX(-100%);
         transition: transform 0.3s ease;
-        width: 85%;
+        width: calc(85% - 50px);
+        /* Soustraire la largeur de tools-sidebar */
         max-width: 320px;
         box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        overflow-y: auto;
+        /* Permettre le scroll si le contenu dépasse */
+        padding-bottom: calc(60px + env(safe-area-inset-bottom, 20px));
+        /* Espace pour le bouton flottant */
     }
 
     .sidebar-column.mobile-visible {
         transform: translateX(0);
+    }
+
+    /* Assurer que les composants internes s'adaptent correctement */
+    .sidebar-column .sidebar-shortcuts {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .sidebar-column .sidebar-accordion {
+        max-height: none;
+        /* Retirer la limite de hauteur en mobile */
+    }
+
+    .sidebar-column .sidebar {
+        position: static;
+        /* Retirer le fixed du enfant pour éviter les conflits */
+        width: 100%;
+        height: auto;
+        left: auto;
+        top: auto;
+        transform: none;
     }
 }
 
