@@ -49,11 +49,7 @@ window.MobileSwipeViewModel = {
      * Gère un balayage de gauche à droite (ouverture potentielle).
      */
     handleLeftToRightSwipe: function () {
-<<<<<<< Updated upstream
-        const sidebarColumn = document.querySelector('.sidebar-column');
-=======
         const sidebarColumn = document.getElementById('sidebarColumn');
->>>>>>> Stashed changes
         if (sidebarColumn && !sidebarColumn.classList.contains('mobile-visible')) {
             this.toggleSidebar();
         }
@@ -63,11 +59,7 @@ window.MobileSwipeViewModel = {
      * Gère un balayage de droite à gauche (fermeture potentielle).
      */
     handleRightToLeftSwipe: function () {
-<<<<<<< Updated upstream
-        const sidebarColumn = document.querySelector('.sidebar-column');
-=======
         const sidebarColumn = document.getElementById('sidebarColumn');
->>>>>>> Stashed changes
         if (sidebarColumn && sidebarColumn.classList.contains('mobile-visible')) {
             this.toggleSidebar();
         }

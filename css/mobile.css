@@ -910,7 +910,6 @@ body.force-mobile-nav .split-mode-toggle span {
     .app-content {
         display: flex;
         flex-direction: row;
-        padding-left: 50px;
     }
 
     /* Sidebar versions en overlay sur mobile */
