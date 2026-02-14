@@ -70,22 +70,8 @@ window.closeMobileToolsSheet = function () {
     MobileMenuViewModel.closeToolsSheet();
 };
 
-// [MVVM: Main] Délègue au floating editor menu existant
-window.toggleFloatingEditorMenu = function () {
-    var toggle = document.getElementById('floatingEditorToggle');
-    var menu = document.getElementById('floatingEditorMenu');
-    if (menu) {
-        if (menu.classList.contains('active')) {
-            menu.classList.remove('active');
-        } else {
-            menu.classList.add('active');
-            // Re-init lucide icons dans le menu
-            if (typeof lucide !== 'undefined' && lucide.createIcons) {
-                lucide.createIcons();
-            }
-        }
-    }
-};
+// [MVVM: Main] toggleFloatingEditorMenu is already defined in floating-editor.handlers.js
+// and uses the proper MVVM pattern. No need to redefine it here.
 
 // Expose internal components for debugging if needed
 window.checkHeaderOverflow = function () {
