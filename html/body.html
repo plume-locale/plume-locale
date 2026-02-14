@@ -338,25 +338,25 @@
                     <!-- Filtres de statut -->
                     <div class="status-filters" id="statusFilters">
                         <button class="status-filter-btn draft active" onclick="toggleStatusFilter('draft')"
-                            data-status="draft" title="Brouillon">
+                            data-status="draft" title="Brouillon" data-i18n-title="sidebar.status.draft">
                             <span class="status-filter-dot draft"></span>
                             <span data-i18n="sidebar.status.draft">Brouillon</span>
                             <span class="status-filter-count" id="countDraft">0</span>
                         </button>
                         <button class="status-filter-btn progress active" onclick="toggleStatusFilter('progress')"
-                            data-status="progress" title="En cours">
+                            data-status="progress" title="En cours" data-i18n-title="sidebar.status.progress">
                             <span class="status-filter-dot progress"></span>
                             <span data-i18n="sidebar.status.progress">En cours</span>
                             <span class="status-filter-count" id="countProgress">0</span>
                         </button>
                         <button class="status-filter-btn complete active" onclick="toggleStatusFilter('complete')"
-                            data-status="complete" title="Terminé">
+                            data-status="complete" title="Terminé" data-i18n-title="sidebar.status.complete">
                             <span class="status-filter-dot complete"></span>
                             <span data-i18n="sidebar.status.complete">Terminé</span>
                             <span class="status-filter-count" id="countComplete">0</span>
                         </button>
                         <button class="status-filter-btn review active" onclick="toggleStatusFilter('review')"
-                            data-status="review" title="À réviser">
+                            data-status="review" title="À réviser" data-i18n-title="sidebar.status.review">
                             <span class="status-filter-dot review"></span>
                             <span data-i18n="sidebar.status.review">À réviser</span>
                             <span class="status-filter-count" id="countReview">0</span>
@@ -365,35 +365,35 @@
                     <!-- Outils de scène -->
                     <div class="scene-tools" id="sceneTools">
                         <button class="scene-tool-btn" onclick="toggleVersionsSidebar()" id="headerVersionsToggle"
-                            title="Afficher/masquer les versions de scène">
+                            title="Afficher/masquer les versions de scène" data-i18n-title="tool.versions_title">
                             <i data-lucide="git-branch"></i>
                             <span data-i18n="tool.versions">Versions</span>
                         </button>
                         <button class="scene-tool-btn" onclick="toggleAnnotationsPanel()" id="sidebarAnnotationsBtn"
-                            title="Afficher/masquer les annotations" data-i18n-title="tool.annotations">
+                            title="Afficher/masquer les annotations" data-i18n-title="tool.annotations_title">
                             <i data-lucide="message-square"></i>
                             <span data-i18n="tool.annotations">Annotations</span>
                             <span class="scene-tool-badge" id="annotationsBadge" style="display: none">0</span>
                         </button>
                         <button class="scene-tool-btn" onclick="toggleTodosPanel()" id="sidebarTodosBtn"
-                            title="Afficher/masquer les TODOs" data-i18n-title="tool.todos">
+                            title="Afficher/masquer les TODOs" data-i18n-title="tool.todos_title">
                             <i data-lucide="check-square"></i>
                             <span data-i18n="tool.todos">TODOs</span>
                             <span class="scene-tool-badge" id="todosBadge" style="display: none">0</span>
                         </button>
                         <button class="scene-tool-btn" onclick="toggleArcScenePanel()" id="sidebarArcsBtn"
-                            title="Afficher/masquer les Arcs Narratifs" data-i18n-title="tool.arcs">
+                            title="Afficher/masquer les Arcs Narratifs" data-i18n-title="tool.arcs_title">
                             <i data-lucide="git-commit-horizontal"></i>
                             <span data-i18n="tool.arcs">Arcs</span>
                         </button>
                         <button class="scene-tool-btn" onclick="PlotGridUI.toggleSidebar()" id="sidebarPlotBtn"
-                            title="Afficher/masquer l'Intrigue" data-i18n-title="tool.plot">
+                            title="Afficher/masquer l'Intrigue" data-i18n-title="tool.plot_title">
                             <i data-lucide="trending-up"></i>
                             <span data-i18n="tool.plot">Intrigue</span>
                         </button>
                         <button class="scene-tool-btn" onclick="InvestigationSidebarUI.toggleSidebar()"
                             id="sidebarInvestigationBtn" title="Afficher/masquer l'Enquête"
-                            data-i18n-title="tool.investigation">
+                            data-i18n-title="tool.investigation_title">
                             <i data-lucide="search"></i>
                             <span data-i18n="tool.investigation">Enquête</span>
                         </button>
@@ -1228,10 +1228,10 @@
     <!-- Metro Character Color Picker Modal -->
     <div class="modal" id="metroColorModal">
         <div class="modal-content" style="max-width: 350px">
-            <div class="modal-title">Couleur de la ligne</div>
+            <div class="modal-title" data-i18n="modal.metro.color_title">Couleur de la ligne</div>
             <input type="hidden" id="metroColorCharId" />
             <div class="form-group">
-                <label class="form-label" id="metroColorCharName">Personnage</label>
+                <label class="form-label" id="metroColorCharName" data-i18n="modal.metro.character">Personnage</label>
                 <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem">
                     <div class="metro-color-option" data-color="#E53935" style="background: #e53935"
                         onclick="selectMetroColor('#E53935')"></div>
@@ -1275,7 +1275,7 @@
                         onclick="selectMetroColor('#263238')"></div>
                 </div>
                 <div style="margin-top: 1rem">
-                    <label class="form-label">Couleur personnalisée</label>
+                    <label class="form-label" data-i18n="modal.metro.custom_color">Couleur personnalisée</label>
                     <input type="color" id="metroCustomColor" class="form-input"
                         style="width: 100%; height: 40px; padding: 0; cursor: pointer" />
                 </div>
@@ -1398,17 +1398,17 @@
             <div class="form-group">
                 <label class="form-label" data-i18n="modal.project.label_genre">Genre</label>
                 <select class="form-input" id="newProjectGenre">
-                    <option value="">Aucun</option>
-                    <option value="Fantasy">Fantasy</option>
-                    <option value="Science-Fiction">Science-Fiction</option>
-                    <option value="Thriller">Thriller</option>
-                    <option value="Romance">Romance</option>
-                    <option value="Policier">Policier</option>
-                    <option value="Horreur">Horreur</option>
-                    <option value="Historique">Historique</option>
-                    <option value="Aventure">Aventure</option>
-                    <option value="Drame">Drame</option>
-                    <option value="Autre">Autre</option>
+                    <option value="" data-i18n="genre.none">Aucun</option>
+                    <option value="Fantasy" data-i18n="genre.fantasy">Fantasy</option>
+                    <option value="Science-Fiction" data-i18n="genre.science_fiction">Science-Fiction</option>
+                    <option value="Thriller" data-i18n="genre.thriller">Thriller</option>
+                    <option value="Romance" data-i18n="genre.romance">Romance</option>
+                    <option value="Policier" data-i18n="genre.police">Policier</option>
+                    <option value="Horreur" data-i18n="genre.horror">Horreur</option>
+                    <option value="Historique" data-i18n="genre.history">Historique</option>
+                    <option value="Aventure" data-i18n="genre.adventure">Aventure</option>
+                    <option value="Drame" data-i18n="genre.drama">Drame</option>
+                    <option value="Autre" data-i18n="genre.other">Autre</option>
                 </select>
             </div>
             <div class="form-group">
@@ -1447,8 +1447,8 @@
                 </select>
             </div>
             <div class="modal-actions">
-                <button class="btn" onclick="closeModal('newProjectModal')">Annuler</button>
-                <button class="btn btn-primary" onclick="createNewProject()">Créer</button>
+                <button class="btn" onclick="closeModal('newProjectModal')" data-i18n="btn.cancel">Annuler</button>
+                <button class="btn btn-primary" onclick="createNewProject()" data-i18n="btn.create">Créer</button>
             </div>
         </div>
     </div>
@@ -1650,7 +1650,7 @@
             </div>
             <div class="modal-actions"
                 style="margin-top: 1.5rem; border-top: 1px solid var(--border-color); padding-top: 1rem">
-                <button class="btn" onclick="closeImportChapterModal()">Annuler</button>
+                <button class="btn" onclick="closeImportChapterModal()" data-i18n="btn.cancel">Annuler</button>
             </div>
         </div>
     </div>
@@ -1929,11 +1929,11 @@
                     Séparateurs de scènes </label>
                 <select id="sceneDividerSelect"
                     style="width: 100%; padding: 0.75rem; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-primary); font-size: 0.95rem; font-family: &quot;Crimson Pro&quot;, serif">
-                    <option value="asterisks">Astérisques ( * * * )</option>
-                    <option value="hash">Dièse ( ### )</option>
-                    <option value="line">Ligne horizontale (---)</option>
-                    <option value="space">Espace vide</option>
-                    <option value="none">Aucun séparateur</option>
+                    <option value="asterisks" data-i18n="modal.export.divider.asterisks">Astérisques ( * * * )</option>
+                    <option value="hash" data-i18n="modal.export.divider.hash">Dièse ( ### )</option>
+                    <option value="line" data-i18n="modal.export.divider.line">Ligne horizontale (---)</option>
+                    <option value="space" data-i18n="modal.export.divider.space">Espace vide</option>
+                    <option value="none" data-i18n="modal.export.divider.none">Aucun séparateur</option>
                 </select>
             </div>
             <!-- Project Export (ZIP with all data) -->
@@ -1950,35 +1950,37 @@
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem">
                     <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.95rem">
                         <input type="checkbox" id="includeCharactersCheck" style="cursor: pointer" />
-                        <span>Personnages</span>
+                        <span data-i18n="nav.characters">Personnages</span>
                     </label>
                     <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.95rem">
                         <input type="checkbox" id="includeWorldCheck" style="cursor: pointer" />
-                        <span>Univers</span>
+                        <span data-i18n="nav.world">Univers</span>
                     </label>
                     <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.95rem">
                         <input type="checkbox" id="includeTimelineCheck" style="cursor: pointer" />
-                        <span>Timeline</span>
+                        <span data-i18n="nav.timeline">Timeline</span>
                     </label>
                     <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.95rem">
                         <input type="checkbox" id="includeRelationsCheck" style="cursor: pointer" />
-                        <span>Relations</span>
+                        <span data-i18n="nav.relations">Relations</span>
                     </label>
                     <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.95rem">
                         <input type="checkbox" id="includeCodexCheck" style="cursor: pointer" />
-                        <span>Codex</span>
+                        <span data-i18n="nav.codex">Codex</span>
                     </label>
                     <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.95rem">
                         <input type="checkbox" id="includeNotesCheck" style="cursor: pointer" />
-                        <span>Notes</span>
+                        <span data-i18n="nav.notes">Notes</span>
                     </label>
                 </div>
                 <div style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px dashed var(--border-color)">
                     <button onclick="toggleAllExportOptions(true)" class="btn btn-small"
-                        style="margin-right: 0.5rem; font-size: 0.8rem; padding: 0.3rem 0.6rem">Tout
+                        style="margin-right: 0.5rem; font-size: 0.8rem; padding: 0.3rem 0.6rem"
+                        data-i18n="modal.export.btn_select_all">Tout
                         sélectionner</button>
                     <button onclick="toggleAllExportOptions(false)" class="btn btn-small"
-                        style="font-size: 0.8rem; padding: 0.3rem 0.6rem">Tout désélectionner</button>
+                        style="font-size: 0.8rem; padding: 0.3rem 0.6rem" data-i18n="modal.export.btn_deselect_all">Tout
+                        désélectionner</button>
                 </div>
             </div>
             <!-- Export Button -->
@@ -1988,7 +1990,7 @@
                     data-i18n="btn.create">Exporter</button>
             </div>
             <div class="modal-actions" style="margin-top: 1rem">
-                <button class="btn" onclick="closeModal('exportNovelModal')">Annuler</button>
+                <button class="btn" onclick="closeModal('exportNovelModal')" data-i18n="btn.cancel">Annuler</button>
             </div>
         </div>
     </div>
@@ -2168,7 +2170,7 @@
                 </label>
             </div>
             <div class="modal-actions">
-                <button class="btn" onclick="closeModal('bulkImportModal')">Annuler</button>
+                <button class="btn" onclick="closeModal('bulkImportModal')" data-i18n="btn.cancel">Annuler</button>
                 <button class="btn btn-primary" onclick="processBulkImport()"><i data-lucide="download"></i>
                     Importer
                     les mots</button>
@@ -2182,7 +2184,7 @@
             </div>
             <div id="referencesModalContent"></div>
             <div class="modal-actions">
-                <button class="btn" onclick="closeModal('referencesModal')">Fermer</button>
+                <button class="btn" onclick="closeModal('referencesModal')" data-i18n="btn.close">Fermer</button>
             </div>
         </div>
     </div>

@@ -12,8 +12,8 @@ const ProductTourData = {
             {
                 "element": ".app-logo-icon",
                 "popover": {
-                    "title": "🪶 Bienvenue dans Plume",
-                    "description": "<p>Plume est votre espace d'écriture complet pour créer des histoires captivantes.</p><p>Cette visite guidée vous présentera les fonctionnalités principales en quelques minutes.</p><p><strong>Vous pouvez quitter à tout moment en appuyant sur Échap.</strong></p>",
+                    "title": "tour.projects.welcome.title",
+                    "description": "tour.projects.welcome.description",
                     "side": "bottom",
                     "align": "start"
                 },
@@ -26,8 +26,8 @@ const ProductTourData = {
             {
                 "element": "#sidebarAccordion",
                 "popover": {
-                    "title": "📝 Outils d'Écriture",
-                    "description": "<p>Organisez et visualisez votre histoire de différentes manières :</p><ul><li><span style=\"color: rgb(255, 152, 0); font-weight: 700;\">Groupe histoire</span></li><li><span style=\"color: rgb(255, 152, 0); font-weight: 700;\">Groupe construction de monde</span></li><li><span style=\"color: rgb(255, 152, 0); font-weight: 700;\">Groupe Visualisation</span></li><li><span style=\"color: rgb(255, 152, 0); font-weight: 700;\">Groupe Stats/analyse</span></li><li><span style=\"color: rgb(255, 152, 0); font-weight: 700;\">Groupe Sauvegarde</span></li></ul>",
+                    "title": "tour.projects.sidebar.title",
+                    "description": "tour.projects.sidebar.description",
                     "side": "bottom",
                     "align": "start"
                 },
@@ -40,8 +40,8 @@ const ProductTourData = {
             {
                 "element": "#header-tab-projects",
                 "popover": {
-                    "title": "Projets",
-                    "description": "C'est l'écran d'accueil de Plume ! </br> Vous voyez ici vos projets, vous pouvez changer de projet, les sauvegarder, les supprimer.",
+                    "title": "tour.projects.tab_projects.title",
+                    "description": "tour.projects.tab_projects.description",
                     "side": "bottom",
                     "align": "start"
                 },
@@ -54,8 +54,8 @@ const ProductTourData = {
             {
                 "element": "#header-tab-editor",
                 "popover": {
-                    "title": "Structure",
-                    "description": "C'est le cœur de Plume, c'est ici que vous écrivez vos histoire !",
+                    "title": "tour.projects.tab_editor.title",
+                    "description": "tour.projects.tab_editor.description",
                     "side": "bottom",
                     "align": "start"
                 },
@@ -69,8 +69,8 @@ const ProductTourData = {
             {
                 "element": "#header-tab-corkboard",
                 "popover": {
-                    "title": "Tableau",
-                    "description": "Visualiser rapidement la structure de votre récit",
+                    "title": "tour.projects.tab_corkboard.title",
+                    "description": "tour.projects.tab_corkboard.description",
                     "side": "bottom",
                     "align": "start"
                 },
@@ -84,8 +84,8 @@ const ProductTourData = {
             {
                 "element": "#header-tab-plot",
                 "popover": {
-                    "title": "Intrigue",
-                    "description": "Analyser la tension narrative de votre récit",
+                    "title": "tour.projects.tab_plot.title",
+                    "description": "tour.projects.tab_plot.description",
                     "side": "bottom",
                     "align": "start"
                 },
@@ -99,8 +99,8 @@ const ProductTourData = {
             {
                 "element": "#header-tab-plotgrid",
                 "popover": {
-                    "title": "Grille narrative",
-                    "description": "Planifier vote récit avec la grille narrative",
+                    "title": "tour.projects.tab_plotgrid.title",
+                    "description": "tour.projects.tab_plotgrid.description",
                     "side": "bottom",
                     "align": "start"
                 },
@@ -114,8 +114,8 @@ const ProductTourData = {
             {
                 "element": "#header-tab-arcs",
                 "popover": {
-                    "title": "Arcs narratifs",
-                    "description": "Créer vos arcs narratifs",
+                    "title": "tour.projects.tab_arcs.title",
+                    "description": "tour.projects.tab_arcs.description",
                     "side": "bottom",
                     "align": "start"
                 },
@@ -129,8 +129,8 @@ const ProductTourData = {
             {
                 "element": "#header-tab-investigation",
                 "popover": {
-                    "title": "Enquête",
-                    "description": "Des outils si vous écrivez un polar ou un thriller.&nbsp;<div>Suivre des indices, des fausses pistes, qui sait quoi, etc...</div>",
+                    "title": "tour.projects.tab_investigation.title",
+                    "description": "tour.projects.tab_investigation.description",
                     "side": "bottom",
                     "align": "start"
                 },
@@ -144,8 +144,8 @@ const ProductTourData = {
             {
                 "element": "#header-tab-globalnotes",
                 "popover": {
-                    "title": "Global Notes",
-                    "description": "Un outil complet pour organiser vos idées en tableaux",
+                    "title": "tour.projects.tab_globalnotes.title",
+                    "description": "tour.projects.tab_globalnotes.description",
                     "side": "bottom",
                     "align": "start"
                 },
@@ -159,8 +159,8 @@ const ProductTourData = {
             {
                 "element": "#header-tab-characters",
                 "popover": {
-                    "title": "Personnages",
-                    "description": "Créer vos fiches personnages",
+                    "title": "tour.projects.tab_characters.title",
+                    "description": "tour.projects.tab_characters.description",
                     "side": "bottom",
                     "align": "start"
                 },
@@ -174,8 +174,8 @@ const ProductTourData = {
             {
                 "element": "#header-tab-world",
                 "popover": {
-                    "title": "Univers",
-                    "description": "Créer les lieux qui composent voter univers",
+                    "title": "tour.projects.tab_world.title",
+                    "description": "tour.projects.tab_world.description",
                     "side": "bottom",
                     "align": "start"
                 },
@@ -189,8 +189,8 @@ const ProductTourData = {
             {
                 "element": "#header-tab-codex",
                 "popover": {
-                    "title": "Codex",
-                    "description": "Consigner le lore de votre univers !",
+                    "title": "tour.projects.tab_codex.title",
+                    "description": "tour.projects.tab_codex.description",
                     "side": "bottom",
                     "align": "start"
                 },
@@ -204,8 +204,8 @@ const ProductTourData = {
             {
                 "element": "#header-tab-notes",
                 "popover": {
-                    "title": "Notes",
-                    "description": "Une autre manière de consigner vos notes",
+                    "title": "tour.projects.tab_notes.title",
+                    "description": "tour.projects.tab_notes.description",
                     "side": "bottom",
                     "align": "start"
                 },
@@ -219,8 +219,8 @@ const ProductTourData = {
             {
                 "element": "#header-tab-mindmap",
                 "popover": {
-                    "title": "Cartes mentales",
-                    "description": "Créer vos cartes mentales.",
+                    "title": "tour.projects.tab_mindmap.title",
+                    "description": "tour.projects.tab_mindmap.description",
                     "side": "bottom",
                     "align": "start"
                 },
@@ -234,8 +234,8 @@ const ProductTourData = {
             {
                 "element": "#header-tab-relations",
                 "popover": {
-                    "title": "Relations",
-                    "description": "Gérer les relations de vos personnages",
+                    "title": "tour.projects.tab_relations.title",
+                    "description": "tour.projects.tab_relations.description",
                     "side": "bottom",
                     "align": "start"
                 },
@@ -249,8 +249,8 @@ const ProductTourData = {
             {
                 "element": "#header-tab-map",
                 "popover": {
-                    "title": "Carte",
-                    "description": "Visualiser votre univers",
+                    "title": "tour.projects.tab_map.title",
+                    "description": "tour.projects.tab_map.description",
                     "side": "bottom",
                     "align": "start"
                 },
@@ -264,8 +264,8 @@ const ProductTourData = {
             {
                 "element": "#header-tab-timeline-viz",
                 "popover": {
-                    "title": "Timeline metro",
-                    "description": "Visualiser les recoupements de vos personnages",
+                    "title": "tour.projects.tab_timeline_viz.title",
+                    "description": "tour.projects.tab_timeline_viz.description",
                     "side": "bottom",
                     "align": "start"
                 },
@@ -279,8 +279,8 @@ const ProductTourData = {
             {
                 "element": "#header-tab-stats",
                 "popover": {
-                    "title": "Statistiques",
-                    "description": "Consulter les statistiques de vos mots",
+                    "title": "tour.projects.tab_stats.title",
+                    "description": "tour.projects.tab_stats.description",
                     "side": "bottom",
                     "align": "start"
                 },
@@ -294,8 +294,8 @@ const ProductTourData = {
             {
                 "element": "#header-tab-analysis",
                 "popover": {
-                    "title": "Analyse",
-                    "description": "Analyse le texte déjà écrit",
+                    "title": "tour.projects.tab_analysis.title",
+                    "description": "tour.projects.tab_analysis.description",
                     "side": "bottom",
                     "align": "start"
                 },
@@ -309,8 +309,8 @@ const ProductTourData = {
             {
                 "element": "#header-tab-versions",
                 "popover": {
-                    "title": "Snapshots",
-                    "description": "Faites un instantané sauvegardé de votre projet à l'instant T",
+                    "title": "tour.projects.tab_versions.title",
+                    "description": "tour.projects.tab_versions.description",
                     "side": "bottom",
                     "align": "start"
                 },
@@ -323,8 +323,8 @@ const ProductTourData = {
             {
                 "element": "#splitModeToggle",
                 "popover": {
-                    "title": "Split",
-                    "description": "Afficher 2 vues côte à côte",
+                    "title": "tour.projects.split.title",
+                    "description": "tour.projects.split.description",
                     "side": "bottom",
                     "align": "start"
                 },
@@ -339,8 +339,8 @@ const ProductTourData = {
             {
                 "element": "#storage-badge",
                 "popover": {
-                    "title": "Etat du stockage",
-                    "description": "Donne une idée de la taille de votre projet.",
+                    "title": "tour.projects.storage.title",
+                    "description": "tour.projects.storage.description",
                     "side": "bottom",
                     "align": "start"
                 },
@@ -353,8 +353,8 @@ const ProductTourData = {
             {
                 "element": "#headerUndoBtn",
                 "popover": {
-                    "title": "Défaire",
-                    "description": "Undo",
+                    "title": "tour.projects.undo.title",
+                    "description": "tour.projects.undo.description",
                     "side": "bottom",
                     "align": "start"
                 },
@@ -367,8 +367,8 @@ const ProductTourData = {
             {
                 "element": "#headerRedoBtn",
                 "popover": {
-                    "title": "Refaire",
-                    "description": "Redo",
+                    "title": "tour.projects.redo.title",
+                    "description": "tour.projects.redo.description",
                     "side": "bottom",
                     "align": "start"
                 },
@@ -381,8 +381,8 @@ const ProductTourData = {
             {
                 "element": "#pomodoroHeaderBtn",
                 "popover": {
-                    "title": "Timer pomodoro",
-                    "description": "Un timer pour gérer vos sessions et faire des pauses !",
+                    "title": "tour.projects.pomodoro.title",
+                    "description": "tour.projects.pomodoro.description",
                     "side": "bottom",
                     "align": "start"
                 },
@@ -395,8 +395,8 @@ const ProductTourData = {
             {
                 "element": "#headerShortcutsBtn",
                 "popover": {
-                    "title": "Raccourcis claviers",
-                    "description": "Tout est dit !",
+                    "title": "tour.projects.shortcuts.title",
+                    "description": "tour.projects.shortcuts.description",
                     "side": "bottom",
                     "align": "start"
                 },
@@ -409,8 +409,8 @@ const ProductTourData = {
             {
                 "element": "#headerThemesBtn",
                 "popover": {
-                    "title": "Gestionnaire de thèmes",
-                    "description": "Personnaliser les couleurs de votre application",
+                    "title": "tour.projects.themes.title",
+                    "description": "tour.projects.themes.description",
                     "side": "bottom",
                     "align": "start"
                 },
@@ -423,8 +423,8 @@ const ProductTourData = {
             {
                 "element": "div#docDropdown > button",
                 "popover": {
-                    "title": "Documentation",
-                    "description": "La doc de Plume !",
+                    "title": "tour.projects.doc.title",
+                    "description": "tour.projects.doc.description",
                     "side": "bottom",
                     "align": "start"
                 },
@@ -437,8 +437,8 @@ const ProductTourData = {
             {
                 "element": "div#langDropdown > button",
                 "popover": {
-                    "title": "Sélecteur de langue",
-                    "description": "Choisir la langue de l'application",
+                    "title": "tour.projects.lang.title",
+                    "description": "tour.projects.lang.description",
                     "side": "bottom",
                     "align": "start"
                 },
@@ -451,8 +451,8 @@ const ProductTourData = {
             {
                 "element": "#tourTriggerBtn",
                 "popover": {
-                    "title": "L'aide visuelle",
-                    "description": "Ce que vous êtes en train de regarder ! ;)",
+                    "title": "tour.projects.tour.title",
+                    "description": "tour.projects.tour.description",
                     "side": "bottom",
                     "align": "start"
                 },
@@ -467,8 +467,8 @@ const ProductTourData = {
             {
                 "element": ".sidebar",
                 "popover": {
-                    "title": "📚 Hiérarchie du Récit",
-                    "description": "<p>C'est ici que vous organisez votre manuscrit. Vous pouvez voir la structure complète de votre livre en un coup d'œil.</p>",
+                    "title": "tour.editor.sidebar.title",
+                    "description": "tour.editor.sidebar.description",
                     "side": "right",
                     "align": "start"
                 }
@@ -476,8 +476,8 @@ const ProductTourData = {
             {
                 "element": ".sidebar-header-actions",
                 "popover": {
-                    "title": "➕ Organisez votre Histoire",
-                    "description": "<p>Utilisez ces boutons pour ajouter de nouveaux <strong>Actes</strong> et <strong>Chapitres</strong> à votre projet.</p>",
+                    "title": "tour.editor.sidebar_header.title",
+                    "description": "tour.editor.sidebar_header.description",
                     "side": "bottom",
                     "align": "start"
                 }
@@ -485,8 +485,8 @@ const ProductTourData = {
             {
                 "element": ".tree-toolbar",
                 "popover": {
-                    "title": "🛠️ Outils de Structure",
-                    "description": "<p>Réduisez tout pour une vue d'ensemble ou utilisez les filtres pour retrouver rapidement vos scènes par statut (premier jet, révision, terminé).</p>",
+                    "title": "tour.editor.tree_toolbar.title",
+                    "description": "tour.editor.tree_toolbar.description",
                     "side": "bottom",
                     "align": "start"
                 }
@@ -494,8 +494,8 @@ const ProductTourData = {
             {
                 "element": ".editor-header",
                 "popover": {
-                    "title": "📍 Navigation & Titre",
-                    "description": "<p>Le fil d'Ariane vous indique où vous êtes. Cliquez sur le titre pour renommer la scène actuelle.</p>",
+                    "title": "tour.editor.header.title",
+                    "description": "tour.editor.header.description",
                     "side": "bottom",
                     "align": "start"
                 }
@@ -503,8 +503,8 @@ const ProductTourData = {
             {
                 "element": ".editor-synopsis",
                 "popover": {
-                    "title": "📝 Résumé de Scène",
-                    "description": "<p>Saisissez ici l'idée principale de votre scène. Ce résumé apparaîtra également dans le Tableau (Corkboard) et la Grille d'Intrigue.</p>",
+                    "title": "tour.editor.synopsis.title",
+                    "description": "tour.editor.synopsis.description",
                     "side": "bottom",
                     "align": "start"
                 }
@@ -512,8 +512,8 @@ const ProductTourData = {
             {
                 "element": "#editorToolbar",
                 "popover": {
-                    "title": "✍️ Mise en Forme",
-                    "description": "<p>Tous vos outils d'écriture classiques : gras, italique, listes, et bien plus. Survolez-les pour découvrir les raccourcis clavier.</p>",
+                    "title": "tour.editor.toolbar.title",
+                    "description": "tour.editor.toolbar.description",
                     "side": "top",
                     "align": "center"
                 }
@@ -521,8 +521,8 @@ const ProductTourData = {
             {
                 "element": ".editor-textarea",
                 "popover": {
-                    "title": "📖 Votre Espace d'Écriture",
-                    "description": "<p>Écrivez sans distraction. Tout est sauvegardé automatiquement en temps réel.</p>",
+                    "title": "tour.editor.textarea.title",
+                    "description": "tour.editor.textarea.description",
                     "side": "top",
                     "align": "center"
                 }
@@ -530,8 +530,8 @@ const ProductTourData = {
             {
                 "element": "#toolsSidebar",
                 "popover": {
-                    "title": "🔍 Outils d'Accompagnement",
-                    "description": "<p>Accédez aux versions de scène, gérez vos annotations, ou suivez les arcs narratifs sans quitter votre texte.</p>",
+                    "title": "tour.editor.tools_sidebar.title",
+                    "description": "tour.editor.tools_sidebar.description",
                     "side": "left",
                     "align": "start"
                 }
@@ -539,8 +539,8 @@ const ProductTourData = {
             {
                 "element": "#toolVersionsBtn",
                 "popover": {
-                    "title": "Gestion des versions",
-                    "description": "Créer différentes version d'un même texte, des variations, sans perdre ce que vous avez déjà écrit.",
+                    "title": "tour.editor.tool_versions.title",
+                    "description": "tour.editor.tool_versions.description",
                     "side": "bottom",
                     "align": "start"
                 },
@@ -554,8 +554,8 @@ const ProductTourData = {
             {
                 "element": "#btnNewVersion",
                 "popover": {
-                    "title": "Créer un version",
-                    "description": "Ajoute une capture de votre texte actuel en mémoire, vous pouvez maintenant modifier, faire des tests et si ça na vous plait pas, vous pouvez revenir à la version que vous souhaitez !</br> Etoile : mettez une étoile pour valider cette version dans l'export final.</br> Diff : Utiliser le \"DIFF\" pour comparer les versions de vos textes </br>Stylo : éditer le nom de votre version</br> Corbeille : supprimer cette version",
+                    "title": "tour.editor.new_version.title",
+                    "description": "tour.editor.new_version.description",
                     "side": "bottom",
                     "align": "start"
                 },
@@ -569,8 +569,8 @@ const ProductTourData = {
             {
                 "element": "#toolAnnotationsBtn",
                 "popover": {
-                    "title": "Annotations",
-                    "description": "Suivez dans cette barre latérale toutes les annotations que vous faites en mode révision",
+                    "title": "tour.editor.annotations.title",
+                    "description": "tour.editor.annotations.description",
                     "side": "bottom",
                     "align": "start"
                 },
@@ -585,8 +585,8 @@ const ProductTourData = {
             {
                 "element": "#toolTodosBtn",
                 "popover": {
-                    "title": "Todo",
-                    "description": "Suivez dans cette barre latérale toutes les TODO que vous faites en mode révision",
+                    "title": "tour.editor.todos.title",
+                    "description": "tour.editor.todos.description",
                     "side": "bottom",
                     "align": "start"
                 },
@@ -601,8 +601,8 @@ const ProductTourData = {
             {
                 "element": "#toolArcsBtn",
                 "popover": {
-                    "title": "Gestions des arcs narratifs",
-                    "description": "Dans cette barre, vous pouvez relier la scène en cours à une étape de vos arcs narratifs en indiquant le statut:</br> Introduction </br> Développement </br> Point culminant </br> Résolution. </br> Quelle est la colonne de votre arc avec laquelle cette scène est liée et mettre des notes.",
+                    "title": "tour.editor.arcs.title",
+                    "description": "tour.editor.arcs.description",
                     "side": "bottom",
                     "align": "start"
                 },
@@ -617,8 +617,8 @@ const ProductTourData = {
             {
                 "element": "#headerProjectTitle",
                 "popover": {
-                    "title": "🎉 Visite Terminée !",
-                    "description": "<p>Vous connaissez maintenant les bases de Plume !</p><p>Explorez les autres sections pour découvrir encore plus de fonctionnalités :</p><ul><li>Personnages et Univers</li><li>Visualisations et graphiques</li><li>Outils d'analyse et statistiques</li></ul><p><strong>Bon courage pour votre écriture ! ✍️</strong></p>",
+                    "title": "tour.editor.finish.title",
+                    "description": "tour.editor.finish.description",
                     "side": "bottom",
                     "align": "start"
                 }

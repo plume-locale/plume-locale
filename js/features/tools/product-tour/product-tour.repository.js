@@ -422,7 +422,23 @@ const ProductTourStepsRepository = {
      */
     loadStaticTour: function (view) {
         if (typeof ProductTourData !== 'undefined' && ProductTourData.tours && ProductTourData.tours[view]) {
-            return ProductTourData.tours[view];
+            const steps = ProductTourData.tours[view];
+
+            // On clone les steps pour ne pas modifier l'original statique
+            // et on traduit les titres/descriptions
+            return steps.map(step => {
+                const translatedStep = { ...step };
+                if (translatedStep.popover) {
+                    translatedStep.popover = { ...translatedStep.popover };
+                    if (translatedStep.popover.title) {
+                        translatedStep.popover.title = Localization.t(translatedStep.popover.title);
+                    }
+                    if (translatedStep.popover.description) {
+                        translatedStep.popover.description = Localization.t(translatedStep.popover.description);
+                    }
+                }
+                return translatedStep;
+            });
         }
         return null;
     },
