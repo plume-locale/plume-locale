@@ -5,6 +5,7 @@
 CSS_ORDER = [
     # Vendor CSS (bundled)
     '../vendor/driver.css',
+    '../vendor/fonts.offline.css',
     'variables.css',
     'base.css',
     'header.css',
@@ -45,9 +46,14 @@ MODULE_CSS_FILES = [
 # Ordre des fichiers JS
 JS_ORDER = [
     # Vendor libraries (bundled)
+    'vendor/idb.js',
+    'vendor/FileSaver.min.js',
+    'vendor/jszip.min.js',
+    'vendor/xlsx.full.min.js',
+    'vendor/mammoth.browser.min.js',
+    'vendor/lucide.min.js',
     'vendor/driver.js.iife.js',
     'vendor/docx.js',
-    'vendor/idb.js',
     'js/core/01.app.refactor.js',
     # Localization Module
     'js/core/localization/locales/fr.js',
