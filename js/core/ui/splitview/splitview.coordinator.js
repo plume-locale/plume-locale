@@ -245,6 +245,12 @@ function renderViewInSplitPanel(view, container, state, panel) {
             }
             break;
 
+        case 'plotgrid':
+            if (typeof renderPlotGridView === 'function') {
+                renderPlotGridView();
+            }
+            break;
+
         case 'relations':
             if (typeof renderRelationsView === 'function') {
                 renderRelationsView();
