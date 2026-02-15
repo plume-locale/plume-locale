@@ -711,8 +711,12 @@ function renderViewContent(view, containerId) {
         case 'map': if (typeof renderMapView === 'function') renderMapView(); break;
         case 'timelineviz': if (typeof renderTimelineVizView === 'function') renderTimelineVizView(); break;
         case 'arcs':
-            if (typeof renderArcsList === 'function') renderArcsList();
-            if (typeof renderArcsWelcome === 'function') renderArcsWelcome();
+            if (typeof ArcBoardViewModel !== 'undefined' && typeof ArcBoardViewModel.render === 'function') {
+                ArcBoardViewModel.render();
+            } else {
+                if (typeof renderArcsList === 'function') renderArcsList();
+                if (typeof renderArcsWelcome === 'function') renderArcsWelcome();
+            }
             break;
         case 'timeline': if (typeof renderTimelineList === 'function') renderTimelineList(); break;
         case 'storygrid': if (typeof renderStoryGrid === 'function') renderStoryGrid(); break;

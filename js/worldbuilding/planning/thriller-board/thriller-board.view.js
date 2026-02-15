@@ -12,22 +12,31 @@ console.log('📋 Thriller Board View loaded');
 /**
  * Point d'entrée principal pour le rendu du Thriller Board.
  */
-function renderThrillerBoard() {
+function renderThrillerBoard(targetContainer = null) {
     console.log('=== RENDER THRILLER BOARD ===');
 
-    // When tabs are active, delegate to tab system
-    if (typeof tabsState !== 'undefined' && tabsState.panes.left.tabs.length > 0 && typeof renderTabs === 'function') {
-        if (!document.getElementById('editorView-backup')) {
+    const container = targetContainer || document.getElementById('editorView');
+    if (!container) {
+        console.log('Editor view container not found!');
+        return;
+    }
+
+    // 🔥 Protection contre l'écrasement du système d'onglets (Tabs)
+    const isTabsSystem = typeof tabsState !== 'undefined' && tabsState.enabled;
+    const isMainEditorView = container.id === 'editorView';
+    const isSplitRendering = document.getElementById('editorView-backup') !== null;
+
+    if (isTabsSystem && isMainEditorView && !isSplitRendering) {
+        if (typeof currentView !== 'undefined' && currentView !== 'thriller') {
+            if (typeof switchView === 'function') {
+                switchView('thriller');
+                return;
+            }
+        } else if (typeof renderTabs === 'function') {
             renderThrillerList();
             renderTabs();
             return;
         }
-    }
-
-    const container = document.getElementById('editorView');
-    if (!container) {
-        console.log('Editor view container not found!');
-        return;
     }
 
     initThrillerBoardVM();
@@ -35,9 +44,9 @@ function renderThrillerBoard() {
 
     const viewMode = ThrillerStateRepository.getViewMode();
     if (viewMode === 'grid') {
-        renderThrillerGridView();
+        renderThrillerGridView(container);
     } else {
-        renderThrillerCanvasView();
+        renderThrillerCanvasView(container);
     }
 
     setTimeout(() => {
@@ -52,8 +61,8 @@ function renderThrillerBoard() {
 /**
  * Affiche la vue Canvas.
  */
-function renderThrillerCanvasView() {
-    const container = document.getElementById('editorView');
+function renderThrillerCanvasView(targetContainer = null) {
+    const container = targetContainer || document.getElementById('editorView');
     if (!container) return;
 
     container.innerHTML = `
@@ -171,8 +180,8 @@ function renderThrillerElements() {
 /**
  * Affiche la vue Grille (Swimlanes).
  */
-function renderThrillerGridView() {
-    const container = document.getElementById('editorView');
+function renderThrillerGridView(targetContainer = null) {
+    const container = targetContainer || document.getElementById('editorView');
     if (!container) return;
 
     const gridData = getGridDataVM();
