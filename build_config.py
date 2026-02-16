@@ -324,6 +324,7 @@ JS_ORDER = [
     'js/worldbuilding/planning/arc-board/arc-board.models.js',
     'js/worldbuilding/planning/arc-board/arc-board.repository.js',
     'js/worldbuilding/planning/arc-board/arc-board.viewmodel.js',
+    'js/worldbuilding/planning/arc-board/arc-board.import-export.js',
     'js/worldbuilding/planning/arc-board/arc-board.services.js',
     'js/worldbuilding/planning/arc-board/arc-board.views.js',
     'js/worldbuilding/planning/arc-board/arc-board.handlers.js',
