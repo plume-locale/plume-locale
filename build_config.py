@@ -35,6 +35,7 @@ CSS_ORDER = [
     'product-tour-editor.css',
     'project-landing.css',
     'structure-blocks.css',
+    'narrative-overview.css',
 ]
 
 # CSS des modules additionnels
@@ -393,6 +394,13 @@ JS_ORDER = [
     'js/features/personal/globalnotes/globalnotes.handlers.js',
     'js/features/personal/globalnotes/globalnotes.main.js',
     'js/features/editor/structure-blocks/structure-blocks.view.js',
+    # Narrative Overview Module
+    'js/features/editor/narrative-overview/narrative-overview.model.js',
+    'js/features/editor/narrative-overview/narrative-overview.repository.js',
+    'js/features/editor/narrative-overview/narrative-overview.viewmodel.js',
+    'js/features/editor/narrative-overview/narrative-overview.view.js',
+    'js/features/editor/narrative-overview/narrative-overview.handlers.js',
+    'js/features/editor/narrative-overview/narrative-overview.main.js',
 ]
 
 # Files to ignore (already refactored or retired)

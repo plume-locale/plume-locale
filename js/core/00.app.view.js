@@ -1504,7 +1504,14 @@ function getEditorToolbarHTML(panel = null, hideExtraTools = false) {
                 <i data-lucide="layers" style="width:14px;height:14px;"></i>
             </button>
         </div>
-        
+
+        <!-- Narrative Overview Toggle -->
+        <div class="toolbar-group">
+            <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="NarrativeOverviewMain.toggleVisibility()" title="Aperçu narratif chronologique">
+                <i data-lucide="book-open" style="width:14px;height:14px;"></i>
+            </button>
+        </div>
+
         ${!hideExtraTools ? `
         <!-- Revision mode button -->
         <div class="toolbar-group">
