@@ -229,6 +229,22 @@ window.LOCALE_DE = {
     "toolbar.remove_format": "Formatierung entfernen",
     "toolbar.revision_mode": "Revisionsmodus (Strg+R)",
     "toolbar.revision": "REVISION",
+    "toolbar.page_format": "Seitenformat",
+    "toolbar.page_format.none": "Freie Breite (Standard)",
+    "toolbar.page_format.a4": "A4 / Manuskript (21 cm)",
+    "toolbar.page_format.moyen": "Handelsformat (18 cm)",
+    "toolbar.page_format.a5": "Roman / A5 (16 cm)",
+    "toolbar.page_format.digest": "Digest (14,5 cm)",
+    "toolbar.page_format.pocket": "Taschenbuch (13 cm)",
+
+
+    // --- Page Preview ---
+    "preview.title": "Seitenvorschau",
+    "preview.format": "Format",
+    "preview.pages_per_row": "Seiten pro Reihe",
+    "preview.zoom_in": "Vergrößern",
+    "preview.zoom_out": "Verkleinern",
+    "preview.print": "Drucken",
 
     // --- Editor View ---
     "editor.focus_mode": "Fokus",
@@ -239,6 +255,17 @@ window.LOCALE_DE = {
     "editor.synopsis_placeholder": "Szenenzusammenfassung hinzufügen...",
     "editor.show_tools": "Werkzeuge anzeigen",
     "editor.final_version_title": "Endversion: {0}",
+    "editor.structure_block.no_selection": "Bitte wählen Sie Text aus, um einen Strukturblock zu erstellen.",
+    "modal.structure_block.title": "Strukturblock erstellen",
+    "modal.structure_block.title_edit": "Strukturblock bearbeiten",
+    "modal.structure_block.label_label": "Label (z.B. SZENEN-BEAT)",
+    "modal.structure_block.label_color": "Blockfarbe",
+    "modal.structure_block.btn_create": "Block anwenden",
+    "modal.structure_block.confirm_unwrap": "Block entfernen? (Text bleibt erhalten)",
+    "modal.structure_block.confirm_delete": "Block UND Inhalt löschen?",
+    "toolbar.structure_block.unwrap": "Text aus Block lösen",
+    "toolbar.structure_block.delete": "Block und Inhalt löschen",
+    "toolbar.structure_block": "Strukturblock erstellen (Label & Rahmen)",
 
     // --- Scene Navigation ---
     "sceneNav.prevBtnTitle": "Zur vorherigen Szene (Text vor Cursor)",

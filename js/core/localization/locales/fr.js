@@ -270,6 +270,7 @@ window.LOCALE_FR = {
     "toolbar.page_format.a5": "Roman / A5 (16 cm)",
     "toolbar.page_format.digest": "Digest (14.5 cm)",
     "toolbar.page_format.pocket": "Poche (13 cm)",
+    "toolbar.structure_map": "Activer la carte de structure (Vue rayons X)",
 
     // --- Page Preview ---
     "preview.format": "Format",
@@ -283,6 +284,18 @@ window.LOCALE_FR = {
     "editor.synopsis_placeholder": "Ajouter un résumé de la scène...",
     "editor.show_tools": "Afficher les outils",
     "editor.final_version_title": "Version finale : {0}",
+    "editor.structure_block.no_selection": "Veuillez sélectionner du texte pour créer un bloc structurel.",
+    "modal.structure_block.title": "Créer un bloc structurel",
+    "modal.structure_block.title_edit": "Modifier le bloc structurel",
+    "modal.structure_block.label_label": "Libellé (ex: SCENE BEAT)",
+    "modal.structure_block.label_color": "Couleur du bloc",
+    "modal.structure_block.btn_create": "Appliquer le bloc",
+    "modal.structure_block.confirm_unwrap": "Retirer le bloc ? (Le texte sera conservé)",
+    "modal.structure_block.confirm_delete": "Supprimer le bloc ET son contenu ?",
+    "modal.structure_block.no_layer": "PAS DE LAYER",
+    "toolbar.structure_block.unwrap": "Détacher le texte du bloc",
+    "toolbar.structure_block.delete": "Supprimer le bloc et le texte",
+    "toolbar.structure_block": "Créer un bloc structurel (Label & Bordure)",
 
     // --- Scene Navigation ---
     "sceneNav.prevBtnTitle": "Déplacer vers la scène précédente (tout le texte avant le curseur)",

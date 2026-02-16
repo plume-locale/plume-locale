@@ -34,6 +34,7 @@ CSS_ORDER = [
     'globalnotes.css',
     'product-tour-editor.css',
     'project-landing.css',
+    'structure-blocks.css',
 ]
 
 # CSS des modules additionnels
@@ -391,6 +392,7 @@ JS_ORDER = [
     'js/features/personal/globalnotes/globalnotes.item.view.js',
     'js/features/personal/globalnotes/globalnotes.handlers.js',
     'js/features/personal/globalnotes/globalnotes.main.js',
+    'js/features/editor/structure-blocks/structure-blocks.view.js',
 ]
 
 # Files to ignore (already refactored or retired)

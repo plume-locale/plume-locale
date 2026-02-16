@@ -264,6 +264,7 @@ window.LOCALE_EN = {
     "toolbar.page_format.digest": "Digest (14.5 cm)",
     "toolbar.page_format.pocket": "Pocket (13 cm)",
 
+
     // --- Page Preview ---
     "preview.title": "Page Preview",
     "preview.format": "Format",
@@ -281,6 +282,18 @@ window.LOCALE_EN = {
     "editor.synopsis_placeholder": "Add a scene synopsis...",
     "editor.show_tools": "Show Tools",
     "editor.final_version_title": "Final version: {0}",
+    "editor.structure_block.no_selection": "Please select some text to create a structural block.",
+    "modal.structure_block.title": "Create Structural Block",
+    "modal.structure_block.title_edit": "Edit Structural Block",
+    "modal.structure_block.label_label": "Label (e.g., SCENE BEAT)",
+    "modal.structure_block.label_color": "Block Color",
+    "modal.structure_block.btn_create": "Apply Block",
+    "modal.structure_block.confirm_unwrap": "Remove the block? (Text will be preserved)",
+    "modal.structure_block.confirm_delete": "Delete block AND its content?",
+
+    "toolbar.structure_block.unwrap": "Unwrap text from block",
+    "toolbar.structure_block.delete": "Delete block and content",
+    "toolbar.structure_block": "Create Structural Block (Label & Border)",
 
     // --- Scene Navigation ---
     "sceneNav.prevBtnTitle": "Move to previous scene (all text before cursor)",

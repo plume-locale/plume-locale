@@ -229,6 +229,22 @@ window.LOCALE_ES = {
     "toolbar.remove_format": "Eliminar Formato",
     "toolbar.revision_mode": "Modo Revisión (Ctrl+R)",
     "toolbar.revision": "REVISIÓN",
+    "toolbar.page_format": "Formato de página",
+    "toolbar.page_format.none": "Ancho libre (Predeterminado)",
+    "toolbar.page_format.a4": "A4 / Manuscrito (21 cm)",
+    "toolbar.page_format.moyen": "Formato comercial (18 cm)",
+    "toolbar.page_format.a5": "Novela / A5 (16 cm)",
+    "toolbar.page_format.digest": "Digest (14.5 cm)",
+    "toolbar.page_format.pocket": "Bolsillo (13 cm)",
+    "toolbar.structure_map": "Alternar mapa de estructura (Vista de rayos X)",
+
+    // --- Page Preview ---
+    "preview.title": "Vista previa de página",
+    "preview.format": "Formato",
+    "preview.pages_per_row": "Páginas por fila",
+    "preview.zoom_in": "Acercar",
+    "preview.zoom_out": "Alejar",
+    "preview.print": "Imprimir",
 
     // --- Editor View ---
     "editor.focus_mode": "Foco",
@@ -239,6 +255,17 @@ window.LOCALE_ES = {
     "editor.synopsis_placeholder": "Añadir sinopsis de escena...",
     "editor.show_tools": "Mostrar Herramientas",
     "editor.final_version_title": "Versión final: {0}",
+    "editor.structure_block.no_selection": "Por favor, seleccione algún texto para crear un bloque estructural.",
+    "modal.structure_block.title": "Crear bloque estructural",
+    "modal.structure_block.title_edit": "Editar bloque estructural",
+    "modal.structure_block.label_label": "Etiqueta (ej. TIEMPO DE ESCENA)",
+    "modal.structure_block.label_color": "Color del bloque",
+    "modal.structure_block.btn_create": "Aplicar bloque",
+    "modal.structure_block.confirm_unwrap": "¿Quitar el bloque? (El texto se conservará)",
+    "modal.structure_block.confirm_delete": "¿Eliminar el bloque Y su contenido?",
+    "toolbar.structure_block.unwrap": "Desprender texto del bloque",
+    "toolbar.structure_block.delete": "Eliminar bloque y contenido",
+    "toolbar.structure_block": "Crear bloque estructural (Etiqueta y Borde)",
 
     // --- Scene Navigation ---
     "sceneNav.prevBtnTitle": "Ir a escena anterior (texto antes del cursor)",

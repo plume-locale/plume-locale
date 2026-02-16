@@ -83,9 +83,9 @@ async function init() {
         await initProductTourVM();
     }
 
-    // Initialize Mention Help
-    if (typeof MentionHelp !== 'undefined' && MentionHelp.init) {
-        MentionHelp.init();
+    // Initialize Structure Blocks (Layers)
+    if (typeof StructureBlockUI !== 'undefined' && StructureBlockUI.init) {
+        StructureBlockUI.init();
     }
 
     // Ensure all icons are rendered

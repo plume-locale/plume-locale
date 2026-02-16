@@ -1500,6 +1500,9 @@ function getEditorToolbarHTML(panel = null, hideExtraTools = false) {
         <div class="toolbar-group">
             <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="${fnName}(${fnPrefix}'insertHorizontalRule')" title="${Localization.t('toolbar.horizontal_rule')}"><i data-lucide="minus" style="width:14px;height:14px;"></i></button>
             <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="${fnName}(${fnPrefix}'removeFormat')" title="${Localization.t('toolbar.remove_format')}"><i data-lucide="eraser" style="width:14px;height:14px;"></i></button>
+            <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="StructureBlockUI.wrapSelection()" title="${Localization.t('toolbar.structure_block')}">
+                <i data-lucide="layers" style="width:14px;height:14px;"></i>
+            </button>
         </div>
         
         ${!hideExtraTools ? `
@@ -1595,6 +1598,9 @@ function renderEditor(act, chapter, scene) {
         </div>`;
 
     if (typeof lucide !== 'undefined') lucide.createIcons();
+    if (typeof StructureBlockUI !== 'undefined' && StructureBlockUI.upgradeLegacyBlocks) {
+        StructureBlockUI.upgradeLegacyBlocks();
+    }
     if (typeof initializeColorPickers === 'function') initializeColorPickers();
 
     // Auto-resize summary textarea on load

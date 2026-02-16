@@ -2543,9 +2543,79 @@
                 Certains raccourcis peuvent varier selon votre système d'exploitation.</div>
         </div>
     </div>
+
+    <!-- Structure Block Modal -->
+    <div class="modal" id="structureBlockModal">
+        <div class="modal-content"
+            style="max-width: 480px; padding: 0; overflow: hidden; border: 2px solid var(--accent-gold);">
+            <div class="modal-header"
+                style="background: var(--bg-secondary); padding: 1.5rem 2rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                <h2
+                    style="margin: 0; font-family: 'Noto Serif JP', serif; font-size: 1.4rem; color: var(--text-primary); letter-spacing: 0.02em; display: flex; align-items: center; gap: 0.75rem;">
+                    <i data-lucide="layers" style="width: 22px; height: 22px; color: var(--accent-gold);"></i>
+                    <span data-i18n="modal.structure_block.title">Bloc Structurel</span>
+                </h2>
+                <button class="close-btn" onclick="StructureBlockUI.closeModal()"
+                    style="background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 5px; transition: color 0.2s;">
+                    <i data-lucide="x" style="width: 24px; height: 24px;"></i>
+                </button>
+            </div>
+
+            <div class="modal-body" style="padding: 2rem;">
+                <!-- Label Section -->
+                <div class="form-group" style="margin-bottom: 2rem;">
+                    <label
+                        style="display: block; margin-bottom: 0.75rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.1em;"
+                        data-i18n="modal.structure_block.label_label">Libellé du bloc</label>
+                    <input type="text" id="structureBlockLabel" placeholder="SCENE BEAT"
+                        style="width: 100%; padding: 0.85rem 1rem; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-primary); color: var(--text-primary); font-family: 'Source Code Pro', monospace; font-size: 1rem; margin-bottom: 1rem; transition: border-color 0.2s, box-shadow 0.2s;"
+                        onfocus="this.style.borderColor='var(--accent-gold)'; this.style.boxShadow='0 0 0 3px rgba(255, 217, 61, 0.1)';"
+                        onblur="this.style.borderColor='var(--border-color)'; this.style.boxShadow='none';">
+
+                    <div id="structureBlockLabelPresets" class="label-presets"
+                        style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <!-- Dynamically populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Color Section -->
+                <div class="form-group">
+                    <label
+                        style="display: block; margin-bottom: 0.75rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.1em;"
+                        data-i18n="modal.structure_block.label_color">Couleur thématique</label>
+                    <div
+                        style="display: flex; gap: 1.25rem; align-items: center; background: var(--bg-secondary); padding: 1rem; border-radius: 12px; border: 1px solid var(--border-color);">
+                        <div style="position: relative; width: 44px; height: 44px;">
+                            <input type="color" id="structureBlockColor" value="#ff8c42"
+                                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;">
+                            <div id="colorPreview"
+                                style="width: 100%; height: 100%; border-radius: 8px; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.15); background: #ff8c42;">
+                            </div>
+                        </div>
+
+                        <div id="structureBlockColorPresets" class="color-presets-grid"
+                            style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 0.6rem; flex: 1;">
+                            <!-- Dynamically populated by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer"
+                style="padding: 1.5rem 2rem; background: var(--bg-secondary); border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 1rem;">
+                <button class="btn btn-outline" onclick="StructureBlockUI.closeModal()" data-i18n="btn.cancel"
+                    style="padding: 0.75rem 1.5rem; font-weight: 600;">Annuler</button>
+                <button class="btn btn-primary" onclick="StructureBlockUI.confirm()"
+                    data-i18n="modal.structure_block.btn_create"
+                    style="padding: 0.75rem 2rem; font-weight: 700; background: var(--accent-gold); border-color: var(--accent-gold); color: var(--bg-accent);">Appliquer</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Hidden input for project import -->
     <input type="file" id="importProjectFile" style="display: none" onchange="ProjectViewModel.import(this.files[0])"
         accept=".json">
+
 
     <!-- ========================================
          MOBILE BOTTOM NAVIGATION BAR
