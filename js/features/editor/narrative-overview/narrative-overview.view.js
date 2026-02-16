@@ -68,7 +68,7 @@ class NarrativeOverviewView {
         if (typeof lucide !== 'undefined') {
             lucide.createIcons();
         }
-    },
+    }
 
     /**
      * Génère le HTML d'un groupe d'acte
@@ -92,7 +92,7 @@ class NarrativeOverviewView {
                 </div>
             </div>
         `;
-    },
+    }
 
     /**
      * Génère le HTML d'un passage individuel
@@ -140,7 +140,7 @@ class NarrativeOverviewView {
                 </div>
             </div>
         `;
-    },
+    }
 
     /**
      * Met à jour l'indicateur de passage actif
@@ -164,7 +164,7 @@ class NarrativeOverviewView {
                 inline: 'nearest'
             });
         }
-    },
+    }
 
     /**
      * Met à jour uniquement l'icône d'un groupe d'acte
@@ -193,7 +193,7 @@ class NarrativeOverviewView {
                 passesList.classList.add('collapsed');
             }
         }
-    },
+    }
 
     /**
      * Met à jour les statistiques dans le header
@@ -207,7 +207,7 @@ class NarrativeOverviewView {
                 `${stats.total} passage${stats.total > 1 ? 's' : ''} ` +
                 `(${stats.structureBlocks} structuré${stats.structureBlocks > 1 ? 's' : ''})`;
         }
-    },
+    }
 
     /**
      * Échappe les caractères HTML pour éviter les injections
@@ -221,7 +221,7 @@ class NarrativeOverviewView {
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
-    },
+    }
 
     /**
      * Affiche un message temporaire dans le sidebar

@@ -30,7 +30,7 @@ class NarrativeOverviewViewModel {
     loadData() {
         this.passages = this.repository.extractAllPassages();
         return this.passages;
-    },
+    }
 
     /**
      * Recharge les données (alias pour loadData)
@@ -39,7 +39,7 @@ class NarrativeOverviewViewModel {
      */
     refresh() {
         return this.loadData();
-    },
+    }
 
     /**
      * Groupe les passages par acte
@@ -62,7 +62,7 @@ class NarrativeOverviewViewModel {
 
         // Retourner sous forme de tableau, trié par actId
         return Object.values(byAct).sort((a, b) => a.actId - b.actId);
-    },
+    }
 
     /**
      * Toggle l'état d'expansion d'un acte
@@ -78,7 +78,7 @@ class NarrativeOverviewViewModel {
             this.collapsedActs.add(actId);
             return false; // Collapsed
         }
-    },
+    }
 
     /**
      * Vérifie si un acte est replié
@@ -88,7 +88,7 @@ class NarrativeOverviewViewModel {
      */
     isActCollapsed(actId) {
         return this.collapsedActs.has(actId);
-    },
+    }
 
     /**
      * Replie tous les actes
@@ -98,14 +98,14 @@ class NarrativeOverviewViewModel {
         actGroups.forEach(group => {
             this.collapsedActs.add(group.actId);
         });
-    },
+    }
 
     /**
      * Déplie tous les actes
      */
     expandAll() {
         this.collapsedActs.clear();
-    },
+    }
 
     /**
      * Définit le passage actif
@@ -114,7 +114,7 @@ class NarrativeOverviewViewModel {
      */
     setActivePassage(passageId) {
         this.activePassageId = passageId;
-    },
+    }
 
     /**
      * Récupère le passage actif
@@ -124,7 +124,7 @@ class NarrativeOverviewViewModel {
     getActivePassage() {
         if (!this.activePassageId) return null;
         return this.passages.find(p => p.id === this.activePassageId) || null;
-    },
+    }
 
     /**
      * Obtient les statistiques globales
@@ -146,7 +146,7 @@ class NarrativeOverviewViewModel {
             regular,
             totalWords
         };
-    },
+    }
 
     /**
      * Filtre les passages par type
@@ -156,7 +156,7 @@ class NarrativeOverviewViewModel {
      */
     getPassagesByType(type) {
         return this.passages.filter(p => p.type === type);
-    },
+    }
 
     /**
      * Recherche des passages par texte
@@ -187,7 +187,7 @@ class NarrativeOverviewViewModel {
 
             return false;
         });
-    },
+    }
 
     /**
      * Obtient le passage suivant dans la liste
@@ -199,7 +199,7 @@ class NarrativeOverviewViewModel {
         const index = this.passages.findIndex(p => p.id === currentPassageId);
         if (index === -1 || index === this.passages.length - 1) return null;
         return this.passages[index + 1];
-    },
+    }
 
     /**
      * Obtient le passage précédent dans la liste
@@ -211,7 +211,7 @@ class NarrativeOverviewViewModel {
         const index = this.passages.findIndex(p => p.id === currentPassageId);
         if (index <= 0) return null;
         return this.passages[index - 1];
-    },
+    }
 
     /**
      * Obtient les passages d'une scène spécifique
