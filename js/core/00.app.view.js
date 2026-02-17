@@ -280,13 +280,7 @@ function syncSidebarWithView(view) {
         'globalnotesList', 'todosList', 'thrillerList', 'frontMatterList'
     ];
 
-    // Cacher toutes les listes
-    listContainers.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.style.display = 'none';
-    });
-
-    // Afficher la liste correspondante
+    // Identifier la liste correspondante
     let targetListId = null;
     switch (view) {
         case 'editor': targetListId = 'chaptersList'; break;
@@ -311,48 +305,58 @@ function syncSidebarWithView(view) {
         case 'front_matter': targetListId = 'frontMatterList'; break;
     }
 
-    if (targetListId) {
-        const targetEl = document.getElementById(targetListId);
-        if (targetEl) targetEl.style.display = 'block';
+    const targetEl = targetListId ? document.getElementById(targetListId) : null;
+    const listWasVisible = targetEl && targetEl.style.display === 'block';
 
-        // Refresh the list content based on view
-        switch (view) {
-            case 'editor':
-                if (typeof renderActsList === 'function') renderActsList();
-                break;
-            case 'characters':
-                if (typeof renderCharactersList === 'function') renderCharactersList();
-                break;
-            case 'world':
-                if (typeof renderWorldList === 'function') renderWorldList();
-                break;
-            case 'notes':
-                if (typeof renderNotesList === 'function') renderNotesList();
-                break;
-            case 'codex':
-                if (typeof renderCodexList === 'function') renderCodexList();
-                break;
-            case 'front_matter':
-                if (window.FrontMatterView && typeof window.FrontMatterView.renderSidebar === 'function') window.FrontMatterView.renderSidebar();
-                break;
-            case 'globalnotes':
-                if (typeof renderGlobalNotesTree === 'function') {
-                    const gnList = document.getElementById('globalnotesList');
-                    if (gnList) gnList.innerHTML = renderGlobalNotesTree();
-                }
-                break;
-            case 'mindmap':
-                if (typeof renderMindmapList === 'function') renderMindmapList();
-                break;
-            case 'timelineviz':
-                if (typeof renderTimelineVizList === 'function') renderTimelineVizList();
-                break;
-            case 'arcs':
-                if (typeof renderArcsList === 'function') renderArcsList();
-                break;
+    // Cacher toutes les listes
+    listContainers.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+    });
+
+    if (targetListId && targetEl) {
+        targetEl.style.display = 'block';
+
+        // On ne rafraîchit le contenu que si la liste n'était pas déjà affichée
+        // Cela évite de casser le double-clic dans l'arborescence (re-render sauvage sur le premier clic)
+        if (!listWasVisible) {
+            switch (view) {
+                case 'editor':
+                    if (typeof renderActsList === 'function') renderActsList();
+                    break;
+                case 'characters':
+                    if (typeof renderCharactersList === 'function') renderCharactersList();
+                    break;
+                case 'world':
+                    if (typeof renderWorldList === 'function') renderWorldList();
+                    break;
+                case 'notes':
+                    if (typeof renderNotesList === 'function') renderNotesList();
+                    break;
+                case 'codex':
+                    if (typeof renderCodexList === 'function') renderCodexList();
+                    break;
+                case 'front_matter':
+                    if (window.FrontMatterView && typeof window.FrontMatterView.renderSidebar === 'function') window.FrontMatterView.renderSidebar();
+                    break;
+                case 'globalnotes':
+                    if (typeof renderGlobalNotesTree === 'function') {
+                        const gnList = document.getElementById('globalnotesList');
+                        if (gnList) gnList.innerHTML = renderGlobalNotesTree();
+                    }
+                    break;
+                case 'mindmap':
+                    if (typeof renderMindmapList === 'function') renderMindmapList();
+                    break;
+                case 'timelineviz':
+                    if (typeof renderTimelineVizList === 'function') renderTimelineVizList();
+                    break;
+                case 'arcs':
+                    if (typeof renderArcsList === 'function') renderArcsList();
+                    break;
+            }
         }
     }
-
     // Gérer les filtres et barres de progression spécifiques
     const progressBar = document.getElementById('projectProgressBar');
     const statusFilters = document.getElementById('statusFilters');
