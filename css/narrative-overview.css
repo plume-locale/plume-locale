@@ -6,12 +6,12 @@
 /* === SIDEBAR CONTAINER === */
 #narrativeOverviewSidebar {
     position: fixed;
-    left: 250px;          /* After main sidebar */
+    right: 0;             /* Aligned to the right edge */
     top: 60px;            /* After header */
     width: 300px;
     height: calc(100vh - 60px);
     background: var(--bg-secondary);
-    border-right: 1px solid var(--border-color);
+    border-left: 1px solid var(--border-color);
     z-index: 100;
     display: flex;
     flex-direction: column;
@@ -20,7 +20,7 @@
 }
 
 #narrativeOverviewSidebar.hidden {
-    transform: translateX(-300px);
+    transform: translateX(300px);
 }
 
 /* === HEADER === */
@@ -214,15 +214,15 @@
 /* === MOBILE RESPONSIVENESS === */
 @media (max-width: 900px) {
     #narrativeOverviewSidebar {
-        left: 0;
-        transform: translateX(-300px);
+        right: 0;
+        transform: translateX(300px);
         z-index: 500;
         box-shadow: none;
     }
 
     #narrativeOverviewSidebar:not(.hidden) {
         transform: translateX(0);
-        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+        box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
     }
 }
 
@@ -230,11 +230,11 @@
 @media (max-width: 1200px) and (min-width: 901px) {
     #narrativeOverviewSidebar {
         width: 250px;
-        left: 200px;
+        right: 0;
     }
 
     #narrativeOverviewSidebar.hidden {
-        transform: translateX(-250px);
+        transform: translateX(250px);
     }
 }
 

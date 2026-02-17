@@ -47,21 +47,21 @@ class NarrativeOverviewViewModel {
      * @returns {Array} Liste d'objets { actId, actTitle, passages }
      */
     getPassagesByAct() {
-        const byAct = {};
+        const byAct = new Map();
 
         this.passages.forEach(passage => {
-            if (!byAct[passage.actId]) {
-                byAct[passage.actId] = {
+            if (!byAct.has(passage.actId)) {
+                byAct.set(passage.actId, {
                     actId: passage.actId,
                     actTitle: passage.actTitle,
                     passages: []
-                };
+                });
             }
-            byAct[passage.actId].passages.push(passage);
+            byAct.get(passage.actId).passages.push(passage);
         });
 
-        // Retourner sous forme de tableau, trié par actId
-        return Object.values(byAct).sort((a, b) => a.actId - b.actId);
+        // Retourner sous forme de tableau, ordre d'insertion préservé par Map
+        return Array.from(byAct.values());
     }
 
     /**
