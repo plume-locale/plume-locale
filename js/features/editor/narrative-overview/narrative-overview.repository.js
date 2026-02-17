@@ -24,224 +24,118 @@ const NarrativeOverviewRepository = {
         const passages = [];
         let globalPosition = 0;
 
-        project.acts.forEach(act => {
-            if (!act.chapters || !Array.isArray(act.chapters)) return;
+        // Accumulateur global de texte régulier (traverse les scènes)
+        let reg = null;
 
-            act.chapters.forEach(chapter => {
-                if (!chapter.scenes || !Array.isArray(chapter.scenes)) return;
+        // [MVVM : Repository] Helpers internes
+        const self = this;
 
-                // Accumulateur pour les scènes consécutives sans structure block
-                let regularAccumulator = null;
-
-                chapter.scenes.forEach(scene => {
-                    const hasStructureBlocks = this.sceneHasStructureBlocks(scene);
-
-                    if (hasStructureBlocks) {
-                        // Flush l'accumulateur de scènes régulières avant
-                        if (regularAccumulator) {
-                            passages.push(NarrativeOverviewModel.createPassage(
-                                NarrativeOverviewModel.PASSAGE_TYPES.REGULAR,
-                                {
-                                    ...regularAccumulator,
-                                    position: globalPosition
-                                }
-                            ));
-                            globalPosition++;
-                            regularAccumulator = null;
-                        }
-
-                        // Extraire les structure blocks de cette scène
-                        const scenePassages = this.extractScenePassages(
-                            scene,
-                            act,
-                            chapter,
-                            globalPosition
-                        );
-                        passages.push(...scenePassages);
-                        globalPosition += scenePassages.length;
-                    } else {
-                        // Scène sans structure block : accumuler
-                        const sceneText = this.extractPlainText(scene);
-                        if (sceneText.length < 20) return;
-
-                        if (!regularAccumulator) {
-                            // Démarrer un nouveau bloc régulier
-                            regularAccumulator = {
-                                actId: act.id,
-                                actTitle: act.title,
-                                chapterId: chapter.id,
-                                chapterTitle: chapter.title,
-                                sceneId: scene.id,
-                                sceneTitle: scene.title,
-                                content: this.generatePreview(sceneText),
-                                fullContent: sceneText,
-                                wordCount: this.countWords(sceneText)
-                            };
-                        } else {
-                            // Fusionner avec le bloc régulier existant
-                            regularAccumulator.fullContent += '\n\n' + sceneText;
-                            regularAccumulator.content = this.generatePreview(regularAccumulator.fullContent);
-                            regularAccumulator.wordCount += this.countWords(sceneText);
-                            // Mettre à jour le titre pour refléter la plage
-                            regularAccumulator.sceneTitle = regularAccumulator.sceneTitle + ' → ' + scene.title;
-                        }
-                    }
-                });
-
-                // Flush l'accumulateur restant en fin de chapitre
-                if (regularAccumulator) {
-                    passages.push(NarrativeOverviewModel.createPassage(
-                        NarrativeOverviewModel.PASSAGE_TYPES.REGULAR,
-                        {
-                            ...regularAccumulator,
-                            position: globalPosition
-                        }
-                    ));
-                    globalPosition++;
-                    regularAccumulator = null;
-                }
-            });
-        });
-
-        return passages;
-    },
-
-    /**
-     * Vérifie si une scène contient des structure blocks
-     *
-     * @param {Object} scene - Objet scène
-     * @returns {boolean} True si la scène contient au moins un structure block
-     */
-    sceneHasStructureBlocks(scene) {
-        if (!scene.content || scene.content.trim() === '') return false;
-
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = scene.content;
-        return tempDiv.querySelectorAll('.structure-block').length > 0;
-    },
-
-    /**
-     * Extrait le texte brut d'une scène (hors structure blocks)
-     *
-     * @param {Object} scene - Objet scène
-     * @returns {string} Texte brut de la scène
-     */
-    extractPlainText(scene) {
-        if (!scene.content || scene.content.trim() === '') return '';
-
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = scene.content;
-
-        // Retirer les structure blocks
-        const blocks = tempDiv.querySelectorAll('.structure-block');
-        blocks.forEach(block => block.remove());
-
-        return tempDiv.textContent.trim();
-    },
-
-    /**
-     * Extrait les passages d'une scène (structure blocks + texte intercalé).
-     * Les scènes sans structure blocks sont gérées par l'accumulateur dans extractAllPassages().
-     *
-     * @param {Object} scene - Objet scène
-     * @param {Object} act - Objet acte parent
-     * @param {Object} chapter - Objet chapitre parent
-     * @param {number} startPosition - Position de départ pour cette scène
-     * @returns {Array} Liste des passages de cette scène
-     */
-    extractScenePassages(scene, act, chapter, startPosition) {
-        if (!scene.content || scene.content.trim() === '') {
-            return [];
+        function flushRegular() {
+            if (reg && reg.fullContent.trim().length >= 20) {
+                passages.push(NarrativeOverviewModel.createPassage(
+                    NarrativeOverviewModel.PASSAGE_TYPES.REGULAR,
+                    { ...reg, position: globalPosition }
+                ));
+                globalPosition++;
+            }
+            reg = null;
         }
 
-        const passages = [];
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = scene.content;
+        function accumulateText(text, act, chapter, scene) {
+            if (!text || text.trim().length === 0) return;
+            const trimmed = text.trim();
 
-        // Parcourir les enfants directs dans l'ordre du DOM
-        // pour intercaler structure blocks et texte régulier
-        const children = Array.from(tempDiv.children);
-        let regularTextBuffer = '';
-
-        children.forEach(child => {
-            if (child.classList && child.classList.contains('structure-block')) {
-                // Flush le texte régulier accumulé avant ce structure block
-                if (regularTextBuffer.trim().length >= 20) {
-                    passages.push(NarrativeOverviewModel.createPassage(
-                        NarrativeOverviewModel.PASSAGE_TYPES.REGULAR,
-                        {
-                            actId: act.id,
-                            actTitle: act.title,
-                            chapterId: chapter.id,
-                            chapterTitle: chapter.title,
-                            sceneId: scene.id,
-                            sceneTitle: scene.title,
-                            content: this.generatePreview(regularTextBuffer.trim()),
-                            fullContent: regularTextBuffer.trim(),
-                            position: startPosition + passages.length,
-                            wordCount: this.countWords(regularTextBuffer.trim())
-                        }
-                    ));
-                    regularTextBuffer = '';
-                }
-
-                // Extraire le structure block
-                const labelEl = child.querySelector('.structure-block-label');
-                const label = labelEl ? labelEl.textContent.trim() : 'SCENE BEAT';
-                const color = child.style.getPropertyValue('--accent-color') || '#ff8c42';
-                const contentEl = child.querySelector('.structure-block-content');
-                const fullContent = contentEl ? contentEl.textContent.trim() : '';
-                const preview = this.generatePreview(fullContent);
-
-                passages.push(NarrativeOverviewModel.createPassage(
-                    NarrativeOverviewModel.PASSAGE_TYPES.STRUCTURE_BLOCK,
-                    {
-                        actId: act.id,
-                        actTitle: act.title,
-                        chapterId: chapter.id,
-                        chapterTitle: chapter.title,
-                        sceneId: scene.id,
-                        sceneTitle: scene.title,
-                        content: preview,
-                        fullContent: fullContent,
-                        label: label,
-                        color: color,
-                        position: startPosition + passages.length,
-                        wordCount: this.countWords(fullContent)
-                    }
-                ));
-            } else {
-                // Élément régulier : accumuler le texte
-                const text = child.textContent.trim();
-                if (text.length > 0 &&
-                    !(child.classList && (
-                        child.classList.contains('scene-separator') ||
-                        child.classList.contains('chapter-separator') ||
-                        child.classList.contains('editor-act-separator')
-                    ))) {
-                    regularTextBuffer += (regularTextBuffer ? '\n' : '') + text;
-                }
-            }
-        });
-
-        // Flush le texte régulier restant après le dernier structure block
-        if (regularTextBuffer.trim().length >= 20) {
-            passages.push(NarrativeOverviewModel.createPassage(
-                NarrativeOverviewModel.PASSAGE_TYPES.REGULAR,
-                {
+            if (!reg) {
+                reg = {
                     actId: act.id,
                     actTitle: act.title,
                     chapterId: chapter.id,
                     chapterTitle: chapter.title,
                     sceneId: scene.id,
                     sceneTitle: scene.title,
-                    content: this.generatePreview(regularTextBuffer.trim()),
-                    fullContent: regularTextBuffer.trim(),
-                    position: startPosition + passages.length,
-                    wordCount: this.countWords(regularTextBuffer.trim())
+                    content: self.generatePreview(trimmed),
+                    fullContent: trimmed,
+                    wordCount: self.countWords(trimmed)
+                };
+            } else {
+                reg.fullContent += '\n\n' + trimmed;
+                reg.content = self.generatePreview(reg.fullContent);
+                reg.wordCount += self.countWords(trimmed);
+                // Mettre à jour le titre si scène différente
+                if (reg.sceneId !== scene.id) {
+                    if (!reg.sceneTitle.includes(' → ')) {
+                        reg.sceneTitle = reg.sceneTitle + ' → ' + scene.title;
+                    } else {
+                        reg.sceneTitle = reg.sceneTitle.replace(/ → [^→]+$/, ' → ' + scene.title);
+                    }
                 }
-            ));
+            }
         }
+
+        function isSystemElement(el) {
+            return el.classList && (
+                el.classList.contains('scene-separator') ||
+                el.classList.contains('chapter-separator') ||
+                el.classList.contains('editor-act-separator')
+            );
+        }
+
+        // Passe unique sur tout le contenu du livre
+        project.acts.forEach(act => {
+            if (!act.chapters || !Array.isArray(act.chapters)) return;
+
+            act.chapters.forEach(chapter => {
+                if (!chapter.scenes || !Array.isArray(chapter.scenes)) return;
+
+                chapter.scenes.forEach(scene => {
+                    if (!scene.content || scene.content.trim() === '') return;
+
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = scene.content;
+                    const children = Array.from(tempDiv.children);
+
+                    children.forEach(child => {
+                        if (child.classList && child.classList.contains('structure-block')) {
+                            // Flush le texte régulier accumulé, puis ajouter le SB
+                            flushRegular();
+
+                            const labelEl = child.querySelector('.structure-block-label');
+                            const label = labelEl ? labelEl.textContent.trim() : 'SCENE BEAT';
+                            const color = child.style.getPropertyValue('--accent-color') || '#ff8c42';
+                            const contentEl = child.querySelector('.structure-block-content');
+                            const fullContent = contentEl ? contentEl.textContent.trim() : '';
+
+                            passages.push(NarrativeOverviewModel.createPassage(
+                                NarrativeOverviewModel.PASSAGE_TYPES.STRUCTURE_BLOCK,
+                                {
+                                    actId: act.id,
+                                    actTitle: act.title,
+                                    chapterId: chapter.id,
+                                    chapterTitle: chapter.title,
+                                    sceneId: scene.id,
+                                    sceneTitle: scene.title,
+                                    content: self.generatePreview(fullContent),
+                                    fullContent: fullContent,
+                                    label: label,
+                                    color: color,
+                                    position: globalPosition,
+                                    wordCount: self.countWords(fullContent)
+                                }
+                            ));
+                            globalPosition++;
+                        } else if (!isSystemElement(child)) {
+                            const text = child.textContent.trim();
+                            if (text.length > 0) {
+                                accumulateText(text, act, chapter, scene);
+                            }
+                        }
+                    });
+                });
+            });
+        });
+
+        // Flush le texte régulier restant en fin de livre
+        flushRegular();
 
         return passages;
     },
