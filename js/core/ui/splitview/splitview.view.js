@@ -370,6 +370,11 @@ function renderEditorInContainer(act, chapter, scene, container, panel) {
             updateLiveTensionMeter(tempDiv.innerText || tempDiv.textContent || '', { sceneId: scene.id, chapterId: chapter.id, actId: act.id });
         }
     }, 50);
+
+    // Initialize scene navigation toolbar
+    setTimeout(() => {
+        if (typeof initSceneNavigation === 'function') initSceneNavigation();
+    }, 200);
 }
 
 /** [MVVM : View] - Alterne la visibilité de la barre d'outils de l'éditeur en mode split */
