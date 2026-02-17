@@ -35,10 +35,20 @@ class NarrativeOverviewView {
 
         let html = `
             <div class="narrative-overview-header">
-                <h3 class="narrative-overview-title">
-                    <i data-lucide="book-open" style="width:18px;height:18px;"></i>
-                    Aperçu Narratif
-                </h3>
+                <div class="narrative-overview-title-row">
+                    <h3 class="narrative-overview-title">
+                        <i data-lucide="book-open" style="width:18px;height:18px;"></i>
+                        Aperçu Narratif
+                    </h3>
+                    <div class="narrative-overview-actions">
+                        <button class="narrative-overview-btn" onclick="NarrativeOverviewMain.refresh()" title="Rafraîchir">
+                            <i data-lucide="refresh-cw" style="width:14px;height:14px;"></i>
+                        </button>
+                        <button class="narrative-overview-btn" onclick="NarrativeOverviewMain.hide()" title="Fermer">
+                            <i data-lucide="x" style="width:14px;height:14px;"></i>
+                        </button>
+                    </div>
+                </div>
                 <div class="narrative-overview-stats">
                     ${stats.total} passage${stats.total > 1 ? 's' : ''}
                     (${stats.structureBlocks} structuré${stats.structureBlocks > 1 ? 's' : ''})

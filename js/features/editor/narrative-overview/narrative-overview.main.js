@@ -124,6 +124,22 @@ const NarrativeOverviewMain = {
             };
         }
 
+        // Hook sur switchToProject pour rafraîchir au changement de projet
+        if (typeof switchToProject === 'function') {
+            const originalSwitchToProject = switchToProject;
+
+            window.switchToProject = function(...args) {
+                const result = originalSwitchToProject.apply(this, args);
+
+                // Rafraîchir après le changement de projet (attendre que project soit mis à jour)
+                setTimeout(() => {
+                    NarrativeOverviewMain.refresh();
+                }, 300);
+
+                return result;
+            };
+        }
+
         // Raccourcis clavier (optionnel)
         document.addEventListener('keydown', (e) => {
             // Ctrl/Cmd + Shift + O : Toggle sidebar
