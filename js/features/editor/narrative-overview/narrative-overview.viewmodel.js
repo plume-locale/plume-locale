@@ -49,6 +49,17 @@ class NarrativeOverviewViewModel {
     getPassagesByAct() {
         const byAct = new Map();
 
+        // Initialiser un groupe pour CHAQUE acte du projet (même vides)
+        if (typeof project !== 'undefined' && project && project.acts) {
+            project.acts.forEach(act => {
+                byAct.set(act.id, {
+                    actId: act.id,
+                    actTitle: act.title,
+                    passages: []
+                });
+            });
+        }
+
         this.passages.forEach(passage => {
             if (!byAct.has(passage.actId)) {
                 byAct.set(passage.actId, {
