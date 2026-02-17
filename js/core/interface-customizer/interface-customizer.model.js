@@ -331,7 +331,7 @@ const InterfaceCustomizerModel = {
         }
     ],
 
-    // Configurations prédéfinies
+    // configurations prédéfinies (inclut les presets système et personnalisés)
     presets: [
         {
             id: 'zen',
@@ -360,6 +360,14 @@ const InterfaceCustomizerModel = {
             shortcuts: ['project', 'editor', 'corkboard', 'notes', 'characters', 'world']
         }
     ],
+
+    /**
+     * Retourne la liste complète des presets (système + personnalisés)
+     */
+    getAllPresets: () => {
+        const custom = InterfaceCustomizerRepository.loadCustomPresets();
+        return [...InterfaceCustomizerModel.presets, ...custom];
+    },
 
     // État par défaut (tout visible)
     getDefaultSettings: () => {

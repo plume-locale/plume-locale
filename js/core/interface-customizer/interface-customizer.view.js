@@ -112,7 +112,7 @@ const InterfaceCustomizerView = {
             : InterfaceCustomizerViewModel.state.settings;
 
         const modules = InterfaceCustomizerModel.modules;
-        const presets = InterfaceCustomizerModel.presets;
+        const presets = InterfaceCustomizerModel.getAllPresets();
         const activeModules = settings.activeModules || [];
         const mandatoryModules = settings.mandatoryModules || [];
 
@@ -127,11 +127,14 @@ const InterfaceCustomizerView = {
                         <p class="setting-hint">${Localization.t('customizer.modules.hint')}</p>
                         
                         <div class="preset-selector compact">
-                            ${presets.map(p => `
+                            ${presets.map(p => {
+            const label = p.label.includes('.') ? Localization.t(p.label) : p.label;
+            return `
                                 <button class="preset-btn btn-sm" onclick="InterfaceCustomizerViewModel.applyPreset('${p.id}'); InterfaceCustomizerView.closeOurModal('moduleSettingsModal')">
-                                    ${Localization.t(p.label)}
+                                    ${label}
                                 </button>
-                            `).join('')}
+                            `;
+        }).join('')}
                         </div>
 
                         <div class="module-categories-grid">
@@ -230,6 +233,10 @@ const InterfaceCustomizerView = {
                         </div>
                     </div>
                     <div class="modal-footer">
+                        <button class="btn btn-outline-danger" onclick="InterfaceCustomizerView.renderPresetsAdmin()">
+                            <i data-lucide="list-plus"></i> Gérer les Presets
+                        </button>
+                        <span style="flex:1"></span>
                         <button class="btn btn-secondary" onclick="InterfaceCustomizerView.closeOurModal('adminModuleModal')">${Localization.t('btn.close')}</button>
                     </div>
                 </div>
@@ -249,6 +256,171 @@ const InterfaceCustomizerView = {
 
         if (typeof lucide !== 'undefined') lucide.createIcons({ root: modal });
         InterfaceCustomizerView._restoreScroll('adminModuleModal');
+    },
+
+    /**
+     * Rendu de l'interface de gestion des PRESETS (Admin) avec Drag & Drop
+     */
+    renderPresetsAdmin: (editPresetId = null) => {
+        const customPresets = InterfaceCustomizerRepository.loadCustomPresets();
+        let currentPreset = editPresetId ? customPresets.find(p => p.id === editPresetId) : null;
+
+        const settings = InterfaceCustomizerViewModel.state.settings;
+        const mandatory = settings.mandatoryModules || [];
+
+        // Modules sélectionnés pour le preset en cours de création/édition
+        if (!InterfaceCustomizerView._presetTmpSelection) {
+            InterfaceCustomizerView._presetTmpSelection = currentPreset ? [...currentPreset.modules] : [...mandatory];
+        }
+
+        // On s'assure que les modules obligatoires sont TOUJOURS présents dans la sélection
+        mandatory.forEach(mId => {
+            if (!InterfaceCustomizerView._presetTmpSelection.includes(mId)) {
+                InterfaceCustomizerView._presetTmpSelection.push(mId);
+            }
+        });
+
+        const modules = InterfaceCustomizerModel.modules;
+
+        const modalHtml = `
+            <div class="modal-overlay" onclick="InterfaceCustomizerView.closeOurModal('presetsAdminModal')">
+                <div class="modal-content module-settings-modal compact" style="max-width: 1000px;" onclick="event.stopPropagation()">
+                    <div class="modal-header">
+                        <h2 class="modal-title" style="color: #ff4757;">
+                            <span class="admin-badge">ADMIN</span> Gestion des Presets
+                        </h2>
+                        <button class="modal-close" onclick="InterfaceCustomizerView.closeOurModal('presetsAdminModal')">&times;</button>
+                    </div>
+                    <div class="modal-body modal-body-scroll" style="display: flex; gap: 20px;">
+                        
+                        <!-- Gauche : Liste des modules disponibles -->
+                        <div class="presets-admin-column" style="flex: 1;">
+                            <h3 class="column-title">${Localization.t('customizer.admin.presets.modules_title')}</h3>
+                            <div class="modules-drag-list" style="max-height: 500px; overflow-y: auto;">
+                                ${modules.map(m => `
+                                    <div class="draggable-module" draggable="true" 
+                                         ondragstart="event.dataTransfer.setData('text/plain', '${m.id}')">
+                                        <i data-lucide="${m.icon}"></i>
+                                        <span>${Localization.t(m.label)}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <!-- Droite : Composition du Preset -->
+                        <div class="presets-admin-column" style="flex: 1; border-left: 1px solid var(--border-color); padding-left: 20px;">
+                            <h3 class="column-title">${Localization.t('customizer.admin.presets.selection_title')}</h3>
+                            
+                            <div class="preset-form">
+                                <input type="text" id="presetNameInput" class="form-input" 
+                                       placeholder="${Localization.t('customizer.admin.presets.name_placeholder')}" 
+                                       value="${currentPreset ? currentPreset.label : ''}"
+                                       style="width: 100%; margin-bottom: 10px;">
+                            </div>
+
+                            <div class="drop-zone-preset" 
+                                 ondragover="event.preventDefault(); this.classList.add('hover')" 
+                                 ondragleave="this.classList.remove('hover')"
+                                 ondrop="InterfaceCustomizerView._handlePresetDrop(event)">
+                                ${InterfaceCustomizerView._presetTmpSelection.length === 0 ?
+                `<div class="drop-hint">${Localization.t('customizer.admin.presets.selection_hint')}</div>` :
+                InterfaceCustomizerView._presetTmpSelection.map(mid => {
+                    const m = modules.find(mod => mod.id === mid);
+                    const isMandatory = mandatory.includes(mid);
+                    return `
+                                            <div class="selected-module-tag ${isMandatory ? 'mandatory' : ''}">
+                                                <i data-lucide="${m ? m.icon : 'box'}"></i>
+                                                <span>${m ? Localization.t(m.label) : mid}</span>
+                                                ${isMandatory ? '<i data-lucide="lock" style="width:10px;height:10px;opacity:0.6;"></i>' : `<button onclick="InterfaceCustomizerView._removeModuleFromPreset('${mid}')">&times;</button>`}
+                                            </div>
+                                        `;
+                }).join('')}
+                            </div>
+
+                            <div style="margin-top: 20px; display: flex; gap: 10px;">
+                                <button class="btn btn-primary btn-sm" onclick="InterfaceCustomizerView._saveCurrentPreset('${editPresetId}')">
+                                    <i data-lucide="save"></i> ${Localization.t('customizer.admin.presets.save')}
+                                </button>
+                                <button class="btn btn-secondary btn-sm" onclick="InterfaceCustomizerView._resetPresetForm()">
+                                    ${Localization.t('btn.cancel')}
+                                </button>
+                            </div>
+
+                            <hr style="margin: 20px 0; border: none; border-top: 1px solid var(--border-color); opacity: 0.3;">
+                            
+                            <!-- Liste des presets existants -->
+                            <h3 class="column-title">Presets Personnalisés</h3>
+                            <div class="custom-presets-list">
+                                ${customPresets.map(p => `
+                                    <div class="custom-preset-item">
+                                        <span class="preset-name">${p.label}</span>
+                                        <div class="preset-actions">
+                                            <button class="btn-icon" title="Activer" onclick="InterfaceCustomizerViewModel.applyPreset('${p.id}')"><i data-lucide="check-circle" style="color: var(--primary-color)"></i></button>
+                                            <button class="btn-icon" title="Modifier" onclick="InterfaceCustomizerView.renderPresetsAdmin('${p.id}')"><i data-lucide="edit-3"></i></button>
+                                            <button class="btn-icon danger" title="Supprimer" onclick="InterfaceCustomizerViewModel.deleteCustomPreset('${p.id}'); InterfaceCustomizerView.renderPresetsAdmin()"><i data-lucide="trash-2"></i></button>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" onclick="InterfaceCustomizerView.closeOurModal('presetsAdminModal'); InterfaceCustomizerView._resetPresetForm()">${Localization.t('btn.close')}</button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        let modal = document.getElementById('presetsAdminModal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'presetsAdminModal';
+            modal.className = 'modal-container';
+            document.body.appendChild(modal);
+        }
+
+        modal.innerHTML = modalHtml;
+        modal.classList.add('active');
+
+        if (typeof lucide !== 'undefined') lucide.createIcons({ root: modal });
+    },
+
+    _handlePresetDrop: (e) => {
+        e.preventDefault();
+        const moduleId = e.dataTransfer.getData('text/plain');
+        if (moduleId && !InterfaceCustomizerView._presetTmpSelection.includes(moduleId)) {
+            InterfaceCustomizerView._presetTmpSelection.push(moduleId);
+            InterfaceCustomizerView.renderPresetsAdmin();
+        }
+    },
+
+    _removeModuleFromPreset: (moduleId) => {
+        InterfaceCustomizerView._presetTmpSelection = InterfaceCustomizerView._presetTmpSelection.filter(id => id !== moduleId);
+        InterfaceCustomizerView.renderPresetsAdmin();
+    },
+
+    _resetPresetForm: () => {
+        InterfaceCustomizerView._presetTmpSelection = null;
+        InterfaceCustomizerView.renderPresetsAdmin();
+    },
+
+    _saveCurrentPreset: (editId = null) => {
+        const name = document.getElementById('presetNameInput').value;
+        if (!name) return alert('Veuillez donner un nom au preset');
+        if (InterfaceCustomizerView._presetTmpSelection.length === 0) return alert('Sélectionnez au moins un module');
+
+        const presetData = {
+            id: editId || 'preset_' + Date.now(),
+            label: name, // On stocke le nom direct (pas d'ID de traduction pour les custom)
+            modules: [...InterfaceCustomizerView._presetTmpSelection],
+            shortcuts: [] // Optionnel pour le moment
+        };
+
+        InterfaceCustomizerViewModel.saveCustomPreset(presetData);
+        InterfaceCustomizerView._presetTmpSelection = null;
+        InterfaceCustomizerView.renderPresetsAdmin();
+        if (typeof showNotification === 'function') showNotification('✓ Preset sauvegardé');
     },
 
     /**

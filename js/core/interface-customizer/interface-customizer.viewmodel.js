@@ -19,6 +19,7 @@ const InterfaceCustomizerViewModel = {
         // Rétrocompatibilité : S'assurer que les nouveaux champs existent
         if (!settings.activeModules) settings.activeModules = defaults.activeModules;
         if (!settings.mandatoryModules) settings.mandatoryModules = defaults.mandatoryModules;
+        if (!settings.shortcuts) settings.shortcuts = defaults.shortcuts;
 
         InterfaceCustomizerViewModel.state.settings = settings;
         InterfaceCustomizerViewModel.applySettings();
@@ -102,22 +103,65 @@ const InterfaceCustomizerViewModel = {
      * Applique un preset global
      */
     applyPreset: (presetId) => {
-        const preset = InterfaceCustomizerModel.presets.find(p => p.id === presetId);
+        const presets = InterfaceCustomizerModel.getAllPresets();
+        const preset = presets.find(p => p.id === presetId);
         if (!preset) return;
 
-        const settings = InterfaceCustomizerViewModel.state.settings;
+        const isEditing = InterfaceCustomizerViewModel.state.isEditing;
+        const settings = isEditing
+            ? InterfaceCustomizerViewModel.state.tempSettings
+            : InterfaceCustomizerViewModel.state.settings;
 
-        // Mix mandatory with preset choices
+        // 1. Appliquer les modules du preset
         const mandatory = settings.mandatoryModules || [];
         settings.activeModules = [...new Set([...mandatory, ...preset.modules])];
-        settings.shortcuts = preset.shortcuts;
 
-        InterfaceCustomizerRepository.saveSettings(settings);
+        // 2. Appliquer les raccourcis
+        settings.shortcuts = preset.shortcuts || [];
+
+        // 3. RÉINITIALISATION : On s'assure que les composants individuels ne sont pas forcés à "hidden"
+        // pour que le preset s'affiche correctement (on veut l'état nominal du preset)
+        InterfaceCustomizerModel.components.forEach(comp => {
+            settings[comp.id] = true;
+        });
+
+        // 4. Si on n'est pas en train d'éditer, on sauvegarde immédiatement
+        if (!isEditing) {
+            InterfaceCustomizerRepository.saveSettings(settings);
+        }
+
+        // 5. Appliquer l'effet visuel immédiatement
         InterfaceCustomizerViewModel.applySettings();
 
         if (typeof showNotification === 'function') {
-            showNotification(`✓ Preset ${presetId} appliqué`);
+            const label = preset.label.includes('.') ? Localization.t(preset.label) : preset.label;
+            showNotification(`✓ Preset "${label}" appliqué (${settings.activeModules.length} modules)`);
         }
+    },
+
+    /**
+     * [ADMIN] Crée ou met à jour un preset personnalisé
+     */
+    saveCustomPreset: (presetData) => {
+        const custom = InterfaceCustomizerRepository.loadCustomPresets();
+        const existingIdx = custom.findIndex(p => p.id === presetData.id);
+
+        if (existingIdx > -1) {
+            custom[existingIdx] = presetData;
+        } else {
+            custom.push(presetData);
+        }
+
+        InterfaceCustomizerRepository.saveCustomPresets(custom);
+    },
+
+    /**
+     * [ADMIN] Supprime un preset personnalisé
+     */
+    deleteCustomPreset: (presetId) => {
+        const custom = InterfaceCustomizerRepository.loadCustomPresets();
+        const filtered = custom.filter(p => p.id !== presetId);
+        InterfaceCustomizerRepository.saveCustomPresets(filtered);
     },
 
     /**
@@ -177,8 +221,9 @@ const InterfaceCustomizerViewModel = {
 
         // Render Shortcuts if defined
         if (typeof renderSidebarShortcuts === 'function') {
+            const shortcuts = settings.shortcuts || [];
             // Filtrer les raccourcis : un raccourci ne peut être affiché que si son module est actif
-            const filteredShortcuts = settings.shortcuts.filter(shortcutId => {
+            const filteredShortcuts = shortcuts.filter(shortcutId => {
                 const module = InterfaceCustomizerModel.modules.find(m => m.components.includes(`header-tab-${shortcutId}`) || m.components.includes(`nav-item-${shortcutId}`));
                 return module ? settings.activeModules.includes(module.id) : true;
             });
@@ -217,6 +262,8 @@ const InterfaceCustomizerViewModel = {
                 el.style.display = '';
                 el.classList.toggle('interface-hidden-preview', !shouldShow);
             } else {
+                // IMPORTANT: On utilise !shouldShow ? 'none' : ''
+                // On s'assure que si shouldShow est false, display est strict 'none'
                 el.style.display = shouldShow ? '' : 'none';
                 el.classList.remove('interface-hidden-preview');
             }
@@ -261,15 +308,36 @@ const InterfaceCustomizerViewModel = {
         });
 
         // 4. Masquer les sections de l'accordéon (Sidebar) si le module est inactif
-        // Note: L'accordéon utilise des IDs comme 'nav-item-stats'
         InterfaceCustomizerModel.modules.forEach(m => {
             const isModuleActive = settings.activeModules.includes(m.id);
             m.components.forEach(compId => {
                 if (compId.startsWith('nav-item-')) {
                     const el = document.getElementById(compId);
-                    if (el) el.style.display = isModuleActive ? '' : 'none';
+                    if (el) {
+                        el.style.display = isModuleActive ? '' : 'none';
+                        // Optionnel : masquer aussi le parent si c'est un wrapper de section
+                        if (el.classList.contains('sidebar-section')) {
+                            el.style.display = isModuleActive ? '' : 'none';
+                        }
+                    }
                 }
             });
+        });
+
+        // 5. Gestion des groupes (Heads de l'accordéon)
+        // Si toutes les sous-sections d'un groupe sont cachées, on cache le groupe.
+        const groups = ['Ecriture', 'Analyse', 'Construction'];
+        groups.forEach(group => {
+            const header = document.querySelector(`.sidebar-group-title[data-group="${group}"]`) ||
+                [...document.querySelectorAll('.accordion-header')].find(h => h.textContent.includes(group));
+            if (header) {
+                const section = header.nextElementSibling;
+                if (section && section.classList.contains('accordion-content')) {
+                    const visibleItems = [...section.querySelectorAll('.accordion-nav-item, .nav-item')].filter(item => item.style.display !== 'none');
+                    header.style.display = visibleItems.length > 0 ? '' : 'none';
+                    section.style.display = visibleItems.length > 0 ? '' : 'none';
+                }
+            }
         });
     }
 };
