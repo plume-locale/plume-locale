@@ -17,6 +17,9 @@ async function init() {
     // Initialiser les préférences d'interface
     if (typeof InterfaceCustomizerViewModel !== 'undefined') {
         InterfaceCustomizerViewModel.init();
+        if (typeof InterfaceCustomizerView !== 'undefined' && InterfaceCustomizerView.init) {
+            InterfaceCustomizerView.init();
+        }
     }
 
     // Initialiser IndexedDB en premier

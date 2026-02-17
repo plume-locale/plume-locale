@@ -3,6 +3,21 @@
  * Gère l'affichage du mode édition et les interactions UI.
  */
 const InterfaceCustomizerView = {
+    _lastScrollTop: 0,
+
+    /**
+     * Initialisation View
+     */
+    init: () => {
+        // Ajouter un écouteur secret pour le menu Admin (Ctrl + Alt + A)
+        window.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'a') {
+                e.preventDefault();
+                InterfaceCustomizerView.renderAdminModuleMenu();
+            }
+        });
+    },
+
     /**
      * Affiche ou masque la barre d'outils d'édition
      */
@@ -26,6 +41,10 @@ const InterfaceCustomizerView = {
                             <div class="edit-bar-hint">${Localization.t('customizer.bar.hint')}</div>
                         </div>
                         <div class="edit-bar-actions">
+                            <button class="btn btn-outline-gold btn-sm" onclick="InterfaceCustomizerView.renderModuleSettings()">
+                                <i data-lucide="layout-template" style="width:14px;height:14px;"></i> ${Localization.t('customizer.btn.modules')}
+                            </button>
+                            <span style="width: 8px"></span>
                             <button class="btn btn-secondary btn-sm" onclick="InterfaceCustomizerViewModel.cancelEditing()">
                                 <i data-lucide="x" style="width:14px;height:14px;"></i> ${Localization.t('btn.cancel')}
                             </button>
@@ -53,6 +72,183 @@ const InterfaceCustomizerView = {
             if (structPanel) structPanel.remove();
             InterfaceCustomizerView._unbindInteraction();
         }
+    },
+
+    /**
+     * Sauvegarde la position du scroll
+     */
+    _saveScroll: (modalId) => {
+        const body = document.querySelector(`#${modalId} .modal-body-scroll`);
+        if (body) InterfaceCustomizerView._lastScrollTop = body.scrollTop;
+    },
+
+    /**
+     * Restaure la position du scroll
+     */
+    _restoreScroll: (modalId) => {
+        const body = document.querySelector(`#${modalId} .modal-body-scroll`);
+        if (body) body.scrollTop = InterfaceCustomizerView._lastScrollTop;
+    },
+
+    /**
+     * Gère la fermeture réelle d'un modal (suppression DOM pour nos modals dynamiques)
+     */
+    closeOurModal: (modalId) => {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.classList.remove('active');
+            setTimeout(() => modal.remove(), 300); // Laisser le temps à l'anim
+        }
+    },
+
+    /**
+     * Rendu de la modale de sélection des modules (Utilisateur)
+     */
+    renderModuleSettings: () => {
+        InterfaceCustomizerView._saveScroll('moduleSettingsModal');
+
+        const settings = InterfaceCustomizerViewModel.state.isEditing
+            ? InterfaceCustomizerViewModel.state.tempSettings
+            : InterfaceCustomizerViewModel.state.settings;
+
+        const modules = InterfaceCustomizerModel.modules;
+        const presets = InterfaceCustomizerModel.presets;
+        const activeModules = settings.activeModules || [];
+        const mandatoryModules = settings.mandatoryModules || [];
+
+        const modalHtml = `
+            <div class="modal-overlay" onclick="InterfaceCustomizerView.closeOurModal('moduleSettingsModal')">
+                <div class="modal-content module-settings-modal compact" onclick="event.stopPropagation()">
+                    <div class="modal-header">
+                        <h2 class="modal-title"><i data-lucide="layout-template"></i> ${Localization.t('customizer.modules.title')}</h2>
+                        <button class="modal-close" onclick="InterfaceCustomizerView.closeOurModal('moduleSettingsModal')">&times;</button>
+                    </div>
+                    <div class="modal-body modal-body-scroll">
+                        <p class="setting-hint">${Localization.t('customizer.modules.hint')}</p>
+                        
+                        <div class="preset-selector compact">
+                            ${presets.map(p => `
+                                <button class="preset-btn btn-sm" onclick="InterfaceCustomizerViewModel.applyPreset('${p.id}'); InterfaceCustomizerView.closeOurModal('moduleSettingsModal')">
+                                    ${Localization.t(p.label)}
+                                </button>
+                            `).join('')}
+                        </div>
+
+                        <div class="module-categories-grid">
+                            ${(() => {
+                const categories = [...new Set(modules.map(m => m.category))];
+                return categories.map(cat => `
+                                    <div class="module-category-section">
+                                        <div class="module-category-header">${Localization.t('module.category.' + cat)}</div>
+                                        <div class="module-compact-grid">
+                                            ${modules.filter(m => m.category === cat).map(m => {
+                    const isActive = activeModules.includes(m.id);
+                    const isMandatory = mandatoryModules.includes(m.id);
+                    return `
+                                                    <div class="module-card ${isActive ? 'active' : ''} ${isMandatory ? 'mandatory' : ''}" 
+                                                         ${isMandatory ? '' : `onclick="InterfaceCustomizerViewModel.toggleModuleActive('${m.id}'); InterfaceCustomizerView.renderModuleSettings()"`}>
+                                                        <i data-lucide="${m.icon}" class="module-card-icon"></i>
+                                                        <span class="module-card-label">${Localization.t(m.label)}</span>
+                                                        ${isMandatory ? '<i data-lucide="lock" class="lock-icon"></i>' : ''}
+                                                    </div>
+                                                `;
+                }).join('')}
+                                        </div>
+                                    </div>
+                                `).join('');
+            })()}
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" onclick="InterfaceCustomizerView.closeOurModal('moduleSettingsModal')">${Localization.t('btn.close')}</button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        let modal = document.getElementById('moduleSettingsModal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'moduleSettingsModal';
+            modal.className = 'modal-container';
+            document.body.appendChild(modal);
+        }
+
+        modal.innerHTML = modalHtml;
+        modal.classList.add('active');
+
+        if (typeof lucide !== 'undefined') lucide.createIcons({ root: modal });
+        InterfaceCustomizerView._restoreScroll('moduleSettingsModal');
+    },
+
+    /**
+     * Rendu du menu secret d'ADMINISTRATION des modules
+     */
+    renderAdminModuleMenu: () => {
+        InterfaceCustomizerView._saveScroll('adminModuleModal');
+
+        const settings = InterfaceCustomizerViewModel.state.settings;
+        const modules = InterfaceCustomizerModel.modules;
+        const mandatoryModules = settings.mandatoryModules || [];
+
+        const modalHtml = `
+            <div class="modal-overlay" onclick="InterfaceCustomizerView.closeOurModal('adminModuleModal')">
+                <div class="modal-content module-settings-modal compact" style="max-width: 900px;" onclick="event.stopPropagation()">
+                    <div class="modal-header">
+                        <h2 class="modal-title" style="color: #ff4757;">
+                            <span class="admin-badge">ADMIN</span> ${Localization.t('customizer.admin.title')}
+                        </h2>
+                        <button class="modal-close" onclick="InterfaceCustomizerView.closeOurModal('adminModuleModal')">&times;</button>
+                    </div>
+                    <div class="modal-body modal-body-scroll">
+                        <p class="setting-hint">${Localization.t('customizer.admin.hint')}</p>
+                        
+                        <div class="admin-categories-container">
+                            ${(() => {
+                const categories = [...new Set(modules.map(m => m.category))];
+                return categories.map(cat => `
+                                    <div class="admin-category-block">
+                                        <div class="module-category-header">${Localization.t('module.category.' + cat)}</div>
+                                        <div class="admin-compact-list">
+                                            ${modules.filter(m => m.category === cat).map(m => {
+                    const isMandatory = mandatoryModules.includes(m.id);
+                    return `
+                                                    <div class="admin-module-tile ${isMandatory ? 'locked' : ''}" 
+                                                         onclick="InterfaceCustomizerViewModel.toggleModuleMandatory('${m.id}'); InterfaceCustomizerView.renderAdminModuleMenu()">
+                                                        <i data-lucide="${m.icon}" class="tile-icon"></i>
+                                                        <span class="tile-label">${Localization.t(m.label)}</span>
+                                                        <div class="tile-status">
+                                                            <i data-lucide="${isMandatory ? 'lock' : 'unlock'}"></i>
+                                                        </div>
+                                                    </div>
+                                                `;
+                }).join('')}
+                                        </div>
+                                    </div>
+                                `).join('');
+            })()}
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" onclick="InterfaceCustomizerView.closeOurModal('adminModuleModal')">${Localization.t('btn.close')}</button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        let modal = document.getElementById('adminModuleModal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'adminModuleModal';
+            modal.className = 'modal-container';
+            document.body.appendChild(modal);
+        }
+
+        modal.innerHTML = modalHtml;
+        modal.classList.add('active');
+
+        if (typeof lucide !== 'undefined') lucide.createIcons({ root: modal });
+        InterfaceCustomizerView._restoreScroll('adminModuleModal');
     },
 
     /**

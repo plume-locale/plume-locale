@@ -9,6 +9,7 @@ CSS_ORDER = [
     'variables.css',
     'base.css',
     'header.css',
+    'interface-customizer.css',
     'sidebar.css',
     'modals.css',
     'editor.css',
