@@ -64,6 +64,11 @@ class NarrativeOverviewView {
                     <p style="margin-top:1rem;color:var(--text-muted);">Aucun passage trouvé</p>
                 </div>
             `;
+        } else if (passagesByAct.length === 1) {
+            // Un seul acte : afficher les passages directement sans wrapper d'acte
+            passagesByAct[0].passages.forEach(p => {
+                html += this.renderPassage(p);
+            });
         } else {
             passagesByAct.forEach(actGroup => {
                 const isCollapsed = this.viewModel.isActCollapsed(actGroup.actId);
