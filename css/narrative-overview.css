@@ -233,6 +233,60 @@
     font-family: 'Source Code Pro', monospace;
 }
 
+/* === COMPACT MODE === */
+.narrative-passage-compact {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.4rem 0.6rem;
+    margin-bottom: 2px;
+    border-radius: 4px;
+    cursor: pointer;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    transition: all 0.15s ease;
+}
+
+.narrative-passage-compact:hover {
+    border-color: var(--accent-gold);
+    transform: translateX(2px);
+}
+
+.narrative-passage-compact.active {
+    border-color: var(--accent-gold);
+    background: rgba(212, 175, 55, 0.1);
+}
+
+.narrative-passage-compact.passage-structure-block {
+    border-left: 3px solid var(--passage-color, #ff8c42);
+}
+
+.compact-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    font-family: 'Source Code Pro', monospace;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.compact-words {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    font-family: 'Source Code Pro', monospace;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-left: 0.5rem;
+}
+
+/* Toggle button active state */
+.narrative-overview-btn.active {
+    background: var(--bg-tertiary);
+    color: var(--accent-gold);
+}
+
 /* === EMPTY STATE === */
 .narrative-empty-state {
     display: flex;

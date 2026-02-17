@@ -41,6 +41,11 @@ class NarrativeOverviewView {
                         Aperçu Narratif
                     </h3>
                     <div class="narrative-overview-actions">
+                        <button class="narrative-overview-btn ${this.viewModel.compactMode ? 'active' : ''}"
+                                onclick="NarrativeOverviewHandlers.toggleCompactMode()"
+                                title="${this.viewModel.compactMode ? 'Vue détaillée' : 'Vue compacte'}">
+                            <i data-lucide="${this.viewModel.compactMode ? 'list' : 'rows-3'}" style="width:14px;height:14px;"></i>
+                        </button>
                         <button class="narrative-overview-btn" onclick="NarrativeOverviewMain.refresh()" title="Rafraîchir">
                             <i data-lucide="refresh-cw" style="width:14px;height:14px;"></i>
                         </button>
@@ -67,7 +72,7 @@ class NarrativeOverviewView {
         } else if (passagesByAct.length === 1) {
             // Un seul acte : afficher les passages directement sans wrapper d'acte
             passagesByAct[0].passages.forEach(p => {
-                html += this.renderPassage(p);
+                html += this.viewModel.compactMode ? this.renderPassageCompact(p) : this.renderPassage(p);
             });
         } else {
             passagesByAct.forEach(actGroup => {
@@ -103,7 +108,7 @@ class NarrativeOverviewView {
                     <span class="narrative-act-count">(${actGroup.passages.length})</span>
                 </div>
                 <div class="narrative-passages-list ${isCollapsed ? 'collapsed' : ''}">
-                    ${actGroup.passages.map(p => this.renderPassage(p)).join('')}
+                    ${actGroup.passages.map(p => this.viewModel.compactMode ? this.renderPassageCompact(p) : this.renderPassage(p)).join('')}
                 </div>
             </div>
         `;
@@ -153,6 +158,41 @@ class NarrativeOverviewView {
                 <div class="passage-meta">
                     <span>${passage.wordCount} mot${passage.wordCount > 1 ? 's' : ''}</span>
                 </div>
+            </div>
+        `;
+    }
+
+    /**
+     * Génère le HTML compact d'un passage (label + mots uniquement)
+     *
+     * @param {Object} passage - Objet passage
+     * @returns {string} HTML compact du passage
+     */
+    renderPassageCompact(passage) {
+        const isActive = this.viewModel.activePassageId === passage.id;
+        const isStructure = passage.type === NarrativeOverviewModel.PASSAGE_TYPES.STRUCTURE_BLOCK;
+        const typeClass = isStructure ? 'passage-structure-block' : 'passage-regular';
+        const color = passage.color || '#ff8c42';
+        const label = passage.label || 'TEXTE';
+
+        let passageStyle = '';
+        if (passage.color) {
+            passageStyle = `style="--passage-color: ${passage.color};"`;
+        }
+
+        return `
+            <div class="narrative-passage-compact ${typeClass} ${isActive ? 'active' : ''}"
+                 data-passage-id="${passage.id}"
+                 data-scene-id="${passage.sceneId}"
+                 data-chapter-id="${passage.chapterId}"
+                 data-act-id="${passage.actId}"
+                 data-position="${passage.position}"
+                 ${passageStyle}
+                 onclick="NarrativeOverviewHandlers.navigateToPassage('${passage.id}')">
+                <span class="compact-label" style="color: ${isStructure ? color : 'var(--text-muted)'};">
+                    ${this.escapeHtml(label)}
+                </span>
+                <span class="compact-words">${passage.wordCount} mots</span>
             </div>
         `;
     }

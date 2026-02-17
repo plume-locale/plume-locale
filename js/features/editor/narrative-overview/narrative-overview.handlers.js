@@ -11,6 +11,19 @@
 const NarrativeOverviewHandlers = {
 
     /**
+     * Toggle le mode compact/détaillé
+     */
+    toggleCompactMode() {
+        const viewModel = window.narrativeOverviewViewModel;
+        const view = window.narrativeOverviewView;
+
+        if (!viewModel || !view) return;
+
+        viewModel.toggleCompactMode();
+        view.render();
+    },
+
+    /**
      * Toggle l'expansion/collapse d'un groupe d'acte
      *
      * @param {number} actId - ID de l'acte à toggle

@@ -20,6 +20,7 @@ class NarrativeOverviewViewModel {
         this.passages = [];
         this.collapsedActs = new Set();     // IDs des actes repliés
         this.activePassageId = null;        // ID du passage actuellement actif
+        this.compactMode = false;           // Mode compact (bandelettes label + mots)
     }
 
     /**
@@ -100,6 +101,16 @@ class NarrativeOverviewViewModel {
     isActCollapsed(actId) {
         return this.collapsedActs.has(actId);
     }
+
+    /**
+     * Toggle le mode compact
+     *
+     * @returns {boolean} Nouvel état (true = compact, false = normal)
+     */
+    toggleCompactMode() {
+        this.compactMode = !this.compactMode;
+        return this.compactMode;
+    },
 
     /**
      * Replie tous les actes
