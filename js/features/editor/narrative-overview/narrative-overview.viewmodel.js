@@ -110,7 +110,7 @@ class NarrativeOverviewViewModel {
     toggleCompactMode() {
         this.compactMode = !this.compactMode;
         return this.compactMode;
-    },
+    }
 
     /**
      * Replie tous les actes
