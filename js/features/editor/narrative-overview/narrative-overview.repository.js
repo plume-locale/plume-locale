@@ -79,6 +79,9 @@ const NarrativeOverviewRepository = {
         project.acts.forEach(act => {
             if (!act.chapters || !Array.isArray(act.chapters)) return;
 
+            // Flush à chaque frontière d'acte
+            flushRegular();
+
             act.chapters.forEach(chapter => {
                 if (!chapter.scenes || !Array.isArray(chapter.scenes)) return;
 
