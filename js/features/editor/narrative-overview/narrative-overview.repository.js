@@ -72,15 +72,10 @@ const NarrativeOverviewRepository = {
             }
         }
 
-        function isSystemElement(el) {
-            return el.classList && (
-                el.classList.contains('scene-separator') ||
-                el.classList.contains('chapter-separator') ||
-                el.classList.contains('editor-act-separator')
-            );
-        }
-
         // Passe unique sur tout le contenu du livre
+        // Utilise des sentinels pour trouver les SB à TOUTE profondeur du DOM
+        const SENTINEL = '\u0000SB\u0000';
+
         project.acts.forEach(act => {
             if (!act.chapters || !Array.isArray(act.chapters)) return;
 
@@ -92,44 +87,65 @@ const NarrativeOverviewRepository = {
 
                     const tempDiv = document.createElement('div');
                     tempDiv.innerHTML = scene.content;
-                    const children = Array.from(tempDiv.children);
 
-                    children.forEach(child => {
-                        if (child.classList && child.classList.contains('structure-block')) {
-                            // Flush le texte régulier accumulé, puis ajouter le SB
-                            flushRegular();
+                    // Retirer les éléments système
+                    tempDiv.querySelectorAll('.scene-separator, .chapter-separator, .editor-act-separator')
+                        .forEach(el => el.remove());
 
-                            const labelEl = child.querySelector('.structure-block-label');
+                    // Trouver TOUS les structure blocks (quelle que soit la profondeur)
+                    const structureBlocks = Array.from(tempDiv.querySelectorAll('.structure-block'));
+
+                    if (structureBlocks.length === 0) {
+                        // Aucun SB : accumuler tout le texte de la scène
+                        accumulateText(tempDiv.textContent, act, chapter, scene);
+                    } else {
+                        // Extraire les données de chaque SB avant de modifier le DOM
+                        const sbData = structureBlocks.map(block => {
+                            const labelEl = block.querySelector('.structure-block-label');
                             const label = labelEl ? labelEl.textContent.trim() : 'SCENE BEAT';
-                            const color = child.style.getPropertyValue('--accent-color') || '#ff8c42';
-                            const contentEl = child.querySelector('.structure-block-content');
+                            const color = block.style.getPropertyValue('--accent-color') || '#ff8c42';
+                            const contentEl = block.querySelector('.structure-block-content');
                             const fullContent = contentEl ? contentEl.textContent.trim() : '';
+                            return { label, color, fullContent };
+                        });
 
-                            passages.push(NarrativeOverviewModel.createPassage(
-                                NarrativeOverviewModel.PASSAGE_TYPES.STRUCTURE_BLOCK,
-                                {
-                                    actId: act.id,
-                                    actTitle: act.title,
-                                    chapterId: chapter.id,
-                                    chapterTitle: chapter.title,
-                                    sceneId: scene.id,
-                                    sceneTitle: scene.title,
-                                    content: self.generatePreview(fullContent),
-                                    fullContent: fullContent,
-                                    label: label,
-                                    color: color,
-                                    position: globalPosition,
-                                    wordCount: self.countWords(fullContent)
-                                }
-                            ));
-                            globalPosition++;
-                        } else if (!isSystemElement(child)) {
-                            const text = child.textContent.trim();
-                            if (text.length > 0) {
-                                accumulateText(text, act, chapter, scene);
+                        // Remplacer chaque SB par un marqueur sentinel dans le DOM
+                        structureBlocks.forEach(block => {
+                            const marker = document.createTextNode(SENTINEL);
+                            block.parentNode.replaceChild(marker, block);
+                        });
+
+                        // Découper le texte résultant par les sentinels
+                        const segments = tempDiv.textContent.split(SENTINEL);
+
+                        // Intercaler : texte[0], SB[0], texte[1], SB[1], ..., texte[n]
+                        segments.forEach((segment, i) => {
+                            accumulateText(segment, act, chapter, scene);
+
+                            if (i < sbData.length) {
+                                flushRegular();
+
+                                passages.push(NarrativeOverviewModel.createPassage(
+                                    NarrativeOverviewModel.PASSAGE_TYPES.STRUCTURE_BLOCK,
+                                    {
+                                        actId: act.id,
+                                        actTitle: act.title,
+                                        chapterId: chapter.id,
+                                        chapterTitle: chapter.title,
+                                        sceneId: scene.id,
+                                        sceneTitle: scene.title,
+                                        content: self.generatePreview(sbData[i].fullContent),
+                                        fullContent: sbData[i].fullContent,
+                                        label: sbData[i].label,
+                                        color: sbData[i].color,
+                                        position: globalPosition,
+                                        wordCount: self.countWords(sbData[i].fullContent)
+                                    }
+                                ));
+                                globalPosition++;
                             }
-                        }
-                    });
+                        });
+                    }
                 });
             });
         });
