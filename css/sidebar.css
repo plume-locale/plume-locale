@@ -97,6 +97,50 @@
     visibility: visible;
 }
 
+/* Feedback visuel pour indiquer que la sidebar est en arrière-plan quand l'accordéon est ouvert */
+.sidebar-accordion.open~.sidebar {
+    opacity: 0.3;
+    filter: blur(2px) grayscale(0.2);
+    pointer-events: none;
+    transition: all 0.4s ease;
+    user-select: none;
+}
+
+/* Indicateur textuel sur la sidebar estompée */
+.sidebar-accordion.open~.sidebar::after {
+    content: "Affichage réduit - cliquez en haut pour masquer le menu";
+    position: absolute;
+    top: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(var(--primary-color-rgb), 0.1);
+    color: var(--primary-color);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 1px solid rgba(var(--primary-color-rgb), 0.2);
+    backdrop-filter: blur(4px);
+    z-index: 10;
+    white-space: nowrap;
+    opacity: 0;
+    animation: fadeInHint 0.5s ease 0.3s forwards;
+}
+
+@keyframes fadeInHint {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+}
+
 /* Navigation Items in Accordion */
 .accordion-nav-item {
     display: flex;

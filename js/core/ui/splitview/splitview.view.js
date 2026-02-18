@@ -363,10 +363,11 @@ function renderEditorInContainer(act, chapter, scene, container, panel) {
         if (typeof initializeColorPickers === 'function') initializeColorPickers(panel);
 
         // Initial Tension Check
-        if (typeof updateLiveTensionMeter === 'function' && scene.content) {
+        if (typeof updateLiveTensionMeter === 'function') {
             // Strip HTML for tension calculation to be safe, or let the handler do it
+            const content = scene.content || '';
             const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = scene.content;
+            tempDiv.innerHTML = content;
             updateLiveTensionMeter(tempDiv.innerText || tempDiv.textContent || '', { sceneId: scene.id, chapterId: chapter.id, actId: act.id });
         }
     }, 50);

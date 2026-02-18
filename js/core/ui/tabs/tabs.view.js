@@ -191,6 +191,8 @@ function switchActivePane(paneId) {
     const pane = tabsState.panes[paneId];
     const activeTab = pane.tabs.find(t => t.id === pane.activeTabId);
     if (activeTab) syncGlobalStateWithTab(activeTab);
+
+    if (typeof closeSidebarAccordion === 'function') closeSidebarAccordion();
 }
 
 /** [MVVM : View] - Active un onglet spécifique */
@@ -201,6 +203,8 @@ function activateTab(tabId, paneId) {
 
     const activeTab = tabsState.panes[paneId].tabs.find(t => t.id === tabId);
     if (activeTab) syncGlobalStateWithTab(activeTab);
+
+    if (typeof closeSidebarAccordion === 'function') closeSidebarAccordion();
 }
 
 /** [MVVM : View] - Gestion du Drag & Drop des onglets */

@@ -118,6 +118,11 @@ function addChapterViewModel(title, targetActId) {
 
     try {
         const chapter = createChapter(trimmedTitle);
+        
+        // Option 1: Implicit Scene creation
+        const scene = createScene(trimmedTitle); // First scene takes chapter title
+        chapter.scenes.push(scene);
+
         const repoActions = [];
         if (autoCreatedAct) repoActions.push({ action: 'ADD', collection: 'acts', data: autoCreatedAct });
         repoActions.push({ action: 'ADD', collection: 'chapters', actId: actId, data: chapter });
@@ -130,7 +135,8 @@ function addChapterViewModel(title, targetActId) {
                 repository: repoActions,
                 shouldExpandAct: actId,
                 shouldExpandChapter: chapter.id,
-                shouldSave: true
+                shouldSave: true,
+                shouldOpenScene: { actId, chapterId: chapter.id, sceneId: scene.id }
             }
         };
     } catch (error) {

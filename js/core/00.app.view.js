@@ -132,9 +132,25 @@ function toggleSidebarAccordion() {
     if (accordion) accordion.classList.toggle('open');
 }
 
+function closeSidebarAccordion() {
+    const accordion = document.getElementById('sidebarAccordion');
+    if (accordion && accordion.classList.contains('open')) {
+        accordion.classList.remove('open');
+    }
+}
+
 // Initial Render
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(renderSidebarAccordion, 100);
+
+    // Fermer l'accordéon au clic à l'extérieur (dans le rendu ou les onglets)
+    // On utilise la phase de capture pour passer à travers les stopPropagation() éventuels
+    document.addEventListener('click', (e) => {
+        const accordion = document.getElementById('sidebarAccordion');
+        if (accordion && accordion.classList.contains('open') && !accordion.contains(e.target)) {
+            accordion.classList.remove('open');
+        }
+    }, { capture: true });
 });
 
 /*
@@ -677,9 +693,10 @@ function renderViewContent(view, containerId) {
                                     if (typeof refreshLinksPanel === 'function') refreshLinksPanel();
 
                                     // Update Tension Meter
-                                    if (typeof updateLiveTensionMeter === 'function' && scene.content) {
+                                    if (typeof updateLiveTensionMeter === 'function') {
+                                        const content = scene.content || '';
                                         const tempDiv = document.createElement('div');
-                                        tempDiv.innerHTML = scene.content;
+                                        tempDiv.innerHTML = content;
                                         updateLiveTensionMeter(tempDiv.innerText || tempDiv.textContent || '', { sceneId: scene.id, chapterId: chapter.id, actId: act.id });
                                     }
 
@@ -711,6 +728,11 @@ function renderViewContent(view, containerId) {
                         <div class="empty-state-title">${Localization.t('empty.select_scene')}</div>
                         <div class="empty-state-text">${Localization.t('empty.select_sidebar')}</div>
                     </div> `;
+            }
+
+            // Reset Tension Meter in empty state
+            if (typeof updateLiveTensionMeter === 'function') {
+                updateLiveTensionMeter('', null);
             }
             break;
 
