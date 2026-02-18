@@ -203,6 +203,7 @@ window.LOCALE_FR = {
     "module.writing.blocks": "Blocs de Structure",
     "module.writing.overview": "Vue d'ensemble narrative",
     "module.writing.revision": "Mode Révision",
+    "module.writing.revision_feedback": "Revision, Scene Notes, Annotations & TODO",
     "module.writing.front_matter": "Liminaires & Annexes",
     "module.planning.corkboard": "Tableau de Bord / Corkboard",
     "module.planning.plot": "Graphique d'Intrigue",

@@ -52,7 +52,10 @@ const InterfaceCustomizerModel = {
         { id: 'toolPlotBtn', icon: 'trending-up', label: 'tool.plot', category: 'tools' },
         { id: 'toolInvestigationBtn', icon: 'search', label: 'nav.investigation', category: 'tools' },
         { id: 'toolRepetitionBtn', icon: 'repeat', label: 'tools.repetition', category: 'tools' },
-        { id: 'toolLinksPanelBtn', icon: 'link', label: 'tools.links', category: 'tools' }
+        { id: 'toolLinksPanelBtn', icon: 'link', label: 'tools.links', category: 'tools' },
+        { id: 'toolRevisionBtn', icon: 'refresh-cw', label: 'module.writing.revision', category: 'tools' },
+        { id: 'toolStructureBlockBtn', icon: 'box', label: 'module.writing.blocks', category: 'tools' },
+        { id: 'toolNarrativeOverviewBtn', icon: 'book-open', label: 'module.writing.overview', category: 'tools' }
     ],
 
     // Liste exhaustive des modules (chaque dossier du projet)
@@ -138,11 +141,17 @@ const InterfaceCustomizerModel = {
             components: ['toolNarrativeOverviewBtn']
         },
         {
-            id: 'revision',
-            label: 'module.writing.revision',
+            id: 'revision_feedback',
+            label: 'module.writing.revision_feedback',
             icon: 'refresh-cw',
             category: 'writing',
-            components: ['toolRevisionBtn']
+            components: [
+                'header-tab-versions', 'nav-item-versions', 'toolVersionsBtn',
+                'toolAnnotationsBtn',
+                'toolRevisionBtn',
+                'header-tab-notes', 'nav-item-notes',
+                'toolTodosBtn'
+            ]
         },
         {
             id: 'front-matter',
@@ -228,7 +237,7 @@ const InterfaceCustomizerModel = {
             label: 'module.planning.relations',
             icon: 'link-2',
             category: 'planning',
-            components: ['header-tab-relations', 'nav-item-relations']
+            components: ['header-tab-relations', 'nav-item-relations', 'toolLinksPanelBtn']
         },
 
         // --- ATLAS (WORLDBUILDING/ATLAS) ---
@@ -309,25 +318,11 @@ const InterfaceCustomizerModel = {
 
         // --- PERSONAL ---
         {
-            id: 'notes',
-            label: 'module.personal.notes',
-            icon: 'sticky-note',
-            category: 'personal',
-            components: ['header-tab-notes', 'nav-item-notes']
-        },
-        {
             id: 'globalnotes',
             label: 'module.personal.global_notes',
             icon: 'layout',
             category: 'personal',
             components: ['header-tab-globalnotes', 'nav-item-globalnotes']
-        },
-        {
-            id: 'todo',
-            label: 'module.personal.todo',
-            icon: 'check-square',
-            category: 'personal',
-            components: ['toolTodosBtn']
         }
     ],
 
@@ -342,22 +337,22 @@ const InterfaceCustomizerModel = {
         {
             id: 'writer',
             label: 'customizer.preset.writer',
-            modules: ['project', 'ui', 'editor', 'notes', 'characters'],
-            shortcuts: ['project', 'editor', 'corkboard', 'notes']
+            modules: ['project', 'ui', 'editor', 'globalnotes', 'characters'],
+            shortcuts: ['project', 'editor', 'corkboard', 'globalnotes']
         },
         {
             id: 'full',
             label: 'customizer.preset.full',
             modules: [
                 'project', 'ui', 'theme-manager', 'localization', 'storage', 'undo-redo', 'keyboard-shortcuts',
-                'editor', 'focusMode', 'structure-blocks', 'narrative-overview', 'revision', 'front-matter',
+                'editor', 'focusMode', 'structure-blocks', 'narrative-overview', 'revision_feedback', 'front-matter',
                 'corkboard', 'plot', 'plotgrid', 'timeline-metro', 'arc-board', 'thriller-board', 'investigation-board', 'mindmap', 'map', 'tension', 'relation-map',
                 'characters', 'world', 'codex',
                 'stats', 'synonyms', 'word-repetition',
                 'search', 'import-export', 'import-chapter', 'colorpalette',
-                'notes', 'globalnotes', 'todo'
+                'globalnotes'
             ],
-            shortcuts: ['project', 'editor', 'corkboard', 'notes', 'characters', 'world']
+            shortcuts: ['project', 'editor', 'corkboard', 'globalnotes', 'characters', 'world']
         }
     ],
 
@@ -375,6 +370,7 @@ const InterfaceCustomizerModel = {
             activeModules: InterfaceCustomizerModel.modules.map(m => m.id),
             mandatoryModules: ['project', 'ui', 'editor'],
             shortcuts: ['project', 'editor', 'corkboard', 'notes', 'characters', 'world'],
+            currentPresetId: null,
             progressBarWidth: 8,
             statusDraftColor: '#ff6b6b',
             statusProgressColor: '#ffd93d',

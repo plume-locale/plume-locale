@@ -20,6 +20,7 @@ const InterfaceCustomizerViewModel = {
         if (!settings.activeModules) settings.activeModules = defaults.activeModules;
         if (!settings.mandatoryModules) settings.mandatoryModules = defaults.mandatoryModules;
         if (!settings.shortcuts) settings.shortcuts = defaults.shortcuts;
+        if (settings.currentPresetId === undefined) settings.currentPresetId = defaults.currentPresetId || null;
 
         InterfaceCustomizerViewModel.state.settings = settings;
         InterfaceCustomizerViewModel.applySettings();
@@ -61,7 +62,11 @@ const InterfaceCustomizerViewModel = {
      * Bascule l'activation d'un module
      */
     toggleModuleActive: (moduleId) => {
-        const settings = InterfaceCustomizerViewModel.state.settings;
+        const isEditing = InterfaceCustomizerViewModel.state.isEditing;
+        const settings = isEditing
+            ? InterfaceCustomizerViewModel.state.tempSettings
+            : InterfaceCustomizerViewModel.state.settings;
+
         const mandatory = settings.mandatoryModules || [];
 
         // Impossible de désactiver un module obligatoire
@@ -74,8 +79,18 @@ const InterfaceCustomizerViewModel = {
             settings.activeModules = [...active, moduleId];
         }
 
-        InterfaceCustomizerRepository.saveSettings(settings);
+        settings.currentPresetId = null;
+
+        if (!isEditing) {
+            InterfaceCustomizerRepository.saveSettings(settings);
+        }
+
         InterfaceCustomizerViewModel.applySettings();
+
+        // Rafraîchir la vue du modal si elle est ouverte
+        if (typeof InterfaceCustomizerView !== 'undefined' && document.getElementById('moduleSettingsModal')) {
+            InterfaceCustomizerView.renderModuleSettings();
+        }
     },
 
     /**
@@ -97,6 +112,11 @@ const InterfaceCustomizerViewModel = {
 
         InterfaceCustomizerRepository.saveSettings(settings);
         InterfaceCustomizerViewModel.applySettings();
+
+        // Rafraîchir la vue admin si elle est ouverte
+        if (typeof InterfaceCustomizerView !== 'undefined' && document.getElementById('adminModuleModal')) {
+            InterfaceCustomizerView.renderAdminModuleMenu();
+        }
     },
 
     /**
@@ -111,6 +131,8 @@ const InterfaceCustomizerViewModel = {
         const settings = isEditing
             ? InterfaceCustomizerViewModel.state.tempSettings
             : InterfaceCustomizerViewModel.state.settings;
+
+        settings.currentPresetId = presetId;
 
         // 1. Appliquer les modules du preset
         const mandatory = settings.mandatoryModules || [];
@@ -132,6 +154,11 @@ const InterfaceCustomizerViewModel = {
 
         // 5. Appliquer l'effet visuel immédiatement
         InterfaceCustomizerViewModel.applySettings();
+
+        // Rafraîchir la vue du modal si elle est ouverte
+        if (typeof InterfaceCustomizerView !== 'undefined' && document.getElementById('moduleSettingsModal')) {
+            InterfaceCustomizerView.renderModuleSettings();
+        }
 
         if (typeof showNotification === 'function') {
             const label = preset.label.includes('.') ? Localization.t(preset.label) : preset.label;
@@ -173,6 +200,7 @@ const InterfaceCustomizerViewModel = {
 
         if (InterfaceCustomizerViewModel.state.isEditing) {
             InterfaceCustomizerViewModel.state.tempSettings[componentId] = !InterfaceCustomizerViewModel.state.tempSettings[componentId];
+            InterfaceCustomizerViewModel.state.tempSettings.currentPresetId = null; // Manual change
             InterfaceCustomizerView.refreshComponentsVisuals();
         }
     },
@@ -183,6 +211,7 @@ const InterfaceCustomizerViewModel = {
     updateSetting: (key, value) => {
         if (InterfaceCustomizerViewModel.state.isEditing) {
             InterfaceCustomizerViewModel.state.tempSettings[key] = value;
+            InterfaceCustomizerViewModel.state.tempSettings.currentPresetId = null;
             InterfaceCustomizerViewModel.applySettings();
         }
     },

@@ -129,8 +129,9 @@ const InterfaceCustomizerView = {
                         <div class="preset-selector compact">
                             ${presets.map(p => {
             const label = p.label.includes('.') ? Localization.t(p.label) : p.label;
+            const isActive = settings.currentPresetId === p.id;
             return `
-                                <button class="preset-btn btn-sm" onclick="InterfaceCustomizerViewModel.applyPreset('${p.id}'); InterfaceCustomizerView.closeOurModal('moduleSettingsModal')">
+                                <button class="preset-btn btn-sm ${isActive ? 'active' : ''}" onclick="InterfaceCustomizerViewModel.applyPreset('${p.id}')">
                                     ${label}
                                 </button>
                             `;
@@ -149,7 +150,7 @@ const InterfaceCustomizerView = {
                     const isMandatory = mandatoryModules.includes(m.id);
                     return `
                                                     <div class="module-card ${isActive ? 'active' : ''} ${isMandatory ? 'mandatory' : ''}" 
-                                                         ${isMandatory ? '' : `onclick="InterfaceCustomizerViewModel.toggleModuleActive('${m.id}'); InterfaceCustomizerView.renderModuleSettings()"`}>
+                                                         ${isMandatory ? '' : `onclick="InterfaceCustomizerViewModel.toggleModuleActive('${m.id}')"`}>
                                                         <i data-lucide="${m.icon}" class="module-card-icon"></i>
                                                         <span class="module-card-label">${Localization.t(m.label)}</span>
                                                         ${isMandatory ? '<i data-lucide="lock" class="lock-icon"></i>' : ''}

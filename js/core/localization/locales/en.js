@@ -195,6 +195,7 @@ window.LOCALE_EN = {
     "module.writing.blocks": "Structure Blocks",
     "module.writing.overview": "Narrative Overview",
     "module.writing.revision": "Revision Mode",
+    "module.writing.revision_feedback": "Revision, Snapshots & Annotations",
     "module.writing.front_matter": "Front Matter & Annexes",
     "module.planning.corkboard": "Corkboard",
     "module.planning.plot": "Plot Graph",

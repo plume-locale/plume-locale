@@ -120,6 +120,11 @@ function renderSidebarAccordion() {
     `).join('');
 
     if (typeof lucide !== 'undefined') lucide.createIcons();
+
+    // Appliquer les réglages d'interface (modules masqués) APRÈS le rendu de l'accordéon
+    if (typeof InterfaceCustomizerViewModel !== 'undefined') {
+        InterfaceCustomizerViewModel.applySettings();
+    }
 }
 
 function toggleSidebarAccordion() {
@@ -413,6 +418,11 @@ function syncSidebarWithView(view) {
     } else if (noSidebarMsg) {
         noSidebarMsg.style.display = 'none';
     }
+
+    // Appliquer les réglages de personnalisation après le changement de vue
+    if (typeof InterfaceCustomizerViewModel !== 'undefined') {
+        InterfaceCustomizerViewModel.applySettings();
+    }
 }
 
 /**
@@ -529,6 +539,11 @@ function updateGNToolsSidebar() {
         </div>
     `;
     if (typeof lucide !== 'undefined') lucide.createIcons({ root: toolsSidebar });
+
+    // Appliquer les réglages de personnalisation après le rendu
+    if (typeof InterfaceCustomizerViewModel !== 'undefined') {
+        InterfaceCustomizerViewModel.applySettings();
+    }
 }
 
 /**
@@ -586,6 +601,11 @@ function updateEditorToolsSidebar() {
     // Immediately refresh badges
     if (typeof ToolsSidebarViewModel !== 'undefined') {
         ToolsSidebarViewModel.updateAllBadges();
+    }
+
+    // Appliquer les réglages de personnalisation après le rendu
+    if (typeof InterfaceCustomizerViewModel !== 'undefined') {
+        InterfaceCustomizerViewModel.applySettings();
     }
 }
 
@@ -1494,7 +1514,7 @@ function getEditorToolbarHTML(panel = null, hideExtraTools = false) {
         </div>
         
         <!-- Synonyms -->
-        <div class="toolbar-group">
+        <div class="toolbar-group" id="toolSynonymsBtn">
             <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="if(typeof SynonymsView !== 'undefined') SynonymsView.toggle()" title="${Localization.t('toolbar.synonyms')}">
                 <i data-lucide="book-a" style="width:14px;height:14px;"></i>
             </button>
@@ -1504,13 +1524,13 @@ function getEditorToolbarHTML(panel = null, hideExtraTools = false) {
         <div class="toolbar-group">
             <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="${fnName}(${fnPrefix}'insertHorizontalRule')" title="${Localization.t('toolbar.horizontal_rule')}"><i data-lucide="minus" style="width:14px;height:14px;"></i></button>
             <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="${fnName}(${fnPrefix}'removeFormat')" title="${Localization.t('toolbar.remove_format')}"><i data-lucide="eraser" style="width:14px;height:14px;"></i></button>
-            <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="StructureBlockUI.wrapSelection()" title="${Localization.t('toolbar.structure_block')}">
+            <button class="toolbar-btn" id="toolStructureBlockBtn" onmousedown="event.preventDefault()" onclick="StructureBlockUI.wrapSelection()" title="${Localization.t('toolbar.structure_block')}">
                 <i data-lucide="layers" style="width:14px;height:14px;"></i>
             </button>
         </div>
 
         <!-- Narrative Overview Toggle -->
-        <div class="toolbar-group">
+        <div class="toolbar-group" id="toolNarrativeOverviewBtn">
             <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="NarrativeOverviewMain.toggleVisibility()" title="Aperçu narratif chronologique">
                 <i data-lucide="book-open" style="width:14px;height:14px;"></i>
             </button>
@@ -1590,6 +1610,12 @@ function renderEditor(act, chapter, scene) {
             <div class="editor-toolbar" id="editorToolbar" style="border-top: 1px solid var(--border-color);">
                 ${getEditorToolbarHTML()}
             </div>
+            
+            <script>
+                if (typeof InterfaceCustomizerViewModel !== 'undefined') {
+                    InterfaceCustomizerViewModel.applySettings();
+                }
+            </script>
         </div>
 
         <div class="chapter-progress-indicator" id="chapterProgressIndicator">

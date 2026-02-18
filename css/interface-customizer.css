@@ -185,6 +185,12 @@
     font-size: 0.75rem;
 }
 
+.preset-btn.btn-sm.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
 /* Presets Admin UI */
 .presets-admin-column {
     display: flex;
