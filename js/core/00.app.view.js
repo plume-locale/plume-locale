@@ -12,7 +12,11 @@ let isMobile = window.innerWidth <= 900;
 
 // Update isMobile on resize
 window.addEventListener('resize', () => {
+    const wasMobile = isMobile;
     isMobile = window.innerWidth <= 900;
+    if (wasMobile !== isMobile) {
+        renderSidebarAccordion();
+    }
 });
 
 // --- DISPATCHER DE REPOSITORY ---
@@ -121,6 +125,13 @@ function renderSidebarAccordion() {
 
     if (typeof lucide !== 'undefined') lucide.createIcons();
 
+    // Sur mobile, on applique le style en grille
+    if (window.innerWidth <= 900) {
+        container.classList.add('mobile-grid');
+    } else {
+        container.classList.remove('mobile-grid');
+    }
+
     // Appliquer les réglages d'interface (modules masqués) APRÈS le rendu de l'accordéon
     if (typeof InterfaceCustomizerViewModel !== 'undefined') {
         InterfaceCustomizerViewModel.applySettings();
@@ -129,7 +140,21 @@ function renderSidebarAccordion() {
 
 function toggleSidebarAccordion() {
     const accordion = document.getElementById('sidebarAccordion');
-    if (accordion) accordion.classList.toggle('open');
+    if (accordion) {
+        const isOpen = accordion.classList.contains('open');
+        setSidebarAccordion(!isOpen);
+    }
+}
+
+function setSidebarAccordion(open) {
+    const accordion = document.getElementById('sidebarAccordion');
+    if (!accordion) return;
+
+    if (open) {
+        accordion.classList.add('open');
+    } else {
+        accordion.classList.remove('open');
+    }
 }
 
 function closeSidebarAccordion() {
@@ -1542,6 +1567,13 @@ function getEditorToolbarHTML(panel = null, hideExtraTools = false) {
             </button>
         </div>
         
+        <!-- Mentions -->
+        <div class="toolbar-group" id="toolMentionsBtn">
+            <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="MentionHelp.showGuide()" title="${Localization.t('mention.toolbar.title')}">
+                <i data-lucide="at-sign" style="width:14px;height:14px;"></i>
+            </button>
+        </div>
+
         <!-- Other -->
         <div class="toolbar-group">
             <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="${fnName}(${fnPrefix}'insertHorizontalRule')" title="${Localization.t('toolbar.horizontal_rule')}"><i data-lucide="minus" style="width:14px;height:14px;"></i></button>

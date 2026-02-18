@@ -519,6 +519,15 @@ const ProductTourData = {
                 }
             },
             {
+                "element": "#toolMentionsBtn",
+                "popover": {
+                    "title": "tour.editor.mentions.title",
+                    "description": "tour.editor.mentions.description",
+                    "side": "top",
+                    "align": "center"
+                }
+            },
+            {
                 "element": ".editor-textarea",
                 "popover": {
                     "title": "tour.editor.textarea.title",

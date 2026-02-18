@@ -6,7 +6,10 @@
 function updateSplitToggleButton() {
     const btn = document.getElementById('splitModeToggle');
     if (btn) {
-        if (splitViewActive) {
+        // En mode onglets, on vérifie tabsState.isSplit
+        const isActive = (typeof tabsState !== 'undefined' && (tabsState.isSplit || tabsState.panes.right.tabs.length > 0)) || splitViewActive;
+
+        if (isActive) {
             btn.classList.add('active');
             btn.innerHTML = `<i data-lucide="columns-2" style="width:14px;height:14px;"></i> <span>${Localization.t('split.toggle_active')}</span>`;
         } else {

@@ -91,6 +91,11 @@ async function init() {
         StructureBlockUI.init();
     }
 
+    // Initialize Mention Help (Auto-completion)
+    if (typeof MentionHelp !== 'undefined' && MentionHelp.init) {
+        MentionHelp.init();
+    }
+
     // Ensure all icons are rendered
     if (typeof lucide !== 'undefined') {
         lucide.createIcons();
