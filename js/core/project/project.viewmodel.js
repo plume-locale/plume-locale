@@ -39,7 +39,7 @@ const ProjectViewModel = {
 
                 if (savedId) {
                     currentProjectId = savedId;
-                    project = projects.find(p => p.id === savedId);
+                    project = projects.find(p => p.id == savedId);
                     window.project = project;
                 }
 
@@ -134,7 +134,7 @@ const ProjectViewModel = {
     async saveAll() {
         try {
             if (currentProjectId) {
-                const index = projects.findIndex(p => p.id === currentProjectId);
+                const index = projects.findIndex(p => p.id == currentProjectId);
                 if (index >= 0) {
                     projects[index] = { ...project, updatedAt: new Date().toISOString() };
                 }
@@ -315,7 +315,7 @@ const ProjectViewModel = {
      */
     switchTo(projectId, shouldSwitchView = true) {
         currentProjectId = projectId;
-        project = projects.find(p => p.id === projectId);
+        project = projects.find(p => p.id == projectId);
         window.project = project;
 
         if (!project) return;
@@ -372,16 +372,16 @@ const ProjectViewModel = {
      * Supprime un projet.
      */
     async delete(projectId) {
-        const proj = projects.find(p => p.id === projectId);
+        const proj = projects.find(p => p.id == projectId);
         if (!proj) return;
 
         if (!confirm(Localization.t('project.viewmodel.confirm_delete', [proj.title]))) return;
 
-        projects = projects.filter(p => p.id !== projectId);
+        projects = projects.filter(p => p.id != projectId);
         await ProjectRepository.delete(projectId);
         await ProjectRepository.saveSetting('currentProjectId', currentProjectId);
 
-        if (currentProjectId === projectId) {
+        if (currentProjectId == projectId) {
             if (projects.length > 0) {
                 this.switchTo(projects[0].id, false);
             } else {
@@ -404,7 +404,7 @@ const ProjectViewModel = {
      * Exporte un projet en JSON.
      */
     export(projectId) {
-        const proj = projects.find(p => p.id === projectId);
+        const proj = projects.find(p => p.id == projectId);
         if (!proj) return;
 
         const dataStr = JSON.stringify(proj, null, 2);
@@ -421,7 +421,7 @@ const ProjectViewModel = {
      * Ouvre le menu de sauvegarde pour un projet spécifique.
      */
     backup(projectId) {
-        const proj = projects.find(p => p.id === projectId);
+        const proj = projects.find(p => p.id == projectId);
         if (!proj) return;
 
         // On définit temporairement ce projet comme actif pour le modal de backup

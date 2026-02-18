@@ -39,6 +39,20 @@ CSS_ORDER = [
     'narrative-overview.css',
 ]
 
+# Mapping des fichiers locaux vers leurs équivalents CDN pour la version LIVE
+# Permet de réduire la taille du déploiement et d'utiliser le cache des navigateurs
+CDN_MAP = {
+    'vendor/idb.js': 'https://cdn.jsdelivr.net/npm/idb@7/build/umd.js',
+    'vendor/FileSaver.min.js': 'https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js',
+    'vendor/jszip.min.js': 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js',
+    'vendor/xlsx.full.min.js': 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js',
+    'vendor/mammoth.browser.min.js': 'https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js',
+    'vendor/lucide.min.js': 'https://unpkg.com/lucide@latest/dist/umd/lucide.min.js',
+    'vendor/driver.js.iife.js': 'https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js',
+    '../vendor/driver.css': 'https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.css',
+    '../vendor/fonts.offline.css': 'https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,700;1,400;1,700&family=Source+Code+Pro&display=swap'
+}
+
 # CSS des modules additionnels
 MODULE_CSS_FILES = [
     'css/synonyms.css',

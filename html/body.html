@@ -884,6 +884,23 @@
                     <input type="text" class="form-input" id="chapterTitleInput" placeholder="Chapitre 1 : Le Début"
                         data-i18n-placeholder="modal.chapter.placeholder" />
                 </div>
+
+                <!-- Batch Creation Option -->
+                <div class="form-group"
+                    style="margin-top: 1.5rem; padding: 1rem; background: var(--bg-secondary); border-radius: 8px; border: 1px dashed var(--border-color);">
+                    <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer; font-weight: 600;">
+                        <input type="checkbox" id="batchChapterCheck"
+                            onchange="document.getElementById('batchChapterCountGroup').style.display = this.checked ? 'block' : 'none'">
+                        <span>Création en masse (chapitres vides)</span>
+                    </label>
+                    <div id="batchChapterCountGroup" style="display: none; margin-top: 1rem;">
+                        <label class="form-label" style="font-size: 0.85rem; opacity: 0.8;">Nombre de chapitres à créer
+                            :</label>
+                        <input type="number" class="form-input" id="batchChapterCount" value="45" min="1" max="100"
+                            style="width: 80px;" />
+                    </div>
+                </div>
+
                 <div class="modal-actions">
                     <button class="btn" onclick="closeModal('addChapterModal')" data-i18n="btn.cancel">Annuler</button>
                     <button class="btn btn-primary" onclick="addChapter()" data-i18n="btn.create">Créer</button>

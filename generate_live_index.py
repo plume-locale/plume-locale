@@ -5,7 +5,7 @@ import sys
 
 # Importer les listes depuis build_config.py
 try:
-    from build_config import CSS_ORDER, JS_ORDER, MODULE_CSS_FILES, IGNORED_ORIGINALS
+    from build_config import CSS_ORDER, JS_ORDER, MODULE_CSS_FILES, IGNORED_ORIGINALS, CDN_MAP
 except ImportError:
     print("ERREUR: build_config.py introuvable.")
     sys.exit(1)
@@ -53,10 +53,13 @@ def generate_index():
     
     # 1. CSS_ORDER
     for css in CSS_ORDER:
-        filename = os.path.basename(css)
-        link = f'<link rel="stylesheet" href="./css/{filename}">'
+        if css in CDN_MAP:
+            link = f'<link rel="stylesheet" href="{CDN_MAP[css]}">'
+        else:
+            filename = os.path.basename(css)
+            link = f'<link rel="stylesheet" href="./css/{filename}">'
         css_links.append(link)
-        processed_css.append(filename)
+        processed_css.append(os.path.basename(css))
 
     # 2. Other CSS files in css/ folder not in order (excluding storygrid)
     local_css_dir = os.path.join(BUILD_DIR, 'css')
@@ -87,7 +90,10 @@ def generate_index():
 
     # 1. JS_ORDER
     for js in JS_ORDER:
-         src = get_live_js_path(js)
+         if js in CDN_MAP:
+             src = CDN_MAP[js]
+         else:
+             src = get_live_js_path(js)
          js_scripts.append(f'<script src="{src}"></script>')
              
     # 2. Extra JS files

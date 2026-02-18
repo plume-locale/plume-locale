@@ -112,6 +112,28 @@ const ArcBoardImportExport = {
         const fileName = `${prefix.replace(/\s+/g, '_')}_export_${new Date().toISOString().slice(0, 10)}.xlsx`;
         XLSX.writeFile(wb, fileName);
     },
+    /**
+     * Triggers the Excel import process.
+     */
+    importFromExcel: function (file) {
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            const sheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[sheetName];
+            const json = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+            if (json.length < 1) {
+                alert(Localization.t('arc.import.error_empty'));
+                return;
+            }
+
+            this.processImportData(json);
+        };
+        reader.readAsArrayBuffer(file);
+    },
 
     /**
      * Processes JSON from Excel to create/update arcs.
@@ -128,16 +150,16 @@ const ArcBoardImportExport = {
             return [fallback, 'ID', 'Export ID', 'Links', 'Links To'].findIndex(f => headers.includes(f));
         };
 
-        const idIdx = 0; // Fixed for safety
-        const arcIdx = headers.indexOf(Localization.t('arc.export.col_arc')) !== -1 ? headers.indexOf(Localization.t('arc.export.col_arc')) : 1;
-        const catIdx = headers.indexOf(Localization.t('arc.export.col_category')) !== -1 ? headers.indexOf(Localization.t('arc.export.col_category')) : 2;
-        const colIdx = headers.indexOf(Localization.t('arc.export.col_board_column')) !== -1 ? headers.indexOf(Localization.t('arc.export.col_board_column')) : 3;
-        const typeIdx = headers.indexOf(Localization.t('arc.export.col_type')) !== -1 ? headers.indexOf(Localization.t('arc.export.col_type')) : 4;
-        const contentIdx = headers.indexOf(Localization.t('arc.export.col_content')) !== -1 ? headers.indexOf(Localization.t('arc.export.col_content')) : 5;
-        const notesIdx = headers.indexOf(Localization.t('arc.export.col_notes')) !== -1 ? headers.indexOf(Localization.t('arc.export.col_notes')) : 6;
-        const linksIdx = 7;
-        const xIdx = 8;
-        const yIdx = 9;
+        const idIdx = getIdx('arc.export.col_id', 'Export ID');
+        const arcIdx = getIdx('arc.export.col_arc', 'Arc');
+        const catIdx = getIdx('arc.export.col_category', 'Catégorie');
+        const colIdx = getIdx('arc.export.col_board_column', 'Colonne');
+        const typeIdx = getIdx('arc.export.col_type', 'Type');
+        const contentIdx = getIdx('arc.export.col_content', 'Contenu');
+        const notesIdx = getIdx('arc.export.col_notes', 'Notes / Détails');
+        const linksIdx = headers.findIndex(h => h && (h.includes('Links') || h.includes('Liens')));
+        const xIdx = headers.indexOf('X');
+        const yIdx = headers.indexOf('Y');
 
         let currentArc = null;
         const idMap = new Map(); // Old ID -> New ID mapping
@@ -282,22 +304,11 @@ const ArcBoardImportExport = {
         }
         return data;
     },
-
-    case 'link':
-    data.title = content;
-    data.url = notes;
-    break;
-    default:
-        data.content = content;
-}
-return data;
-    },
-
-_downloadFile: function (content, fileName, contentType) {
-    const a = document.createElement("a");
-    const file = new Blob([content], { type: contentType });
-    a.href = URL.createObjectURL(file);
-    a.download = fileName;
-    a.click();
-}
+    _downloadFile: function (content, fileName, contentType) {
+        const a = document.createElement("a");
+        const file = new Blob([content], { type: contentType });
+        a.href = URL.createObjectURL(file);
+        a.download = fileName;
+        a.click();
+    }
 };

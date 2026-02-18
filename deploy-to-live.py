@@ -14,7 +14,7 @@ from datetime import datetime
 
 # Importer les listes depuis build_config.py
 try:
-    from build_config import CSS_ORDER, JS_ORDER, MODULE_CSS_FILES, IGNORED_ORIGINALS
+    from build_config import CSS_ORDER, JS_ORDER, MODULE_CSS_FILES, IGNORED_ORIGINALS, CDN_MAP
 except ImportError:
     print("ERREUR: build_config.py introuvable.")
     sys.exit(1)
@@ -72,6 +72,9 @@ def get_all_files_to_deploy():
         else:
             rel_path = f'css/{css_file}'
         
+        if css_file in CDN_MAP:
+             continue
+             
         files.append(rel_path)
         processed_css.add(os.path.basename(rel_path))
     
@@ -98,6 +101,9 @@ def get_all_files_to_deploy():
         else:
             rel_path = f'js/{js_file}'
         
+        if js_file in CDN_MAP:
+             continue
+             
         files.append(rel_path)
         processed_js.add(os.path.basename(rel_path))
     

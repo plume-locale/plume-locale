@@ -36,16 +36,43 @@ function deleteAct(actId) {
 
 function addChapter() {
     const titleInput = document.getElementById('chapterTitleInput');
-    const result = addChapterViewModel((titleInput.value || '').trim(), typeof activeActId !== 'undefined' ? activeActId : null);
+    const isBatch = document.getElementById('batchChapterCheck')?.checked;
+    const batchCountInput = document.getElementById('batchChapterCount');
+    const actId = typeof activeActId !== 'undefined' ? activeActId : null;
 
-    if (result.success) {
-        processStructureSideEffects(result.sideEffects);
-        titleInput.value = '';
-        closeModal('addChapterModal');
-        renderActsList();
-        if (result.message) showNotification(result.message, 'success');
+    if (isBatch) {
+        const count = parseInt(batchCountInput.value) || 0;
+        if (count <= 0) {
+            showNotification('Veuillez entrer un nombre valide', 'error');
+            return;
+        }
+
+        const baseTitle = (titleInput.value || 'Chapitre').trim();
+        const result = batchAddChaptersViewModel(baseTitle, count, actId);
+
+        if (result.success) {
+            processStructureSideEffects(result.sideEffects);
+            titleInput.value = '';
+            document.getElementById('batchChapterCheck').checked = false;
+            document.getElementById('batchChapterCountGroup').style.display = 'none';
+            closeModal('addChapterModal');
+            renderActsList();
+            showNotification(result.message, 'success');
+        } else {
+            showNotification(result.message || 'Échec de la création', 'error');
+        }
     } else {
-        showNotification(result.message || 'Erreur lors de l\'ajout', 'error');
+        const result = addChapterViewModel((titleInput.value || '').trim(), actId);
+
+        if (result.success) {
+            processStructureSideEffects(result.sideEffects);
+            titleInput.value = '';
+            closeModal('addChapterModal');
+            renderActsList();
+            if (result.message) showNotification(result.message, 'success');
+        } else {
+            showNotification(result.message || 'Erreur lors de l\'ajout', 'error');
+        }
     }
 }
 
