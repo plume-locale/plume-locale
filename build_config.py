@@ -37,6 +37,7 @@ CSS_ORDER = [
     'project-landing.css',
     'structure-blocks.css',
     'narrative-overview.css',
+    'import-scrivener.css',
 ]
 
 # Mapping des fichiers locaux vers leurs équivalents CDN pour la version LIVE
@@ -372,6 +373,10 @@ JS_ORDER = [
     'js/features/tools/import-chapter/import-chapter.model.js',
     'js/features/tools/import-chapter/import-chapter.viewmodel.js',
     'js/features/tools/import-chapter/import-chapter.view.js',
+    # Import Scrivener
+    'js/features/tools/import-scrivener/import-scrivener.model.js',
+    'js/features/tools/import-scrivener/import-scrivener.viewmodel.js',
+    'js/features/tools/import-scrivener/import-scrivener.view.js',
     # Word Repetition Analyzer
     'js/features/analysis/word-repetition/word-repetition.model.js',
     'js/features/analysis/word-repetition/word-repetition.repository.js',
