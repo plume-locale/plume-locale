@@ -8,11 +8,39 @@ html {
     scroll-behavior: smooth;
 }
 
+/* Transition fluide lors du changement de thème clair/sombre */
+*,
+*::before,
+*::after {
+    transition-property: background-color, border-color, color, fill, stroke, box-shadow;
+    transition-duration: 200ms;
+    transition-timing-function: ease;
+}
+
+/* Exclure les éléments animés pour éviter la désynchronisation */
+*[style*="transition"],
+.tab-item,
+.focus-mode-panel,
+.sidebar-accordion,
+.lang-dropdown-menu,
+.extra-menu-dropdown-content,
+.modal,
+.modal-content,
+.pomodoro-popup,
+[data-lucide],
+.writing-progress-fill,
+.progress-scene-segment {
+    transition-property: none;
+}
+
 body {
-    font-family: 'Crimson Pro', serif;
+    /* UI utilise Inter sans-serif pour lisibilité optimale des éléments d'interface */
+    font-family: var(--font-ui, 'Inter', system-ui, sans-serif);
     background: var(--bg-primary);
     color: var(--text-primary);
     overflow: hidden;
+    font-size: 14px;
+    line-height: 1.5;
 }
 
 .app-container {
