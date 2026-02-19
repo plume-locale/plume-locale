@@ -130,6 +130,9 @@ window.LOCALE_FR = {
     "sidebar.group.write": "Ecriture",
     "sidebar.group.analyze": "Analyse",
     "sidebar.group.construction": "Construction",
+    "sidebar.group.world": "Univers",
+    "sidebar.group.history": "Historique",
+    "sidebar.accordion.hint": "Menu affiché — cliquez ailleurs pour fermer",
     "nav.ecriture": "Ecriture",
 
     // --- Header Tools ---
@@ -1596,6 +1599,7 @@ window.LOCALE_FR = {
     "shortcuts.desc.paste": "Coller",
     "shortcuts.desc.paste_no_format": "Coller sans mise en forme",
     "shortcuts.cat.navigation": "Navigation & Menus",
+    "shortcuts.cat.tools": "Outils",
     "shortcuts.desc.close_cancel": "Fermer la fenêtre / Annuler",
     "shortcuts.desc.validate_ok": "Valider / OK",
     "shortcuts.desc.line_start_end": "Début / Fin de ligne",

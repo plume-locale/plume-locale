@@ -72,22 +72,27 @@ const NAVIGATION_GROUPS = [
         items: [
             { id: 'plot', icon: 'trending-up', label: 'nav.plot' },
             { id: 'plotgrid', icon: 'grid-3x3', label: 'nav.plotgrid' },
+            { id: 'arcs', icon: 'git-commit-horizontal', label: 'nav.arcs' },
+            { id: 'investigation', icon: 'search', label: 'nav.investigation' },
             { id: 'analysis', icon: 'scan-search', label: 'nav.analysis' },
             { id: 'stats', icon: 'bar-chart-3', label: 'nav.stats' }
         ]
     },
     {
-        title: 'sidebar.group.construction',
+        title: 'sidebar.group.world',
         items: [
             { id: 'world', icon: 'globe', label: 'nav.world' },
             { id: 'codex', icon: 'book-open', label: 'nav.codex' },
             { id: 'notes', icon: 'sticky-note', label: 'nav.notes' },
-            { id: 'arcs', icon: 'git-commit-horizontal', label: 'nav.arcs' },
-            { id: 'investigation', icon: 'search', label: 'nav.investigation' },
             { id: 'mindmap', icon: 'git-branch', label: 'nav.mindmap' },
             { id: 'relations', icon: 'link', label: 'nav.relations' },
             { id: 'map', icon: 'map', label: 'nav.map' },
-            { id: 'timelineviz', icon: 'clock', label: 'nav.timeline' },
+            { id: 'timelineviz', icon: 'clock', label: 'nav.timeline' }
+        ]
+    },
+    {
+        title: 'sidebar.group.history',
+        items: [
             { id: 'versions', icon: 'history', label: 'nav.snapshots' }
         ]
     }
@@ -106,17 +111,12 @@ function renderSidebarAccordion() {
             </div>
             <div class="accordion-group-items">
                 ${group.items.map(item => `
-                    <div class="accordion-nav-item" onclick="switchView('${item.id}')" id="nav-item-${item.id}" style="position: relative; padding-right: 48px;">
+                    <div class="accordion-nav-item"
+                         onclick="switchView('${item.id}')"
+                         oncontextmenu="_showNavContextMenu(event, '${item.id}')"
+                         id="nav-item-${item.id}">
                         <i data-lucide="${item.icon}"></i>
                         <span data-i18n="${item.label}">${Localization.t(item.label)}</span>
-                        <div class="accordion-item-actions">
-                            <button class="treeview-action-btn" onclick="event.stopPropagation(); switchView('${item.id}', { forceNew: true })" title="${Localization.t('tabs.open_new')}">
-                                <i data-lucide="plus-square"></i>
-                            </button>
-                            <button class="treeview-action-btn" onclick="event.stopPropagation(); switchView('${item.id}', { replaceCurrent: true })" title="${Localization.t('tabs.replace')}">
-                                <i data-lucide="maximize-2"></i>
-                            </button>
-                        </div>
                     </div>
                 `).join('')}
             </div>
@@ -136,6 +136,57 @@ function renderSidebarAccordion() {
     if (typeof InterfaceCustomizerViewModel !== 'undefined') {
         InterfaceCustomizerViewModel.applySettings();
     }
+
+    // Injecter le hint localisé dans le nœud dédié (évite tout contenu CSS hardcodé)
+    const hintEl = document.getElementById('sidebarAccordionHint');
+    if (hintEl && typeof Localization !== 'undefined') {
+        hintEl.textContent = Localization.t('sidebar.accordion.hint');
+    }
+}
+
+/**
+ * R2 — Menu contextuel (clic droit) sur les éléments de l'accordéon de navigation.
+ * Remplace les 2 boutons inline (open new tab / replace current).
+ */
+function _showNavContextMenu(e, viewId) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // Supprimer tout menu existant
+    let existing = document.getElementById('navContextMenu');
+    if (existing) existing.remove();
+
+    const menu = document.createElement('div');
+    menu.id = 'navContextMenu';
+    menu.className = 'nav-context-menu';
+    menu.innerHTML = `
+        <button class="nav-ctx-item" onclick="_navCtxAction('${viewId}', 'new')">
+            <i data-lucide="plus-square"></i>
+            <span data-i18n="tabs.open_new">${Localization.t('tabs.open_new')}</span>
+        </button>
+        <button class="nav-ctx-item" onclick="_navCtxAction('${viewId}', 'replace')">
+            <i data-lucide="maximize-2"></i>
+            <span data-i18n="tabs.replace">${Localization.t('tabs.replace')}</span>
+        </button>
+    `;
+
+    // Positionner le menu au curseur
+    menu.style.left = e.clientX + 'px';
+    menu.style.top = e.clientY + 'px';
+    document.body.appendChild(menu);
+
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+
+    // Fermer au prochain clic (n'importe où)
+    const closeMenu = () => { menu.remove(); document.removeEventListener('click', closeMenu); };
+    setTimeout(() => document.addEventListener('click', closeMenu), 0);
+}
+
+function _navCtxAction(viewId, action) {
+    const menu = document.getElementById('navContextMenu');
+    if (menu) menu.remove();
+    if (action === 'new') switchView(viewId, { forceNew: true });
+    else if (action === 'replace') switchView(viewId, { replaceCurrent: true });
 }
 
 function toggleSidebarAccordion() {
@@ -176,6 +227,17 @@ document.addEventListener('DOMContentLoaded', () => {
             accordion.classList.remove('open');
         }
     }, { capture: true });
+
+    // R2 — Fallback: délégation contextmenu sur le container navigation
+    // (couvre les cas où l'attribut oncontextmenu serait ignoré)
+    document.addEventListener('contextmenu', (e) => {
+        const item = e.target.closest('.accordion-nav-item[id^="nav-item-"]');
+        if (!item) return;
+        const viewId = item.id.replace('nav-item-', '');
+        _showNavContextMenu(e, viewId);
+        e.preventDefault();
+        return false;
+    });
 });
 
 /*
@@ -483,9 +545,9 @@ function updateSidebarActions(view) {
     switch (v) {
         case 'editor':
             html = `
-                <button class="btn btn-primary" onclick="openAddActModal()">${Localization.t('btn.add_act')}</button>
-                <button class="btn btn-primary" onclick="openAddChapterModal()">${Localization.t('btn.add_chapter')}</button>
                 <button class="btn btn-primary" onclick="openAddSceneModalQuick()">${Localization.t('btn.add_scene')}</button>
+                <button class="btn btn-secondary" onclick="openAddChapterModal()">${Localization.t('btn.add_chapter')}</button>
+                <button class="btn btn-ghost" onclick="openAddActModal()">${Localization.t('btn.add_act')}</button>
             `;
             break;
         case 'plotgrid':

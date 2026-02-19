@@ -21,21 +21,20 @@
 }
 
 /* Sidebar Accordion (Navigation) */
+/* R7 — Accordion fluide : grid-template-rows pour animation native */
 .sidebar-accordion {
     flex-shrink: 0;
     border-bottom: 1px solid var(--border-color);
     background: var(--bg-secondary);
-    transition: all 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    max-height: 48px;
-    /* Collapsed height */
+    display: grid;
+    grid-template-rows: 48px 0fr;
+    transition: grid-template-rows 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow 0.28s ease;
 }
 
 .sidebar-accordion.open {
-    max-height: 90vh;
-    /* Max expansion height */
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    grid-template-rows: 48px 1fr;
+    box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.12);
 }
 
 .sidebar-accordion-header {
@@ -48,6 +47,7 @@
     background: var(--bg-secondary);
     user-select: none;
     flex-shrink: 0;
+    transition: background 0.15s ease;
 }
 
 .sidebar-accordion-header:hover {
@@ -73,28 +73,35 @@
     width: 16px;
     height: 16px;
     color: var(--text-muted);
-    transition: transform 0.3s ease;
+    transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .sidebar-accordion.open .accordion-chevron {
     transform: rotate(180deg);
 }
 
+/* Wrapper nécessaire pour que grid-template-rows: 0fr fonctionne */
+.sidebar-accordion-content-wrapper {
+    min-height: 0;
+    overflow: hidden;
+}
+
 .sidebar-accordion-content {
     overflow-y: auto;
+    max-height: 80vh;
     padding: 0.5rem;
     border-top: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
     gap: 2px;
     opacity: 0;
-    transition: opacity 0.2s ease;
-    visibility: hidden;
+    transform: translateY(-4px);
+    transition: opacity 0.2s ease 0.05s, transform 0.2s ease 0.05s;
 }
 
 .sidebar-accordion.open .sidebar-accordion-content {
     opacity: 1;
-    visibility: visible;
+    transform: translateY(0);
 }
 
 /* Feedback visuel pour indiquer que la sidebar est en arrière-plan quand l'accordéon est ouvert */
@@ -106,13 +113,12 @@
     user-select: none;
 }
 
-/* Indicateur textuel sur la sidebar estompée */
-.sidebar-accordion.open~.sidebar::after {
-    content: "Affichage réduit - cliquez en haut pour masquer le menu";
+/* Indicateur textuel sur la sidebar estompée — texte injecté par JS via Localization.t() */
+.sidebar-accordion-hint {
     position: absolute;
     top: 50px;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translateX(-50%) translateY(-10px);
     background: rgba(var(--primary-color-rgb), 0.1);
     color: var(--primary-color);
     padding: 0.5rem 1rem;
@@ -126,6 +132,12 @@
     z-index: 10;
     white-space: nowrap;
     opacity: 0;
+    pointer-events: none;
+    display: none;
+}
+
+.sidebar-accordion.open~.sidebar .sidebar-accordion-hint {
+    display: block;
     animation: fadeInHint 0.5s ease 0.3s forwards;
 }
 
@@ -187,6 +199,60 @@
 .accordion-item-actions .treeview-action-btn i {
     width: 14px;
     height: 14px;
+}
+
+/* R2 — Context menu (right-click) sur les nav items de l'accordéon */
+.nav-context-menu {
+    position: fixed;
+    z-index: 99999;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18), 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 4px;
+    min-width: 180px;
+    animation: navCtxAppear 0.12s cubic-bezier(0.2, 0.8, 0.2, 1);
+    backdrop-filter: blur(8px);
+}
+
+@keyframes navCtxAppear {
+    from {
+        opacity: 0;
+        transform: scale(0.92) translateY(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.nav-ctx-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    color: var(--text-secondary);
+    font-family: var(--font-ui, sans-serif);
+    font-size: 0.85rem;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.12s ease, color 0.12s ease;
+}
+
+.nav-ctx-item:hover {
+    background: rgba(var(--primary-color-rgb), 0.1);
+    color: var(--primary-color);
+}
+
+.nav-ctx-item i {
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
 }
 
 .accordion-nav-item i {
@@ -299,41 +365,95 @@
     transform: scale(1.08);
 }
 
-.tool-btn:hover::after {
-    content: attr(title);
+/* ─── Rich Tooltip for tool buttons ──────────────────────────────────────── */
+/* Triggered by .tool-btn:hover, uses data-tooltip (label) + data-shortcut   */
+
+.tool-btn::before,
+.tool-btn::after {
     position: absolute;
-    left: 100%;
-    top: 50%;
-    /* Centrage vertical initial */
-    transform: translateY(-50%);
-    margin-left: 12px;
-    background: rgba(15, 23, 42, 0.95);
-    backdrop-filter: blur(4px);
-    color: white;
-    padding: 6px 10px;
-    border-radius: var(--radius-sm);
-    font-family: var(--font-ui);
-    font-size: 0.75rem;
-    font-weight: 500;
-    white-space: nowrap;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    z-index: 1000;
+    left: calc(100% + 14px);
     pointer-events: none;
     opacity: 0;
-    animation: fadeInTooltip 0.2s ease 0.3s forwards;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    transform: translateX(-6px);
 }
 
-@keyframes fadeInTooltip {
-    from {
-        opacity: 0;
-        transform: translateY(-50%) translateX(-8px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(-50%) translateX(0);
-    }
+/* Arrow pointing left */
+.tool-btn::before {
+    content: '';
+    top: 50%;
+    transform: translateY(-50%) translateX(-6px);
+    border: 6px solid transparent;
+    border-right-color: rgba(15, 23, 42, 0.95);
+    margin-left: -6px;
+    z-index: 1001;
 }
+
+/* Tooltip body */
+.tool-btn::after {
+    content: attr(data-tooltip);
+    top: 50%;
+    transform: translateY(-50%) translateX(-6px);
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(8px);
+    color: #f1f5f9;
+    padding: 7px 11px;
+    border-radius: 8px;
+    font-family: var(--font-ui);
+    font-size: 0.78rem;
+    font-weight: 500;
+    white-space: nowrap;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25), 0 1px 4px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    min-width: max-content;
+}
+
+/* When a shortcut is defined, make room for the kbd pill */
+.tool-btn[data-shortcut]::after {
+    padding-bottom: 22px;
+}
+
+.tool-btn:hover::before,
+.tool-btn:hover::after {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+    transition-delay: 0.25s;
+}
+
+.tool-btn:hover::before {
+    transform: translateY(-50%) translateX(0);
+    transition-delay: 0.25s;
+}
+
+/* Shortcut kbd pill – injected as a pseudo on a ::after sibling via JS wrapper */
+/* We use a data-shortcut attribute + a real <span class="tool-kbd"> injected by JS */
+.tool-btn .tool-kbd {
+    position: absolute;
+    left: calc(100% + 14px);
+    top: calc(50% + 10px);
+    background: rgba(255, 255, 255, 0.12);
+    color: #94a3b8;
+    font-family: var(--font-ui, monospace);
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateX(-6px);
+    transition: opacity 0.15s ease 0.25s, transform 0.15s ease 0.25s;
+    z-index: 1002;
+    letter-spacing: 0.03em;
+}
+
+.tool-btn:hover .tool-kbd {
+    opacity: 1;
+    transform: translateX(0);
+}
+
 
 .tool-btn.active {
     background: var(--primary-color);

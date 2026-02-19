@@ -958,6 +958,47 @@
     white-space: nowrap;
 }
 
+/* R5 — Hiérarchie CTA : Scène (primary) > Chapitre (secondary) > Acte (ghost) */
+.sidebar-actions .btn-primary {
+    flex: 1.4;
+}
+
+.sidebar-actions .btn-secondary {
+    flex: 1.1;
+    padding: 0.5rem 0.25rem;
+    font-size: 0.75rem;
+    white-space: nowrap;
+}
+
+/* btn-ghost global (utilisé aussi pour le CTA Acte) */
+.btn-ghost {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1.5px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.6rem 1.2rem;
+    font-family: 'Crimson Pro', serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    opacity: 0.7;
+}
+
+.btn-ghost:hover {
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    border-color: var(--text-muted);
+    opacity: 1;
+}
+
+.sidebar-actions .btn-ghost {
+    flex: 0.9;
+    padding: 0.5rem 0.25rem;
+    font-size: 0.75rem;
+    white-space: nowrap;
+}
+
 /* Scene Tools Bar */
 .scene-tools {
     display: flex;

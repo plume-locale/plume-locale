@@ -120,6 +120,9 @@ window.LOCALE_EN = {
     "sidebar.group.write": "Writing",
     "sidebar.group.analyze": "Analysis",
     "sidebar.group.construction": "Construction",
+    "sidebar.group.world": "World",
+    "sidebar.group.history": "History",
+    "sidebar.accordion.hint": "Menu open — click elsewhere to close",
     "nav.ecriture": "Writing",
 
     // --- Header Tools ---
@@ -1837,6 +1840,7 @@ window.LOCALE_EN = {
     "shortcuts.desc.paste": "Paste",
     "shortcuts.desc.paste_no_format": "Paste without formatting",
     "shortcuts.cat.navigation": "Navigation & Menus",
+    "shortcuts.cat.tools": "Tools",
     "shortcuts.desc.close_cancel": "Close window / Cancel",
     "shortcuts.desc.validate_ok": "Validate / OK",
     "shortcuts.desc.line_start_end": "Start / End of line",

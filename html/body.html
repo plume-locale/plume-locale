@@ -212,13 +212,18 @@
                         </div>
                         <i data-lucide="chevron-down" class="accordion-chevron"></i>
                     </div>
-                    <div class="sidebar-accordion-content" id="sidebarAccordionContent">
-                        <!-- Navigation Items will be injected here via JS -->
+                    <div class="sidebar-accordion-content-wrapper">
+                        <div class="sidebar-accordion-content" id="sidebarAccordionContent">
+                            <!-- Navigation Items will be injected here via JS -->
+                        </div>
                     </div>
                 </div>
 
                 <!-- Sidebar Navigation -->
                 <div class="sidebar" id="sidebar">
+
+                    <!-- Localized hint shown when accordion is open (text injected by JS) -->
+                    <div class="sidebar-accordion-hint" id="sidebarAccordionHint"></div>
 
                     <!-- Barre de progression globale -->
                     <div class="project-progress-bar" id="projectProgressBar">
@@ -390,56 +395,72 @@
                         <!-- Message for views without sidebar -->
                     </div>
                     <div class="sidebar-actions" id="sidebarActions">
-                        <button class="btn btn-primary" onclick="openAddActModal()" data-i18n="btn.add_act">+
-                            Acte</button>
-                        <button class="btn btn-primary" onclick="openAddChapterModal()" data-i18n="btn.add_chapter">+
-                            Chapitre</button>
                         <button class="btn btn-primary" onclick="openAddSceneModalQuick()" data-i18n="btn.add_scene">+
                             Scène</button>
+                        <button class="btn btn-secondary" onclick="openAddChapterModal()" data-i18n="btn.add_chapter">+
+                            Chapitre</button>
+                        <button class="btn btn-ghost" onclick="openAddActModal()" data-i18n="btn.add_act">+
+                            Acte</button>
                     </div>
                 </div>
             </div>
             <!-- Vertical Tools Sidebar -->
             <div class="tools-sidebar" id="toolsSidebar">
                 <button class="tool-btn" onclick="toggleVersionsSidebar()" id="toolVersionsBtn"
-                    title="Versions de scène" data-i18n-title="tools.versions">
+                    title="Versions de scène" data-i18n-title="tools.versions" data-tooltip="Versions"
+                    data-i18n-tooltip="tools.versions" data-shortcut="Alt+V">
                     <i data-lucide="git-branch"></i>
                     <span class="tool-badge" id="toolVersionsBadge" style="display: none">0</span>
+                    <span class="tool-kbd">Alt+V</span>
                 </button>
                 <button class="tool-btn" onclick="toggleAnnotationsPanel()" id="toolAnnotationsBtn" title="Annotations"
-                    data-i18n-title="tools.annotations">
+                    data-i18n-title="tools.annotations" data-tooltip="Annotations" data-i18n-tooltip="tools.annotations"
+                    data-shortcut="Alt+A">
                     <i data-lucide="message-square"></i>
                     <span class="tool-badge" id="toolAnnotationsBadge" style="display: none">0</span>
+                    <span class="tool-kbd">Alt+A</span>
                 </button>
                 <button class="tool-btn" onclick="toggleTodosPanel()" id="toolTodosBtn" title="TODOs"
-                    data-i18n-title="tools.todos">
+                    data-i18n-title="tools.todos" data-tooltip="TODOs" data-i18n-tooltip="tools.todos"
+                    data-shortcut="Alt+T">
                     <i data-lucide="check-square"></i>
                     <span class="tool-badge" id="toolTodosBadge" style="display: none">0</span>
+                    <span class="tool-kbd">Alt+T</span>
                 </button>
                 <button class="tool-btn" onclick="toggleArcScenePanel()" id="toolArcsBtn" title="Arcs Narratifs"
-                    data-i18n-title="tools.arcs">
+                    data-i18n-title="tools.arcs" data-tooltip="Arcs" data-i18n-tooltip="tools.arcs"
+                    data-shortcut="Alt+N">
                     <i data-lucide="git-commit-horizontal"></i>
                     <span class="tool-badge" id="toolArcsBadge" style="display: none">0</span>
+                    <span class="tool-kbd">Alt+N</span>
                 </button>
                 <button class="tool-btn" onclick="PlotGridUI.toggleSidebar()" id="toolPlotBtn" title="Grille d'Intrigue"
-                    data-i18n-title="nav.plotgrid">
+                    data-i18n-title="nav.plotgrid" data-tooltip="Plot Grid" data-i18n-tooltip="nav.plotgrid"
+                    data-shortcut="Alt+P">
                     <i data-lucide="grid-3x3"></i>
                     <span class="tool-badge" id="toolPlotBadge" style="display: none">0</span>
+                    <span class="tool-kbd">Alt+P</span>
                 </button>
                 <button class="tool-btn" onclick="InvestigationSidebarUI.toggleSidebar()" id="toolInvestigationBtn"
-                    title="Enquête" data-i18n-title="tools.investigation">
+                    title="Enquête" data-i18n-title="tools.investigation" data-tooltip="Investigation"
+                    data-i18n-tooltip="tools.investigation" data-shortcut="Alt+I">
                     <i data-lucide="search"></i>
                     <span class="tool-badge" id="toolInvestigationBadge" style="display: none">0</span>
+                    <span class="tool-kbd">Alt+I</span>
                 </button>
-                <div style="width: 100%; height: 1px; background: var(--border-color); margin: 0.5rem 0"></div>
-                <button class="tool-btn" onclick="toggleLinksPanelVisibility()" id="toolLinksPanelBtn"
-                    title="Afficher/Masquer les liens (Personnages, Univers, Timeline)" data-i18n-title="tools.links">
+                <div class="tool-separator"></div>
+                <button class="tool-btn" onclick="toggleLinksPanelVisibility()" id="toolLinksPanelBtn" title="Liens"
+                    data-i18n-title="tools.links" data-tooltip="Links" data-i18n-tooltip="tools.links"
+                    data-shortcut="Alt+L">
                     <i data-lucide="link-2"></i>
                     <span class="tool-badge" id="toolLinksBadge" style="display: none">0</span>
+                    <span class="tool-kbd">Alt+L</span>
                 </button>
                 <button class="tool-btn" onclick="toggleWordRepetitionPanel()" id="toolRepetitionBtn"
-                    title="Analyseur de répétitions de mots" data-i18n-title="tools.repetition">
+                    title="Répétitions" data-i18n-title="tools.repetition" data-tooltip="Repetitions"
+                    data-i18n-tooltip="tools.repetition" data-shortcut="Alt+R">
                     <i data-lucide="repeat"></i>
+                    <span class="tool-kbd">Alt+R</span>
                 </button>
             </div>
             <!-- Sidebar Versions (pour les versions de scènes) -->
@@ -2466,6 +2487,80 @@
                                     <span class="shortcut-key">Origine</span>
                                     <span class="shortcut-plus">/</span>
                                     <span class="shortcut-key">Fin</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section : Outils -->
+                    <div class="shortcut-category">
+                        <div class="shortcut-category-title" data-i18n="shortcuts.cat.tools">
+                            <i data-lucide="panel-right" style="width: 14px; height: 14px"></i>
+                            Outils
+                        </div>
+                        <div class="shortcut-list">
+                            <div class="shortcut-item">
+                                <span class="shortcut-description" data-i18n="tools.versions">Versions de scène</span>
+                                <div class="shortcut-keys">
+                                    <span class="shortcut-key">Alt</span>
+                                    <span class="shortcut-plus">+</span>
+                                    <span class="shortcut-key">V</span>
+                                </div>
+                            </div>
+                            <div class="shortcut-item">
+                                <span class="shortcut-description" data-i18n="tools.annotations">Annotations</span>
+                                <div class="shortcut-keys">
+                                    <span class="shortcut-key">Alt</span>
+                                    <span class="shortcut-plus">+</span>
+                                    <span class="shortcut-key">A</span>
+                                </div>
+                            </div>
+                            <div class="shortcut-item">
+                                <span class="shortcut-description" data-i18n="tools.todos">TODOs</span>
+                                <div class="shortcut-keys">
+                                    <span class="shortcut-key">Alt</span>
+                                    <span class="shortcut-plus">+</span>
+                                    <span class="shortcut-key">T</span>
+                                </div>
+                            </div>
+                            <div class="shortcut-item">
+                                <span class="shortcut-description" data-i18n="tools.arcs">Arcs Narratifs</span>
+                                <div class="shortcut-keys">
+                                    <span class="shortcut-key">Alt</span>
+                                    <span class="shortcut-plus">+</span>
+                                    <span class="shortcut-key">N</span>
+                                </div>
+                            </div>
+                            <div class="shortcut-item">
+                                <span class="shortcut-description" data-i18n="nav.plotgrid">Grille d'Intrigue</span>
+                                <div class="shortcut-keys">
+                                    <span class="shortcut-key">Alt</span>
+                                    <span class="shortcut-plus">+</span>
+                                    <span class="shortcut-key">P</span>
+                                </div>
+                            </div>
+                            <div class="shortcut-item">
+                                <span class="shortcut-description" data-i18n="tools.investigation">Investigation</span>
+                                <div class="shortcut-keys">
+                                    <span class="shortcut-key">Alt</span>
+                                    <span class="shortcut-plus">+</span>
+                                    <span class="shortcut-key">I</span>
+                                </div>
+                            </div>
+                            <div class="shortcut-item">
+                                <span class="shortcut-description" data-i18n="tools.links">Liens</span>
+                                <div class="shortcut-keys">
+                                    <span class="shortcut-key">Alt</span>
+                                    <span class="shortcut-plus">+</span>
+                                    <span class="shortcut-key">L</span>
+                                </div>
+                            </div>
+                            <div class="shortcut-item">
+                                <span class="shortcut-description" data-i18n="tools.repetition">Répétitions</span>
+                                <div class="shortcut-keys">
+                                    <span class="shortcut-key">Alt</span>
+                                    <span class="shortcut-plus">+</span>
+                                    <span class="shortcut-key">R</span>
                                 </div>
                             </div>
                         </div>
