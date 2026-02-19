@@ -117,8 +117,7 @@ const InterfaceCustomizerView = {
         const mandatoryModules = settings.mandatoryModules || [];
 
         const modalHtml = `
-            <div class="modal-overlay" onclick="InterfaceCustomizerView.closeOurModal('moduleSettingsModal')">
-                <div class="modal-content module-settings-modal compact" onclick="event.stopPropagation()">
+                <div class="modal-content module-settings-modal compact">
                     <div class="modal-header">
                         <h2 class="modal-title"><i data-lucide="layout-template"></i> ${Localization.t('customizer.modules.title')}</h2>
                         <button class="modal-close" onclick="InterfaceCustomizerView.closeOurModal('moduleSettingsModal')">&times;</button>
@@ -131,10 +130,10 @@ const InterfaceCustomizerView = {
             const label = p.label.includes('.') ? Localization.t(p.label) : p.label;
             const isActive = settings.currentPresetId === p.id;
             return `
-                                <button class="preset-btn btn-sm ${isActive ? 'active' : ''}" onclick="InterfaceCustomizerViewModel.applyPreset('${p.id}')">
-                                    ${label}
-                                </button>
-                            `;
+                                    <button class="preset-btn btn-sm ${isActive ? 'active' : ''}" onclick="InterfaceCustomizerViewModel.applyPreset('${p.id}')">
+                                        ${label}
+                                    </button>
+                                `;
         }).join('')}
                         </div>
 
@@ -167,14 +166,16 @@ const InterfaceCustomizerView = {
                         <button class="btn btn-primary" onclick="InterfaceCustomizerView.closeOurModal('moduleSettingsModal')">${Localization.t('btn.close')}</button>
                     </div>
                 </div>
-            </div>
         `;
 
         let modal = document.getElementById('moduleSettingsModal');
         if (!modal) {
             modal = document.createElement('div');
             modal.id = 'moduleSettingsModal';
-            modal.className = 'modal-container';
+            modal.className = 'modal';
+            modal.onclick = (e) => {
+                if (e.target === modal) InterfaceCustomizerView.closeOurModal('moduleSettingsModal');
+            };
             document.body.appendChild(modal);
         }
 
@@ -196,8 +197,7 @@ const InterfaceCustomizerView = {
         const mandatoryModules = settings.mandatoryModules || [];
 
         const modalHtml = `
-            <div class="modal-overlay" onclick="InterfaceCustomizerView.closeOurModal('adminModuleModal')">
-                <div class="modal-content module-settings-modal compact" style="max-width: 900px;" onclick="event.stopPropagation()">
+                <div class="modal-content module-settings-modal compact" style="max-width: 900px;">
                     <div class="modal-header">
                         <h2 class="modal-title" style="color: #ff4757;">
                             <span class="admin-badge">ADMIN</span> ${Localization.t('customizer.admin.title')}
@@ -241,14 +241,16 @@ const InterfaceCustomizerView = {
                         <button class="btn btn-secondary" onclick="InterfaceCustomizerView.closeOurModal('adminModuleModal')">${Localization.t('btn.close')}</button>
                     </div>
                 </div>
-            </div>
         `;
 
         let modal = document.getElementById('adminModuleModal');
         if (!modal) {
             modal = document.createElement('div');
             modal.id = 'adminModuleModal';
-            modal.className = 'modal-container';
+            modal.className = 'modal';
+            modal.onclick = (e) => {
+                if (e.target === modal) InterfaceCustomizerView.closeOurModal('adminModuleModal');
+            };
             document.body.appendChild(modal);
         }
 
@@ -284,8 +286,7 @@ const InterfaceCustomizerView = {
         const modules = InterfaceCustomizerModel.modules;
 
         const modalHtml = `
-            <div class="modal-overlay" onclick="InterfaceCustomizerView.closeOurModal('presetsAdminModal')">
-                <div class="modal-content module-settings-modal compact" style="max-width: 1000px;" onclick="event.stopPropagation()">
+                <div class="modal-content module-settings-modal compact" style="max-width: 1000px;">
                     <div class="modal-header">
                         <h2 class="modal-title" style="color: #ff4757;">
                             <span class="admin-badge">ADMIN</span> Gestion des Presets
@@ -370,14 +371,16 @@ const InterfaceCustomizerView = {
                         <button class="btn btn-secondary" onclick="InterfaceCustomizerView.closeOurModal('presetsAdminModal'); InterfaceCustomizerView._resetPresetForm()">${Localization.t('btn.close')}</button>
                     </div>
                 </div>
-            </div>
         `;
 
         let modal = document.getElementById('presetsAdminModal');
         if (!modal) {
             modal = document.createElement('div');
             modal.id = 'presetsAdminModal';
-            modal.className = 'modal-container';
+            modal.className = 'modal';
+            modal.onclick = (e) => {
+                if (e.target === modal) InterfaceCustomizerView.closeOurModal('presetsAdminModal');
+            };
             document.body.appendChild(modal);
         }
 

@@ -422,18 +422,22 @@ function syncSidebarWithView(view) {
             if (typeof updateEditorToolsSidebar === 'function') updateEditorToolsSidebar();
         }
 
-        // Ensure tension meter is visible and properly displayed
-        if (!tensionMeter && typeof window.injectTensionMeter === 'function') {
-            window.injectTensionMeter();
-            tensionMeter = document.getElementById('liveTensionMeter');
+        // Tension meter: contrôlé par CSS via la classe sur le body
+        if (view === 'editor') {
+            document.body.classList.add('view-editor');
+            // Injecter si pas encore présent
+            if (!tensionMeter && typeof TensionView !== 'undefined' && typeof TensionView.injectTensionMeter === 'function') {
+                TensionView.injectTensionMeter();
+            }
+        } else {
+            document.body.classList.remove('view-editor');
         }
-        if (tensionMeter) tensionMeter.style.display = 'flex';
     } else if (view === 'globalnotes') {
         if (progressBar) progressBar.style.display = 'none';
         if (statusFilters) statusFilters.style.display = 'none';
         if (treeCollapseToolbar) treeCollapseToolbar.style.display = 'none';
         if (sceneTools) sceneTools.style.display = 'none';
-        if (tensionMeter) tensionMeter.style.display = 'none';
+        document.body.classList.remove('view-editor');
         if (toolsSidebar) {
             toolsSidebar.style.display = 'flex';
             document.body.classList.add('has-tools-sidebar');
@@ -444,11 +448,11 @@ function syncSidebarWithView(view) {
         if (statusFilters) statusFilters.style.display = 'none';
         if (treeCollapseToolbar) treeCollapseToolbar.style.display = 'none';
         if (sceneTools) sceneTools.style.display = 'none';
+        document.body.classList.remove('view-editor');
         if (toolsSidebar) {
             toolsSidebar.style.display = 'none';
             document.body.classList.remove('has-tools-sidebar');
         }
-        if (tensionMeter) tensionMeter.style.display = 'none';
     }
 
     // Message "pas de sidebar" si rien ne correspond
@@ -695,6 +699,7 @@ window.addEventListener('localeChanged', () => {
 function renderViewContent(view, containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
+
 
     switch (view) {
         case 'projects':
@@ -1290,7 +1295,9 @@ function closeModal(modalId) {
 }
 
 function openModal(modalId) {
-    document.getElementById(modalId)?.classList.add('active');
+    const modal = document.getElementById(modalId);
+    if (!modal) return;
+    modal.classList.add('active');
 }
 
 

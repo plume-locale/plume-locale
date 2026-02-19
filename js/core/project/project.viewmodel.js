@@ -304,7 +304,7 @@ const ProjectViewModel = {
         if (currentView === 'projects') {
             ProjectView.renderLandingPage(projects);
         } else {
-            this.switchTo(newProject.id);
+            await this.switchTo(newProject.id);
         }
     },
 
@@ -313,12 +313,22 @@ const ProjectViewModel = {
      * @param {number} projectId 
      * @param {boolean} shouldSwitchView Si true, bascule vers la vue éditeur.
      */
-    switchTo(projectId, shouldSwitchView = true) {
+    async switchTo(projectId, shouldSwitchView = true) {
+        // Sauvegarder l'état actuel avant de changer
+        try {
+            await this.saveAll();
+        } catch (error) {
+            console.error('⚠️ Echec sauvegarde pré-switch:', error);
+        }
+
         currentProjectId = projectId;
         project = projects.find(p => p.id == projectId);
         window.project = project;
 
-        if (!project) return;
+        if (!project) {
+            console.error('❌ Projet introuvable:', projectId);
+            return;
+        }
 
         ProjectView.updateHeader(project.title);
 
@@ -360,7 +370,7 @@ const ProjectViewModel = {
         if (typeof renderActsList === 'function') renderActsList();
         if (typeof refreshAllViews === 'function') refreshAllViews();
 
-        localStorage.setItem('plume_locale_current_project', projectId);
+        await ProjectRepository.saveSetting('currentProjectId', projectId);
         ProjectView.renderSidebarList(projects);
 
         if (currentView === 'projects') {
@@ -383,14 +393,14 @@ const ProjectViewModel = {
 
         if (currentProjectId == projectId) {
             if (projects.length > 0) {
-                this.switchTo(projects[0].id, false);
+                await this.switchTo(projects[0].id, false);
             } else {
                 project = ProjectModel.createDefault();
                 window.project = project;
                 projects = [project];
                 currentProjectId = project.id;
                 await ProjectRepository.save(project);
-                this.switchTo(project.id, false);
+                await this.switchTo(project.id, false);
             }
         }
 

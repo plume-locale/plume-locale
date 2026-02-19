@@ -118,6 +118,7 @@ const TensionView = {
         div.className = 'tension-meter-container';
         div.setAttribute('title', Localization.t('tension.meter.title'));
 
+
         div.innerHTML = `
             <div class="tension-meter-bar-bg" id="tensionMeterBar">
                 <div class="tension-meter-bar-fill" id="tensionMeterBarFill"></div>
