@@ -299,3 +299,34 @@
     border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
+
+/* ============================================
+   POLISHED INTERACTIVE ELEMENTS
+   ============================================ */
+
+button,
+.btn,
+.header-action-btn,
+.tool-btn,
+.sidebar-actions .btn,
+.modal-close,
+.diff-modal-close {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+button:active,
+.btn:active,
+.header-action-btn:active,
+.tool-btn:active {
+    transform: scale(0.96);
+    transition: transform 0.05s ease;
+}
+
+button:focus-visible,
+.btn:focus-visible,
+.header-action-btn:focus-visible,
+.form-input:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px rgba(var(--primary-color-rgb), 0.2);
+}
