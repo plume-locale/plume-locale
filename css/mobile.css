@@ -1242,7 +1242,8 @@ body.force-mobile-nav .split-mode-toggle span {
     }
 
     /* Sidebar column - overlay mode (hidden by default, slides from left) */
-    .sidebar-column {
+    .sidebar-column,
+    .activity-bar {
         position: fixed !important;
         top: 56px !important;
         left: -100% !important;
@@ -1256,9 +1257,11 @@ body.force-mobile-nav .split-mode-toggle span {
         min-width: unset !important;
         box-shadow: none !important;
         padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
+        display: flex !important;
     }
 
-    .sidebar-column.mobile-visible {
+    .sidebar-column.mobile-visible,
+    .activity-bar.mobile-visible {
         left: 0 !important;
         box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15) !important;
     }

@@ -31,7 +31,7 @@ const MobileMenuViewModel = {
         });
 
         if (newState) {
-            MobileMenuView.openSidebar();
+            MobileMenuView.openSidebar(newTab);
             // Appliquer l'état de l'accordéon selon l'onglet
             if (typeof setSidebarAccordion === 'function') {
                 setSidebarAccordion(newTab === 'navigation');

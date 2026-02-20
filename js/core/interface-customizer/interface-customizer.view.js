@@ -26,9 +26,16 @@ const InterfaceCustomizerView = {
 
         if (active) {
             document.body.classList.add('interface-edit-mode');
+
+            // Expand activity bar to ensure edit menu is legible
+            const activityBar = document.getElementById('sidebarAccordion');
+            if (activityBar && activityBar.classList.contains('thin')) {
+                activityBar.classList.remove('thin');
+            }
+
             if (!bar) {
-                // Insert the edit bar right after sidebarShortcuts
-                const shortcuts = document.getElementById('sidebarShortcuts');
+                // Insert the edit bar inside activityBarCustomization
+                const customSlot = document.getElementById('activityBarCustomization');
                 bar = document.createElement('div');
                 bar.id = 'interfaceEditBar';
                 bar.className = 'interface-edit-bar';
@@ -54,8 +61,8 @@ const InterfaceCustomizerView = {
                         </div>
                     </div>
                 `;
-                if (shortcuts && shortcuts.parentNode) {
-                    shortcuts.parentNode.insertBefore(bar, shortcuts.nextSibling);
+                if (customSlot) {
+                    customSlot.appendChild(bar);
                 } else {
                     document.body.appendChild(bar);
                 }

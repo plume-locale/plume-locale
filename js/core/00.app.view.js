@@ -114,9 +114,10 @@ function renderSidebarAccordion() {
                     <div class="accordion-nav-item"
                          onclick="switchView('${item.id}')"
                          oncontextmenu="_showNavContextMenu(event, '${item.id}')"
-                         id="nav-item-${item.id}">
+                         id="nav-item-${item.id}"
+                         data-tooltip="${Localization.t(item.label)}">
                         <i data-lucide="${item.icon}"></i>
-                        <span data-i18n="${item.label}">${Localization.t(item.label)}</span>
+                        <span class="nav-item-label" data-i18n="${item.label}">${Localization.t(item.label)}</span>
                     </div>
                 `).join('')}
             </div>
@@ -125,22 +126,9 @@ function renderSidebarAccordion() {
 
     if (typeof lucide !== 'undefined') lucide.createIcons();
 
-    // Sur mobile, on applique le style en grille
-    if (window.innerWidth <= 900) {
-        container.classList.add('mobile-grid');
-    } else {
-        container.classList.remove('mobile-grid');
-    }
-
     // Appliquer les réglages d'interface (modules masqués) APRÈS le rendu de l'accordéon
     if (typeof InterfaceCustomizerViewModel !== 'undefined') {
         InterfaceCustomizerViewModel.applySettings();
-    }
-
-    // Injecter le hint localisé dans le nœud dédié (évite tout contenu CSS hardcodé)
-    const hintEl = document.getElementById('sidebarAccordionHint');
-    if (hintEl && typeof Localization !== 'undefined') {
-        hintEl.textContent = Localization.t('sidebar.accordion.hint');
     }
 }
 
@@ -192,26 +180,33 @@ function _navCtxAction(viewId, action) {
 function toggleSidebarAccordion() {
     const accordion = document.getElementById('sidebarAccordion');
     if (accordion) {
-        const isOpen = accordion.classList.contains('open');
-        setSidebarAccordion(!isOpen);
+        if (window.innerWidth <= 900) {
+            return; // L'en-tête ne permet pas de plier la barre en mode mobile
+        }
+        if (document.body.classList.contains('interface-edit-mode') && !accordion.classList.contains('thin')) {
+            // Empêche de fermer/réduire la barre pendant le mode édition
+            return;
+        }
+        const isThin = accordion.classList.contains('thin');
+        setSidebarAccordion(isThin);
     }
 }
 
-function setSidebarAccordion(open) {
+function setSidebarAccordion(expanded) {
     const accordion = document.getElementById('sidebarAccordion');
     if (!accordion) return;
 
-    if (open) {
-        accordion.classList.add('open');
+    if (expanded) {
+        accordion.classList.remove('thin');
     } else {
-        accordion.classList.remove('open');
+        accordion.classList.add('thin');
     }
 }
 
 function closeSidebarAccordion() {
     const accordion = document.getElementById('sidebarAccordion');
-    if (accordion && accordion.classList.contains('open')) {
-        accordion.classList.remove('open');
+    if (accordion && !accordion.classList.contains('thin')) {
+        accordion.classList.add('thin');
     }
 }
 
@@ -219,14 +214,11 @@ function closeSidebarAccordion() {
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(renderSidebarAccordion, 100);
 
-    // Fermer l'accordéon au clic à l'extérieur (dans le rendu ou les onglets)
-    // On utilise la phase de capture pour passer à travers les stopPropagation() éventuels
-    document.addEventListener('click', (e) => {
-        const accordion = document.getElementById('sidebarAccordion');
-        if (accordion && accordion.classList.contains('open') && !accordion.contains(e.target)) {
-            accordion.classList.remove('open');
-        }
-    }, { capture: true });
+    // Default to thin mode
+    const accordion = document.getElementById('sidebarAccordion');
+    if (accordion && !accordion.classList.contains('thin')) {
+        accordion.classList.add('thin');
+    }
 
     // R2 — Fallback: délégation contextmenu sur le container navigation
     // (couvre les cas où l'attribut oncontextmenu serait ignoré)
@@ -2919,255 +2911,3 @@ function renderCodexWelcome() {
         </div>`;
     if (typeof lucide !== 'undefined') lucide.createIcons();
 }
-
-
-// --- SIDEBAR SHORTCUTS & COLLAPSE ---
-
-/**
- * Renders the draggable sidebar shortcuts.
- */
-function renderSidebarShortcuts(shortcuts = null, isEditing = false) {
-    const container = document.getElementById('sidebarShortcuts');
-    if (!container) return;
-
-    // 1. Determine which shortcuts to show (Handling temp state while editing)
-    let list = shortcuts;
-    const vm = InterfaceCustomizerViewModel;
-
-    if (!list) {
-        if (vm && vm.state && vm.state.isEditing) {
-            list = vm.state.tempSettings.shortcuts;
-        } else if (typeof InterfaceCustomizerRepository !== 'undefined') {
-            const settings = InterfaceCustomizerRepository.loadSettings();
-            list = settings ? settings.shortcuts : null;
-        }
-    }
-
-    // Default fallback if still nothing
-    if (!list || !Array.isArray(list)) {
-        list = ['projects', 'editor', 'corkboard', 'notes', 'characters', 'world'];
-    }
-
-    // 2. Generate HTML items
-    const html = list.map(id => {
-        const cleanId = String(id).trim();
-        const item = NAVIGATION_ITEMS.find(i => String(i.id).trim() == cleanId);
-        if (!item) return '';
-
-        const isActive = (typeof currentView !== 'undefined' && currentView === cleanId);
-        const label = Localization.t(item.label);
-
-        return `
-            <div class="sidebar-shortcut-item ${isActive ? 'active' : ''}"
-                 onclick="switchView('${cleanId}')"
-                 title="${label}"
-                 data-id="${cleanId}">
-                <i data-lucide="${item.icon}"></i>
-                ${isEditing ? `<div class="shortcut-remove-btn" onclick="removeSidebarShortcut('${cleanId}', event)">×</div>` : ''}
-            </div>
-        `;
-    }).join('');
-
-    // 3. Add Customize + Collapse/Expand buttons
-    const col = document.getElementById('sidebarColumn');
-    const isCollapsed = col ? col.classList.contains('collapsed') : false;
-    const customizeBtn = `
-        <button class="sidebar-customize-btn" onclick="InterfaceCustomizerViewModel.startEditing()" title="${Localization.t('customizer.sidebar.btn_title')}" id="sidebarCustomizeBtn">
-            <i data-lucide="settings-2"></i>
-        </button>
-    `;
-    const toggleBtn = `
-        <button class="sidebar-collapse-btn" onclick="toggleSidebarCollapse()" title="${isCollapsed ? 'Déplier' : 'Replier'}">
-            <i data-lucide="${isCollapsed ? 'panel-left-open' : 'panel-left-close'}"></i>
-        </button>
-    `;
-
-    // 4. Inject and Process Icons
-    container.innerHTML = html + customizeBtn + toggleBtn;
-
-    if (typeof lucide !== 'undefined') {
-        lucide.createIcons({ root: container });
-    }
-
-    // 5. Re-attach Drag & Drop if needed
-    if (isEditing) {
-        setupShortcutsDragAndDrop(container, list);
-    } else {
-        disableShortcutsDragAndDrop();
-    }
-}
-
-/**
- * Disables Drag & Drop on accordion items.
- */
-function disableShortcutsDragAndDrop() {
-    document.querySelectorAll('.accordion-nav-item').forEach(item => {
-        item.removeAttribute('draggable');
-        item.style.cursor = '';
-        item.ondragstart = null;
-        item.ondragend = null;
-    });
-}
-
-/**
- * Removes a shortcut from the list (Edit Mode).
- */
-function removeSidebarShortcut(id, event) {
-    if (event) event.stopPropagation();
-
-    if (typeof InterfaceCustomizerViewModel !== 'undefined' && InterfaceCustomizerViewModel.state.isEditing) {
-        const currentShortcuts = InterfaceCustomizerViewModel.state.tempSettings.shortcuts || ['projects', 'editor', 'corkboard', 'notes', 'characters', 'world'];
-        const newShortcuts = currentShortcuts.filter(s => s !== id);
-
-        InterfaceCustomizerViewModel.state.tempSettings.shortcuts = newShortcuts;
-        renderSidebarShortcuts(newShortcuts, true);
-    }
-}
-
-/**
- * Toggles the sidebar collapse state.
- */
-function toggleSidebarCollapse() {
-    const col = document.getElementById('sidebarColumn');
-    if (col) {
-        col.classList.toggle('collapsed');
-        const isCollapsed = col.classList.contains('collapsed');
-
-        // Force hide/show if CSS fails or for animation smoothness (Desktop only)
-        const accordion = document.getElementById('sidebarAccordion');
-        const sidebar = document.getElementById('sidebar');
-
-        if (window.innerWidth > 900) {
-            if (isCollapsed) {
-                if (accordion) accordion.style.display = 'none';
-                if (sidebar) sidebar.style.display = 'none';
-            } else {
-                if (accordion) accordion.style.display = '';
-                if (sidebar) sidebar.style.display = '';
-            }
-        } else {
-            // Sur mobile, on enlève le display: none forcé pour laisser le clipping CSS s'opérer
-            if (accordion) accordion.style.display = '';
-            if (sidebar) sidebar.style.display = '';
-        }
-
-        // Re-render shortcuts to update the toggle icon
-        const isEditing = document.body.classList.contains('interface-edit-mode');
-        // Get current shortcuts
-        let shortcuts = null;
-        if (typeof InterfaceCustomizerViewModel !== 'undefined' && isEditing) {
-            shortcuts = InterfaceCustomizerViewModel.state.tempSettings.shortcuts;
-        } else if (typeof InterfaceCustomizerRepository !== 'undefined') {
-            shortcuts = InterfaceCustomizerRepository.loadSettings().shortcuts;
-        }
-
-        renderSidebarShortcuts(shortcuts, isEditing);
-
-        // Handle resizing event globally
-        window.dispatchEvent(new Event('resize'));
-    }
-}
-
-/**
- * Sets up Drag & Drop for shortcuts.
- */
-function setupShortcutsDragAndDrop(container, currentShortcuts) {
-    if (!container) return;
-
-    // Direct property assignment to override any previous handlers
-    container.ondragover = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        e.dataTransfer.dropEffect = 'copy';
-        container.classList.add('drag-over');
-    };
-
-    container.ondragleave = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        if (e.relatedTarget && container.contains(e.relatedTarget)) return;
-        container.classList.remove('drag-over');
-    };
-
-    container.ondrop = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        container.classList.remove('drag-over');
-        container.classList.remove('can-drop');
-
-        const rawId = e.dataTransfer.getData('text/plain') || e.dataTransfer.getData('Text');
-        const id = rawId ? rawId.trim() : null;
-
-        console.log('[SHORTCUT DROP] Raw ID:', rawId, 'Cleaned ID:', id);
-
-        if (id) {
-            const vm = InterfaceCustomizerViewModel;
-            console.log('[SHORTCUT DROP] ViewModel:', vm);
-            console.log('[SHORTCUT DROP] Is Editing:', vm?.state?.isEditing);
-
-            if (vm && vm.state && vm.state.isEditing) {
-                // Initialize tempSettings if empty
-                if (!vm.state.tempSettings.shortcuts) {
-                    vm.state.tempSettings.shortcuts = [...(currentShortcuts || [])];
-                    console.log('[SHORTCUT DROP] Initialized shortcuts:', vm.state.tempSettings.shortcuts);
-                }
-
-                const list = vm.state.tempSettings.shortcuts;
-                const alreadyExists = list.some(s => String(s).trim() == String(id));
-
-                console.log('[SHORTCUT DROP] Current list:', list);
-                console.log('[SHORTCUT DROP] Already exists:', alreadyExists);
-
-                if (!alreadyExists) {
-                    // Final safety: check if ID exists in navigation items
-                    const isValid = NAVIGATION_ITEMS.some(i => String(i.id).trim() == String(id));
-                    console.log('[SHORTCUT DROP] Is valid nav item:', isValid);
-
-                    if (isValid) {
-                        const newList = [...list, id];
-                        vm.state.tempSettings.shortcuts = newList;
-                        console.log('[SHORTCUT DROP] New list:', newList);
-                        // Trigger immediate UI refresh
-                        renderSidebarShortcuts(newList, true);
-                        console.log('[SHORTCUT DROP] Rendered shortcuts');
-                    }
-                } else {
-                    console.log('[SHORTCUT DROP] Item already in shortcuts, skipping');
-                }
-            }
-        }
-    };
-
-    // Attaching drag events to accordion items
-    const items = document.querySelectorAll('.accordion-nav-item');
-    items.forEach(item => {
-        item.setAttribute('draggable', 'true');
-        item.style.cursor = 'grab';
-
-        // Extract ID from nav-item-{id}
-        const navId = item.id.replace('nav-item-', '').trim();
-
-        item.ondragstart = (e) => {
-            const cleanId = String(navId).trim();
-            // Store ID in multiple formats for browser compatibility
-            e.dataTransfer.effectAllowed = 'copy';
-            e.dataTransfer.setData('text/plain', cleanId);
-            e.dataTransfer.setData('Text', cleanId);
-            item.classList.add('dragging');
-            container.classList.add('can-drop');
-        };
-
-        item.ondragend = (e) => {
-            item.classList.remove('dragging');
-            container.classList.remove('can-drop');
-            container.classList.remove('drag-over');
-        };
-    });
-}
-
-// Initial Render of Shortcuts
-document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(() => {
-        renderSidebarShortcuts();
-    }, 200); // Wait for navigation items to be loaded/rendered
-});

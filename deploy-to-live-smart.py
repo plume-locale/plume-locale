@@ -276,8 +276,16 @@ def deploy():
     log(f"Total traité: {len(files_to_deploy)} fichiers")
     log("")
     
-    # Toujours regénérer l'index si des fichiers ont changé
-    if copied_count > 0 or not os.path.exists(os.path.join(LIVE_DIR, 'index.html')):
+    # Toujours regénérer l'index si des fichiers ont changé,
+    # OU si l'index n'existe pas,
+    # OU si html/body.html a changé (car il n'est pas copié mais injecté)
+    force_regen = False
+    body_src = os.path.join(BUILD_DIR, 'html/body.html')
+    app_target = os.path.join(LIVE_DIR, 'app.html')
+    if os.path.exists(body_src) and file_has_changed(body_src, app_target):
+        force_regen = True
+
+    if copied_count > 0 or not os.path.exists(os.path.join(LIVE_DIR, 'index.html')) or force_regen:
         log(f"--- Régénération de index.html ---")
         try:
             import subprocess

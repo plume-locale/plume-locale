@@ -20,185 +20,237 @@
     /* Sécurité pour ne pas tout envahir */
 }
 
-/* Sidebar Accordion (Navigation) */
-/* R7 — Accordion fluide : grid-template-rows pour animation native */
-.sidebar-accordion {
-    flex-shrink: 0;
-    border-bottom: 1px solid var(--border-color);
+/* Sidebar Accordion (Activity Bar) */
+.activity-bar {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    border-right: 1px solid var(--border-color);
     background: var(--bg-secondary);
-    display: grid;
-    grid-template-rows: 48px 0fr;
-    transition: grid-template-rows 0.28s cubic-bezier(0.4, 0, 0.2, 1),
-        box-shadow 0.28s ease;
+    flex-shrink: 0;
+    transition: width 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 101;
+    overflow: visible;
 }
 
-.sidebar-accordion.open {
-    grid-template-rows: 48px 1fr;
-    box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.12);
+.activity-bar.thin {
+    width: 64px;
 }
 
-.sidebar-accordion-header {
+.activity-bar:not(.thin) {
+    width: 250px;
+}
+
+.activity-bar-header {
     height: 48px;
-    padding: 0 1rem;
+    padding: 0 20px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
     cursor: pointer;
     background: var(--bg-secondary);
     user-select: none;
     flex-shrink: 0;
-    transition: background 0.15s ease;
-}
-
-.sidebar-accordion-header:hover {
-    background: var(--bg-primary);
-}
-
-.sidebar-accordion-title {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--text-primary);
-}
-
-.accordion-icon {
-    width: 18px;
-    height: 18px;
-    color: var(--text-secondary);
-}
-
-.accordion-chevron {
-    width: 16px;
-    height: 16px;
-    color: var(--text-muted);
-    transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.sidebar-accordion.open .accordion-chevron {
-    transform: rotate(180deg);
-}
-
-/* Wrapper nécessaire pour que grid-template-rows: 0fr fonctionne */
-.sidebar-accordion-content-wrapper {
-    min-height: 0;
+    transition: background 0.15s ease, padding 0.28s ease;
+    border-bottom: 1px solid var(--border-color);
     overflow: hidden;
 }
 
-.sidebar-accordion-content {
+.activity-bar.thin .activity-bar-header {
+    padding: 0 23px;
+}
+
+.activity-bar-header:hover {
+    background: var(--bg-primary);
+}
+
+.activity-bar-icon {
+    width: 18px;
+    height: 18px;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+    transition: transform 0.28s ease;
+}
+
+.activity-bar-title {
+    margin-left: 16px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+    opacity: 1;
+    transition: opacity 0.2s ease;
+}
+
+.activity-bar.thin .activity-bar-title {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.activity-bar-content-wrapper {
+    flex: 1;
+    min-height: 0;
     overflow-y: auto;
-    max-height: 80vh;
-    padding: 0.5rem;
-    border-top: 1px solid var(--border-color);
+    overflow-x: hidden;
+}
+
+/* Allow tooltips to escape in thin mode (sacrifices scrolling in thin mode) */
+.activity-bar.thin .activity-bar-content-wrapper {
+    overflow: visible;
+}
+
+.activity-bar-content {
     display: flex;
     flex-direction: column;
+    padding: 0.5rem 0;
     gap: 2px;
+}
+
+.activity-bar-customization-slot {
+    padding: 0.5rem 0;
+    border-top: 1px solid var(--border-color);
+    overflow: hidden;
+    transition: opacity 0.2s ease;
+}
+
+.activity-bar.thin .activity-bar-customization-slot {
     opacity: 0;
-    transform: translateY(-4px);
-    transition: opacity 0.2s ease 0.05s, transform 0.2s ease 0.05s;
-}
-
-.sidebar-accordion.open .sidebar-accordion-content {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-/* Feedback visuel pour indiquer que la sidebar est en arrière-plan quand l'accordéon est ouvert */
-.sidebar-accordion.open~.sidebar {
-    opacity: 0.3;
-    filter: blur(2px) grayscale(0.2);
     pointer-events: none;
-    transition: all 0.4s ease;
-    user-select: none;
+    height: 0;
+    padding: 0;
+    border-top: none;
 }
 
-/* Indicateur textuel sur la sidebar estompée — texte injecté par JS via Localization.t() */
-.sidebar-accordion-hint {
-    position: absolute;
-    top: 50px;
-    left: 50%;
-    transform: translateX(-50%) translateY(-10px);
-    background: rgba(var(--primary-color-rgb), 0.1);
-    color: var(--primary-color);
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    font-size: 0.7rem;
+.accordion-group {
+    margin-bottom: 1rem;
+}
+
+.accordion-group-title {
+    padding: 0.5rem 24px;
+    font-size: 0.75rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    border: 1px solid rgba(var(--primary-color-rgb), 0.2);
-    backdrop-filter: blur(4px);
-    z-index: 10;
+    color: var(--text-muted);
     white-space: nowrap;
+    transition: opacity 0.2s ease;
+}
+
+.activity-bar.thin .accordion-group-title {
     opacity: 0;
-    pointer-events: none;
-    display: none;
+    height: 0;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
 }
 
-.sidebar-accordion.open~.sidebar .sidebar-accordion-hint {
-    display: block;
-    animation: fadeInHint 0.5s ease 0.3s forwards;
-}
-
-@keyframes fadeInHint {
-    from {
-        opacity: 0;
-        transform: translate(-50%, -10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translate(-50%, 0);
-    }
-}
-
-/* Navigation Items in Accordion */
-.accordion-nav-item {
+.accordion-nav-item,
+.activity-bar-nav-item {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    padding: 0.3rem 1rem;
+    padding: 0.5rem 23px;
     color: var(--text-secondary);
     text-decoration: none;
-    border-radius: 6px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: background 0.2s ease, color 0.2s ease, border-left 0.2s ease;
+    border-left: 2px solid transparent;
     font-size: 0.9rem;
+    position: relative;
+    white-space: nowrap;
 }
 
-.accordion-nav-item:hover {
+.accordion-nav-item:hover,
+.activity-bar-nav-item:hover {
     background: var(--bg-primary);
     color: var(--text-primary);
 }
 
-.accordion-nav-item.active {
+.accordion-nav-item.active,
+.activity-bar-nav-item.active {
     background: rgba(var(--primary-color-rgb), 0.1);
     color: var(--primary-color);
+    border-left: 2px solid var(--primary-color);
     font-weight: 500;
 }
 
-.accordion-item-actions {
-    position: absolute;
-    right: 8px;
-    top: 50%;
-    transform: translateY(-50%);
-    display: flex;
-    gap: 4px;
+.accordion-nav-item i,
+.activity-bar-nav-item i,
+.accordion-nav-item svg,
+.activity-bar-nav-item svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    margin: 0;
+}
+
+.nav-item-label {
+    margin-left: 16px;
+    transition: opacity 0.2s ease;
+}
+
+.activity-bar.thin .nav-item-label {
     opacity: 0;
-    transition: opacity 0.2s;
-    background: var(--bg-secondary);
-    border-radius: 4px;
-    padding: 2px;
+    pointer-events: none;
+    width: 0;
+    overflow: hidden;
 }
 
-.accordion-nav-item:hover .accordion-item-actions {
+/* Tooltip on hover when thin */
+.activity-bar.thin [data-tooltip]::after,
+.activity-bar.thin .accordion-nav-item::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%) translateX(10px);
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(8px);
+    color: #f1f5f9;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-family: var(--font-ui);
+    font-size: 0.8rem;
+    font-weight: 500;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    margin-left: 8px;
+    z-index: 1000;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.activity-bar.thin [data-tooltip]:hover::after,
+.activity-bar.thin .accordion-nav-item:hover::after {
     opacity: 1;
+    transform: translateY(-50%) translateX(0);
 }
 
-.accordion-item-actions .treeview-action-btn i {
-    width: 14px;
-    height: 14px;
+.activity-bar.thin [data-tooltip]::before,
+.activity-bar.thin .accordion-nav-item::before {
+    content: '';
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%) translateX(10px);
+    border: 6px solid transparent;
+    border-right-color: rgba(15, 23, 42, 0.95);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 1001;
+}
+
+.activity-bar.thin [data-tooltip]:hover::before,
+.activity-bar.thin .accordion-nav-item:hover::before {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+}
+
+.activity-bar-footer {
+    border-top: 1px solid var(--border-color);
+    padding: 0.5rem 0;
+    flex-shrink: 0;
 }
 
 /* R2 — Context menu (right-click) sur les nav items de l'accordéon */
@@ -958,196 +1010,7 @@
     gap: 1px;
 }
 
-/* Sidebar Shortcuts Bar */
-.sidebar-shortcuts {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 12px;
-    background: var(--bg-secondary);
-    border-bottom: 1px solid var(--border-color);
-    transition: all 0.3s ease;
-    flex-shrink: 0;
-    overflow-x: auto;
-    /* Allow scrolling if too many items in expanded mode */
-    min-height: 48px;
-    /* Consistent height */
-    position: relative;
-    z-index: 50;
-    cursor: default;
-}
 
-/* Hide scrollbar for shortcuts */
-.sidebar-shortcuts::-webkit-scrollbar {
-    display: none;
-}
-
-.sidebar-shortcut-item {
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 6px;
-    color: var(--text-secondary);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    flex-shrink: 0;
-    position: relative;
-}
-
-.sidebar-shortcut-item:hover {
-    background: var(--bg-primary);
-    color: var(--text-primary);
-}
-
-.sidebar-shortcut-item.active {
-    background: rgba(var(--primary-color-rgb), 0.1);
-    color: var(--primary-color);
-}
-
-.sidebar-shortcut-item i {
-    width: 18px;
-    height: 18px;
-}
-
-/* Collapsed Sidebar State */
-.sidebar-column.collapsed {
-    width: 60px !important;
-    min-width: 60px !important;
-}
-
-/* Hide Accordion in Collapsed Mode (Keep shortcuts visible) */
-.sidebar-column.collapsed .sidebar-accordion {
-    display: none;
-}
-
-/* Hide Sidebar Content (Lists) in Collapsed Mode */
-.sidebar-column.collapsed .sidebar {
-    display: none;
-}
-
-/* Shortcuts in Collapsed Mode */
-.sidebar-column.collapsed .sidebar-shortcuts {
-    flex-direction: column;
-    padding: 16px 0;
-    gap: 16px;
-    border-bottom: none;
-    height: 100%;
-    overflow-y: auto;
-    overflow-x: hidden;
-    align-items: center;
-    background: var(--bg-secondary);
-    /* Ensure background */
-}
-
-.sidebar-column.collapsed .sidebar-shortcut-item {
-    width: 40px;
-    height: 40px;
-}
-
-.sidebar-column.collapsed .sidebar-shortcut-item i {
-    width: 20px;
-    height: 20px;
-}
-
-/* Customize Button in Shortcuts Bar */
-.sidebar-customize-btn {
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text-muted);
-    cursor: pointer;
-    border-radius: 4px;
-    transition: all 0.2s;
-    border: none;
-    background: transparent;
-    margin-left: auto;
-    flex-shrink: 0;
-}
-
-.sidebar-customize-btn:hover {
-    background: var(--bg-primary);
-    color: var(--accent-gold);
-}
-
-.sidebar-customize-btn i {
-    width: 16px;
-    height: 16px;
-}
-
-/* Toggle Button Style */
-.sidebar-collapse-btn {
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text-muted);
-    cursor: pointer;
-    border-radius: 4px;
-    transition: all 0.2s;
-    border: none;
-    background: transparent;
-    flex-shrink: 0;
-}
-
-.sidebar-collapse-btn:hover {
-    background: var(--bg-primary);
-    color: var(--text-primary);
-}
-
-/* Drag and Drop Styles */
-.sidebar-shortcut-item.dragging {
-    opacity: 0.5;
-    transform: scale(0.9);
-}
-
-.sidebar-shortcuts.can-drop {
-    background: rgba(0, 122, 255, 0.08) !important;
-    border: 1px dashed rgba(0, 122, 255, 0.3) !important;
-}
-
-.sidebar-shortcuts.can-drop * {
-    pointer-events: none !important;
-}
-
-.sidebar-shortcuts.drag-over {
-    background: rgba(0, 122, 255, 0.15) !important;
-    border: 2px dashed #007aff !important;
-    box-shadow: inset 0 0 10px rgba(0, 122, 255, 0.2);
-}
-
-.accordion-nav-item.dragging {
-    opacity: 0.6;
-    background: rgba(0, 122, 255, 0.05) !important;
-    border: 1px dashed #007aff !important;
-}
-
-.shortcut-remove-btn {
-    position: absolute;
-    top: -4px;
-    right: -4px;
-    width: 14px;
-    height: 14px;
-    background: var(--accent-red);
-    color: white;
-    border-radius: 50%;
-    font-size: 10px;
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    z-index: 10;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.shortcut-remove-btn:hover {
-    transform: scale(1.1);
-}
 
 /* ==========================================
    STATUS & PROGRESS BAR STYLES

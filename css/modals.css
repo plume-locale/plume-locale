@@ -1047,8 +1047,7 @@
    ============================================ */
 
 /* Overlay */
-.modal,
-.modal-overlay {
+.modal {
     position: fixed;
     top: 0;
     left: 0;
@@ -1062,6 +1061,31 @@
     justify-content: center;
     opacity: 0;
     transition: opacity 0.3s ease;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeInModalOverlay 0.2s ease forwards;
+}
+
+@keyframes fadeInModalOverlay {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 .modal.active,
@@ -1086,6 +1110,20 @@
     transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     position: relative;
     overflow: hidden;
+}
+
+.modal-overlay .modal-content {
+    animation: slideUpModalContent 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes slideUpModalContent {
+    from {
+        transform: translateY(20px);
+    }
+
+    to {
+        transform: translateY(0);
+    }
 }
 
 .modal.active .modal-content,
@@ -1159,11 +1197,13 @@
 }
 
 /* Form Styles inside Modals */
-.modal .form-group {
+.modal .form-group,
+.modal-overlay .form-group {
     margin-bottom: 1.25rem;
 }
 
-.modal .form-label {
+.modal .form-label,
+.modal-overlay .form-label {
     display: block;
     margin-bottom: 0.5rem;
     font-weight: 500;
@@ -1172,8 +1212,11 @@
 }
 
 .modal .form-input,
+.modal-overlay .form-input,
 .modal .form-select,
-.modal textarea {
+.modal-overlay .form-select,
+.modal textarea,
+.modal-overlay textarea {
     width: 100%;
     padding: 0.75rem;
     border: 1px solid var(--border-color);
@@ -1185,8 +1228,11 @@
 }
 
 .modal .form-input:focus,
+.modal-overlay .form-input:focus,
 .modal .form-select:focus,
-.modal textarea:focus {
+.modal-overlay .form-select:focus,
+.modal textarea:focus,
+.modal-overlay textarea:focus {
     border-color: var(--primary-color);
     box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.15);
     outline: none;

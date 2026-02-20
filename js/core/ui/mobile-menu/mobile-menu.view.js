@@ -27,11 +27,21 @@ const MobileMenuView = {
     /**
      * Ouvre la sidebar (ajoute classes CSS).
      */
-    openSidebar: function () {
+    openSidebar: function (tab) {
         const sidebarColumn = document.getElementById('sidebarColumn');
+        const activityBar = document.getElementById('sidebarAccordion');
         const overlay = document.querySelector('.sidebar-overlay');
 
-        if (sidebarColumn) sidebarColumn.classList.add('mobile-visible');
+        if (tab === 'navigation') {
+            if (activityBar) {
+                activityBar.classList.add('mobile-visible');
+                activityBar.classList.remove('thin');
+            }
+            if (sidebarColumn) sidebarColumn.classList.remove('mobile-visible');
+        } else {
+            if (sidebarColumn) sidebarColumn.classList.add('mobile-visible');
+            if (activityBar) activityBar.classList.remove('mobile-visible');
+        }
 
         if (overlay) {
             overlay.style.display = 'block';
@@ -46,9 +56,11 @@ const MobileMenuView = {
      */
     closeSidebar: function () {
         const sidebarColumn = document.getElementById('sidebarColumn');
+        const activityBar = document.getElementById('sidebarAccordion');
         const overlay = document.querySelector('.sidebar-overlay');
 
         if (sidebarColumn) sidebarColumn.classList.remove('mobile-visible');
+        if (activityBar) activityBar.classList.remove('mobile-visible');
 
         if (overlay) {
             overlay.classList.remove('active');
@@ -178,11 +190,13 @@ const MobileMenuView = {
      */
     ensureDesktopState: function () {
         const sidebarColumn = document.getElementById('sidebarColumn');
+        const activityBar = document.getElementById('sidebarAccordion');
         const overlay = document.querySelector('.sidebar-overlay');
         const menuBtn = document.querySelector('.mobile-menu-toggle');
         const toolsSheet = document.getElementById('mobileToolsSheet');
 
         if (sidebarColumn) sidebarColumn.classList.remove('mobile-visible');
+        if (activityBar) activityBar.classList.remove('mobile-visible');
         if (overlay) {
             overlay.classList.remove('active');
             overlay.style.display = 'none';

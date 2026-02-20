@@ -248,17 +248,6 @@ const InterfaceCustomizerViewModel = {
 
         const forceHiddenComponentIds = [...allModuleComponentIds].filter(id => !activeComponentIds.has(id));
 
-        // Render Shortcuts if defined
-        if (typeof renderSidebarShortcuts === 'function') {
-            const shortcuts = settings.shortcuts || [];
-            // Filtrer les raccourcis : un raccourci ne peut être affiché que si son module est actif
-            const filteredShortcuts = shortcuts.filter(shortcutId => {
-                const module = InterfaceCustomizerModel.modules.find(m => m.components.includes(`header-tab-${shortcutId}`) || m.components.includes(`nav-item-${shortcutId}`));
-                return module ? settings.activeModules.includes(module.id) : true;
-            });
-            renderSidebarShortcuts(filteredShortcuts, isEditing);
-        }
-
         // 1. Appliquer les variables CSS de personnalisation
         const root = document.documentElement;
         if (settings.progressBarWidth) root.style.setProperty('--progress-bar-width', `${settings.progressBarWidth}px`);
