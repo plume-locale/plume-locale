@@ -465,11 +465,8 @@ function syncSidebarWithView(view) {
     const toolsSidebar = document.getElementById('toolsSidebar');
     let tensionMeter = document.getElementById('liveTensionMeter');
 
-    if (view === 'editor' || view === 'plotgrid') {
-        if (progressBar) progressBar.style.display = (view === 'editor') ? 'block' : 'none';
-        if (statusFilters) statusFilters.style.display = (view === 'editor') ? 'flex' : 'none';
+    if (view === 'editor') {
         if (treeCollapseToolbar) treeCollapseToolbar.style.display = (view === 'editor') ? 'flex' : 'none';
-        if (sceneTools) sceneTools.style.display = (view === 'editor') ? 'flex' : 'none';
         if (toolsSidebar) {
             toolsSidebar.style.display = 'flex';
             document.body.classList.add('has-tools-sidebar');
@@ -487,10 +484,7 @@ function syncSidebarWithView(view) {
             document.body.classList.remove('view-editor');
         }
     } else if (view === 'globalnotes') {
-        if (progressBar) progressBar.style.display = 'none';
-        if (statusFilters) statusFilters.style.display = 'none';
         if (treeCollapseToolbar) treeCollapseToolbar.style.display = 'none';
-        if (sceneTools) sceneTools.style.display = 'none';
         document.body.classList.remove('view-editor');
         if (toolsSidebar) {
             toolsSidebar.style.display = 'flex';
@@ -498,10 +492,7 @@ function syncSidebarWithView(view) {
             if (typeof updateGNToolsSidebar === 'function') updateGNToolsSidebar();
         }
     } else {
-        if (progressBar) progressBar.style.display = 'none';
-        if (statusFilters) statusFilters.style.display = 'none';
         if (treeCollapseToolbar) treeCollapseToolbar.style.display = 'none';
-        if (sceneTools) sceneTools.style.display = 'none';
         document.body.classList.remove('view-editor');
         if (toolsSidebar) {
             toolsSidebar.style.display = 'none';
@@ -1302,6 +1293,10 @@ function expandAllTree() {
         renderNotesList();
     }
 
+    // Refresh other view lists if they exist
+    if (typeof renderCharactersList === 'function') renderCharactersList();
+    if (typeof renderWorldList === 'function') renderWorldList();
+
     if (typeof ActRepository?.saveTreeState === 'function') ActRepository.saveTreeState();
     if (typeof lucide !== 'undefined') lucide.createIcons();
 }
@@ -1313,13 +1308,18 @@ function collapseAllTree() {
     expandedActs.clear();
     expandedChapters.clear();
 
-    document.querySelectorAll('.treeview-children').forEach(el => el.classList.add('collapsed'));
-    document.querySelectorAll('.treeview-chevron').forEach(el => el.setAttribute('data-lucide', 'chevron-right'));
+    // Only collapse children that are inside a treeview group
+    document.querySelectorAll('.treeview-group .treeview-children').forEach(el => el.classList.add('collapsed'));
+    document.querySelectorAll('.treeview-group .treeview-chevron').forEach(el => el.setAttribute('data-lucide', 'chevron-right'));
 
     if (typeof renderNotesList === 'function') {
         expandedNoteCategories.clear();
         renderNotesList();
     }
+
+    // Refresh other view lists if they exist
+    if (typeof renderCharactersList === 'function') renderCharactersList();
+    if (typeof renderWorldList === 'function') renderWorldList();
 
     if (typeof ActRepository?.saveTreeState === 'function') ActRepository.saveTreeState();
     if (typeof lucide !== 'undefined') lucide.createIcons();
@@ -2911,3 +2911,47 @@ function renderCodexWelcome() {
         </div>`;
     if (typeof lucide !== 'undefined') lucide.createIcons();
 }
+
+// --- GLOBAL FLOATING TOOLTIP ---
+document.addEventListener('mouseover', (e) => {
+    // Target any item with a data-tooltip inside a thin activity bar.
+    const target = e.target.closest('.activity-bar.thin [data-tooltip], .activity-bar.thin .accordion-nav-item');
+    if (!target) return;
+
+    // Si l'élément est caché par le panel (ex: nav-item-label masqué) ou autre, l'event mouseover sur l'icon fonctionne.
+    let tooltip = document.getElementById('globalFloatingTooltip');
+    if (!tooltip) {
+        tooltip = document.createElement('div');
+        tooltip.id = 'globalFloatingTooltip';
+        tooltip.className = 'global-floating-tooltip';
+        document.body.appendChild(tooltip);
+    }
+
+    const text = target.getAttribute('data-tooltip') || target.querySelector('.nav-item-label')?.textContent;
+    if (!text) return;
+
+    tooltip.textContent = text;
+
+    // Position
+    const rect = target.getBoundingClientRect();
+    tooltip.style.left = (rect.right + 10) + 'px';
+    tooltip.style.top = (rect.top + rect.height / 2) + 'px';
+
+    // Afficher
+    tooltip.classList.add('visible');
+
+    const hideTooltip = () => {
+        tooltip.classList.remove('visible');
+        target.removeEventListener('mouseleave', hideTooltip);
+        const wrapper = document.querySelector('.activity-bar-content-wrapper');
+        if (wrapper) wrapper.removeEventListener('scroll', hideTooltip);
+    };
+
+    target.addEventListener('mouseleave', hideTooltip);
+
+    // Fermer l'infobulle si l'utilisateur scrolle la barre
+    const scrollWrapper = document.querySelector('.activity-bar-content-wrapper');
+    if (scrollWrapper) {
+        scrollWrapper.addEventListener('scroll', hideTooltip, { once: true });
+    }
+});

@@ -41,12 +41,6 @@ const InterfaceCustomizerView = {
                 bar.className = 'interface-edit-bar';
                 bar.innerHTML = `
                     <div class="edit-bar-content">
-                        <div class="edit-bar-left">
-                            <div class="edit-bar-title">
-                                <i data-lucide="grip-vertical"></i> <span>${Localization.t('customizer.bar.title')}</span>
-                            </div>
-                            <div class="edit-bar-hint">${Localization.t('customizer.bar.hint')}</div>
-                        </div>
                         <div class="edit-bar-actions">
                             <button class="btn btn-outline-gold btn-sm" onclick="InterfaceCustomizerView.renderModuleSettings()">
                                 <i data-lucide="layout-template" style="width:14px;height:14px;"></i> ${Localization.t('customizer.btn.modules')}

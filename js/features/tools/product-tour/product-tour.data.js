@@ -5,58 +5,117 @@
  */
 
 const ProductTourData = {
-    // Les tours personnalisés par vue
-    // Chaque clé correspond à une valeur possible de la variable globale 'currentView'
-    tours: {
+    "tours": {
         "projects": [
             {
-                "element": ".app-logo-icon",
+                "element": ".projects-actions .view-toggle-group button:nth-child(1)",
                 "popover": {
-                    "title": "tour.projects.welcome.title",
-                    "description": "tour.projects.welcome.description",
+                    "title": "tour.project_list.view_grid.title",
+                    "description": "tour.project_list.view_grid.description",
+                    "image": null,
                     "side": "bottom",
-                    "align": "start"
+                    "align": "center"
                 },
                 "onHighlightStarted": null,
                 "onHighlighted": null,
                 "onDeselected": null,
                 "onNext": null,
-                "onPrevious": null
+                "onPrevious": null,
+                "clickBefore": null,
+                "clickAfter": null
             },
             {
-                "element": "#sidebarAccordion",
+                "element": ".projects-actions .view-toggle-group button:nth-child(2)",
                 "popover": {
-                    "title": "tour.projects.sidebar.title",
-                    "description": "tour.projects.sidebar.description",
+                    "title": "tour.project_list.view_table.title",
+                    "description": "tour.project_list.view_table.description",
+                    "image": null,
                     "side": "bottom",
-                    "align": "start"
+                    "align": "center"
                 },
                 "onHighlightStarted": null,
                 "onHighlighted": null,
                 "onDeselected": null,
                 "onNext": null,
-                "onPrevious": null
+                "onPrevious": null,
+                "clickBefore": null,
+                "clickAfter": null
             },
             {
-                "element": "#header-tab-projects",
+                "element": ".projects-actions button[onclick*=\"importDemo\"]",
                 "popover": {
-                    "title": "tour.projects.tab_projects.title",
-                    "description": "tour.projects.tab_projects.description",
+                    "title": "tour.project_list.import_demo.title",
+                    "description": "tour.project_list.import_demo.description",
+                    "image": null,
                     "side": "bottom",
-                    "align": "start"
+                    "align": "center"
                 },
                 "onHighlightStarted": null,
                 "onHighlighted": null,
                 "onDeselected": null,
                 "onNext": null,
-                "onPrevious": null
+                "onPrevious": null,
+                "clickBefore": null,
+                "clickAfter": null
             },
             {
-                "element": "#header-tab-editor",
+                "element": ".projects-actions button[onclick*=\"showBackupMenu\"]",
                 "popover": {
-                    "title": "tour.projects.tab_editor.title",
-                    "description": "tour.projects.tab_editor.description",
+                    "title": "tour.project_list.backup_menu.title",
+                    "description": "tour.project_list.backup_menu.description",
+                    "image": null,
                     "side": "bottom",
+                    "align": "center"
+                },
+                "onHighlightStarted": null,
+                "onHighlighted": null,
+                "onDeselected": null,
+                "onNext": null,
+                "onPrevious": null,
+                "clickBefore": null,
+                "clickAfter": null
+            },
+            {
+                "element": ".projects-actions button[onclick*=\"importHandler\"]",
+                "popover": {
+                    "title": "tour.project_list.import_project.title",
+                    "description": "tour.project_list.import_project.description",
+                    "image": null,
+                    "side": "bottom",
+                    "align": "center"
+                },
+                "onHighlightStarted": null,
+                "onHighlighted": null,
+                "onDeselected": null,
+                "onNext": null,
+                "onPrevious": null,
+                "clickBefore": null,
+                "clickAfter": null
+            },
+            {
+                "element": ".projects-actions button[onclick*=\"openNewModal\"]",
+                "popover": {
+                    "title": "tour.project_list.new_project.title",
+                    "description": "tour.project_list.new_project.description",
+                    "image": null,
+                    "side": "bottom",
+                    "align": "center"
+                },
+                "onHighlightStarted": null,
+                "onHighlighted": null,
+                "onDeselected": null,
+                "onNext": null,
+                "onPrevious": null,
+                "clickBefore": null,
+                "clickAfter": null
+            },
+            {
+                "element": ".projects-grid .project-card-new:first-child",
+                "popover": {
+                    "title": "tour.project_list.project_card.title",
+                    "description": "tour.project_list.project_card.description",
+                    "image": null,
+                    "side": "right",
                     "align": "start"
                 },
                 "onHighlightStarted": null,
@@ -64,492 +123,272 @@ const ProductTourData = {
                 "onDeselected": null,
                 "onNext": null,
                 "onPrevious": null,
-                "clickBefore": "#header-tab-editor"
+                "clickBefore": null,
+                "clickAfter": null
             },
             {
-                "element": "#header-tab-corkboard",
+                "element": ".projects-grid .project-card-new:first-child .progress-section",
                 "popover": {
-                    "title": "tour.projects.tab_corkboard.title",
-                    "description": "tour.projects.tab_corkboard.description",
-                    "side": "bottom",
-                    "align": "start"
+                    "title": "tour.project_list.progress.title",
+                    "description": "tour.project_list.progress.description",
+                    "image": null,
+                    "side": "top",
+                    "align": "center"
                 },
                 "onHighlightStarted": null,
                 "onHighlighted": null,
                 "onDeselected": null,
                 "onNext": null,
                 "onPrevious": null,
-                "clickBefore": "#header-tab-corkboard"
+                "clickBefore": null,
+                "clickAfter": null
             },
             {
-                "element": "#header-tab-plot",
+                "element": ".projects-grid .project-card-new:first-child .stats-grid",
                 "popover": {
-                    "title": "tour.projects.tab_plot.title",
-                    "description": "tour.projects.tab_plot.description",
-                    "side": "bottom",
-                    "align": "start"
+                    "title": "tour.project_list.stats.title",
+                    "description": "tour.project_list.stats.description",
+                    "image": null,
+                    "side": "top",
+                    "align": "center"
                 },
                 "onHighlightStarted": null,
                 "onHighlighted": null,
                 "onDeselected": null,
                 "onNext": null,
                 "onPrevious": null,
-                "clickBefore": "#header-tab-plot"
+                "clickBefore": null,
+                "clickAfter": null
             },
             {
-                "element": "#header-tab-plotgrid",
+                "element": ".projects-grid .project-card-new:first-child .project-card-actions-row button:nth-child(1)",
                 "popover": {
-                    "title": "tour.projects.tab_plotgrid.title",
-                    "description": "tour.projects.tab_plotgrid.description",
+                    "title": "tour.project_list.open_btn.title",
+                    "description": "tour.project_list.open_btn.description",
+                    "image": null,
                     "side": "bottom",
-                    "align": "start"
+                    "align": "center"
                 },
                 "onHighlightStarted": null,
                 "onHighlighted": null,
                 "onDeselected": null,
                 "onNext": null,
                 "onPrevious": null,
-                "clickBefore": "#header-tab-plotgrid"
+                "clickBefore": null,
+                "clickAfter": null
             },
             {
-                "element": "#header-tab-arcs",
+                "element": ".projects-grid .project-card-new:first-child .project-card-actions-row button:nth-child(2)",
                 "popover": {
-                    "title": "tour.projects.tab_arcs.title",
-                    "description": "tour.projects.tab_arcs.description",
+                    "title": "tour.project_list.export_btn.title",
+                    "description": "tour.project_list.export_btn.description",
+                    "image": null,
                     "side": "bottom",
-                    "align": "start"
+                    "align": "center"
                 },
                 "onHighlightStarted": null,
                 "onHighlighted": null,
                 "onDeselected": null,
                 "onNext": null,
                 "onPrevious": null,
-                "clickBefore": "#header-tab-arcs"
+                "clickBefore": null,
+                "clickAfter": null
             },
             {
-                "element": "#header-tab-investigation",
+                "element": ".projects-grid .project-card-new:first-child .project-card-actions-row button:nth-child(3)",
                 "popover": {
-                    "title": "tour.projects.tab_investigation.title",
-                    "description": "tour.projects.tab_investigation.description",
+                    "title": "tour.project_list.backup_btn.title",
+                    "description": "tour.project_list.backup_btn.description",
+                    "image": null,
                     "side": "bottom",
-                    "align": "start"
+                    "align": "center"
                 },
                 "onHighlightStarted": null,
                 "onHighlighted": null,
                 "onDeselected": null,
                 "onNext": null,
                 "onPrevious": null,
-                "clickBefore": "#header-tab-investigation"
+                "clickBefore": null,
+                "clickAfter": null
             },
             {
-                "element": "#header-tab-globalnotes",
+                "element": ".projects-grid .project-card-new:first-child .project-card-actions-row button:nth-child(4)",
                 "popover": {
-                    "title": "tour.projects.tab_globalnotes.title",
-                    "description": "tour.projects.tab_globalnotes.description",
+                    "title": "tour.project_list.delete_btn.title",
+                    "description": "tour.project_list.delete_btn.description",
+                    "image": null,
                     "side": "bottom",
-                    "align": "start"
+                    "align": "center"
                 },
                 "onHighlightStarted": null,
                 "onHighlighted": null,
                 "onDeselected": null,
                 "onNext": null,
                 "onPrevious": null,
-                "clickBefore": "#header-tab-globalnotes"
-            },
-            {
-                "element": "#header-tab-characters",
-                "popover": {
-                    "title": "tour.projects.tab_characters.title",
-                    "description": "tour.projects.tab_characters.description",
-                    "side": "bottom",
-                    "align": "start"
-                },
-                "onHighlightStarted": null,
-                "onHighlighted": null,
-                "onDeselected": null,
-                "onNext": null,
-                "onPrevious": null,
-                "clickBefore": "#header-tab-characters"
-            },
-            {
-                "element": "#header-tab-world",
-                "popover": {
-                    "title": "tour.projects.tab_world.title",
-                    "description": "tour.projects.tab_world.description",
-                    "side": "bottom",
-                    "align": "start"
-                },
-                "onHighlightStarted": null,
-                "onHighlighted": null,
-                "onDeselected": null,
-                "onNext": null,
-                "onPrevious": null,
-                "clickBefore": "#header-tab-world"
-            },
-            {
-                "element": "#header-tab-codex",
-                "popover": {
-                    "title": "tour.projects.tab_codex.title",
-                    "description": "tour.projects.tab_codex.description",
-                    "side": "bottom",
-                    "align": "start"
-                },
-                "onHighlightStarted": null,
-                "onHighlighted": null,
-                "onDeselected": null,
-                "onNext": null,
-                "onPrevious": null,
-                "clickBefore": "#header-tab-codex"
-            },
-            {
-                "element": "#header-tab-notes",
-                "popover": {
-                    "title": "tour.projects.tab_notes.title",
-                    "description": "tour.projects.tab_notes.description",
-                    "side": "bottom",
-                    "align": "start"
-                },
-                "onHighlightStarted": null,
-                "onHighlighted": null,
-                "onDeselected": null,
-                "onNext": null,
-                "onPrevious": null,
-                "clickBefore": "#header-tab-notes"
-            },
-            {
-                "element": "#header-tab-mindmap",
-                "popover": {
-                    "title": "tour.projects.tab_mindmap.title",
-                    "description": "tour.projects.tab_mindmap.description",
-                    "side": "bottom",
-                    "align": "start"
-                },
-                "onHighlightStarted": null,
-                "onHighlighted": null,
-                "onDeselected": null,
-                "onNext": null,
-                "onPrevious": null,
-                "clickBefore": "#header-tab-mindmap"
-            },
-            {
-                "element": "#header-tab-relations",
-                "popover": {
-                    "title": "tour.projects.tab_relations.title",
-                    "description": "tour.projects.tab_relations.description",
-                    "side": "bottom",
-                    "align": "start"
-                },
-                "onHighlightStarted": null,
-                "onHighlighted": null,
-                "onDeselected": null,
-                "onNext": null,
-                "onPrevious": null,
-                "clickBefore": "#header-tab-relations"
-            },
-            {
-                "element": "#header-tab-map",
-                "popover": {
-                    "title": "tour.projects.tab_map.title",
-                    "description": "tour.projects.tab_map.description",
-                    "side": "bottom",
-                    "align": "start"
-                },
-                "onHighlightStarted": null,
-                "onHighlighted": null,
-                "onDeselected": null,
-                "onNext": null,
-                "onPrevious": null,
-                "clickBefore": "#header-tab-map"
-            },
-            {
-                "element": "#header-tab-timeline-viz",
-                "popover": {
-                    "title": "tour.projects.tab_timeline_viz.title",
-                    "description": "tour.projects.tab_timeline_viz.description",
-                    "side": "bottom",
-                    "align": "start"
-                },
-                "onHighlightStarted": null,
-                "onHighlighted": null,
-                "onDeselected": null,
-                "onNext": null,
-                "onPrevious": null,
-                "clickBefore": "#header-tab-timeline-viz"
-            },
-            {
-                "element": "#header-tab-stats",
-                "popover": {
-                    "title": "tour.projects.tab_stats.title",
-                    "description": "tour.projects.tab_stats.description",
-                    "side": "bottom",
-                    "align": "start"
-                },
-                "onHighlightStarted": null,
-                "onHighlighted": null,
-                "onDeselected": null,
-                "onNext": null,
-                "onPrevious": null,
-                "clickBefore": "#header-tab-stats"
-            },
-            {
-                "element": "#header-tab-analysis",
-                "popover": {
-                    "title": "tour.projects.tab_analysis.title",
-                    "description": "tour.projects.tab_analysis.description",
-                    "side": "bottom",
-                    "align": "start"
-                },
-                "onHighlightStarted": null,
-                "onHighlighted": null,
-                "onDeselected": null,
-                "onNext": null,
-                "onPrevious": null,
-                "clickBefore": "#header-tab-analysis"
-            },
-            {
-                "element": "#header-tab-versions",
-                "popover": {
-                    "title": "tour.projects.tab_versions.title",
-                    "description": "tour.projects.tab_versions.description",
-                    "side": "bottom",
-                    "align": "start"
-                },
-                "onHighlightStarted": null,
-                "onHighlighted": null,
-                "onDeselected": null,
-                "onNext": null,
-                "onPrevious": null
-            },
-            {
-                "element": "#splitModeToggle",
-                "popover": {
-                    "title": "tour.projects.split.title",
-                    "description": "tour.projects.split.description",
-                    "side": "bottom",
-                    "align": "start"
-                },
-                "onHighlightStarted": null,
-                "onHighlighted": null,
-                "onDeselected": null,
-                "onNext": null,
-                "onPrevious": null,
-                "clickBefore": "#splitModeToggle",
-                "clickAfter": "#splitModeToggle"
-            },
-            {
-                "element": "#storage-badge",
-                "popover": {
-                    "title": "tour.projects.storage.title",
-                    "description": "tour.projects.storage.description",
-                    "side": "bottom",
-                    "align": "start"
-                },
-                "onHighlightStarted": null,
-                "onHighlighted": null,
-                "onDeselected": null,
-                "onNext": null,
-                "onPrevious": null
-            },
-            {
-                "element": "#headerUndoBtn",
-                "popover": {
-                    "title": "tour.projects.undo.title",
-                    "description": "tour.projects.undo.description",
-                    "side": "bottom",
-                    "align": "start"
-                },
-                "onHighlightStarted": null,
-                "onHighlighted": null,
-                "onDeselected": null,
-                "onNext": null,
-                "onPrevious": null
-            },
-            {
-                "element": "#headerRedoBtn",
-                "popover": {
-                    "title": "tour.projects.redo.title",
-                    "description": "tour.projects.redo.description",
-                    "side": "bottom",
-                    "align": "start"
-                },
-                "onHighlightStarted": null,
-                "onHighlighted": null,
-                "onDeselected": null,
-                "onNext": null,
-                "onPrevious": null
-            },
-            {
-                "element": "#pomodoroHeaderBtn",
-                "popover": {
-                    "title": "tour.projects.pomodoro.title",
-                    "description": "tour.projects.pomodoro.description",
-                    "side": "bottom",
-                    "align": "start"
-                },
-                "onHighlightStarted": null,
-                "onHighlighted": null,
-                "onDeselected": null,
-                "onNext": null,
-                "onPrevious": null
-            },
-            {
-                "element": "#headerShortcutsBtn",
-                "popover": {
-                    "title": "tour.projects.shortcuts.title",
-                    "description": "tour.projects.shortcuts.description",
-                    "side": "bottom",
-                    "align": "start"
-                },
-                "onHighlightStarted": null,
-                "onHighlighted": null,
-                "onDeselected": null,
-                "onNext": null,
-                "onPrevious": null
-            },
-            {
-                "element": "#headerThemesBtn",
-                "popover": {
-                    "title": "tour.projects.themes.title",
-                    "description": "tour.projects.themes.description",
-                    "side": "bottom",
-                    "align": "start"
-                },
-                "onHighlightStarted": null,
-                "onHighlighted": null,
-                "onDeselected": null,
-                "onNext": null,
-                "onPrevious": null
-            },
-            {
-                "element": "div#docDropdown > button",
-                "popover": {
-                    "title": "tour.projects.doc.title",
-                    "description": "tour.projects.doc.description",
-                    "side": "bottom",
-                    "align": "start"
-                },
-                "onHighlightStarted": null,
-                "onHighlighted": null,
-                "onDeselected": null,
-                "onNext": null,
-                "onPrevious": null
-            },
-            {
-                "element": "div#langDropdown > button",
-                "popover": {
-                    "title": "tour.projects.lang.title",
-                    "description": "tour.projects.lang.description",
-                    "side": "bottom",
-                    "align": "start"
-                },
-                "onHighlightStarted": null,
-                "onHighlighted": null,
-                "onDeselected": null,
-                "onNext": null,
-                "onPrevious": null
-            },
-            {
-                "element": "#tourTriggerBtn",
-                "popover": {
-                    "title": "tour.projects.tour.title",
-                    "description": "tour.projects.tour.description",
-                    "side": "bottom",
-                    "align": "start"
-                },
-                "onHighlightStarted": null,
-                "onHighlighted": null,
-                "onDeselected": null,
-                "onNext": null,
-                "onPrevious": null
+                "clickBefore": null,
+                "clickAfter": null
             }
-        ],      // Écran d'accueil / Liste des projets
+        ],
         "editor": [
             {
                 "element": ".sidebar",
                 "popover": {
                     "title": "tour.editor.sidebar.title",
                     "description": "tour.editor.sidebar.description",
+                    "image": null,
                     "side": "right",
                     "align": "start"
-                }
+                },
+                "onHighlightStarted": null,
+                "onHighlighted": null,
+                "onDeselected": null,
+                "onNext": null,
+                "onPrevious": null,
+                "clickBefore": null,
+                "clickAfter": null
             },
             {
                 "element": ".sidebar-header-actions",
                 "popover": {
                     "title": "tour.editor.sidebar_header.title",
                     "description": "tour.editor.sidebar_header.description",
+                    "image": null,
                     "side": "bottom",
                     "align": "start"
-                }
+                },
+                "onHighlightStarted": null,
+                "onHighlighted": null,
+                "onDeselected": null,
+                "onNext": null,
+                "onPrevious": null,
+                "clickBefore": null,
+                "clickAfter": null
             },
             {
                 "element": ".tree-toolbar",
                 "popover": {
                     "title": "tour.editor.tree_toolbar.title",
                     "description": "tour.editor.tree_toolbar.description",
+                    "image": null,
                     "side": "bottom",
                     "align": "start"
-                }
+                },
+                "onHighlightStarted": null,
+                "onHighlighted": null,
+                "onDeselected": null,
+                "onNext": null,
+                "onPrevious": null,
+                "clickBefore": null,
+                "clickAfter": null
             },
             {
                 "element": ".editor-header",
                 "popover": {
                     "title": "tour.editor.header.title",
                     "description": "tour.editor.header.description",
+                    "image": null,
                     "side": "bottom",
                     "align": "start"
-                }
+                },
+                "onHighlightStarted": null,
+                "onHighlighted": null,
+                "onDeselected": null,
+                "onNext": null,
+                "onPrevious": null,
+                "clickBefore": null,
+                "clickAfter": null
             },
             {
                 "element": ".editor-synopsis",
                 "popover": {
                     "title": "tour.editor.synopsis.title",
                     "description": "tour.editor.synopsis.description",
+                    "image": null,
                     "side": "bottom",
                     "align": "start"
-                }
+                },
+                "onHighlightStarted": null,
+                "onHighlighted": null,
+                "onDeselected": null,
+                "onNext": null,
+                "onPrevious": null,
+                "clickBefore": null,
+                "clickAfter": null
             },
             {
                 "element": "#editorToolbar",
                 "popover": {
                     "title": "tour.editor.toolbar.title",
                     "description": "tour.editor.toolbar.description",
+                    "image": null,
                     "side": "top",
                     "align": "center"
-                }
+                },
+                "onHighlightStarted": null,
+                "onHighlighted": null,
+                "onDeselected": null,
+                "onNext": null,
+                "onPrevious": null,
+                "clickBefore": null,
+                "clickAfter": null
             },
             {
                 "element": "#toolMentionsBtn",
                 "popover": {
                     "title": "tour.editor.mentions.title",
                     "description": "tour.editor.mentions.description",
+                    "image": null,
                     "side": "top",
                     "align": "center"
-                }
+                },
+                "onHighlightStarted": null,
+                "onHighlighted": null,
+                "onDeselected": null,
+                "onNext": null,
+                "onPrevious": null,
+                "clickBefore": null,
+                "clickAfter": null
             },
             {
                 "element": ".editor-textarea",
                 "popover": {
                     "title": "tour.editor.textarea.title",
                     "description": "tour.editor.textarea.description",
+                    "image": null,
                     "side": "top",
                     "align": "center"
-                }
+                },
+                "onHighlightStarted": null,
+                "onHighlighted": null,
+                "onDeselected": null,
+                "onNext": null,
+                "onPrevious": null,
+                "clickBefore": null,
+                "clickAfter": null
             },
             {
                 "element": "#toolsSidebar",
                 "popover": {
                     "title": "tour.editor.tools_sidebar.title",
                     "description": "tour.editor.tools_sidebar.description",
+                    "image": null,
                     "side": "left",
                     "align": "start"
-                }
+                },
+                "onHighlightStarted": null,
+                "onHighlighted": null,
+                "onDeselected": null,
+                "onNext": null,
+                "onPrevious": null,
+                "clickBefore": null,
+                "clickAfter": null
             },
             {
                 "element": "#toolVersionsBtn",
                 "popover": {
                     "title": "tour.editor.tool_versions.title",
                     "description": "tour.editor.tool_versions.description",
+                    "image": null,
                     "side": "bottom",
                     "align": "start"
                 },
@@ -558,13 +397,15 @@ const ProductTourData = {
                 "onDeselected": null,
                 "onNext": null,
                 "onPrevious": null,
-                "clickBefore": "#toolVersionsBtn"
+                "clickBefore": "#toolVersionsBtn",
+                "clickAfter": null
             },
             {
                 "element": "#btnNewVersion",
                 "popover": {
                     "title": "tour.editor.new_version.title",
                     "description": "tour.editor.new_version.description",
+                    "image": null,
                     "side": "bottom",
                     "align": "start"
                 },
@@ -573,6 +414,7 @@ const ProductTourData = {
                 "onDeselected": null,
                 "onNext": null,
                 "onPrevious": null,
+                "clickBefore": null,
                 "clickAfter": "#toolVersionsBtn"
             },
             {
@@ -580,6 +422,7 @@ const ProductTourData = {
                 "popover": {
                     "title": "tour.editor.annotations.title",
                     "description": "tour.editor.annotations.description",
+                    "image": null,
                     "side": "bottom",
                     "align": "start"
                 },
@@ -596,6 +439,7 @@ const ProductTourData = {
                 "popover": {
                     "title": "tour.editor.todos.title",
                     "description": "tour.editor.todos.description",
+                    "image": null,
                     "side": "bottom",
                     "align": "start"
                 },
@@ -612,6 +456,7 @@ const ProductTourData = {
                 "popover": {
                     "title": "tour.editor.arcs.title",
                     "description": "tour.editor.arcs.description",
+                    "image": null,
                     "side": "bottom",
                     "align": "start"
                 },
@@ -628,32 +473,40 @@ const ProductTourData = {
                 "popover": {
                     "title": "tour.editor.finish.title",
                     "description": "tour.editor.finish.description",
+                    "image": null,
                     "side": "bottom",
                     "align": "start"
-                }
+                },
+                "onHighlightStarted": null,
+                "onHighlighted": null,
+                "onDeselected": null,
+                "onNext": null,
+                "onPrevious": null,
+                "clickBefore": null,
+                "clickAfter": null
             }
-        ],        // Structure du roman (Actes, Chapitres, Scènes)
-        "characters": [],    // Gestion des personnages
-        "world": [],         // Worldbuilding / Univers
-        "notes": [],         // Notes de projet
-        "codex": [],         // Codex / Encyclopédie
-        "arcs": [],          // Arcs narratifs
-        "plotgrid": [],      // Grille d'intrigue (Plot Grid)
-        "timeline": [],      // Frise chronologique
-        "timelineviz": [],   // Visualisation temporelle
-        "stats": [],         // Statistiques d'écriture
-        "analysis": [],      // Analyse de texte
-        "investigation": [], // Tableau d'enquête
-        "globalnotes": [],   // Tableaux de bord (Global Notes)
-        "mindmap": [],       // Carte mentale
-        "corkboard": [],     // Tableau de liège
-        "map": [],           // Cartographie
-        "relations": [],     // Carte des relations
-        "storygrid": [],     // Story Grid
-        "thriller": [],      // Thriller Board
-        "snapshots": [],     // Snapshots / Sauvegardes
-        "versions": [],      // Historique des versions
-        "todos": [],         // Liste des tâches (TODO)
-        "search": []         // Recherche globale
+        ],
+        "characters": [],
+        "world": [],
+        "notes": [],
+        "codex": [],
+        "arcs": [],
+        "plotgrid": [],
+        "timeline": [],
+        "timelineviz": [],
+        "stats": [],
+        "analysis": [],
+        "investigation": [],
+        "globalnotes": [],
+        "mindmap": [],
+        "corkboard": [],
+        "map": [],
+        "relations": [],
+        "storygrid": [],
+        "thriller": [],
+        "snapshots": [],
+        "versions": [],
+        "todos": [],
+        "search": []
     }
 };

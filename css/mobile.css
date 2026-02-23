@@ -2136,38 +2136,36 @@ body.force-mobile-nav .split-mode-toggle span {
         box-shadow: none !important;
     }
 
-    /* Modals */
+    /* Modals (Unified) */
     .modal-content {
-        width: 95%;
-        max-width: 95%;
-        margin: 1rem auto;
-        max-height: 90vh;
-        overflow-y: auto;
-    }
-
-    .modal-title {
-        font-size: 1.3rem;
-    }
-
-    /* Boutons dans les modals - empiler verticalement sur mobile */
-    .modal-button-group {
-        flex-direction: column;
-    }
-
-    .modal-button-group .btn {
         width: 100%;
-        min-width: unset;
+        max-width: 100%;
         margin: 0;
+        height: 100%;
+        max-height: 100%;
+        border-radius: 0;
+        border: none;
     }
 
-    .modal-button-group .btn+.btn {
-        margin-top: 0.75rem;
+    .modal-header {
+        padding: 1rem;
     }
 
-    .modal-content>div>.btn {
-        display: block;
+    .modal-body {
+        padding: 1rem;
+    }
+
+    .modal-footer,
+    .modal-actions {
+        padding: 1rem;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .modal-footer .btn,
+    .modal-actions .btn {
         width: 100%;
-        margin: 0.5rem 0;
+        margin: 0;
     }
 
     /* Forms */

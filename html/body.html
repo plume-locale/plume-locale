@@ -76,6 +76,12 @@
 
 
 
+                <!-- Ko-fi Support -->
+                <a href="https://ko-fi.com/plume_locale" target="_blank" class="header-action-btn"
+                    title="Soutenir le projet sur Ko-fi" data-i18n-title="header.support_kofi">
+                    <i data-lucide="coffee"></i>
+                </a>
+
                 <!-- Extra Menu Dropdown -->
                 <div class="extra-menu-dropdown" id="extraMenuDropdown">
                     <button class="header-action-btn" title="Menu supplémentaire" data-i18n-title="header.extra_menu"
@@ -321,7 +327,7 @@
                             <i data-lucide="fold-vertical" style="width: 12px; height: 12px"></i>
                             <span data-i18n="tool.tree.collapse">Replier</span>
                         </button>
-                        <button class="tree-collapse-btn" onclick="openStructureOrganizer()"
+                        <button class="tree-collapse-btn" onclick="openStructureOrganizer()" id="structureOrganizeBtn"
                             title="Réorganiser la structure (vue globale)" data-i18n-title="tool.tree.organize">
                             <i data-lucide="layout-list" style="width: 12px; height: 12px"></i>
                             <span data-i18n="tool.tree.organize">Organiser</span>
@@ -1871,117 +1877,121 @@
         </div>
         <!-- Tension Words Editor Modal -->
         <div class="modal" id="tensionWordsModal">
-            <div class="modal-content" style="max-width: 900px">
-                <div class="modal-title" data-i18n="modal.tension.title"><i data-lucide="pencil"></i> Personnaliser
-                    les
-                    mots
-                    de tension</div>
-                <div
-                    style="margin-bottom: 1.5rem; padding: 1rem; background: var(--bg-secondary); border-radius: 6px; border: 1px solid var(--border-color)">
-                    <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6; margin: 0"
-                        data-i18n="modal.tension.desc">Ces mots
-                        sont
-                        utilisés pour calculer automatiquement la tension narrative de vos scènes. Personnalisez-les
-                        selon
-                        votre style d'écriture et le genre de votre roman.</p>
+            <div class="modal-content modal-lg" style="height: 90vh;">
+                <div class="modal-header">
+                    <h2 class="modal-title" data-i18n="modal.tension.title"><i data-lucide="pencil"></i> Personnaliser
+                        les mots de tension</h2>
+                    <button class="modal-close" onclick="closeModal('tensionWordsModal')">
+                        <i data-lucide="x" style="width: 20px; height: 20px;"></i>
+                    </button>
                 </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem">
-                    <!-- High Tension Words -->
+
+                <div class="modal-body">
                     <div
-                        style="background: var(--bg-secondary); border-radius: 8px; padding: 1.25rem; border: 2px solid rgba(196, 69, 54, 0.3)">
-                        <h3
-                            style="margin: 0 0 0.75rem 0; font-size: 1rem; color: var(--accent-red); display: flex; align-items: center; gap: 0.5rem">
-                            <span data-i18n="modal.tension.high.title">Haute tension</span>
-                            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal"
-                                data-i18n="modal.tension.high.pts">(+3 pts
-                                chacun)</span>
-                        </h3>
-                        <div style="margin-bottom: 0.75rem">
-                            <input type="text" id="highTensionInput" placeholder="Ajouter un mot..."
-                                data-i18n-placeholder="btn.add_word"
-                                style="width: 100%; padding: 0.5rem; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-primary); font-size: 0.85rem"
-                                onkeypress="if (event.key === 'Enter') addTensionWord('high');" />
-                            <button onclick="addTensionWord('high')"
-                                style="width: 100%; margin-top: 0.5rem; padding: 0.5rem; background: var(--accent-red); color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-weight: 500">+
-                                <span data-i18n="btn.add">Ajouter</span></button>
-                            <button onclick="openBulkImport('high')"
-                                style="width: 100%; margin-top: 0.5rem; padding: 0.5rem; background: rgba(196, 69, 54, 0.2); color: var(--accent-red); border: 1px solid var(--accent-red); border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-weight: 500"
-                                data-i18n="modal.tension.bulk_import">Import
-                                en masse</button>
-                        </div>
-                        <div id="highTensionList"
-                            style="max-height: 300px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.4rem">
-                            <!-- Words will be added here -->
-                        </div>
+                        style="margin-bottom: 2rem; padding: 1.25rem; background: var(--bg-secondary); border-radius: 8px; border: 1px solid var(--border-color); box-shadow: inset 0 0 10px rgba(0,0,0,0.02);">
+                        <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.6; margin: 0"
+                            data-i18n="modal.tension.desc">
+                            Ces mots sont utilisés pour calculer automatiquement la tension narrative de vos scènes.
+                            Personnalisez-les selon votre style d'écriture et le genre de votre roman.
+                        </p>
                     </div>
-                    <!-- Medium Tension Words -->
+
                     <div
-                        style="background: var(--bg-secondary); border-radius: 8px; padding: 1.25rem; border: 2px solid rgba(230, 162, 60, 0.3)">
-                        <h3
-                            style="margin: 0 0 0.75rem 0; font-size: 1rem; color: #e6a23c; display: flex; align-items: center; gap: 0.5rem">
-                            <span data-i18n="modal.tension.medium.title">Tension moyenne</span>
-                            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal"
-                                data-i18n="modal.tension.medium.pts">(+1.5
-                                pts
-                                chacun)</span>
-                        </h3>
-                        <div style="margin-bottom: 0.75rem">
-                            <input type="text" id="mediumTensionInput" placeholder="Ajouter un mot..."
-                                data-i18n-placeholder="btn.add_word"
-                                style="width: 100%; padding: 0.5rem; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-primary); font-size: 0.85rem"
-                                onkeypress="if (event.key === 'Enter') addTensionWord('medium');" />
-                            <button onclick="addTensionWord('medium')"
-                                style="width: 100%; margin-top: 0.5rem; padding: 0.5rem; background: #e6a23c; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-weight: 500">+
-                                <span data-i18n="btn.add">Ajouter</span></button>
-                            <button onclick="openBulkImport('medium')"
-                                style="width: 100%; margin-top: 0.5rem; padding: 0.5rem; background: rgba(230, 162, 60, 0.2); color: #e6a23c; border: 1px solid #e6a23c; border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-weight: 500"
-                                data-i18n="modal.tension.bulk_import">Import
-                                en masse</button>
+                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">
+                        <!-- High Tension Words -->
+                        <div
+                            style="background: var(--bg-primary); border-radius: 12px; padding: 1.5rem; border: 2px solid rgba(196, 69, 54, 0.2); display: flex; flex-direction: column;">
+                            <h3
+                                style="margin: 0 0 1rem 0; font-size: 1.05rem; color: var(--accent-red); display: flex; align-items: center; justify-content: space-between; font-weight: 700;">
+                                <span data-i18n="modal.tension.high.title">Haute tension</span>
+                                <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal"
+                                    data-i18n="modal.tension.high.pts">(+3 pts)</span>
+                            </h3>
+                            <div style="margin-bottom: 1rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                                <input type="text" id="highTensionInput" placeholder="Ajouter un mot..."
+                                    data-i18n-placeholder="btn.add_word" class="form-input"
+                                    onkeypress="if (event.key === 'Enter') addTensionWord('high');" />
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                                    <button onclick="addTensionWord('high')" class="btn btn-primary"
+                                        style="background: var(--accent-red); border-color: var(--accent-red); padding: 0.5rem;">+
+                                        <span data-i18n="btn.add">Ajouter</span></button>
+                                    <button onclick="openBulkImport('high')" class="btn btn-outline"
+                                        style="color: var(--accent-red); border-color: var(--accent-red); padding: 0.5rem; font-size: 0.8rem;"
+                                        data-i18n="modal.tension.bulk_import">Import masse</button>
+                                </div>
+                            </div>
+                            <div id="highTensionList"
+                                style="flex: 1; max-height: 450px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem; padding-right: 4px;">
+                                <!-- Words will be added here -->
+                            </div>
                         </div>
-                        <div id="mediumTensionList"
-                            style="max-height: 300px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.4rem">
-                            <!-- Words will be added here -->
+
+                        <!-- Medium Tension Words -->
+                        <div
+                            style="background: var(--bg-primary); border-radius: 12px; padding: 1.5rem; border: 2px solid rgba(230, 162, 60, 0.2); display: flex; flex-direction: column;">
+                            <h3
+                                style="margin: 0 0 1rem 0; font-size: 1.05rem; color: #e6a23c; display: flex; align-items: center; justify-content: space-between; font-weight: 700;">
+                                <span data-i18n="modal.tension.medium.title">Tension moyenne</span>
+                                <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal"
+                                    data-i18n="modal.tension.medium.pts">(+1.5 pts)</span>
+                            </h3>
+                            <div style="margin-bottom: 1rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                                <input type="text" id="mediumTensionInput" placeholder="Ajouter un mot..."
+                                    data-i18n-placeholder="btn.add_word" class="form-input"
+                                    onkeypress="if (event.key === 'Enter') addTensionWord('medium');" />
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                                    <button onclick="addTensionWord('medium')" class="btn btn-primary"
+                                        style="background: #e6a23c; border-color: #e6a23c; padding: 0.5rem;">+ <span
+                                            data-i18n="btn.add">Ajouter</span></button>
+                                    <button onclick="openBulkImport('medium')" class="btn btn-outline"
+                                        style="color: #e6a23c; border-color: #e6a23c; padding: 0.5rem; font-size: 0.8rem;"
+                                        data-i18n="modal.tension.bulk_import">Import masse</button>
+                                </div>
+                            </div>
+                            <div id="mediumTensionList"
+                                style="flex: 1; max-height: 450px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem; padding-right: 4px;">
+                                <!-- Words will be added here -->
+                            </div>
                         </div>
-                    </div>
-                    <!-- Low Tension Words -->
-                    <div
-                        style="background: var(--bg-secondary); border-radius: 8px; padding: 1.25rem; border: 2px solid rgba(74, 144, 226, 0.3)">
-                        <h3
-                            style="margin: 0 0 0.75rem 0; font-size: 1rem; color: var(--accent-blue); display: flex; align-items: center; gap: 0.5rem">
-                            <span data-i18n="modal.tension.low.title">Baisse de tension</span>
-                            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal"
-                                data-i18n="modal.tension.low.pts">(-2 pts
-                                chacun)</span>
-                        </h3>
-                        <div style="margin-bottom: 0.75rem">
-                            <input type="text" id="lowTensionInput" placeholder="Ajouter un mot..."
-                                data-i18n-placeholder="btn.add_word"
-                                style="width: 100%; padding: 0.5rem; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-primary); font-size: 0.85rem"
-                                onkeypress="if (event.key === 'Enter') addTensionWord('low');" />
-                            <button onclick="addTensionWord('low')"
-                                style="width: 100%; margin-top: 0.5rem; padding: 0.5rem; background: #2d6bb3; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-weight: 500">+
-                                <span data-i18n="btn.add">Ajouter</span></button>
-                            <button onclick="openBulkImport('low')"
-                                style="width: 100%; margin-top: 0.5rem; padding: 0.5rem; background: rgba(45, 107, 179, 0.15); color: #2d6bb3; border: 1px solid #2d6bb3; border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-weight: 500"
-                                data-i18n="modal.tension.bulk_import">Import
-                                en masse</button>
-                        </div>
-                        <div id="lowTensionList"
-                            style="max-height: 300px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.4rem">
-                            <!-- Words will be added here -->
+
+                        <!-- Low Tension Words -->
+                        <div
+                            style="background: var(--bg-primary); border-radius: 12px; padding: 1.5rem; border: 2px solid rgba(74, 144, 226, 0.2); display: flex; flex-direction: column;">
+                            <h3
+                                style="margin: 0 0 1rem 0; font-size: 1.05rem; color: var(--accent-blue); display: flex; align-items: center; justify-content: space-between; font-weight: 700;">
+                                <span data-i18n="modal.tension.low.title">Baisse de tension</span>
+                                <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal"
+                                    data-i18n="modal.tension.low.pts">(-2 pts)</span>
+                            </h3>
+                            <div style="margin-bottom: 1rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                                <input type="text" id="lowTensionInput" placeholder="Ajouter un mot..."
+                                    data-i18n-placeholder="btn.add_word" class="form-input"
+                                    onkeypress="if (event.key === 'Enter') addTensionWord('low');" />
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                                    <button onclick="addTensionWord('low')" class="btn btn-primary"
+                                        style="background: #2d6bb3; border-color: #2d6bb3; padding: 0.5rem;">+ <span
+                                            data-i18n="btn.add">Ajouter</span></button>
+                                    <button onclick="openBulkImport('low')" class="btn btn-outline"
+                                        style="color: #2d6bb3; border-color: #2d6bb3; padding: 0.5rem; font-size: 0.8rem;"
+                                        data-i18n="modal.tension.bulk_import">Import masse</button>
+                                </div>
+                            </div>
+                            <div id="lowTensionList"
+                                style="flex: 1; max-height: 450px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem; padding-right: 4px;">
+                                <!-- Words will be added here -->
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="modal-actions" style="display: flex; justify-content: space-between; align-items: center">
+
+                <div class="modal-actions" style="display: flex; justify-content: space-between; align-items: center;">
                     <div style="display: flex; gap: 0.75rem">
-                        <button class="btn" onclick="exportTensionWords()"
-                            style="background: #2d6bb3; color: white; border: 1px solid #2d6bb3"
-                            data-i18n="modal.tension.export_dicts">Exporter les
-                            dictionnaires</button>
-                        <button class="btn" onclick="resetTensionWordsToDefault()"
-                            style="background: var(--accent-red); color: white"
-                            data-i18n="modal.tension.reset_default">Réinitialiser aux valeurs par
-                            défaut</button>
+                        <button class="btn btn-outline" onclick="exportTensionWords()"
+                            style="border-color: #2d6bb3; color: #2d6bb3"
+                            data-i18n="modal.tension.export_dicts">Exporter</button>
+                        <button class="btn btn-outline" onclick="resetTensionWordsToDefault()"
+                            style="border-color: var(--accent-red); color: var(--accent-red)"
+                            data-i18n="modal.tension.reset_default">Réinitialiser</button>
                     </div>
                     <div style="display: flex; gap: 0.75rem">
                         <button class="btn" onclick="closeModal('tensionWordsModal')"
@@ -1994,65 +2004,71 @@
         </div>
         <!-- Bulk Import Modal -->
         <div class="modal" id="bulkImportModal">
-            <div class="modal-content" style="max-width: 700px">
-                <div class="modal-title" id="bulkImportTitle" data-i18n="modal.bulk_import.title">Import en masse</div>
-                <div style="margin-bottom: 1.5rem">
-                    <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 1rem"
-                        data-i18n="modal.bulk_import.desc">
-                        Importez une liste de mots en masse. Vous pouvez :</p>
-                    <ul
-                        style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.8; padding-left: 1.5rem">
-                        <li><strong data-i18n="modal.bulk_import.li_paste">Coller du texte</strong><span
-                                data-i18n="modal.bulk_import.li_paste_desc"> : Un mot par ligne ou séparés par des
-                                virgules</span></li>
-                        <li><strong data-i18n="modal.bulk_import.li_file">Importer un fichier</strong><span
-                                data-i18n="modal.bulk_import.li_file_desc"> : Fichier .txt avec un mot par ligne</span>
-                        </li>
-                    </ul>
+            <div class="modal-content" style="max-height: 85vh;">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="bulkImportTitle" data-i18n="modal.bulk_import.title">Import en masse
+                    </h2>
+                    <button class="modal-close" onclick="closeModal('bulkImportModal')">
+                        <i data-lucide="x" style="width: 20px; height: 20px;"></i>
+                    </button>
                 </div>
-                <div style="margin-bottom: 1.5rem">
-                    <label class="form-label" data-i18n="modal.bulk_import.label_paste">Collez vos mots ici :</label>
-                    <textarea id="bulkImportText"
-                        placeholder="Ex: combat, bataille, mort&#10;tuer, danger, peur&#10;terreur, cri, hurler"
-                        data-i18n-placeholder="modal.bulk_import.placeholder"
-                        style="width: 100%; min-height: 200px; padding: 0.75rem; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-primary); font-size: 0.85rem; font-family: monospace; resize: vertical"> </textarea>
-                    <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem"
-                        data-i18n="modal.bulk_import.formats">Formats acceptés :
-                        un
-                        mot
-                        par ligne, ou plusieurs mots séparés par des virgules</div>
-                </div>
-                <div style="margin-bottom: 1.5rem">
-                    <label class="form-label" data-i18n="modal.bulk_import.label_file">Ou importez un fichier .txt
-                        :</label>
-                    <input type="file" id="bulkImportFile" accept=".txt"
-                        style="width: 100%; padding: 0.5rem; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-primary); font-size: 0.85rem" />
-                </div>
-                <div
-                    style="padding: 1rem; background: rgba(74, 144, 226, 0.1); border-radius: 4px; border: 1px solid var(--accent-blue); margin-bottom: 1.5rem">
-                    <div style="font-size: 0.85rem; font-weight: 600; color: var(--accent-blue); margin-bottom: 0.5rem"
-                        data-i18n="modal.bulk_import.fusion_mode">
-                        Mode
-                        de fusion</div>
-                    <label
-                        style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; margin-bottom: 0.5rem">
-                        <input type="radio" name="importMode" value="add" checked />
-                        <span style="font-size: 0.85rem; color: var(--text-primary)"
-                            data-i18n="modal.bulk_import.mode_add">Ajouter aux mots existants
-                            (recommandé)</span>
-                    </label>
-                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer">
-                        <input type="radio" name="importMode" value="replace" />
-                        <span style="font-size: 0.85rem; color: var(--text-primary)"
-                            data-i18n="modal.bulk_import.mode_replace">Remplacer tous les mots
-                            existants</span>
-                    </label>
+                <div class="modal-body">
+                    <div style="margin-bottom: 1.5rem">
+                        <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 1rem"
+                            data-i18n="modal.bulk_import.desc">
+                            Importez une liste de mots en masse. Vous pouvez :</p>
+                        <ul
+                            style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.8; padding-left: 1.5rem">
+                            <li><strong data-i18n="modal.bulk_import.li_paste">Coller du texte</strong><span
+                                    data-i18n="modal.bulk_import.li_paste_desc"> : Un mot par ligne ou séparés par des
+                                    virgules</span></li>
+                            <li><strong data-i18n="modal.bulk_import.li_file">Importer un fichier</strong><span
+                                    data-i18n="modal.bulk_import.li_file_desc"> : Fichier .txt avec un mot par
+                                    ligne</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div style="margin-bottom: 1.5rem">
+                        <label class="form-label" data-i18n="modal.bulk_import.label_paste"
+                            style="font-weight: 700; margin-bottom: 0.5rem; display: block;">Collez vos mots ici
+                            :</label>
+                        <textarea id="bulkImportText"
+                            placeholder="Ex: combat, bataille, mort&#10;tuer, danger, peur&#10;terreur, cri, hurler"
+                            data-i18n-placeholder="modal.bulk_import.placeholder"
+                            style="width: 100%; min-height: 180px; padding: 0.75rem; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-primary); font-size: 0.9rem; font-family: 'Source Code Pro', monospace; resize: vertical"></textarea>
+                        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem"
+                            data-i18n="modal.bulk_import.formats">Formats acceptés : un mot par ligne, ou plusieurs mots
+                            séparés par des virgules</div>
+                    </div>
+                    <div style="margin-bottom: 1.5rem">
+                        <label class="form-label" data-i18n="modal.bulk_import.label_file"
+                            style="font-weight: 700; margin-bottom: 0.5rem; display: block;">Ou importez un fichier .txt
+                            :</label>
+                        <input type="file" id="bulkImportFile" accept=".txt"
+                            style="width: 100%; padding: 0.5rem; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-primary); font-size: 0.85rem" />
+                    </div>
+                    <div
+                        style="padding: 1.25rem; background: rgba(74, 144, 226, 0.08); border-radius: 8px; border: 1px solid var(--accent-blue); margin-bottom: 1rem">
+                        <div style="font-size: 0.9rem; font-weight: 700; color: var(--accent-blue); margin-bottom: 0.75rem"
+                            data-i18n="modal.bulk_import.fusion_mode">Mode de fusion</div>
+                        <label
+                            style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer; margin-bottom: 0.6rem">
+                            <input type="radio" name="importMode" value="add" checked
+                                style="width: 16px; height: 16px;" />
+                            <span style="font-size: 0.9rem; color: var(--text-primary)"
+                                data-i18n="modal.bulk_import.mode_add">Ajouter aux mots existants (recommandé)</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer">
+                            <input type="radio" name="importMode" value="replace" style="width: 16px; height: 16px;" />
+                            <span style="font-size: 0.9rem; color: var(--text-primary)"
+                                data-i18n="modal.bulk_import.mode_replace">Remplacer tous les mots existants</span>
+                        </label>
+                    </div>
                 </div>
                 <div class="modal-actions">
                     <button class="btn" onclick="closeModal('bulkImportModal')" data-i18n="btn.cancel">Annuler</button>
                     <button class="btn btn-primary" onclick="processBulkImport()"><i data-lucide="download"></i>
-                        Importer
-                        les mots</button>
+                        Importer les mots</button>
                 </div>
             </div>
         </div>
