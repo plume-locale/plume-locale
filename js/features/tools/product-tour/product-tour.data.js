@@ -486,10 +486,167 @@ const ProductTourData = {
                 "clickAfter": null
             }
         ],
-        "characters": [],
-        "world": [],
-        "notes": [],
-        "codex": [],
+        "characters": [
+            {
+                "element": ".character-sheet",
+                "popover": {
+                    "title": "tour.characters.intro.title",
+                    "description": "tour.characters.intro.description",
+                    "side": "bottom",
+                    "align": "center"
+                }
+            },
+            {
+                "element": "#section-etat-civil",
+                "popover": {
+                    "title": "tour.characters.civil.title",
+                    "description": "tour.characters.civil.description",
+                    "side": "left",
+                    "align": "start"
+                }
+            },
+            {
+                "element": "#section-physique",
+                "popover": {
+                    "title": "tour.characters.physical.title",
+                    "description": "tour.characters.physical.description",
+                    "side": "right",
+                    "align": "start"
+                }
+            },
+            {
+                "element": "#section-radar",
+                "popover": {
+                    "title": "tour.characters.stats.title",
+                    "description": "tour.characters.stats.description",
+                    "side": "left",
+                    "align": "start"
+                }
+            },
+            {
+                "element": "#section-evolution",
+                "popover": {
+                    "title": "tour.characters.evolution.title",
+                    "description": "tour.characters.evolution.description",
+                    "side": "top",
+                    "align": "start"
+                }
+            },
+            {
+                "element": "#section-caractere",
+                "popover": {
+                    "title": "tour.characters.traits.title",
+                    "description": "tour.characters.traits.description",
+                    "side": "top",
+                    "align": "start"
+                }
+            },
+            {
+                "element": "#section-profil",
+                "popover": {
+                    "title": "tour.characters.profile.title",
+                    "description": "tour.characters.profile.description",
+                    "side": "top",
+                    "align": "start"
+                }
+            },
+            {
+                "element": "#section-inventaire",
+                "popover": {
+                    "title": "tour.characters.inventory.title",
+                    "description": "tour.characters.inventory.description",
+                    "side": "top",
+                    "align": "start"
+                }
+            },
+        ],
+        "world": [
+            {
+                "element": "#worldList",
+                "popover": {
+                    "title": "tour.world.intro.title",
+                    "description": "tour.world.intro.description",
+                    "side": "right",
+                    "align": "start"
+                }
+            },
+            {
+                "element": "#sidebarActions button[onclick*=\"openAddWorldModal\"]",
+                "popover": {
+                    "title": "tour.world.add_btn.title",
+                    "description": "tour.world.add_btn.description",
+                    "side": "right",
+                    "align": "center"
+                }
+            },
+            {
+                "element": ".detail-view",
+                "popover": {
+                    "title": "tour.world.detail.title",
+                    "description": "tour.world.detail.description",
+                    "side": "bottom",
+                    "align": "center"
+                }
+            }
+        ],
+        "notes": [
+            {
+                "element": "#notesList",
+                "popover": {
+                    "title": "tour.notes.intro.title",
+                    "description": "tour.notes.intro.description",
+                    "side": "right",
+                    "align": "start"
+                }
+            },
+            {
+                "element": "#sidebarActions button[onclick*=\"openAddNoteModal\"]",
+                "popover": {
+                    "title": "tour.notes.add_btn.title",
+                    "description": "tour.notes.add_btn.description",
+                    "side": "right",
+                    "align": "center"
+                }
+            },
+            {
+                "element": ".detail-view",
+                "popover": {
+                    "title": "tour.notes.detail.title",
+                    "description": "tour.notes.detail.description",
+                    "side": "bottom",
+                    "align": "center"
+                }
+            }
+        ],
+        "codex": [
+            {
+                "element": "#codexList",
+                "popover": {
+                    "title": "tour.codex.intro.title",
+                    "description": "tour.codex.intro.description",
+                    "side": "right",
+                    "align": "start"
+                }
+            },
+            {
+                "element": "#sidebarActions button[onclick*=\"openAddCodexModal\"]",
+                "popover": {
+                    "title": "tour.codex.add_btn.title",
+                    "description": "tour.codex.add_btn.description",
+                    "side": "right",
+                    "align": "center"
+                }
+            },
+            {
+                "element": ".detail-view",
+                "popover": {
+                    "title": "tour.codex.detail.title",
+                    "description": "tour.codex.detail.description",
+                    "side": "bottom",
+                    "align": "center"
+                }
+            }
+        ],
         "arcs": [],
         "plotgrid": [],
         "timeline": [],
@@ -497,9 +654,237 @@ const ProductTourData = {
         "stats": [],
         "analysis": [],
         "investigation": [],
-        "globalnotes": [],
+        "globalnotes": [
+            {
+                "element": "#globalnotesCanvas",
+                "popover": {
+                    "title": "tour.globalnotes.intro.title",
+                    "description": "tour.globalnotes.intro.description",
+                    "side": "bottom",
+                    "align": "center"
+                }
+            },
+            {
+                "element": ".tools-sidebar .tool-item:nth-child(1) .tool-btn",
+                "popover": {
+                    "title": "tour.globalnotes.tool.board.title",
+                    "description": "tour.globalnotes.tool.board.description",
+                    "side": "right",
+                    "align": "center"
+                }
+            },
+            {
+                "element": ".tools-sidebar .tool-item:nth-child(2) .tool-btn",
+                "popover": {
+                    "title": "tour.globalnotes.tool.column.title",
+                    "description": "tour.globalnotes.tool.column.description",
+                    "side": "right",
+                    "align": "center"
+                }
+            },
+            {
+                "element": ".tools-sidebar .tool-item:nth-child(3) .tool-btn",
+                "popover": {
+                    "title": "tour.globalnotes.tool.note.title",
+                    "description": "tour.globalnotes.tool.note.description",
+                    "side": "right",
+                    "align": "center"
+                }
+            },
+            {
+                "element": ".tools-sidebar .tool-item:nth-child(5) .tool-btn",
+                "popover": {
+                    "title": "tour.globalnotes.tool.checklist.title",
+                    "description": "tour.globalnotes.tool.checklist.description",
+                    "side": "right",
+                    "align": "center"
+                }
+            },
+            {
+                "element": ".tools-sidebar .tool-item:nth-child(6) .tool-btn",
+                "popover": {
+                    "title": "tour.globalnotes.tool.table.title",
+                    "description": "tour.globalnotes.tool.table.description",
+                    "side": "right",
+                    "align": "center"
+                }
+            },
+            {
+                "element": ".tools-sidebar .tool-item:nth-child(7) .tool-btn",
+                "popover": {
+                    "title": "tour.globalnotes.tool.sketch.title",
+                    "description": "tour.globalnotes.tool.sketch.description",
+                    "side": "right",
+                    "align": "center"
+                }
+            },
+            {
+                "element": ".tools-sidebar .tool-item:nth-child(8) .tool-btn",
+                "popover": {
+                    "title": "tour.globalnotes.tool.line.title",
+                    "description": "tour.globalnotes.tool.line.description",
+                    "side": "right",
+                    "align": "center"
+                }
+            },
+            {
+                "element": ".tools-sidebar .tool-item:nth-child(10) .tool-btn",
+                "popover": {
+                    "title": "tour.globalnotes.tool.image.title",
+                    "description": "tour.globalnotes.tool.image.description",
+                    "side": "right",
+                    "align": "center"
+                }
+            },
+            {
+                "element": ".tools-sidebar .tool-item:nth-child(11) .tool-btn",
+                "popover": {
+                    "title": "tour.globalnotes.tool.file.title",
+                    "description": "tour.globalnotes.tool.file.description",
+                    "side": "right",
+                    "align": "center"
+                }
+            },
+            {
+                "element": ".tools-sidebar .tool-item:nth-child(12) .tool-btn",
+                "popover": {
+                    "title": "tour.globalnotes.tool.video.title",
+                    "description": "tour.globalnotes.tool.video.description",
+                    "side": "right",
+                    "align": "center"
+                }
+            },
+            {
+                "element": ".tools-sidebar .tool-item:nth-child(13) .tool-btn",
+                "popover": {
+                    "title": "tour.globalnotes.tool.link.title",
+                    "description": "tour.globalnotes.tool.link.description",
+                    "side": "right",
+                    "align": "center"
+                }
+            },
+            {
+                "element": ".tools-sidebar .tool-item:nth-child(14) .tool-btn",
+                "popover": {
+                    "title": "tour.globalnotes.tool.map.title",
+                    "description": "tour.globalnotes.tool.map.description",
+                    "side": "right",
+                    "align": "center"
+                }
+            },
+            {
+                "element": ".tools-sidebar .tool-item:nth-child(15) .tool-btn",
+                "popover": {
+                    "title": "tour.globalnotes.tool.color.title",
+                    "description": "tour.globalnotes.tool.color.description",
+                    "side": "right",
+                    "align": "center"
+                }
+            }
+        ],
         "mindmap": [],
-        "corkboard": [],
+        "corkboard": [
+            {
+                "element": ".cork-board-container",
+                "popover": {
+                    "title": "tour.corkboard.intro.title",
+                    "description": "tour.corkboard.intro.description",
+                    "image": null,
+                    "side": "bottom",
+                    "align": "center"
+                }
+            },
+            {
+                "element": ".cork-board-header div:nth-child(2)",
+                "popover": {
+                    "title": "tour.corkboard.modes.title",
+                    "description": "tour.corkboard.modes.description",
+                    "image": null,
+                    "side": "bottom",
+                    "align": "center"
+                }
+            },
+            {
+                "element": ".cork-board-header input[type=\"range\"]",
+                "popover": {
+                    "title": "tour.corkboard.grid_size.title",
+                    "description": "tour.corkboard.grid_size.description",
+                    "image": null,
+                    "side": "bottom",
+                    "align": "center"
+                }
+            },
+            {
+                "element": ".structured-act-container",
+                "popover": {
+                    "title": "tour.corkboard.act.title",
+                    "description": "tour.corkboard.act.description",
+                    "image": null,
+                    "side": "top",
+                    "align": "start"
+                }
+            },
+            {
+                "element": ".structured-act-header button.btn-primary",
+                "popover": {
+                    "title": "tour.corkboard.add_chapter.title",
+                    "description": "tour.corkboard.add_chapter.description",
+                    "image": null,
+                    "side": "top",
+                    "align": "center"
+                }
+            },
+            {
+                "element": ".structured-chapter-container",
+                "popover": {
+                    "title": "tour.corkboard.chapter.title",
+                    "description": "tour.corkboard.chapter.description",
+                    "image": null,
+                    "side": "right",
+                    "align": "start"
+                }
+            },
+            {
+                "element": ".structured-scene-card",
+                "popover": {
+                    "title": "tour.corkboard.scene.title",
+                    "description": "tour.corkboard.scene.description",
+                    "image": null,
+                    "side": "bottom",
+                    "align": "center"
+                }
+            },
+            {
+                "element": ".structured-scene-synopsis",
+                "popover": {
+                    "title": "tour.corkboard.synopsis.title",
+                    "description": "tour.corkboard.synopsis.description",
+                    "image": null,
+                    "side": "bottom",
+                    "align": "center"
+                }
+            },
+            {
+                "element": ".structured-add-scene-btn",
+                "popover": {
+                    "title": "tour.corkboard.add_scene.title",
+                    "description": "tour.corkboard.add_scene.description",
+                    "image": null,
+                    "side": "bottom",
+                    "align": "center"
+                }
+            },
+            {
+                "element": ".structured-bottom-actions button",
+                "popover": {
+                    "title": "tour.corkboard.add_act.title",
+                    "description": "tour.corkboard.add_act.description",
+                    "image": null,
+                    "side": "top",
+                    "align": "center"
+                }
+            }
+        ],
         "map": [],
         "relations": [],
         "storygrid": [],

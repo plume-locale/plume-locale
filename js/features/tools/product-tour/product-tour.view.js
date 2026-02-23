@@ -364,6 +364,22 @@ const ProductTourDriverView = {
             el.removeAttribute('aria-controls');
         });
 
+        // S'assurer que le scroll est réinitialisé si décalé (avec un léger délai pour laisser Driver.js finir)
+        setTimeout(() => {
+            window.scrollTo(0, 0);
+
+            // Réinitialiser le scroll des conteneurs internes (important pour le système d'onglets et corkboard)
+            const scrollableContainers = document.querySelectorAll('.cork-board-container, .tab-content-area, .editor-container, .sidebar, .split-panel');
+            scrollableContainers.forEach(el => {
+                el.scrollTop = 0;
+            });
+            // Optionnel: rafraîchir la vue actuelle pour forcer un re-calcul du layout si nécessaire
+            if (typeof refreshAllViews === 'function') {
+                refreshAllViews();
+            }
+            console.log('🔄 All tour scroll positions reset and views refreshed');
+        }, 50);
+
         console.log('✅ Tour cleanup complete');
     }
 };
