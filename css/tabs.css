@@ -130,6 +130,24 @@
     color: var(--status-error);
 }
 
+.tab-tour {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    opacity: 0.4;
+    transition: all 0.2s;
+    margin-right: 2px;
+}
+
+.tab-tour:hover {
+    opacity: 1 !important;
+    background: var(--bg-hover);
+    color: var(--primary-color);
+}
+
 .tab-content-area {
     flex: 1;
     position: relative;
