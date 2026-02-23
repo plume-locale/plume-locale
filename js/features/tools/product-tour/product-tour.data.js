@@ -647,7 +647,58 @@ const ProductTourData = {
                 }
             }
         ],
-        "arcs": [],
+        "arcs": [
+            {
+                "element": ".arc-board-container",
+                "popover": {
+                    "title": "tour.arcs.intro.title",
+                    "description": "tour.arcs.intro.description",
+                    "image": null,
+                    "side": "bottom",
+                    "align": "center"
+                }
+            },
+            {
+                "element": ".arc-board-toolbar",
+                "popover": {
+                    "title": "tour.arcs.toolbar.title",
+                    "description": "tour.arcs.toolbar.description",
+                    "image": null,
+                    "side": "right",
+                    "align": "start"
+                }
+            },
+            {
+                "element": ".arc-multi-bar",
+                "popover": {
+                    "title": "tour.arcs.multi_bar.title",
+                    "description": "tour.arcs.multi_bar.description",
+                    "image": null,
+                    "side": "bottom",
+                    "align": "center"
+                }
+            },
+            {
+                "element": ".arc-multi-modes button:nth-child(2)",
+                "popover": {
+                    "title": "tour.arcs.compare_view.title",
+                    "description": "tour.arcs.compare_view.description",
+                    "image": null,
+                    "side": "bottom",
+                    "align": "center"
+                }
+            },
+            {
+                "element": ".arc-zoom-controls",
+                "popover": {
+                    "title": "tour.arcs.zoom.title",
+                    "description": "tour.arcs.zoom.description",
+                    "image": null,
+                    "side": "left",
+                    "align": "end"
+                }
+            }
+        ],
         "plotgrid": [],
         "timeline": [],
         "timelineviz": [],

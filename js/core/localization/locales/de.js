@@ -3154,4 +3154,14 @@ window.LOCALE_DE = {
     "tour.globalnotes.tool.map.description": "Pinnen Sie reale Orte über Google Maps an, um Ihre geografische Erzählung zu verankern.",
     "tour.globalnotes.tool.color.title": "Farbe",
     "tour.globalnotes.tool.color.description": "Passen Sie das Erscheinungsbild Ihrer Notizen für eine bessere visuelle Lesbarkeit an.",
+    "tour.arcs.intro.title": "Erzählbögen",
+    "tour.arcs.intro.description": "Verwalten und visualisieren Sie die Entwicklung Ihrer Haupt- und Nebengeschichten frei oder strukturiert.",
+    "tour.arcs.toolbar.title": "Erstellungswerkzeuge",
+    "tour.arcs.toolbar.description": "Nutzen Sie diese Werkzeuge, um Notizen, Spalten und Bilder hinzuzufügen und die Elemente Ihres Erzählbogens zu verknüpfen.",
+    "tour.arcs.multi_bar.title": "Erzählbogen-Navigationsleiste",
+    "tour.arcs.multi_bar.description": "Wechseln Sie schnell zwischen Ihren verschiedenen Erzählbögen, um sie einzeln zu bearbeiten oder zu vergleichen.",
+    "tour.arcs.compare_view.title": "Vergleichsmodus",
+    "tour.arcs.compare_view.description": "Der Vergleichsmodus ermöglicht es Ihnen, mehrere Erzählbögen übereinander zu legen, um deren Timing zu analysieren und Querverbindungen zwischen ihnen herzustellen.",
+    "tour.arcs.zoom.title": "Zoom & Navigation",
+    "tour.arcs.zoom.description": "Steuern Sie die Zoomstufe für einen Überblick oder tauchen Sie in die Details Ihrer Elemente ein."
 };

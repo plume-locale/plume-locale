@@ -3144,4 +3144,14 @@ window.LOCALE_ES = {
     "tour.globalnotes.tool.map.description": "Fije ubicaciones reales a través de Google Maps para anclar su narrativa geográfica.",
     "tour.globalnotes.tool.color.title": "Color",
     "tour.globalnotes.tool.color.description": "Personalice la apariencia de sus notas para una mejor lectura visual.",
+    "tour.arcs.intro.title": "Arcos Narrativos",
+    "tour.arcs.intro.description": "Gestiona y visualiza la evolución de tus tramas principales y secundarias de forma libre o estructurada.",
+    "tour.arcs.toolbar.title": "Herramientas de creación",
+    "tour.arcs.toolbar.description": "Utiliza estas herramientas para añadir notas, columnas, imágenes y conectar los elementos de tu arco narrativo.",
+    "tour.arcs.multi_bar.title": "Barra de navegación de arcos",
+    "tour.arcs.multi_bar.description": "Cambia rápidamente entre tus diferentes arcos narrativos para trabajar en ellos uno por uno o compararlos.",
+    "tour.arcs.compare_view.title": "Modo Comparación",
+    "tour.arcs.compare_view.description": "El modo comparación te permite apilar varios arcos narrativos para analizar su ritmo cruzado y crear enlaces inter-arcos entre ellos.",
+    "tour.arcs.zoom.title": "Zoom y Navegación",
+    "tour.arcs.zoom.description": "Controla el nivel de zoom para obtener una visión general o sumérgete en los detalles de tus elementos."
 };

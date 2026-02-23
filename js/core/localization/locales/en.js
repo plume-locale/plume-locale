@@ -3194,4 +3194,14 @@ window.LOCALE_EN = {
     "tour.globalnotes.tool.map.description": "Pin real locations via Google Maps to anchor your geographic narrative.",
     "tour.globalnotes.tool.color.title": "Color",
     "tour.globalnotes.tool.color.description": "Customize the appearance of your notes for better visual reading.",
+    "tour.arcs.intro.title": "Narrative Arcs",
+    "tour.arcs.intro.description": "Manage and visualize the evolution of your main and secondary plots in a free or structured way.",
+    "tour.arcs.toolbar.title": "Creation Tools",
+    "tour.arcs.toolbar.description": "Use these tools to add notes, columns, images, and connect the elements of your narrative arc.",
+    "tour.arcs.multi_bar.title": "Arcs Navigation Bar",
+    "tour.arcs.multi_bar.description": "Quickly switch between your different narrative arcs to work on them one by one or compare them.",
+    "tour.arcs.compare_view.title": "Compare View",
+    "tour.arcs.compare_view.description": "The compare view allows you to stack multiple narrative arcs to analyze their cross-pacing and create inter-arc links between them.",
+    "tour.arcs.zoom.title": "Zoom & Navigation",
+    "tour.arcs.zoom.description": "Control the zoom level to get an overview or dive into the details of your elements."
 };
