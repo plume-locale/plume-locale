@@ -295,7 +295,7 @@ function closeAllToolsSidebarPanels() {
  */
 function switchView(view, options = {}) {
     // Si le système d'onglets est actif et que la vue le supporte
-    if (typeof openTab === 'function' && viewSupportsTabs(view)) {
+    if (typeof openTab === 'function' && viewSupportsTabs(view) && !options.skipTabs) {
         openTab(view, {}, options);
         return;
     }
@@ -351,7 +351,9 @@ function switchView(view, options = {}) {
     }
 
     // Initial render of view content
-    renderViewContent(view, 'editorView');
+    if (!options.skipRenderView) {
+        renderViewContent(view, 'editorView');
+    }
 
     // Live Tension Meter Visibility
     const tensionMeter = document.getElementById('liveTensionMeter');
@@ -374,10 +376,9 @@ function switchView(view, options = {}) {
 function syncSidebarWithView(view) {
     const listContainers = [
         'chaptersList', 'charactersList', 'worldList', 'notesList',
-        'codexList', 'arcsList', 'statsList', 'versionsList',
-        'analysisList', 'corkboardList', 'mindmapList', 'plotList',
-        'relationsList', 'mapList', 'timelineVizList', 'investigationList',
-        'globalnotesList', 'todosList', 'thrillerList', 'frontMatterList'
+        'codexList', 'arcsList',
+        'mindmapList', 'mapList', 'timelineVizList', 'investigationList',
+        'globalnotesList', 'todosList', 'frontMatterList'
     ];
 
     // Identifier la liste correspondante
@@ -389,19 +390,12 @@ function syncSidebarWithView(view) {
         case 'notes': targetListId = 'notesList'; break;
         case 'codex': targetListId = 'codexList'; break;
         case 'arcs': targetListId = 'arcsList'; break;
-        case 'stats': targetListId = 'statsList'; break;
-        case 'versions': targetListId = 'versionsList'; break;
-        case 'analysis': targetListId = 'analysisList'; break;
-        case 'corkboard': targetListId = 'corkboardList'; break;
         case 'mindmap': targetListId = 'mindmapList'; break;
-        case 'plot': targetListId = 'plotList'; break;
-        case 'relations': targetListId = 'relationsList'; break;
         case 'map': targetListId = 'mapList'; break;
         case 'timelineviz': targetListId = 'timelineVizList'; break;
         case 'investigation': targetListId = 'investigationList'; break;
         case 'globalnotes': targetListId = 'globalnotesList'; break;
         case 'todos': targetListId = 'todosList'; break;
-        case 'thriller': targetListId = 'thrillerList'; break;
         case 'front_matter': targetListId = 'frontMatterList'; break;
     }
 
@@ -502,11 +496,19 @@ function syncSidebarWithView(view) {
 
     // Message "pas de sidebar" si rien ne correspond
     const noSidebarMsg = document.getElementById('noSidebarMessage');
-    if (!targetListId && noSidebarMsg) {
-        noSidebarMsg.style.display = 'block';
-        noSidebarMsg.innerHTML = `<div style="padding: 2rem; text-align: center; color: var(--text-muted); font-size: 0.85rem;">${Localization.t('sidebar.no_info') || 'Pas d\'informations pour cette vue'}</div>`;
-    } else if (noSidebarMsg) {
-        noSidebarMsg.style.display = 'none';
+    const sidebarColumn = document.getElementById('sidebarColumn');
+
+    if (!targetListId) {
+        if (noSidebarMsg) {
+            noSidebarMsg.style.display = 'block';
+            noSidebarMsg.innerHTML = `<div style="padding: 2rem; text-align: center; color: var(--text-muted); font-size: 0.85rem;">${Localization.t('sidebar.no_info') || 'Pas d\'informations pour cette vue'}</div>`;
+        }
+        // Masquage automatique de la sidebar pour les vues qui ne l'utilisent pas
+        if (sidebarColumn) sidebarColumn.style.setProperty('display', 'none', 'important');
+    } else {
+        if (noSidebarMsg) noSidebarMsg.style.display = 'none';
+        // Réaffichage de la sidebar pour les vues qui l'utilisent
+        if (sidebarColumn) sidebarColumn.style.removeProperty('display');
     }
 
     // Appliquer les réglages de personnalisation après le changement de vue
