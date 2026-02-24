@@ -699,12 +699,143 @@ const ProductTourData = {
                 }
             }
         ],
-        "plotgrid": [],
         "timeline": [],
-        "timelineviz": [],
+        "timelineviz": [
+            {
+                "element": "#metroTimelineContainer",
+                "popover": {
+                    "title": "tour.metro.intro.title",
+                    "description": "tour.metro.intro.description",
+                    "side": "bottom",
+                    "align": "center"
+                }
+            },
+            {
+                "element": ".metro-toolbar",
+                "popover": {
+                    "title": "tour.metro.toolbar.title",
+                    "description": "tour.metro.toolbar.description",
+                    "side": "bottom",
+                    "align": "start"
+                }
+            },
+            {
+                "element": ".metro-svg-container",
+                "popover": {
+                    "title": "tour.metro.graph.title",
+                    "description": "tour.metro.graph.description",
+                    "side": "top",
+                    "align": "center"
+                }
+            },
+            {
+                "element": ".metro-legend",
+                "popover": {
+                    "title": "tour.metro.legend.title",
+                    "description": "tour.metro.legend.description",
+                    "side": "top",
+                    "align": "center"
+                }
+            },
+            {
+                "element": "#timelineVizList",
+                "popover": {
+                    "title": "tour.metro.sidebar.title",
+                    "description": "tour.metro.sidebar.description",
+                    "side": "right",
+                    "align": "start"
+                }
+            }
+        ],
         "stats": [],
         "analysis": [],
-        "investigation": [],
+        "investigation": [
+            {
+                "element": ".investigation-board-layout",
+                "popover": {
+                    "title": "tour.investigation.intro.title",
+                    "description": "tour.investigation.intro.description",
+                    "side": "bottom",
+                    "align": "center"
+                }
+            },
+            {
+                "element": ".investigation-sidebar",
+                "popover": {
+                    "title": "tour.investigation.sidebar.title",
+                    "description": "tour.investigation.sidebar.description",
+                    "side": "right",
+                    "align": "start"
+                }
+            },
+            {
+                "element": ".case-tabs",
+                "popover": {
+                    "title": "tour.investigation.tabs.title",
+                    "description": "tour.investigation.tabs.description",
+                    "side": "bottom",
+                    "align": "start"
+                }
+            },
+            {
+                "element": ".active-case-info",
+                "popover": {
+                    "title": "tour.investigation.status.title",
+                    "description": "tour.investigation.status.description",
+                    "side": "bottom",
+                    "align": "end"
+                }
+            },
+            {
+                "element": ".investigation-nav",
+                "popover": {
+                    "title": "tour.investigation.nav.title",
+                    "description": "tour.investigation.nav.description",
+                    "side": "bottom",
+                    "align": "start"
+                }
+            },
+            {
+                "element": ".investigation-nav-btn:nth-child(2)",
+                "popover": {
+                    "title": "tour.investigation.registry.title",
+                    "description": "tour.investigation.registry.description",
+                    "side": "bottom",
+                    "align": "center"
+                },
+                "clickBefore": ".investigation-nav-btn:nth-child(2)"
+            },
+            {
+                "element": ".investigation-nav-btn:nth-child(3)",
+                "popover": {
+                    "title": "tour.investigation.matrix.title",
+                    "description": "tour.investigation.matrix.description",
+                    "side": "bottom",
+                    "align": "center"
+                },
+                "clickBefore": ".investigation-nav-btn:nth-child(3)"
+            },
+            {
+                "element": ".investigation-nav-btn:nth-child(4)",
+                "popover": {
+                    "title": "tour.investigation.mmo.title",
+                    "description": "tour.investigation.mmo.description",
+                    "side": "bottom",
+                    "align": "center"
+                },
+                "clickBefore": ".investigation-nav-btn:nth-child(4)"
+            },
+            {
+                "element": ".investigation-nav-btn:nth-child(5)",
+                "popover": {
+                    "title": "tour.investigation.timeline.title",
+                    "description": "tour.investigation.timeline.description",
+                    "side": "bottom",
+                    "align": "center"
+                },
+                "clickBefore": ".investigation-nav-btn:nth-child(5)"
+            }
+        ],
         "globalnotes": [
             {
                 "element": "#globalnotesCanvas",
@@ -833,7 +964,62 @@ const ProductTourData = {
                 }
             }
         ],
-        "mindmap": [],
+        "mindmap": [
+            {
+                "element": "#mindmapCanvasWrapper",
+                "popover": {
+                    "title": "tour.mindmap.intro.title",
+                    "description": "tour.mindmap.intro.description",
+                    "side": "bottom",
+                    "align": "center"
+                }
+            },
+            {
+                "element": ".mindmap-sidebar-header",
+                "popover": {
+                    "title": "tour.mindmap.sidebar.title",
+                    "description": "tour.mindmap.sidebar.description",
+                    "side": "right",
+                    "align": "start"
+                }
+            },
+            {
+                "element": ".mindmap-toolbar",
+                "popover": {
+                    "title": "tour.mindmap.toolbar.title",
+                    "description": "tour.mindmap.toolbar.description",
+                    "side": "bottom",
+                    "align": "start"
+                }
+            },
+            {
+                "element": ".mindmap-library",
+                "popover": {
+                    "title": "tour.mindmap.library.title",
+                    "description": "tour.mindmap.library.description",
+                    "side": "left",
+                    "align": "start"
+                }
+            },
+            {
+                "element": "#mindmapCanvas",
+                "popover": {
+                    "title": "tour.mindmap.canvas.title",
+                    "description": "tour.mindmap.canvas.description",
+                    "side": "top",
+                    "align": "center"
+                }
+            },
+            {
+                "element": ".mindmap-zoom-controls",
+                "popover": {
+                    "title": "tour.mindmap.zoom.title",
+                    "description": "tour.mindmap.zoom.description",
+                    "side": "left",
+                    "align": "end"
+                }
+            }
+        ],
         "corkboard": [
             {
                 "element": ".cork-board-container",
@@ -936,10 +1122,303 @@ const ProductTourData = {
                 }
             }
         ],
-        "map": [],
-        "relations": [],
-        "storygrid": [],
-        "thriller": [],
+        "map": [
+            {
+                "element": ".map-main-area",
+                "popover": {
+                    "title": "tour.map.intro.title",
+                    "description": "tour.map.intro.description",
+                    "side": "bottom",
+                    "align": "center"
+                }
+            },
+            {
+                "element": ".map-tabs",
+                "popover": {
+                    "title": "tour.map.tabs.title",
+                    "description": "tour.map.tabs.description",
+                    "side": "bottom",
+                    "align": "start"
+                }
+            },
+            {
+                "element": ".map-toolbar",
+                "popover": {
+                    "title": "tour.map.toolbar.title",
+                    "description": "tour.map.toolbar.description",
+                    "side": "bottom",
+                    "align": "center"
+                }
+            },
+            {
+                "element": ".map-image-wrapper",
+                "popover": {
+                    "title": "tour.map.canvas.title",
+                    "description": "tour.map.canvas.description",
+                    "side": "top",
+                    "align": "center"
+                }
+            },
+            {
+                "element": ".map-marker",
+                "popover": {
+                    "title": "tour.map.markers.title",
+                    "description": "tour.map.markers.description",
+                    "side": "right",
+                    "align": "center"
+                }
+            },
+            {
+                "element": "#mapList",
+                "popover": {
+                    "title": "tour.map.sidebar.title",
+                    "description": "tour.map.sidebar.description",
+                    "side": "right",
+                    "align": "start"
+                }
+            }
+        ],
+        "front_matter": [
+            {
+                "element": ".empty-state",
+                "popover": {
+                    "title": "tour.front_matter.intro.title",
+                    "description": "tour.front_matter.intro.description",
+                    "side": "bottom",
+                    "align": "center"
+                }
+            },
+            {
+                "element": "#sidebarActions .btn-primary",
+                "popover": {
+                    "title": "tour.front_matter.add.title",
+                    "description": "tour.front_matter.add.description",
+                    "side": "bottom",
+                    "align": "start"
+                }
+            },
+            {
+                "element": "#frontMatterList",
+                "popover": {
+                    "title": "tour.front_matter.sidebar.title",
+                    "description": "tour.front_matter.sidebar.description",
+                    "side": "right",
+                    "align": "start"
+                }
+            },
+            {
+                "element": ".editor-header",
+                "popover": {
+                    "title": "tour.front_matter.header.title",
+                    "description": "tour.front_matter.header.description",
+                    "side": "bottom",
+                    "align": "center"
+                }
+            },
+            {
+                "element": "#editorToolbar",
+                "popover": {
+                    "title": "tour.front_matter.toolbar.title",
+                    "description": "tour.front_matter.toolbar.description",
+                    "side": "bottom",
+                    "align": "center"
+                }
+            },
+            {
+                "element": "#fm-editor-container",
+                "popover": {
+                    "title": "tour.front_matter.editor.title",
+                    "description": "tour.front_matter.editor.description",
+                    "side": "top",
+                    "align": "center"
+                }
+            }
+        ],
+        "relations": [
+            {
+                "element": "#relationMapScrollContainer",
+                "popover": {
+                    "title": "tour.relations.intro.title",
+                    "description": "tour.relations.intro.description",
+                    "side": "bottom",
+                    "align": "center"
+                }
+            },
+            {
+                "element": "#rel-map-instructions",
+                "popover": {
+                    "title": "tour.relations.instructions.title",
+                    "description": "tour.relations.instructions.description",
+                    "side": "bottom",
+                    "align": "start"
+                }
+            },
+            {
+                "element": "#rel-map-toolbar",
+                "popover": {
+                    "title": "tour.relations.toolbar.title",
+                    "description": "tour.relations.toolbar.description",
+                    "side": "bottom",
+                    "align": "start"
+                }
+            },
+            {
+                "element": "#relationsGraph",
+                "popover": {
+                    "title": "tour.relations.graph.title",
+                    "description": "tour.relations.graph.description",
+                    "side": "top",
+                    "align": "center"
+                }
+            },
+            {
+                "element": ".char-node-draggable",
+                "popover": {
+                    "title": "tour.relations.nodes.title",
+                    "description": "tour.relations.nodes.description",
+                    "side": "right",
+                    "align": "center"
+                }
+            },
+            {
+                "element": "#relationTypesStats",
+                "popover": {
+                    "title": "tour.relations.stats.title",
+                    "description": "tour.relations.stats.description",
+                    "side": "top",
+                    "align": "center"
+                }
+            },
+            {
+                "element": "#relationsListContainer",
+                "popover": {
+                    "title": "tour.relations.list.title",
+                    "description": "tour.relations.list.description",
+                    "side": "top",
+                    "align": "center"
+                }
+            }
+        ],
+        "plotgrid": [
+            {
+                "element": ".plot-grid-container",
+                "popover": {
+                    "title": "tour.storygrid.intro.title",
+                    "description": "tour.storygrid.intro.description",
+                    "image": null,
+                    "side": "bottom",
+                    "align": "center"
+                }
+            },
+            {
+                "element": ".plot-grid-toolbar",
+                "popover": {
+                    "title": "tour.storygrid.toolbar.title",
+                    "description": "tour.storygrid.toolbar.description",
+                    "image": null,
+                    "side": "bottom",
+                    "align": "start"
+                }
+            },
+            {
+                "element": ".pg-header-cell.structure",
+                "popover": {
+                    "title": "tour.storygrid.structure_col.title",
+                    "description": "tour.storygrid.structure_col.description",
+                    "image": null,
+                    "side": "right",
+                    "align": "start"
+                }
+            },
+            {
+                "element": ".pg-header-cell:not(.structure):not(.pg-gutter-cell)",
+                "popover": {
+                    "title": "tour.storygrid.custom_cols.title",
+                    "description": "tour.storygrid.custom_cols.description",
+                    "image": null,
+                    "side": "bottom",
+                    "align": "center"
+                }
+            },
+            {
+                "element": ".pg-card.structure-card",
+                "popover": {
+                    "title": "tour.storygrid.scene_cards.title",
+                    "description": "tour.storygrid.scene_cards.description",
+                    "image": null,
+                    "side": "right",
+                    "align": "center"
+                }
+            },
+            {
+                "element": ".plot-grid-wrapper",
+                "popover": {
+                    "title": "tour.storygrid.cells.title",
+                    "description": "tour.storygrid.cells.description",
+                    "image": null,
+                    "side": "top",
+                    "align": "center"
+                }
+            }
+        ],
+        "plot": [
+            {
+                "element": ".visualization-canvas",
+                "popover": {
+                    "title": "tour.plot.intro.title",
+                    "description": "tour.plot.intro.description",
+                    "side": "bottom",
+                    "align": "center"
+                }
+            },
+            {
+                "element": ".plot-graph",
+                "popover": {
+                    "title": "tour.plot.graph.title",
+                    "description": "tour.plot.graph.description",
+                    "side": "top",
+                    "align": "center"
+                }
+            },
+            {
+                "element": ".visualization-toolbar",
+                "popover": {
+                    "title": "tour.plot.toolbar.title",
+                    "description": "tour.plot.toolbar.description",
+                    "side": "bottom",
+                    "align": "start"
+                }
+            },
+            {
+                "element": "button[onclick*=\"openTensionWordsEditor\"]",
+                "popover": {
+                    "title": "tour.plot.customize.title",
+                    "description": "tour.plot.customize.description",
+                    "side": "bottom",
+                    "align": "end"
+                }
+            },
+            {
+                "element": ".visualization-toolbar button:nth-child(2)",
+                "popover": {
+                    "title": "tour.plot.analysis.title",
+                    "description": "tour.plot.analysis.description",
+                    "side": "bottom",
+                    "align": "center"
+                },
+                "clickBefore": ".visualization-toolbar button:nth-child(2)"
+            },
+            {
+                "element": ".visualization-toolbar button:nth-child(3)",
+                "popover": {
+                    "title": "tour.plot.suggestions.title",
+                    "description": "tour.plot.suggestions.description",
+                    "side": "bottom",
+                    "align": "center"
+                },
+                "clickBefore": ".visualization-toolbar button:nth-child(3)"
+            }
+        ],
         "snapshots": [],
         "versions": [],
         "todos": [],
