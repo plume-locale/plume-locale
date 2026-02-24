@@ -162,7 +162,7 @@ def get_all_files_to_deploy():
                 files.append(rel_path)
                 processed_js.add(filename)
     
-    files.append('landing.html')
+    files.append('html/index.html')
     
     return files
 
@@ -171,6 +171,14 @@ def get_dest_path(file_path):
     # DOC & DEMO
     if file_path.startswith('doc/') or file_path.startswith('demo/'):
          return file_path
+
+    # Landing page -> index.html (New version)
+    if file_path == 'html/index.html':
+        return 'index.html'
+
+    # Landing page translations -> directly in /live
+    if file_path == 'js/index-translations.js':
+        return 'index-translations.js'
 
     # CSS -> live/css/filename.css (flattened)
     if file_path.endswith('.css'):
@@ -188,10 +196,6 @@ def get_dest_path(file_path):
     # HTML
     if file_path.startswith('html/'):
          return file_path
-    
-    # Landing page -> index.html
-    if file_path == 'landing.html':
-        return 'index.html'
          
     return file_path
 
@@ -285,8 +289,8 @@ def deploy():
     if os.path.exists(body_src) and file_has_changed(body_src, app_target):
         force_regen = True
 
-    if copied_count > 0 or not os.path.exists(os.path.join(LIVE_DIR, 'index.html')) or force_regen:
-        log(f"--- Régénération de index.html ---")
+    if copied_count > 0 or not os.path.exists(os.path.join(LIVE_DIR, 'app.html')) or force_regen:
+        log(f"--- Régénération de app.html ---")
         try:
             import subprocess
             gen_script = os.path.join(BUILD_DIR, 'generate_live_index.py')
