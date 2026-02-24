@@ -2036,6 +2036,20 @@ window.LOCALE_ES = {
     "tour.step.finish.title": "🎉 ¡Recorrido Completado!",
     "tour.step.finish.desc": "<p>¡Ahora conoces los conceptos básicos de Plume!</p><p>Explora las otras secciones para descubrir aún más funciones:</p><ul><li>Personajes y Mundo</li><li>Visualizaciones y gráficos</li><li>Herramientas de análisis y estadísticas</li></ul><p><strong>¡Buena suerte con tu escritura! ✍️</strong></p>",
 
+    // --- App Overview Tour ---
+    "tour.app_overview.welcome.title": "🚀 Bienvenido a la Interfaz",
+    "tour.app_overview.welcome.description": "<p>Plume es una herramienta rica. Tomémonos un momento para descubrir cómo navegar en su nuevo espacio de trabajo.</p>",
+    "tour.app_overview.header.title": "📍 Barra de Encabezado",
+    "tour.app_overview.header.description": "<p>Aquí es donde gestiona lo esencial: el título de su proyecto, los botones <strong>Deshacer/Rehacer</strong>, la búsqueda global, el modo <strong>Split</strong> para trabajar en dos textos y el temporizador <strong>Pomodoro</strong>.</p>",
+    "tour.app_overview.extra_menu.title": "➕ Menú Adicional",
+    "tour.app_overview.extra_menu.description": "<p>Acceda aquí a los ajustes del sistema: gestión del almacenamiento, importación de textos, atajos de teclado, temas visuales y documentación completa.</p>",
+    "tour.app_overview.sidebar.title": "🧭 Navegación Principal",
+    "tour.app_overview.sidebar.description": "<p>La barra de actividad a la izquierda le permite navegar entre sus módulos (Editor, Personajes, Universo, etc.). El icono de engranaje en la parte inferior permite <strong>Personalizar</strong> los módulos mostrados.</p>",
+    "tour.app_overview.tabs.title": "📑 Pestañas y Disposiciones",
+    "tour.app_overview.tabs.description": "<p>Los botones de pestañas en la parte superior le permiten guardar sus disposiciones preferidas. ¡Cambie de modo 'Escritura' a modo 'Planificación' con un solo clic!</p>",
+    "tour.app_overview.finish.title": "✨ ¡Listo para escribir!",
+    "tour.app_overview.finish.description": "<p>La interfaz ya no tiene secretos para usted. Haga clic en el <strong>?</strong> en cualquier momento para revisar estas explicaciones.</p>",
+
     // --- Corkboard Tour ---
     "tour.corkboard.intro.title": "Bienvenido al Corcho (Corkboard)",
     "tour.corkboard.intro.description": "El corcho te permite visualizar y organizar tus escenas en forma de fichas, como en un tablero de corcho real.",

@@ -2036,6 +2036,20 @@ window.LOCALE_DE = {
     "tour.step.finish.title": "🎉 Tour abgeschlossen!",
     "tour.step.finish.desc": "<p>Sie kennen jetzt die Grundlagen von Plume!</p><p>Erkunden Sie die anderen Bereiche, um noch mehr Funktionen zu entdecken:</p><ul><li>Charaktere und Welt</li><li>Visualisierungen und Diagramme</li><li>Analysewerkzeuge und Statistiken</li></ul><p><strong>Viel Erfolg beim Schreiben! ✍️</strong></p>",
 
+    // --- App Overview Tour ---
+    "tour.app_overview.welcome.title": "🚀 Willkommen in der Benutzeroberfläche",
+    "tour.app_overview.welcome.description": "<p>Plume ist ein umfangreiches Werkzeug. Nehmen wir uns einen Moment Zeit, um zu entdecken, wie Sie in Ihrem neuen Arbeitsbereich navigieren.</p>",
+    "tour.app_overview.header.title": "📍 Kopfzeile",
+    "tour.app_overview.header.description": "<p>Hier verwalten Sie das Wesentliche: Ihren Projekttitel, die <strong>Rückgängig/Wiederholen</strong>-Schaltflächen, die globale Suche, den <strong>Split</strong>-Modus für das Arbeiten an zwei Texten und den <strong>Pomodoro</strong>-Timer.</p>",
+    "tour.app_overview.extra_menu.title": "➕ Zusatzmenü",
+    "tour.app_overview.extra_menu.description": "<p>Greifen Sie hier auf Systemeinstellungen zu: Speicherverwaltung, Textimporte, Tastenkombinationen, visuelle Themen und die vollständige Dokumentation.</p>",
+    "tour.app_overview.sidebar.title": "🧭 Hauptnavigation",
+    "tour.app_overview.sidebar.description": "<p>Die Aktivitätsleiste auf der linken Seite ermöglicht es Ihnen, zwischen Ihren Modulen (Editor, Charaktere, Welt usw.) zu navigieren. Das Zahnradsymbol unten ermöglicht es Ihnen, die angezeigten Module zu <strong>Personalisieren</strong>.</p>",
+    "tour.app_overview.tabs.title": "📑 Tabs und Layouts",
+    "tour.app_overview.tabs.description": "<p>Mit den Tab-Schaltflächen oben können Sie Ihre bevorzugten Layouts speichern. Wechseln Sie mit einem Klick vom 'Schreibmodus' in den 'Planungsmodus'!</p>",
+    "tour.app_overview.finish.title": "✨ Bereit zum Schreiben!",
+    "tour.app_overview.finish.description": "<p>Die Benutzeroberfläche hat keine Geheimnisse mehr für Sie. Klicken Sie jederzeit auf das <strong>?</strong>, um diese Erklärungen erneut anzuzeigen.</p>",
+
     // --- Corkboard Tour ---
     "tour.corkboard.intro.title": "Willkommen an der Pinnwand (Corkboard)",
     "tour.corkboard.intro.description": "Die Pinnwand ermöglicht es Ihnen, Ihre Szenen in Form von Karten zu visualisieren und zu organisieren, genau wie an einer echten Korkwand.",

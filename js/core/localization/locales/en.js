@@ -2136,6 +2136,20 @@ window.LOCALE_EN = {
     "tour.step.finish.title": "🎉 Tour Completed!",
     "tour.step.finish.desc": "<p>You now know the basics of Plume!</p><p>Explore the other sections to discover even more features:</p><ul><li>Characters and World</li><li>Visualizations and charts</li><li>Analysis tools and statistics</li></ul><p><strong>Good luck with your writing! ✍️</strong></p>",
 
+    // --- App Overview Tour ---
+    "tour.app_overview.welcome.title": "🚀 Welcome to the Interface",
+    "tour.app_overview.welcome.description": "<p>Plume is a rich tool. Let's take a moment to discover how to navigate your new workspace.</p>",
+    "tour.app_overview.header.title": "📍 Header Bar",
+    "tour.app_overview.header.description": "<p>This is where you manage the essentials: your project title, <strong>Undo/Redo</strong> buttons, global search, <strong>Split</strong> mode for working on two texts, and the <strong>Pomodoro</strong> timer.</p>",
+    "tour.app_overview.extra_menu.title": "➕ Extra Menu",
+    "tour.app_overview.extra_menu.description": "<p>Access system settings here: storage management, text imports, keyboard shortcuts, visual themes, and complete documentation.</p>",
+    "tour.app_overview.sidebar.title": "🧭 Main Navigation",
+    "tour.app_overview.sidebar.description": "<p>The activity bar on the left allows you to navigate between your modules (Editor, Characters, World, etc.). The gear icon at the bottom allows you to <strong>Customize</strong> which modules are displayed.</p>",
+    "tour.app_overview.tabs.title": "📑 Tabs and Layouts",
+    "tour.app_overview.tabs.description": "<p>The tab buttons at the top allow you to save your preferred layouts. Switch from 'Writing' mode to 'Planning' mode with a single click!</p>",
+    "tour.app_overview.finish.title": "✨ Ready to Write!",
+    "tour.app_overview.finish.description": "<p>The interface no longer has any secrets for you. Click on the <strong>?</strong> at any time to review these explanations.</p>",
+
     // --- Corkboard Tour ---
     "tour.corkboard.intro.title": "Welcome to the Corkboard",
     "tour.corkboard.intro.description": "The corkboard allows you to visualize and organize your scenes as cards, just like on a physical corkboard.",

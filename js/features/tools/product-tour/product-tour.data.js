@@ -1422,6 +1422,62 @@ const ProductTourData = {
         "snapshots": [],
         "versions": [],
         "todos": [],
-        "search": []
+        "search": [],
+        "app_overview": [
+            {
+                "element": "#tourTriggerBtn",
+                "popover": {
+                    "title": "tour.app_overview.welcome.title",
+                    "description": "tour.app_overview.welcome.description",
+                    "side": "bottom",
+                    "align": "end"
+                }
+            },
+            {
+                "element": ".app-header",
+                "popover": {
+                    "title": "tour.app_overview.header.title",
+                    "description": "tour.app_overview.header.description",
+                    "side": "bottom",
+                    "align": "center"
+                }
+            },
+            {
+                "element": "#extraMenuDropdown",
+                "popover": {
+                    "title": "tour.app_overview.extra_menu.title",
+                    "description": "tour.app_overview.extra_menu.description",
+                    "side": "bottom",
+                    "align": "end"
+                }
+            },
+            {
+                "element": ".activity-bar",
+                "popover": {
+                    "title": "tour.app_overview.sidebar.title",
+                    "description": "tour.app_overview.sidebar.description",
+                    "side": "right",
+                    "align": "center"
+                }
+            },
+            {
+                "element": ".tab-preset-btn",
+                "popover": {
+                    "title": "tour.app_overview.tabs.title",
+                    "description": "tour.app_overview.tabs.description",
+                    "side": "bottom",
+                    "align": "center"
+                }
+            },
+            {
+                "element": "#tourTriggerBtn",
+                "popover": {
+                    "title": "tour.app_overview.finish.title",
+                    "description": "tour.app_overview.finish.description",
+                    "side": "bottom",
+                    "align": "end"
+                }
+            }
+        ]
     }
 };

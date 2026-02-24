@@ -22,9 +22,8 @@ async function initProductTourVM() {
 
         // Créer le bouton de tour dans le header
         ProductTourButtonView.create(() => {
-            // Au lieu de démarrer directement, on affiche le modal de bienvenue
-            // pour permettre de choisir, d'ignorer ou de masquer définitivement.
-            showWelcomeModalVM();
+            // Au lieu de démarrer directement, on affiche le tour global de l'interface
+            startProductTourVM('app_overview');
         });
 
         // Vérifier si on doit afficher le modal de bienvenue
@@ -73,6 +72,7 @@ function showWelcomeModalVM() {
         ProductTourWelcomeView.show(
             // onStart
             () => {
+                // Pour le modal de bienvenue, on peut garder le tour par défaut de la vue
                 startProductTourVM();
             },
             // onSkip
@@ -127,10 +127,11 @@ function hideWelcomeModalVM() {
 
 /**
  * Démarre la visite guidée.
+ * @param {string} forcedView - Vue forcée (optionnel).
  * @returns {Promise<Object>} Résultat de l'opération.
  */
-async function startProductTourVM() {
-    console.log('Starting product tour...');
+async function startProductTourVM(forcedView = null) {
+    console.log('Starting product tour...', forcedView || 'current view');
 
     try {
         // Réinitialiser le step sauvegardé pour recommencer du début
@@ -142,7 +143,7 @@ async function startProductTourVM() {
         }
 
         // Récupérer les steps
-        const view = typeof currentView !== 'undefined' ? currentView : 'editor';
+        const view = forcedView || (typeof currentView !== 'undefined' ? currentView : 'editor');
         let steps = await ProductTourStepsRepository.getAllSteps(view);
 
         // Filtrer les steps valides d'abord pour éviter d'enrichir des steps malformés

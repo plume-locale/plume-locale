@@ -1912,6 +1912,20 @@ window.LOCALE_FR = {
     "tour.step.finish.title": "🎉 Visite Terminée !",
     "tour.step.finish.desc": "<p>Vous connaissez maintenant les bases de Plume !</p><p>Explorez les autres sections pour découvrir encore plus de fonctionnalités :</p><ul><li>Personnages et Univers</li><li>Visualisations et graphiques</li><li>Outils d'analyse et statistiques</li></ul><p><strong>Bon courage pour votre écriture ! ✍️</strong></p>",
 
+    // --- App Overview Tour ---
+    "tour.app_overview.welcome.title": "🚀 Bienvenue dans l'interface",
+    "tour.app_overview.welcome.description": "<p>Plume est un outil riche. Prenons un instant pour découvrir comment naviguer dans votre nouvel espace de travail.</p>",
+    "tour.app_overview.header.title": "📍 Barre d'En-tête",
+    "tour.app_overview.header.description": "<p>C'est ici que vous gérez l'essentiel : le titre de votre projet, les boutons <strong>Annuler/Rétablir</strong>, la recherche globale, le mode <strong>Split</strong> pour travailler sur deux textes, et le timer <strong>Pomodoro</strong>.</p>",
+    "tour.app_overview.extra_menu.title": "➕ Menu Supplémentaire",
+    "tour.app_overview.extra_menu.description": "<p>Accédez ici aux paramètres système : gestion du stockage, imports de textes, raccourcis clavier, thèmes visuels et documentation complète.</p>",
+    "tour.app_overview.sidebar.title": "🧭 Navigation Principale",
+    "tour.app_overview.sidebar.description": "<p>La barre d'activité à gauche vous permet de naviguer entre vos modules (Éditeur, Personnages, Univers, etc.). L'icône roue dentée en bas permet de <strong>Personnaliser</strong> les modules affichés.</p>",
+    "tour.app_overview.tabs.title": "📑 Onglets et Dispositions",
+    "tour.app_overview.tabs.description": "<p>Les boutons d'onglets en haut vous permettent de sauvegarder vos dispositions préférées. Passez d'un mode 'Écriture' à un mode 'Planification' d'un seul clic !</p>",
+    "tour.app_overview.finish.title": "✨ Prêt à écrire !",
+    "tour.app_overview.finish.description": "<p>L'interface n'a plus de secrets pour vous. Cliquez sur le <strong>?</strong> à tout moment pour revoir ces explications.</p>",
+
     // --- Corkboard Tour ---
     "tour.corkboard.intro.title": "Bienvenue sur le Tableau (Corkboard)",
     "tour.corkboard.intro.description": "Le tableau vous permet de visualiser et d'organiser vos scènes sous forme de fiches, comme sur un panneau de liège.",
