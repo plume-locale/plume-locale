@@ -60,6 +60,8 @@
     align-items: center;
     justify-content: center;
     transition: background 0.3s ease;
+    touch-action: none;
+    /* Prevents scroll on drag handle; compensates for passive:true on touchmove */
 }
 
 #floatingMenuHandle::after {

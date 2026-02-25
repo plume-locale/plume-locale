@@ -3,6 +3,8 @@
 Script de déploiement INTELLIGENT vers /live
 Copie seulement les fichiers modifiés depuis le dernier déploiement.
 Vérifie la taille et la date de modification des fichiers.
+Supprime automatiquement les fichiers/dossiers orphelins dans /live
+(présents dans /live mais dont la source a été supprimée).
 Usage: python3 deploy-to-live-smart.py
 """
 
@@ -199,6 +201,71 @@ def get_dest_path(file_path):
          
     return file_path
 
+# Files/dirs that must never be deleted from /live even if not in the deploy list
+PROTECTED_LIVE_PATHS = {
+    'app.html',
+    'index.html',
+    'index-translations.js',
+}
+
+def cleanup_orphans(expected_dest_paths):
+    """
+    Supprime les fichiers présents dans /live qui ne font plus partie
+    du déploiement (fichiers supprimés côté source).
+    
+    :param expected_dest_paths: set de chemins RELATIFS attendus dans /live
+                                (ex: 'js/core/00.app.view.js', 'css/mobile.css')
+    """
+    if not os.path.exists(LIVE_DIR):
+        return 0, 0
+
+    deleted_files = 0
+    deleted_dirs = 0
+
+    # 1. Supprimer les fichiers orphelins
+    for root, dirs, files in os.walk(LIVE_DIR, topdown=False):
+        # Ignorer les dossiers protégés (demo/, doc/)
+        rel_root = os.path.relpath(root, LIVE_DIR).replace('\\', '/')
+        if rel_root.startswith('demo') or rel_root.startswith('doc'):
+            continue
+        
+        for filename in files:
+            full_path = os.path.join(root, filename)
+            rel_path = os.path.relpath(full_path, LIVE_DIR).replace('\\', '/')
+            
+            # Ne jamais supprimer les fichiers protégés
+            if rel_path in PROTECTED_LIVE_PATHS or filename in PROTECTED_LIVE_PATHS:
+                continue
+            
+            # Supprimer si pas dans les chemins attendus
+            if rel_path not in expected_dest_paths:
+                try:
+                    os.remove(full_path)
+                    log(f"   [SUPPRIME] {rel_path}")
+                    deleted_files += 1
+                except Exception as e:
+                    log(f"   [ERREUR] Impossible de supprimer {rel_path}: {e}")
+
+    # 2. Supprimer les dossiers vides (après suppression des fichiers)
+    for root, dirs, files in os.walk(LIVE_DIR, topdown=False):
+        rel_root = os.path.relpath(root, LIVE_DIR).replace('\\', '/')
+        # Ne pas supprimer la racine /live ni les dossiers protégés
+        if rel_root in ('.', 'demo', 'doc'):
+            continue
+        if rel_root.startswith('demo/') or rel_root.startswith('doc/'):
+            continue
+        
+        try:
+            # os.rmdir ne supprime que les dossiers vides
+            os.rmdir(root)
+            log(f"   [DOSSIER VIDE SUPPRIME] {rel_root}/")
+            deleted_dirs += 1
+        except OSError:
+            # Dossier non vide -> normal, on ignore
+            pass
+
+    return deleted_files, deleted_dirs
+
 def copy_file(src_path, dest_rel_path):
     """Copie un fichier vers son emplacement calculé dans /live"""
     try:
@@ -280,6 +347,23 @@ def deploy():
     log(f"Total traité: {len(files_to_deploy)} fichiers")
     log("")
     
+    # --- Nettoyage des fichiers orphelins dans /live ---
+    log("")
+    log(f"--- Nettoyage des fichiers orphelins dans /live ---")
+    
+    # Construire l'ensemble des chemins de destination attendus
+    expected_live_paths = set()
+    for file_path in files_to_deploy:
+        dest_rel = get_dest_path(file_path)
+        dest_rel = dest_rel.replace('\\', '/')
+        expected_live_paths.add(dest_rel)
+    
+    deleted_f, deleted_d = cleanup_orphans(expected_live_paths)
+    if deleted_f == 0 and deleted_d == 0:
+        log(f"   [OK] Aucun fichier orphelin trouvé")
+    else:
+        log(f"   [OK] {deleted_f} fichier(s) et {deleted_d} dossier(s) vide(s) supprimés")
+
     # Toujours regénérer l'index si des fichiers ont changé,
     # OU si l'index n'existe pas,
     # OU si html/body.html a changé (car il n'est pas copié mais injecté)
@@ -289,7 +373,7 @@ def deploy():
     if os.path.exists(body_src) and file_has_changed(body_src, app_target):
         force_regen = True
 
-    if copied_count > 0 or not os.path.exists(os.path.join(LIVE_DIR, 'app.html')) or force_regen:
+    if copied_count > 0 or deleted_f > 0 or not os.path.exists(os.path.join(LIVE_DIR, 'app.html')) or force_regen:
         log(f"--- Régénération de app.html ---")
         try:
             import subprocess

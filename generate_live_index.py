@@ -49,9 +49,9 @@ def generate_index():
     
     # CSS Links
     css_links = []
-    processed_css = []
+    processed_css = set()  # Track by basename to avoid duplicates
     
-    # 1. CSS_ORDER
+    # 1. CSS_ORDER (priority order)
     for css in CSS_ORDER:
         if css in CDN_MAP:
             link = f'<link rel="stylesheet" href="{CDN_MAP[css]}">'
@@ -59,22 +59,24 @@ def generate_index():
             filename = os.path.basename(css)
             link = f'<link rel="stylesheet" href="./css/{filename}">'
         css_links.append(link)
-        processed_css.append(os.path.basename(css))
+        processed_css.add(os.path.basename(css))
 
-    # 2. Other CSS files in css/ folder not in order (excluding storygrid)
+    # 2. MODULE_CSS_FILES (declared modules — added before loose files)
+    for css in MODULE_CSS_FILES:
+        filename = os.path.basename(css)
+        if filename not in processed_css:
+            link = f'<link rel="stylesheet" href="./css/{filename}">'
+            css_links.append(link)
+            processed_css.add(filename)
+
+    # 3. Other CSS files in css/ folder not in order (excluding storygrid)
     local_css_dir = os.path.join(BUILD_DIR, 'css')
-    for filepath in glob.glob(os.path.join(local_css_dir, '*.css')):
+    for filepath in sorted(glob.glob(os.path.join(local_css_dir, '*.css'))):
         filename = os.path.basename(filepath)
         if filename not in processed_css and filename not in ['11.storygrid.css', 'landing-page.css']:
             link = f'<link rel="stylesheet" href="./css/{filename}">'
             css_links.append(link)
-
-    # 3. Module CSS files
-    for css in MODULE_CSS_FILES:
-        filename = os.path.basename(css)
-        if filename not in processed_css: 
-             link = f'<link rel="stylesheet" href="./css/{filename}">'
-             css_links.append(link)
+            processed_css.add(filename)
 
     # JS Scripts
     js_scripts = []
