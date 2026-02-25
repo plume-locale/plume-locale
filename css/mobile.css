@@ -977,10 +977,14 @@
     z-index: 10001;
     opacity: 0;
     transition: opacity 0.3s ease;
+    pointer-events: none;
+    /* Critical: never capture events when invisible/inactive */
 }
 
 .sidebar-overlay.active {
     opacity: 1;
+    pointer-events: auto;
+    /* Only capture events when truly active/visible */
 }
 
 /* Tablet styles (landscape phones and portrait tablets) */
