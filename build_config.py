@@ -364,7 +364,11 @@ JS_ORDER = [
     # Synonyms Module
     'js/features/analysis/synonyms/synonyms.config.js',
     'js/features/analysis/synonyms/synonyms.model.js',
-    'js/features/analysis/synonyms/synonyms.dictionary.js',
+    'js/features/analysis/synonyms/synonyms.dictionary.js',      # FR
+    'js/features/analysis/synonyms/synonyms.dictionary.en.js',   # EN
+    'js/features/analysis/synonyms/synonyms.dictionary.de.js',   # DE
+    'js/features/analysis/synonyms/synonyms.dictionary.es.js',   # ES
+    'js/features/analysis/synonyms/synonyms.dictionary.manager.js',  # Orchestrateur multi-langues
     'js/features/analysis/synonyms/synonyms.service.js',
     'js/features/analysis/synonyms/synonyms.repository.js',
     'js/features/analysis/synonyms/synonyms.viewmodel.js',
