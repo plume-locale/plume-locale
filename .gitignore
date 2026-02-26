@@ -8,3 +8,9 @@ demo/bug mobile 2.gif
 demo/bug mobile.gif
 diff_aed_new.txt
 diff_aed.txt
+
+# Pipeline build-dictionary — fichiers trop lourds pour git
+scripts/build-dictionary/kaikki-french.jsonl
+scripts/build-dictionary/synonyms_raw.json
+scripts/build-dictionary/*.backup-*.js
+js/features/analysis/synonyms/synonyms.dictionary.backup-*.js
