@@ -107,6 +107,8 @@ window.LOCALE_ES = {
     "header.backup": "Copias y Exportaciones",
     "header.shortcuts": "Atajos de teclado (?)",
     "header.themes": "Gestor de Temas",
+    "header.changelog": "Novedades (Changelog)",
+    "nav.changelog": "Changelog",
     "header.projects": "Gestionar Proyectos",
     "header.documentation": "Documentación",
     "header.split": "Alternar Vista Dividida",

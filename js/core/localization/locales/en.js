@@ -137,6 +137,8 @@ window.LOCALE_EN = {
     "header.backup": "Backups and Exports",
     "header.shortcuts": "Keyboard Shortcuts (?)",
     "header.themes": "Theme Manager",
+    "header.changelog": "What's New (Changelog)",
+    "nav.changelog": "Changelog",
     "header.projects": "Manage Projects",
     "header.documentation": "Documentation",
     "header.split": "Toggle Split View",

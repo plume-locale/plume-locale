@@ -337,6 +337,10 @@ function renderViewInSplitPanel(view, container, state, panel) {
             }
             break;
 
+        case 'changelog':
+            ChangelogView.renderInContainer(tempContainer);
+            break;
+
         case 'projects':
             if (typeof ProjectView !== 'undefined' && typeof ProjectView.renderLandingPage === 'function') {
                 ProjectView.renderLandingPage(projects);

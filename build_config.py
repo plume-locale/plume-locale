@@ -58,7 +58,8 @@ CDN_MAP = {
 MODULE_CSS_FILES = [
     'css/synonyms.css',
     'css/map.css',
-    'css/keyboard-shortcuts.css'
+    'css/keyboard-shortcuts.css',
+    'css/changelog.css'
 ]
 
 # Ordre des fichiers JS
@@ -425,6 +426,9 @@ JS_ORDER = [
     'js/features/editor/narrative-overview/narrative-overview.view.js',
     'js/features/editor/narrative-overview/narrative-overview.handlers.js',
     'js/features/editor/narrative-overview/narrative-overview.main.js',
+    # Changelog Module
+    'js/features/tools/changelog/changelog.data.js',
+    'js/features/tools/changelog/changelog.view.js',
 ]
 
 # Files to ignore (already refactored or retired)
