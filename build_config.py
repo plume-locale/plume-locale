@@ -139,6 +139,8 @@ JS_ORDER = [
     'js/features/analysis/stats/stats.viewmodel.js',
     'js/features/analysis/stats/stats.view.js',
     'js/features/analysis/stats/stats.main.js',
+    'js/features/analysis/scene-worksheet.view.js',
+    'js/features/analysis/scene-worksheet.handlers.js',
     'js/features/tools/auto-detect/auto-detect.model.js',
     'js/features/tools/auto-detect/auto-detect.repository.js',
     'js/features/tools/auto-detect/auto-detect.viewmodel.js',

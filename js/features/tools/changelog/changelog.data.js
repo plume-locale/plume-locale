@@ -1,5 +1,5 @@
 /* ==========================================
-   CHANGELOG DATA — Généré le 2026-02-26 18:36
+   CHANGELOG DATA — Généré le 2026-02-27 22:18
    Source : git log (historique réel)
    NE PAS MODIFIER À LA MAIN.
    Exécuter build-changelog-from-git.py pour regénérer.
@@ -7,16 +7,17 @@
 
 window.CHANGELOG_DATA = [
   {
-    "version": "617a966",
+    "version": "d9802fd",
     "date":    "2026-02-26",
     "type":    "minor",
-    "summary": "Nouveau dictionnaire de synonymes fr",
-    "content": `# Nouveau dictionnaire de synonymes fr
+    "summary": "Ajout d'un changelog",
+    "content": `# Ajout d'un changelog
 
-**Date :** 26 February 2026 · **Commit :** \`617a966\`
+**Date :** 26 February 2026 · **Commit :** \`d9802fd\`
 
 ## ✨ Nouveautés
 
+- Ajout d'un changelog
 - Nouveau dictionnaire de synonymes fr
 - Ajout i18n manquants
 - Ajout d'autres product-tour et suppression de thriller board
