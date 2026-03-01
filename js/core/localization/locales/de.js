@@ -1311,6 +1311,11 @@ window.LOCALE_DE = {
     "char.error.not_found": "Charakter nicht gefunden",
     "char.error.list_not_found": "Charakter oder Liste nicht gefunden",
 
+    "char.evolution.add_stage": "Evolutionsschritt hinzufügen",
+    "char.evolution.no_scene": "Keine Szene",
+    "char.evolution.placeholder": "Beschreiben Sie, was hier passiert...",
+    "char.evolution.confirm_delete": "Diesen Evolutionsschritt löschen?",
+
     "char.trait.section.emotional": "Emotionaler Aspekt",
     "char.trait.section.evolution": "Persönliche Entwicklung",
     "char.trait.section.daily": "Alltagsleben",

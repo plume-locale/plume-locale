@@ -1372,6 +1372,11 @@ window.LOCALE_FR = {
     "char.error.not_found": "Personnage introuvable",
     "char.error.list_not_found": "Personnage ou liste introuvable",
 
+    "char.evolution.add_stage": "Ajouter une étape",
+    "char.evolution.no_scene": "Aucune scène",
+    "char.evolution.placeholder": "Décrivez ce qu'il se passe ici...",
+    "char.evolution.confirm_delete": "Supprimer cette étape d'évolution ?",
+
     "char.trait.section.emotional": "Aspect Émotionnel",
     "char.trait.section.evolution": "Évolution Personnelle",
     "char.trait.section.daily": "Au Quotidien",

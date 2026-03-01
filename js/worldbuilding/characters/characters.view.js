@@ -418,19 +418,8 @@ function renderCharacterSheet(character, racesList, groupsList, linkedScenes) {
                         <textarea rows="3" onchange="updateCharacterField('${character.id}', 'goals', this.value)">${character.goals || ''}</textarea>
                     </div>
                         
-                    <div class="character-timeline">
-                        <div class="timeline-card">
-                            <div class="timeline-card-title">${Localization.t('char.field.past')}</div>
-                            <textarea placeholder="${Localization.t('char.field.past')}..." onchange="updateCharacterField('${character.id}', 'past', this.value)">${character.past || ''}</textarea>
-                        </div>
-                        <div class="timeline-card">
-                            <div class="timeline-card-title">${Localization.t('char.field.present')}</div>
-                            <textarea placeholder="${Localization.t('char.field.present')}..." onchange="updateCharacterField('${character.id}', 'present', this.value)">${character.present || ''}</textarea>
-                        </div>
-                        <div class="timeline-card">
-                            <div class="timeline-card-title">${Localization.t('char.field.future')}</div>
-                            <textarea placeholder="${Localization.t('char.field.future')}..." onchange="updateCharacterField('${character.id}', 'future', this.value)">${character.future || ''}</textarea>
-                        </div>
+                    <div class="character-evolution-timeline" id="evolutionTimeline-${character.id}">
+                        ${renderEvolutionTimeline(character)}
                     </div>
                 </div>
             </div>
@@ -593,6 +582,10 @@ function processCharacterSideEffects(result) {
             });
             initCharacterRadar(result.data);
         }
+    }
+
+    if (effects.shouldRefreshEvolution && result.data) {
+        refreshEvolutionTimeline(result.data);
     }
 }
 
@@ -821,6 +814,88 @@ function changeCharacterAvatar(id, currentEmoji, currentImage) {
     processCharacterSideEffects(result);
 }
 
+// --- EVOLUTION TIMELINE RENDERERS ---
+
+function renderEvolutionTimeline(character) {
+    const periods = ['past', 'present', 'future'];
+    const evolution = character.evolution || { past: [], present: [], future: [] };
+
+    return `
+        <div class="evolution-periods-container">
+            ${periods.map(period => `
+                <div class="evolution-period-column" data-period="${period}">
+                    <div class="period-header">
+                        <i data-lucide="${period === 'past' ? 'history' : (period === 'present' ? 'clock' : 'fast-forward')}"></i>
+                        <span>${Localization.t('char.field.' + period)}</span>
+                        <button class="btn-add-evolution" onclick="addEvolutionStage('${character.id}', '${period}')" title="${Localization.t('char.evolution.add_stage')}">
+                            <i data-lucide="plus"></i>
+                        </button>
+                    </div>
+                    <div class="period-stages">
+                        ${(evolution[period] || []).map(stage => renderEvolutionStage(character.id, period, stage)).join('')}
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
+function renderEvolutionStage(charId, period, stage) {
+    const scenes = typeof InvestigationStore !== 'undefined' ? InvestigationStore.getScenesWithContext() : [];
+    const isInitial = stage.isInitial;
+
+    return `
+        <div class="evolution-stage-card ${isInitial ? 'is-initial' : ''}" data-stage-id="${stage.id}">
+            <div class="stage-card-header">
+                <div class="scene-selector-wrapper">
+                    <i data-lucide="film" class="scene-icon"></i>
+                    <select class="scene-select-mini" onchange="updateEvolutionStage('${charId}', '${period}', '${stage.id}', { sceneId: this.value })">
+                        <option value="">-- ${Localization.t('char.evolution.no_scene')} --</option>
+                        ${scenes.map(s => {
+        const breadcrumb = `${s.actTitle} › ${s.chapterTitle} › ${s.title}`;
+        return `<option value="${s.id || s.uid}" ${stage.sceneId == (s.id || s.uid) ? 'selected' : ''}>${breadcrumb}</option>`;
+    }).join('')}
+                    </select>
+                </div>
+                ${!isInitial ? `
+                    <button class="btn-delete-stage" onclick="removeEvolutionStage('${charId}', '${period}', '${stage.id}')">
+                        <i data-lucide="trash-2"></i>
+                    </button>
+                ` : '<span class="initial-badge">Initial</span>'}
+            </div>
+            <textarea class="stage-textarea" 
+                      placeholder="${Localization.t('char.evolution.placeholder')}" 
+                      onchange="updateEvolutionStage('${charId}', '${period}', '${stage.id}', { text: this.value })">${stage.text || ''}</textarea>
+        </div>
+    `;
+}
+
+function refreshEvolutionTimeline(character) {
+    const container = document.getElementById(`evolutionTimeline-${character.id}`);
+    if (container) {
+        container.innerHTML = renderEvolutionTimeline(character);
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
+}
+
+// Actions user -> ViewModel
+function addEvolutionStage(charId, period) {
+    const result = addEvolutionStageViewModel(charId, period);
+    processCharacterSideEffects(result);
+}
+
+function removeEvolutionStage(charId, period, stageId) {
+    if (!confirm(Localization.t('char.evolution.confirm_delete'))) return;
+    const result = removeEvolutionStageViewModel(charId, period, stageId);
+    processCharacterSideEffects(result);
+}
+
+function updateEvolutionStage(charId, period, stageId, updates) {
+    const result = updateEvolutionStageViewModel(charId, period, stageId, updates);
+    processCharacterSideEffects(result);
+}
+
+
 // Génération du HTML pour les scènes liées
 function renderCharacterLinkedScenes(linkedScenes) {
     if (!linkedScenes || linkedScenes.length === 0) return '';
@@ -830,8 +905,7 @@ function renderCharacterLinkedScenes(linkedScenes) {
             <div class="detail-section-title"><i data-lucide="file-text" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Apparaît dans ${linkedScenes.length} scène(s)</div>
             <div class="quick-links" style="display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px;">
                 ${linkedScenes.map(scene => {
-        const actNumNum = scene.actNumber || '?';
-        const breadcrumb = `Acte ${actNumNum} › Chapitre ${scene.chapterNumber || '?'} › ${scene.sceneTitle}`;
+        const breadcrumb = `${scene.actTitle || Localization.t('investigation.common.act')} › ${scene.chapterTitle || Localization.t('investigation.common.chapter')} › ${scene.sceneTitle}`;
 
         return `
                     <span class="link-badge" onclick="openScene('${scene.actId}', '${scene.chapterId}', '${scene.sceneId}')" 
