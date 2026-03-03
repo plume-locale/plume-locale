@@ -305,6 +305,65 @@ function updateInventoryItemViewModel(id, listType, index, field, value) {
     };
 }
 
+function addInventoryEventViewModel(charId, itemIndex) {
+    const char = CharacterRepository.getById(charId);
+    if (!char || !char.inventory || !char.inventory[itemIndex]) return { success: false };
+
+    const item = char.inventory[itemIndex];
+    if (!item.history) item.history = [];
+
+    item.history.push({
+        id: Date.now().toString(),
+        action: '',
+        sceneId: null,
+        description: '',
+        createdAt: Date.now()
+    });
+
+    const updatedChar = CharacterRepository.update(charId, { inventory: char.inventory });
+    return {
+        success: !!updatedChar,
+        data: updatedChar,
+        sideEffects: { shouldSave: true, shouldRefreshInventory: 'inventory' }
+    };
+}
+
+function removeInventoryEventViewModel(charId, itemIndex, eventId) {
+    const char = CharacterRepository.getById(charId);
+    if (!char || !char.inventory || !char.inventory[itemIndex]) return { success: false };
+
+    const item = char.inventory[itemIndex];
+    if (item.history) {
+        item.history = item.history.filter(e => e.id !== eventId);
+    }
+
+    const updatedChar = CharacterRepository.update(charId, { inventory: char.inventory });
+    return {
+        success: !!updatedChar,
+        data: updatedChar,
+        sideEffects: { shouldSave: true, shouldRefreshInventory: 'inventory' }
+    };
+}
+
+function updateInventoryEventViewModel(charId, itemIndex, eventId, updates) {
+    const char = CharacterRepository.getById(charId);
+    if (!char || !char.inventory || !char.inventory[itemIndex]) return { success: false };
+
+    const item = char.inventory[itemIndex];
+    const event = (item.history || []).find(e => e.id === eventId);
+    if (!event) return { success: false };
+
+    Object.assign(event, updates);
+    event.updatedAt = Date.now();
+
+    const updatedChar = CharacterRepository.update(charId, { inventory: char.inventory });
+    return {
+        success: !!updatedChar,
+        data: updatedChar,
+        sideEffects: { shouldSave: true }
+    };
+}
+
 /**
  * Mise à jour des stats de personnalité.
  */

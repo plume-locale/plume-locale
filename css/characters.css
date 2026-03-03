@@ -276,7 +276,6 @@
     font-size: 0.75rem;
     font-weight: 500;
     color: var(--accent-red);
-    text-transform: capitalize;
 }
 
 .character-field input,
