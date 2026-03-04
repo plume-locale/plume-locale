@@ -429,7 +429,7 @@ JS_ORDER = [
     'js/features/editor/narrative-overview/narrative-overview.handlers.js',
     'js/features/editor/narrative-overview/narrative-overview.main.js',
     # Changelog Module
-    'js/features/tools/changelog/changelog.data.js',
+    'js/features/tools/changelog/changelog.i18n.data.js',
     'js/features/tools/changelog/changelog.view.js',
 ]
 
@@ -445,6 +445,9 @@ IGNORED_ORIGINALS = [
     '_33.plot.js', '_34.relations-graph.js', '_35.renderMap.js', '_36.timeline-metro.js', '_43.arcs.js', '_44.storygrid.js', 
     '_45.arc-board.js', '_45.arc-board.refactor.js', '_46.thriller-board.js', '38.tension.js', '40.sidebar-views.js',
     '12.import-export.js', '39.export.js', '41.storageMonitoring.js', '02.storage.js', '20.snapshots.js', '13.mobile-menu.js',
-    '27.keyboardShortcuts.js', '42.mobile-swipe.js', '14.dragndrop-acts.js'
+    '27.keyboardShortcuts.js', '42.mobile-swipe.js', '14.dragndrop-acts.js',
+    'changelog.data.js',         # Remplacé par changelog.i18n.data.js
+    'changelog.manual.data.js',  # Source FR uniquement, non déployé
+    'translate-changelog.md',    # Outil interne Antigravity, non déployé
 ]
 

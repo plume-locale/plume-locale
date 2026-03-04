@@ -14,3 +14,7 @@ scripts/build-dictionary/kaikki-french.jsonl
 scripts/build-dictionary/synonyms_raw.json
 scripts/build-dictionary/*.backup-*.js
 js/features/analysis/synonyms/synonyms.dictionary.backup-*.js
+
+# Changelog — fichiers internes non déployés
+js/features/tools/changelog/translate-changelog.md
+js/features/tools/changelog/changelog.manual.data.js

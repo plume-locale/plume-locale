@@ -7,9 +7,9 @@
 
 window.CHANGELOG_DATA = [
   {
-    "version": "412c885",
-    "date":    "2026-02-27",
-    "type":    "minor",
+    "version": "1.0.3",
+    "date": "2026-02-27",
+    "type": "minor",
     "summary": "Ajout d'un export .zip avec tous les \u00e9l\u00e9ments en .md pour pouvoir r\u00e9cup\u00e9rer dans",
     "content": `# Ajout d'un export .zip avec tous les éléments en .md pour pouvoir récupérer dans vos logiciels préférés
 
@@ -33,5 +33,5 @@ window.CHANGELOG_DATA = [
 - Correction mediaqueries <900px
 - Freeze mobile <900px`
   },
-  
+
 ];
