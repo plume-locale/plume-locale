@@ -428,6 +428,10 @@ JS_ORDER = [
     'js/features/editor/narrative-overview/narrative-overview.view.js',
     'js/features/editor/narrative-overview/narrative-overview.handlers.js',
     'js/features/editor/narrative-overview/narrative-overview.main.js',
+    # Magic Importer
+    'js/features/tools/magic-importer/magic-importer.viewmodel.js',
+    'js/features/tools/magic-importer/magic-importer.view.js',
+    'js/features/tools/magic-importer/magic-importer.main.js',
     # Changelog Module
     'js/features/tools/changelog/changelog.i18n.data.js',
     'js/features/tools/changelog/changelog.view.js',
