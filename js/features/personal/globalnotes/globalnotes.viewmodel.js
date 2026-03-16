@@ -67,7 +67,7 @@ const GlobalNotesViewModel = {
         }
 
         if (typeof syncSidebarWithView === 'function') {
-            syncSidebarWithView('globalnotes');
+            syncSidebarWithView('globalnotes', true);
         }
         if (typeof updateSidebarActions === 'function') {
             updateSidebarActions('globalnotes');
@@ -100,7 +100,7 @@ const GlobalNotesViewModel = {
         }
 
         if (typeof syncSidebarWithView === 'function') {
-            syncSidebarWithView('globalnotes');
+            syncSidebarWithView('globalnotes', true);
         }
         if (typeof updateSidebarActions === 'function') {
             updateSidebarActions('globalnotes');
@@ -177,6 +177,48 @@ const GlobalNotesViewModel = {
         }
     },
 
+    moveItemToBoard: function (itemId, targetBoardId) {
+        const allItems = GlobalNotesRepository.getItems();
+        const item = allItems.find(i => i.id == itemId);
+
+        if (item && targetBoardId) {
+            // Remove from current column if it was in one
+            if (item.columnId) {
+                const column = allItems.find(i => i.id === item.columnId);
+                if (column && column.data.items) {
+                    column.data.items = column.data.items.filter(id => id !== itemId);
+                    GlobalNotesRepository.saveItem(column);
+                }
+            }
+
+            // If moving a board item, we must also update the parentId of the actual board it represents
+            if (item.type === 'board' && item.data.targetBoardId) {
+                const targetBoard = GlobalNotesRepository.getBoards().find(b => b.id === item.data.targetBoardId);
+                if (targetBoard) {
+                    targetBoard.parentId = targetBoardId;
+                    GlobalNotesRepository.saveBoard(targetBoard);
+                }
+            }
+
+            item.boardId = targetBoardId;
+            item.columnId = null;
+            
+            // Set position to a default or keep relative (here default for simplicity as requested "be inside that board")
+            item.x = 100;
+            item.y = 100;
+
+            GlobalNotesRepository.saveItem(item);
+
+            // Sync sidebar as hierarchy might have changed
+            if (typeof syncSidebarWithView === 'function') {
+                syncSidebarWithView('globalnotes', true);
+            }
+
+            return true;
+        }
+        return false;
+    },
+
     deleteSelectedItem: function () {
         const allItems = GlobalNotesRepository.getItems();
         this.state.selectedItemIds.forEach(id => {
@@ -224,7 +266,7 @@ const GlobalNotesViewModel = {
         }
 
         if (typeof syncSidebarWithView === 'function') {
-            syncSidebarWithView('globalnotes');
+            syncSidebarWithView('globalnotes', true);
         }
         if (typeof updateSidebarActions === 'function') {
             updateSidebarActions('globalnotes');
@@ -280,6 +322,12 @@ const GlobalNotesViewModel = {
         const boardContent = document.getElementById('globalnotesBoardContent');
         if (boardContent) {
             boardContent.style.transform = `translate(${this.state.panX}px, ${this.state.panY}px) scale(${this.state.zoom})`;
+        }
+
+        // Update zoom level display if visible
+        const zoomText = document.querySelector('.mindmap-zoom-level');
+        if (zoomText) {
+            zoomText.innerText = `${Math.round(this.state.zoom * 100)}%`;
         }
     },
 

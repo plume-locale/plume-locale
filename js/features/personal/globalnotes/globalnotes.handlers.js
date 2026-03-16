@@ -885,22 +885,35 @@ const GlobalNotesHandlers = {
     },
 
     onWheel: function (e) {
+        // Zoom only with Ctrl (standard for canvas apps) or if it's a pinch gesture
         if (e.ctrlKey || e.metaKey) {
             e.preventDefault();
-            const zoomSpeed = 0.001;
-            const delta = -e.deltaY;
-            const factor = Math.pow(1.1, delta / 100);
+            
+            // Standardizing delta for different browsers/OS
+            const delta = e.deltaY;
+            const zoomSpeed = 0.0015;
+            const factor = Math.exp(-delta * zoomSpeed);
 
             const oldZoom = GlobalNotesViewModel.state.zoom;
-            const newZoom = oldZoom * factor;
+            let newZoom = oldZoom * factor;
+            
+            // Apply limits
+            newZoom = Math.max(0.1, Math.min(5, newZoom));
 
-            // To zoom towards mouse, we need to adjust panX/panY but for now let's keep it simple
+            // To zoom towards mouse, we'd need to adjust panX/panY. 
+            // For now, let's just update the zoom.
             GlobalNotesViewModel.setZoom(newZoom);
         }
     },
 
     onCanvasMouseDown: function (e) {
-        if (e.target.id === 'globalnotesCanvas' || e.target.id === 'globalnotesBoardContent') {
+        // Allow panning if clicking on the background layers (canvas, board content, or the items layer)
+        const isBackground = e.target.id === 'globalnotesCanvas' || 
+                           e.target.id === 'globalnotesBoardContent' || 
+                           e.target.id === 'globalnotesItemsLayer' ||
+                           e.target.classList.contains('globalnotes-board-view');
+
+        if (isBackground) {
             GlobalNotesViewModel.clearSelection();
 
             const clientX = e.clientX;
@@ -1056,13 +1069,17 @@ const GlobalNotesHandlers = {
 
             // Highlight dropzone if dragging a single item
             if (this.dragData.items.length === 1) {
-                document.querySelectorAll('.column-items-dropzone').forEach(dz => {
+                // Clear previous highlights
+                document.querySelectorAll('.column-items-dropzone, .globalnotes-item-board').forEach(dz => {
                     dz.classList.remove('drag-over');
                     const existingPlaceholder = dz.querySelector('.drop-placeholder');
                     if (existingPlaceholder) existingPlaceholder.remove();
                 });
 
-                const dropzone = document.elementFromPoint(clientX, clientY)?.closest('.column-items-dropzone');
+                const targetEl = document.elementFromPoint(clientX, clientY);
+                const dropzone = targetEl?.closest('.column-items-dropzone');
+                const boardDropzone = targetEl?.closest('.globalnotes-item-board');
+
                 if (dropzone) {
                     const columnId = dropzone.getAttribute('data-column-id');
                     const draggedId = this.dragData.targetId;
@@ -1088,6 +1105,8 @@ const GlobalNotesHandlers = {
 
                         this.dragData.dropIndex = index;
                     }
+                } else if (boardDropzone && boardDropzone.getAttribute('data-id') !== this.dragData.targetId) {
+                    boardDropzone.classList.add('drag-over');
                 } else {
                     this.dragData.dropIndex = -1;
                 }
@@ -1118,23 +1137,39 @@ const GlobalNotesHandlers = {
         const clientY = e.clientY;
 
         if (this.dragData.type === 'item') {
-            document.querySelectorAll('.column-items-dropzone').forEach(dz => dz.classList.remove('drag-over'));
+            document.querySelectorAll('.column-items-dropzone, .globalnotes-item-board').forEach(dz => dz.classList.remove('drag-over'));
 
             const targetEl = document.elementFromPoint(clientX, clientY);
             let dropColumnId = null;
+            let dropBoardItemId = null;
+            
             const dropzone = targetEl?.closest('.column-items-dropzone') || targetEl?.closest('.globalnotes-item-column')?.querySelector('.column-items-dropzone');
+            const boardDropzone = targetEl?.closest('.globalnotes-item-board');
 
             if (dropzone) {
                 dropColumnId = dropzone.getAttribute('data-column-id');
+            } else if (boardDropzone) {
+                dropBoardItemId = boardDropzone.getAttribute('data-id');
             }
 
             // Process all dragged items
+            let itemsChangedBoard = false;
+
             this.dragData.items.forEach(dragItem => {
                 dragItem.el.classList.remove('dragging');
                 if (!this.dragData.hasMoved) return;
 
                 const item = GlobalNotesRepository.getItems().find(i => i.id == dragItem.id);
                 if (!item) return;
+
+                if (dropBoardItemId && item.id !== dropBoardItemId) {
+                    const boardItem = GlobalNotesRepository.getItems().find(i => i.id === dropBoardItemId);
+                    if (boardItem && boardItem.type === 'board' && boardItem.data.targetBoardId) {
+                        GlobalNotesViewModel.moveItemToBoard(item.id, boardItem.data.targetBoardId);
+                        itemsChangedBoard = true;
+                        return;
+                    }
+                }
 
                 if (dropColumnId) {
                     // Prevent moving a column into itself or into another column (columns are top-level only in this model)
@@ -1160,7 +1195,7 @@ const GlobalNotesHandlers = {
                 }
             });
 
-            if (this.dragData.hasMoved) {
+            if (this.dragData.hasMoved || itemsChangedBoard) {
                 GlobalNotesView.renderContent();
             }
         }
