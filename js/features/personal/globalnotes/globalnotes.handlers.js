@@ -130,8 +130,18 @@ const GlobalNotesHandlers = {
 
         const typeActions = this.getTypeSpecificActions(item);
         const isInColumn = !!item.columnId;
+        const selectedIds = GlobalNotesViewModel.state.selectedItemIds || [];
+        const isMultiSelected = selectedIds.length > 1 && selectedIds.includes(itemId);
 
         menu.innerHTML = `
+            ${isMultiSelected ? `
+                <div class="context-menu-group">
+                    <div class="context-menu-item" onclick="GlobalNotesHandlers.applySameDimension()">
+                        <i data-lucide="layers"></i> ${Localization.t('globalnotes.menu.same_dimension') || 'Same Dimensions'}
+                    </div>
+                </div>
+                <div class="context-menu-divider"></div>
+            ` : ''}
             ${typeActions ? `<div class="context-menu-group">${typeActions}</div><div class="context-menu-divider"></div>` : ''}
             <div class="context-menu-group">
                 <div class="context-menu-item" onclick="GlobalNotesHandlers.duplicateItem('${itemId}')">
@@ -184,6 +194,13 @@ const GlobalNotesHandlers = {
         switch (item.type) {
             case 'note':
                 return `
+                    <div class="context-menu-item" onclick="GlobalNotesHandlers.autofitWidth('${id}')">
+                        <i data-lucide="expand"></i> ${Localization.t('globalnotes.menu.autofit_width') || 'Auto-fit width'}
+                    </div>
+                    <div class="context-menu-item" onclick="GlobalNotesHandlers.autofitHeight('${id}')">
+                        <i data-lucide="expand-vertical"></i> ${Localization.t('globalnotes.menu.autofit_height') || 'Auto-fit height'}
+                    </div>
+                    <div class="context-menu-divider"></div>
                     <div class="context-menu-item" onclick="GlobalNotesHandlers.convertItemTo('${id}', 'checklist')">
                         <i data-lucide="list-checks"></i> ${Localization.t('globalnotes.menu.to_checklist') || 'Convert to Checklist'}
                     </div>
@@ -1568,6 +1585,120 @@ const GlobalNotesHandlers = {
             const dataUrl = canvas.toDataURL();
             GlobalNotesViewModel.updateItemData(itemId, { image: dataUrl });
         }
+    },
+
+    onPaste: function (e) {
+        const html = e.clipboardData.getData('text/html');
+        const text = e.clipboardData.getData('text/plain');
+
+        let content = '';
+
+        if (html) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const allowedTags = ['B', 'I', 'EM', 'STRONG', 'U', 'H1', 'H2', 'H3', 'P', 'BR', 'UL', 'OL', 'LI', 'SPAN'];
+            
+            const cleanNode = (node) => {
+                const frag = document.createDocumentFragment();
+                Array.from(node.childNodes).forEach(child => {
+                    if (child.nodeType === 1) { // Element
+                        const tagName = child.tagName.toUpperCase();
+                        if (allowedTags.includes(tagName)) {
+                            while (child.attributes.length > 0) child.removeAttribute(child.attributes[0].name);
+                            const cleaned = cleanNode(child);
+                            child.innerHTML = '';
+                            child.appendChild(cleaned);
+                            frag.appendChild(child.cloneNode(true));
+                        } else {
+                            frag.appendChild(cleanNode(child));
+                        }
+                    } else if (child.nodeType === 3) { // Text
+                        frag.appendChild(child.cloneNode(true));
+                    }
+                });
+                return frag;
+            };
+
+            const finalFrag = cleanNode(doc.body);
+            const tempDiv = document.createElement('div');
+            tempDiv.appendChild(finalFrag);
+            content = tempDiv.innerHTML.trim();
+        }
+
+        // If HTML cleaning resulted in nothing, fallback to plain text
+        if (!content && text) {
+            content = text.trim().replace(/\n/g, '<br>');
+        }
+
+        if (content) {
+            e.preventDefault();
+            
+            if (document.queryCommandSupported('insertHTML')) {
+                document.execCommand('insertHTML', false, content);
+            } else {
+                const selection = window.getSelection();
+                if (selection.rangeCount) {
+                    const range = selection.getRangeAt(0);
+                    range.deleteFromDocument();
+                    range.insertNode(range.createContextualFragment(content));
+                    range.collapse(false);
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                }
+            }
+        }
+        // If content is still empty, we don't call e.preventDefault(), 
+        // allowing the browser's default behavior.
+    },
+
+    autofitWidth: function (itemId) {
+        const itemEl = document.querySelector(`.globalnotes-item[data-id="${itemId}"]`);
+        if (!itemEl) return;
+        const noteContent = itemEl.querySelector('.item-content');
+        if (!noteContent) return;
+
+        // Measures the scrollWidth of a clone without constraints
+        const clone = noteContent.cloneNode(true);
+        clone.style.width = 'max-content';
+        clone.style.minWidth = '0';
+        clone.style.position = 'fixed';
+        clone.style.top = '-9999px';
+        clone.style.left = '-9999px';
+        clone.style.visibility = 'hidden';
+        clone.style.display = 'inline-block';
+        clone.style.padding = window.getComputedStyle(noteContent).padding;
+        
+        document.body.appendChild(clone);
+        const width = Math.max(150, Math.min(1000, clone.scrollWidth + 40));
+        document.body.removeChild(clone);
+
+        GlobalNotesViewModel.updateItemSize(itemId, width);
+        GlobalNotesView.renderContent();
+        this.hideContextMenu();
+    },
+
+    autofitHeight: function (itemId) {
+        const itemEl = document.querySelector(`.globalnotes-item[data-id="${itemId}"]`);
+        if (!itemEl) return;
+        const inner = itemEl.querySelector('.item-inner');
+        if (!inner) return;
+
+        // Reset height temporarily to get true scrollHeight
+        const oldHeight = itemEl.style.height;
+        itemEl.style.height = 'auto';
+        
+        const height = Math.max(80, Math.min(1200, inner.scrollHeight + 10));
+        
+        itemEl.style.height = oldHeight; // Restore
+
+        GlobalNotesViewModel.updateItemSize(itemId, undefined, height);
+        GlobalNotesView.renderContent();
+        this.hideContextMenu();
+    },
+
+    applySameDimension: function () {
+        GlobalNotesViewModel.applySameDimension();
+        this.hideContextMenu();
     }
 };
 
