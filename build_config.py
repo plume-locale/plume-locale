@@ -22,6 +22,7 @@ CSS_ORDER = [
     'mindmap.css',
     'arc-detail.css',
     'timeline-metro.css',
+    'timeline-pro.css',
     'utilities.css',
     'mobile.css',
     'color-palette.css',
@@ -300,6 +301,11 @@ JS_ORDER = [
     'js/worldbuilding/planning/timeline-metro/timeline-metro.view.js',
     'js/worldbuilding/planning/timeline-metro/timeline-metro.handlers.js',
     'js/worldbuilding/planning/timeline-metro/timeline-metro.main.js',
+    # Timeline Pro
+    'js/worldbuilding/planning/timeline-pro/timeline-pro.model.js',
+    'js/worldbuilding/planning/timeline-pro/timeline-pro.repository.js',
+    'js/worldbuilding/planning/timeline-pro/timeline-pro.viewmodel.js',
+    'js/worldbuilding/planning/timeline-pro/timeline-pro.view.js',
     # Theme Manager
     'js/core/theme-manager/theme-manager.model.js',
     'js/core/theme-manager/theme-manager.repository.js',
