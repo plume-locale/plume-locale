@@ -17,6 +17,7 @@ class TimelineProViewModel {
         const centerWorld = TimelineProView._screenToWorld(
             (state.width + TimelineProView.HEADER_W) / 2
         );
+        TimelineProView._pushHistory();
         const ev = new TimelineProModel({
             title:   Localization.t('modal.timeline.placeholder_title'),
             startDate: Math.round(centerWorld),
@@ -30,6 +31,7 @@ class TimelineProViewModel {
     }
 
     static addEventAt(t, trackId) {
+        TimelineProView._pushHistory();
         const ev = new TimelineProModel({
             title: Localization.t('modal.timeline.placeholder_title'),
             startDate: t,
@@ -43,6 +45,7 @@ class TimelineProViewModel {
     }
 
     static deleteEvent(id) {
+        TimelineProView._pushHistory();
         TimelineProRepository.delete(id);
         TimelineProRepository.deleteLinksForEvent(id);   // nettoyer les liens orphelins
         TimelineProView.state.selectedId     = null;
@@ -60,6 +63,7 @@ class TimelineProViewModel {
         const tracks = TimelineProRepository.getTracks();
         const palette = ['#e74c3c','#3498db','#2ecc71','#9b59b6','#f39c12','#1abc9c','#e67e22','#e91e63'];
         const color  = palette[tracks.length % palette.length];
+        TimelineProView._pushHistory();
         const trk = new TimelineProTrack({
             title: 'Piste ' + (tracks.length + 1),
             color,
@@ -80,7 +84,18 @@ class TimelineProViewModel {
     static deleteTrack(id) {
         if (id === 'default') { alert('La piste par défaut ne peut pas être supprimée.'); return; }
         if (!confirm('Supprimer cette piste ? Les événements seront déplacés vers la piste par défaut.')) return;
+        TimelineProView._pushHistory();
         TimelineProRepository.deleteTrack(id);
+        TimelineProView.draw();
+        if (typeof saveProject === 'function') saveProject();
+        this.openTracksPanel();
+    }
+
+    static toggleTrackVisibility(id) {
+        const tr = TimelineProRepository.getTracks().find(t => t.id === id);
+        if (!tr) return;
+        tr.isHidden = !tr.isHidden;
+        TimelineProRepository.saveTrack(tr);
         TimelineProView.draw();
         if (typeof saveProject === 'function') saveProject();
         this.openTracksPanel();
@@ -95,7 +110,9 @@ class TimelineProViewModel {
         const panel = this._panel();
         if (!ev || !panel) return;
 
-        const tracks  = TimelineProRepository.getTracks();
+        const trk = TimelineProRepository.getTracks();
+        // Le sélecteur de piste ne montre que les pistes visibles
+        const visibleTracks = trk.filter(t => !t.isHidden);
         const isHex   = c => c?.startsWith('#');
         const bgColor = isHex(ev.color) ? ev.color : '#d4af37';
         const txColor = isHex(ev.textColor) ? ev.textColor : '#ffffff';
@@ -126,7 +143,7 @@ class TimelineProViewModel {
     <!-- Title -->
     <div>
       <label style="${this._labelStyle()}">Titre</label>
-      <input id="tlp-p-title" type="text" value="${this._esc(ev.title)}" style="${this._inputStyle()}" placeholder="Nom de l'événement">
+      <textarea id="tlp-p-title" style="${this._inputStyle()}height:44px;resize:vertical;" placeholder="Nom de l'événement">${this._esc(ev.title)}</textarea>
     </div>
 
     <!-- Start / End -->
@@ -151,7 +168,7 @@ class TimelineProViewModel {
     <div>
       <label style="${this._labelStyle()}">${Localization.t('timeline.pro.field.track')}</label>
       <select id="tlp-p-track" style="${this._inputStyle()}">
-        ${tracks.map(t => `<option value="${t.id}" ${t.id === ev.trackId ? 'selected' : ''}>${this._esc(t.title)}</option>`).join('')}
+        ${visibleTracks.map(t => `<option value="${t.id}" ${t.id === ev.trackId ? 'selected' : ''}>${this._esc(t.title)}</option>`).join('')}
       </select>
     </div>
 
@@ -205,6 +222,33 @@ class TimelineProViewModel {
         </div>
       </div>
     </div><!-- /design -->
+
+    <!-- ── Entités Liées ─────────────────────────────────────────── -->
+    <div style="border-top:1px solid var(--border-color);padding-top:1rem;">
+      <label style="${this._labelStyle()}">Entités liées</label>
+      
+      <!-- Personnages -->
+      <div style="margin-bottom:.8rem;">
+        <div style="font-size:.75rem;color:var(--text-muted);margin-bottom:.4rem;">Personnages impliqués</div>
+        <select id="tlp-p-characters" multiple style="${this._inputStyle()}height:auto;min-height:70px;">
+          ${(window.project?.characters || []).map(c => `
+            <option value="${c.id}" ${(ev.characters || []).includes(c.id) ? 'selected' : ''}>${this._esc(c.name || (c.firstName + ' ' + c.lastName).trim() || 'Sans nom')}</option>
+          `).join('')}
+        </select>
+        <div style="font-size:.65rem;color:var(--text-muted);margin-top:.3rem;opacity:.7;">Maintenir Ctrl/Cmd pour sélection multiple</div>
+      </div>
+
+      <!-- Lieu / Monde -->
+      <div style="margin-bottom:.5rem;">
+        <div style="font-size:.75rem;color:var(--text-muted);margin-bottom:.4rem;">Lieu principal (Atlas)</div>
+        <select id="tlp-p-world" style="${this._inputStyle()}">
+          <option value="">-- Aucun --</option>
+          ${(window.project?.world || []).map(w => `
+            <option value="${w.id}" ${ev.worldId === w.id ? 'selected' : ''}>${this._esc(w.fields?.nom || 'Sans nom')}</option>
+          `).join('')}
+        </select>
+      </div>
+    </div>
 
     <!-- ── Tags ──────────────────────────────────────────────────── -->
     <div style="border-top:1px solid var(--border-color);padding-top:1rem;">
@@ -277,12 +321,18 @@ class TimelineProViewModel {
             raw.description = document.getElementById('tlp-p-desc').value;
             raw.isLocked    = document.getElementById('tlp-p-lock').checked;
             raw.showBand    = document.getElementById('tlp-p-band')?.checked ?? false;
+
+            const charsSelect = document.getElementById('tlp-p-characters');
+            if (charsSelect) raw.characters = Array.from(charsSelect.selectedOptions).map(o => o.value);
+            
+            const worldSelect = document.getElementById('tlp-p-world');
+            if (worldSelect) raw.worldId = worldSelect.value || null;
             TimelineProRepository.save(raw);
             TimelineProView.draw();
             if (save && typeof saveProject === 'function') saveProject();
         };
 
-        ['tlp-p-title','tlp-p-start','tlp-p-end','tlp-p-track','tlp-p-desc'].forEach(k => {
+        ['tlp-p-title','tlp-p-start','tlp-p-end','tlp-p-track','tlp-p-desc','tlp-p-characters','tlp-p-world'].forEach(k => {
             document.getElementById(k)?.addEventListener('input', () => update(false));
             document.getElementById(k)?.addEventListener('change', () => update(true));
         });
@@ -396,6 +446,10 @@ class TimelineProViewModel {
         const tracks = TimelineProRepository.getTracks();
         const PALETTE = ['#e74c3c','#e67e22','#f1c40f','#2ecc71','#16a085','#3498db','#9b59b6','#d4af37','#1abc9c','#e91e63'];
 
+        // Icône œil ouvert / fermé
+        const eyeOpen   = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+        const eyeClosed = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
+
         panel.style.display = 'flex';
         panel.innerHTML = `
 <div style="padding:1.25rem;display:flex;flex-direction:column;gap:0;height:100%;">
@@ -416,6 +470,12 @@ class TimelineProViewModel {
           <div style="cursor:grab;color:var(--text-muted);opacity:.5;display:flex;align-items:center;justify-content:center;padding:.2rem;" title="Déplacer">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
           </div>
+          <!-- Bouton visibilité -->
+          <button onclick="TimelineProViewModel.toggleTrackVisibility('${tr.id}')"
+                  title="${tr.isHidden ? 'Afficher la piste' : 'Masquer la piste'}"
+                  style="background:none;border:none;cursor:pointer;padding:.2rem;display:flex;align-items:center;color:${tr.isHidden ? 'var(--text-muted)' : 'var(--text-primary)'};opacity:${tr.isHidden ? '.45' : '.8'};transition:opacity .15s;"
+                  onmouseenter="this.style.opacity='1'" onmouseleave="this.style.opacity='${tr.isHidden ? '.45' : '.8'}'"
+          >${tr.isHidden ? eyeClosed : eyeOpen}</button>
           <!-- Color swatch / picker trigger -->
           <label title="Changer la couleur" style="cursor:pointer;flex-shrink:0;position:relative;">
             <div style="width:14px;height:38px;border-radius:4px;background:${trColor};transition:opacity .15s;"
@@ -564,7 +624,12 @@ class TimelineProViewModel {
             l => (l.fromId === fromId && l.toId === toId) ||
                  (l.fromId === toId   && l.toId === fromId)
         );
-        if (existing) { alert('Une liaison entre ces deux événements existe déjà.'); return; }
+        if (existing) {
+            // Toast non-bloquant au lieu d'alert()
+            this._toast('Une liaison entre ces deux événements existe déjà.');
+            return;
+        }
+        TimelineProView._pushHistory();
         const lnk = new TimelineProLink({ fromId, toId });
         TimelineProRepository.saveLink(lnk);
         if (typeof saveProject === 'function') saveProject();
@@ -574,11 +639,34 @@ class TimelineProViewModel {
     }
 
     static deleteLink(id) {
+        TimelineProView._pushHistory();
         TimelineProRepository.deleteLink(id);
         TimelineProView.state.selectedLinkId = null;
         this.closePanel();
         TimelineProView.draw();
         if (typeof saveProject === 'function') saveProject();
+    }
+
+    /** Toast non-bloquant (2.5s) */
+    static _toast(msg, type = 'info') {
+        const t = document.createElement('div');
+        const colors = { info: '#3498db', warn: '#e67e22', error: '#e74c3c' };
+        t.style.cssText = `
+            position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);
+            background:${colors[type]||colors.info};color:#fff;
+            padding:.55rem 1.2rem;border-radius:8px;font-size:.85rem;font-weight:600;
+            z-index:999999;box-shadow:0 4px 20px rgba(0,0,0,.25);
+            animation:tlpToastIn .2s ease;pointer-events:none;
+        `;
+        t.textContent = msg;
+        if (!document.getElementById('tlp-toast-style')) {
+            const s = document.createElement('style');
+            s.id = 'tlp-toast-style';
+            s.textContent = `@keyframes tlpToastIn{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%)}}`;
+            document.head.appendChild(s);
+        }
+        document.body.appendChild(t);
+        setTimeout(() => t.remove(), 2500);
     }
 
     static _applyLinkField(id, field, value) {
@@ -598,7 +686,9 @@ class TimelineProViewModel {
         const events = TimelineProRepository.getAll();
         const fromEv = events.find(e => e.id === lnk.fromId);
         const toEv   = events.find(e => e.id === lnk.toId);
-        const color  = lnk.color?.startsWith('#') ? lnk.color : '#d4af37';
+        // Couleur effective : couleur custom ou couleur du type sémantique
+        const color  = TimelineProView._linkColor(lnk);
+        const TYPES  = TimelineProView.LINK_TYPE_META;
 
         const CapBtn = (capField, val, label, svgContent) => `
             <button data-cap="${capField}" data-val="${val}" title="${label}" style="
@@ -657,10 +747,28 @@ class TimelineProViewModel {
   <!-- Scroll area -->
   <div style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:1rem;padding-bottom:1rem;">
 
+    <!-- Type sémantique -->
+    <div>
+      <label style="${this._labelStyle()}">Type de relation</label>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.35rem;" id="tlp-lp-type-grid">
+        ${Object.entries(TYPES).map(([key, meta]) => `
+          <button data-type="${key}" title="${meta.label}" style="
+              display:flex;align-items:center;gap:.35rem;padding:.45rem .4rem;
+              border-radius:6px;border:2px solid ${lnk.type===key ? meta.color : 'var(--border-color)'};
+              background:${lnk.type===key ? meta.color + '22' : 'var(--bg-secondary)'};
+              cursor:pointer;transition:border-color .15s;font-size:.72rem;
+              color:${lnk.type===key ? meta.color : 'var(--text-secondary)'};
+              font-weight:${lnk.type===key ? '700' : '500'};">
+            <span style="flex-shrink:0;font-size:.85rem;">${meta.icon}</span>
+            <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${meta.label}</span>
+          </button>`).join('')}
+      </div>
+    </div>
+
     <!-- Couleur -->
     <div>
-      <label style="${this._labelStyle()}">Couleur</label>
-      <div style="display:flex;align-items:center;gap:.5rem;">
+      <label style="${this._labelStyle()}">Couleur personnalisée <span style="font-weight:400;text-transform:none;font-size:.75rem;">(optionnel — remplace la couleur du type)</span></label>
+      <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;">
         <input id="tlp-lp-color" type="color" value="${color}"
                style="width:36px;height:32px;border:2px solid var(--border-color);border-radius:6px;cursor:pointer;background:none;padding:1px;flex-shrink:0;">
         <div style="display:flex;gap:.3rem;flex-wrap:wrap;">
@@ -669,6 +777,7 @@ class TimelineProViewModel {
                 style="width:16px;height:16px;border-radius:50%;background:${c};cursor:pointer;border:2px solid ${c===color?'var(--text-primary)':'rgba(0,0,0,.1)'};transition:transform .12s;"
                 onmouseenter="this.style.transform='scale(1.25)'" onmouseleave="this.style.transform=''"></div>`).join('')}
         </div>
+        ${lnk.color ? `<button onclick="TimelineProViewModel._applyLinkField('${id}','color',null);TimelineProViewModel.openLinkPanel('${id}')" title="Réinitialiser (utiliser la couleur du type)" style="font-size:.72rem;background:none;border:1px solid var(--border-color);border-radius:4px;padding:.15rem .4rem;cursor:pointer;color:var(--text-muted);">Auto</button>` : ''}
       </div>
     </div>
 
@@ -758,6 +867,14 @@ class TimelineProViewModel {
             const span = document.getElementById('tlp-lp-curv-val');
             if (span) span.textContent = Math.round(v);
             this._applyLinkField(id, 'curvature', v);
+        });
+
+        // Type sémantique
+        document.getElementById('tlp-lp-type-grid')?.querySelectorAll('button[data-type]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                this._applyLinkField(id, 'type', btn.dataset.type);
+                this.openLinkPanel(id); // rafraîchir pour mettre à jour couleurs
+            });
         });
 
         // Motif

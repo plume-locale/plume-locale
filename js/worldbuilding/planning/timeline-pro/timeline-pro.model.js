@@ -59,7 +59,9 @@ class TimelineProLink {
         this.id        = data.id        || 'lnk_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
         this.fromId    = data.fromId    || null;   // ID de l'événement source
         this.toId      = data.toId      || null;   // ID de l'événement cible
-        this.color     = data.color     || '#d4af37';
+        this.color     = data.color     || null;   // null = couleur auto selon type
+        // Type sémantique : 'causal' | 'temporal' | 'contradicts' | 'parallel' | 'triggers' | 'custom'
+        this.type      = data.type      || 'causal';
         // Motif du trait : 'solid' | 'dashed' | 'dotted'
         this.pattern   = data.pattern   || 'solid';
         // Extrémités : 'none' | 'arrow' | 'circle' | 'diamond'

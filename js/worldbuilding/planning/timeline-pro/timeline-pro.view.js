@@ -5,10 +5,12 @@
 class TimelineProView {
 
     // ─── Constants ───────────────────────────────────────────────────────────
-    static RULER_H   = 52;   // Hauteur de la règle temporelle
-    static HEADER_W  = 200;  // Largeur des en-têtes de piste
-    static TRACK_H   = 80;   // Hauteur d'une piste
-    static GUARD     = 8;    // Marge intérieure des eventos
+    static RULER_H     = 52;   // Hauteur de la règle temporelle
+    static HEADER_W    = 200;  // Largeur des en-têtes de piste
+    static ROW_H       = 50;   // Hauteur d'une SOUS-LIGNE d'événement
+    static MIN_TRACK_H = 60;   // Hauteur minimale d'une piste (1 sous-ligne)
+    static get TRACK_H()  { return this.MIN_TRACK_H; } // legacy alias
+    static GUARD       = 6;    // Marge intérieure des eventi
 
     // ─── State ────────────────────────────────────────────────────────────────
     static state = {
@@ -18,11 +20,18 @@ class TimelineProView {
         scrollY: 0,           // décalage vertical pour pistes (px)
         width: 0, height: 0,
         // Interaction
-        isDragging: false, dragMode: null,   // 'pan' | 'event'
+        isDragging: false,
+        // dragMode: 'pan' | 'event' | 'resize' | 'event-track'
+        //   'resize'      → redimensionnement du bord droit d'une barre
+        //   'event-track' → glisser un événement (horizontal + changement de piste)
+        dragMode: null,
         lastMouseX: 0, lastMouseY: 0,
         dragEventId: null, dragEventOffsetX: 0,
+        // drag cross-track : piste cible pendant le drag
+        dragTargetTrackIdx: null,
         // État UI
         hoveredId: null, selectedId: null,
+        hoveredResizeId: null,  // ID de l'event dont le handle resize est survolé
         // Liaisons Bézier
         linkMode: false,       // true = attente du 2e clic pour créer un lien
         linkFromId: null,      // événement source du lien en cours
@@ -33,7 +42,80 @@ class TimelineProView {
         dateMode: 'numeric',
         // Resize observer
         ro: null,
+        // ── P1 : Filtre de recherche ──
+        filterText: '',        // texte filtré (titre ou tag)
     };
+
+    // ─── Undo / Redo ─────────────────────────────────────────────────────────────
+    static _history    = [];   // snapshots JSON de project.timelinePro
+    static _historyIdx = -1;   // pointeur courant
+    static _MAX_HIST   = 60;   // profondeur max
+
+    /** Prend un snapshot de l’état courant (appelé avant chaque mutation) */
+    static _pushHistory() {
+        if (!project?.timelinePro) return;
+        // Tronquer les états futurs si on était en plein undo
+        this._history = this._history.slice(0, this._historyIdx + 1);
+        this._history.push(JSON.stringify(project.timelinePro));
+        if (this._history.length > this._MAX_HIST) this._history.shift();
+        this._historyIdx = this._history.length - 1;
+        this._refreshUndoButtons();
+    }
+
+    static _undo() {
+        if (this._historyIdx <= 0) return;
+        // Sauvegarder l’état actuel si on est au dernier enregistrement
+        if (this._historyIdx === this._history.length - 1) {
+            this._history.push(JSON.stringify(project.timelinePro));
+            this._historyIdx = this._history.length - 2;
+        } else {
+            this._historyIdx--;
+        }
+        this._applySnapshot(this._history[this._historyIdx]);
+    }
+
+    static _redo() {
+        if (this._historyIdx >= this._history.length - 1) return;
+        this._historyIdx++;
+        this._applySnapshot(this._history[this._historyIdx]);
+    }
+
+    static _applySnapshot(json) {
+        if (!json) return;
+        try {
+            project.timelinePro = JSON.parse(json);
+        } catch(e) { return; }
+        // Réinitialiser sélection
+        this.state.selectedId     = null;
+        this.state.selectedLinkId = null;
+        TimelineProViewModel.closePanel();
+        this.draw();
+        this._refreshUndoButtons();
+        if (typeof saveProject === 'function') saveProject();
+    }
+
+    static _refreshUndoButtons() {
+        const undoBtn = document.getElementById('tlp-undo');
+        const redoBtn = document.getElementById('tlp-redo');
+        if (undoBtn) undoBtn.style.opacity = this._historyIdx > 0 ? '1' : '0.35';
+        if (redoBtn) redoBtn.style.opacity = this._historyIdx < this._history.length - 1 ? '1' : '0.35';
+    }
+
+    // ─── Couleur sémantique des liaisons ───────────────────────────────────────────────
+    static LINK_TYPE_META = {
+        causal:      { label: 'Cause → Effet',    color: '#e67e22', icon: '⚡' },
+        temporal:    { label: 'Contemporain',     color: '#3498db', icon: '⧐'  },
+        triggers:    { label: 'Déclenche',        color: '#e74c3c', icon: '▶' },
+        parallel:    { label: 'Parallèle',        color: '#9b59b6', icon: '∥'  },
+        contradicts: { label: 'Contredit',        color: '#c0392b', icon: '✘'  },
+        custom:      { label: 'Personnalisé',     color: '#d4af37', icon: '○'  },
+    };
+
+    /** Retourne la couleur effective d'un lien (couleur custom ou couleur du type) */
+    static _linkColor(lnk) {
+        if (lnk.color) return lnk.color;  // couleur custom définie manuellement
+        return (this.LINK_TYPE_META[lnk.type] || this.LINK_TYPE_META.custom).color;
+    }
 
     // ─── POINT D'ENTRÉE ───────────────────────────────────────────────────────
     static renderMainView(containerId = 'editorView') {
@@ -47,10 +129,15 @@ class TimelineProView {
         this.state.linkFromId    = null;
         this.state.hoveredLinkId = null;
         this.state.selectedLinkId= null;
+        this.state.filterText    = '';
+        // Vider l'historique undo/redo à chaque ouverture (nouveau contexte de projet)
+        this._history    = [];
+        this._historyIdx = -1;
         this._hideTooltip();
         if (this.state.ro) { this.state.ro.disconnect(); this.state.ro = null; }
-        window.removeEventListener('mousemove', this._onMouseMove);
-        window.removeEventListener('mouseup',   this._onMouseUp);
+        window.removeEventListener('mousemove',  this._onMouseMove);
+        window.removeEventListener('mouseup',    this._onMouseUp);
+        window.removeEventListener('keydown',    this._onKeyDown);
 
         host.innerHTML = `
 <div id="tlp-shell" style="
@@ -107,7 +194,38 @@ class TimelineProView {
     </button>
 
     <div style="flex:1;"></div>
-    <div id="tlp-hint" style="font-size:.75rem;color:var(--text-muted);opacity:.7;">
+
+    <!-- ── Filtre recherche ── -->
+    <div style="position:relative;display:flex;align-items:center;">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+           style="position:absolute;left:.55rem;color:var(--text-muted);pointer-events:none;">
+        <circle cx="11" cy="11" r="8"/><line x1="16.5" y1="16.5" x2="22" y2="22"/>
+      </svg>
+      <input id="tlp-filter" type="text" placeholder="Filtrer…" autocomplete="off"
+             style="padding:.4rem .4rem .4rem 1.8rem;border:1px solid var(--border-color);
+                    border-radius:6px;background:var(--bg-secondary);color:var(--text-primary);
+                    font-size:.8rem;width:140px;outline:none;transition:border-color .15s,width .2s;"
+             onfocus="this.style.width='200px'" onblur="this.style.width='140px'">
+      <button id="tlp-filter-clear" title="Effacer" style="
+          position:absolute;right:.3rem;background:none;border:none;cursor:pointer;
+          color:var(--text-muted);font-size:.9rem;line-height:1;padding:.1rem;display:none;">×</button>
+    </div>
+
+    <div style="width:1px;height:22px;background:var(--border-color);margin:0 .25rem;"></div>
+
+    <!-- ── Undo / Redo ── -->
+    <button id="tlp-undo" class="btn" title="Annuler (Ctrl+Z)" style="padding:.4rem .6rem;border-radius:6px;opacity:.35;">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/>
+      </svg>
+    </button>
+    <button id="tlp-redo" class="btn" title="Rétablir (Ctrl+Y)" style="padding:.4rem .6rem;border-radius:6px;opacity:.35;">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3L21 13"/>
+      </svg>
+    </button>
+
+    <div id="tlp-hint" style="font-size:.75rem;color:var(--text-muted);opacity:.7;margin-left:.5rem;">
       Double-clic sur une piste pour créer un événement
     </div>
   </div>
@@ -207,6 +325,8 @@ class TimelineProView {
             this._initCanvas();
             this._bindAll();
             this._fitView();
+            // Snapshot initial après le premier affichage
+            this._pushHistory();
             this.draw();
         });
     }
@@ -267,6 +387,7 @@ class TimelineProView {
         // Bind handlers as stable references
         this._onMouseMove = this._handleMouseMove.bind(this);
         this._onMouseUp   = this._handleMouseUp.bind(this);
+        this._onKeyDown   = this._handleKeyDown.bind(this);
 
         canvas.addEventListener('mousedown',  e => this._handleMouseDown(e));
         canvas.addEventListener('dblclick',   e => this._handleDblClick(e));
@@ -275,6 +396,7 @@ class TimelineProView {
         canvas.addEventListener('wheel',      e => this._handleWheel(e), { passive: false });
         window.addEventListener('mousemove',  this._onMouseMove);
         window.addEventListener('mouseup',    this._onMouseUp);
+        window.addEventListener('keydown',    this._onKeyDown);
 
         // Toolbar
         document.getElementById('tlp-add')?.addEventListener('click', () => TimelineProViewModel.addEvent());
@@ -286,7 +408,6 @@ class TimelineProView {
             this.state.dateMode = this.state.dateMode === 'calendar' ? 'numeric' : 'calendar';
             const lbl = document.getElementById('tlp-date-label');
             if (lbl) lbl.textContent = this.state.dateMode === 'calendar' ? 'Calendrier' : 'Numérique';
-            // Si un event est sélectionné, rafraîchir le panneau pour changer les inputs
             if (this.state.selectedId) TimelineProViewModel.openPanel(this.state.selectedId);
             this.draw();
         });
@@ -295,15 +416,71 @@ class TimelineProView {
         const linkBtn = document.getElementById('tlp-link-mode');
         linkBtn?.addEventListener('click', () => this._toggleLinkMode());
 
+        // Undo / Redo boutons
+        document.getElementById('tlp-undo')?.addEventListener('click', () => this._undo());
+        document.getElementById('tlp-redo')?.addEventListener('click', () => this._redo());
+
+        // Filtre recherche
+        const filterInput = document.getElementById('tlp-filter');
+        const filterClear = document.getElementById('tlp-filter-clear');
+        filterInput?.addEventListener('input', () => {
+            this.state.filterText = filterInput.value.trim().toLowerCase();
+            if (filterClear) filterClear.style.display = this.state.filterText ? 'block' : 'none';
+            this.draw();
+        });
+        filterClear?.addEventListener('click', () => {
+            filterInput.value = '';
+            this.state.filterText = '';
+            filterClear.style.display = 'none';
+            this.draw();
+        });
+
         // Context menu sur clic droit dans les en-têtes
         this.state.canvas.addEventListener('contextmenu', e => {
             e.preventDefault();
             const { lx, ly } = this._local(e);
             if (lx > this.HEADER_W || ly < this.RULER_H) return;
             const tIdx  = Math.floor((ly - this.RULER_H + this.state.scrollY) / this.TRACK_H);
-            const track = TimelineProRepository.getTracks()[tIdx];
+            const track = TimelineProRepository.getTracks().filter(t => !t.isHidden)[tIdx];
             if (track) this._showTrackContextMenu(e.clientX, e.clientY, track);
         });
+    }
+
+    // ─── KEYBOARD ─────────────────────────────────────────────────────────────
+    static _handleKeyDown(e) {
+        // Ignorer si l'utilisateur tape dans un champ de saisie
+        const tag = document.activeElement?.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+
+        if (e.ctrlKey || e.metaKey) {
+            if (e.key === 'z' || e.key === 'Z') {
+                e.preventDefault();
+                if (e.shiftKey) this._redo(); else this._undo();
+            } else if (e.key === 'y' || e.key === 'Y') {
+                e.preventDefault();
+                this._redo();
+            }
+        }
+
+        // Supprimer l'élément sélectionné avec Delete / Backspace
+        if (e.key === 'Delete' || e.key === 'Backspace') {
+            if (this.state.selectedId) {
+                this._pushHistory();
+                TimelineProViewModel.deleteEvent(this.state.selectedId);
+            } else if (this.state.selectedLinkId) {
+                this._pushHistory();
+                TimelineProViewModel.deleteLink(this.state.selectedLinkId);
+            }
+        }
+
+        // Escape : désélectionner / quitter modes
+        if (e.key === 'Escape') {
+            if (this.state.linkMode) this._toggleLinkMode();
+            this._selectEvent(null);
+            this.state.selectedLinkId = null;
+            TimelineProViewModel.closePanel();
+            this.draw();
+        }
     }
 
     // ─── MOUSE DOWN ──────────────────────────────────────────────────────────
@@ -347,17 +524,33 @@ class TimelineProView {
         // Clic dans l'en-tête de piste → ne rien faire
         if (lx <= this.HEADER_W && ly >= this.RULER_H) return;
 
-        // ── Clic sur un événement ? ──
+        // ── Resize handle (bord droit d'une barre) ? ──
+        const resizeHit = this._hitTestResize(lx, ly);
+        if (resizeHit) {
+            this.state.isDragging  = true;
+            this.state.lastMouseX  = e.clientX;
+            this.state.dragMode    = 'resize';
+            this.state.dragEventId = resizeHit.id;
+            this._selectEvent(resizeHit.id);
+            this.state.selectedLinkId = null;
+            e.preventDefault();
+            return;
+        }
+
+        // ── Clic sur un événement ? → drag event-track ──
         const hit = this._hitTest(lx, ly);
         if (hit) {
-            this.state.isDragging       = true;
-            this.state.lastMouseX       = e.clientX;
-            this.state.lastMouseY       = e.clientY;
-            this.state.dragMode         = 'event';
-            this.state.dragEventId      = hit.id;
-            this.state.dragEventOffsetX = lx - this._worldToScreen(hit.startDate);
+            const tracks = TimelineProRepository.getTracks().filter(t => !t.isHidden);
+            const tIdx   = tracks.findIndex(t => t.id === hit.trackId);
+            this.state.isDragging        = true;
+            this.state.lastMouseX        = e.clientX;
+            this.state.lastMouseY        = e.clientY;
+            this.state.dragMode          = 'event-track';
+            this.state.dragEventId       = hit.id;
+            this.state.dragEventOffsetX  = lx - this._worldToScreen(hit.startDate);
+            this.state.dragTargetTrackIdx = tIdx;
             this._selectEvent(hit.id);
-            this.state.selectedLinkId   = null;
+            this.state.selectedLinkId    = null;
             e.preventDefault();
             return;
         }
@@ -394,8 +587,8 @@ class TimelineProView {
         const { lx, ly } = this._local(e);
         if (lx <= this.HEADER_W) return;
 
-        const trackIdx = Math.floor((ly - this.RULER_H + this.state.scrollY) / this.TRACK_H);
-        const tracks   = TimelineProRepository.getTracks();
+        const trackIdx = this._getTrackIdxAtY(ly);
+        const tracks   = TimelineProRepository.getTracks().filter(t => !t.isHidden);
         if (trackIdx < 0 || trackIdx >= tracks.length) return;
 
         const worldT = this._screenToWorld(lx);
@@ -415,12 +608,24 @@ class TimelineProView {
             const newHover = hit ? hit.id : null;
             if (newHover !== this.state.hoveredId) {
                 this.state.hoveredId = newHover;
-                this.state.canvas.style.cursor = hit ? 'crosshair' : 'crosshair';
+                this.state.canvas.style.cursor = 'crosshair';
                 this.draw();
             } else if (this.state.linkFromId) {
-                // Forcer le redraw pour que la ligne élastique suive la souris
                 this.draw();
             }
+            return;
+        }
+
+        // ── Hover handle de resize ──
+        const resizeHit = this._hitTestResize(lx, ly);
+        const newResizeHover = resizeHit ? resizeHit.id : null;
+        if (newResizeHover !== this.state.hoveredResizeId) {
+            this.state.hoveredResizeId = newResizeHover;
+            this.draw();
+        }
+        if (resizeHit) {
+            this.state.canvas.style.cursor = 'ew-resize';
+            this._hideTooltip();
             return;
         }
 
@@ -428,7 +633,7 @@ class TimelineProView {
         const newHover = hit ? hit.id : null;
         if (newHover !== this.state.hoveredId) {
             this.state.hoveredId = newHover;
-            this.state.canvas.style.cursor = hit ? 'grab' : (lx > this.HEADER_W ? 'default' : 'default');
+            this.state.canvas.style.cursor = hit ? 'grab' : 'default';
             this.draw();
         }
 
@@ -460,14 +665,41 @@ class TimelineProView {
             this.state.offsetX  += dx;
             this.state.scrollY  -= dy;
             this.state.scrollY   = Math.max(0, this.state.scrollY);
-        } else if (this.state.dragMode === 'event' && this.state.dragEventId) {
+
+        } else if (this.state.dragMode === 'resize' && this.state.dragEventId) {
+            // ── Resize : modifier uniquement endDate ──
             const ev = TimelineProRepository.getById(this.state.dragEventId);
             if (ev && !ev.isLocked) {
-                const cursorX = e.clientX - this.state.canvas.getBoundingClientRect().left;
-                const newStart = Math.round(this._screenToWorld(cursorX - this.state.dragEventOffsetX));
-                const delta = newStart - ev.startDate;
-                ev.startDate = newStart;
+                const canvasLeft = this.state.canvas.getBoundingClientRect().left;
+                const cursorX    = e.clientX - canvasLeft;
+                const newEnd     = Math.round(this._screenToWorld(cursorX));
+                // Ne pas dépasser startDate
+                if (newEnd > ev.startDate) {
+                    ev.endDate = newEnd;
+                    TimelineProRepository.save(ev);
+                }
+            }
+
+        } else if (this.state.dragMode === 'event-track' && this.state.dragEventId) {
+            // ── Déplacement horizontal + cross-track ──
+            const ev = TimelineProRepository.getById(this.state.dragEventId);
+            if (ev && !ev.isLocked) {
+                // Horizontal : mise à jour startDate / endDate
+                const canvasLeft = this.state.canvas.getBoundingClientRect().left;
+                const cursorX    = e.clientX - canvasLeft;
+                const newStart   = Math.round(this._screenToWorld(cursorX - this.state.dragEventOffsetX));
+                const delta      = newStart - ev.startDate;
+                ev.startDate     = newStart;
                 if (ev.endDate != null) ev.endDate = +(ev.endDate) + delta;
+
+                // Vertical : déterminer la piste cible
+                const canvasTop  = this.state.canvas.getBoundingClientRect().top;
+                const cursorY    = e.clientY - canvasTop;
+                const tracks     = TimelineProRepository.getTracks().filter(t => !t.isHidden);
+                const rawIdx     = this._getTrackIdxAtY(cursorY);
+                const tIdx       = Math.max(0, Math.min(tracks.length - 1, rawIdx));
+                this.state.dragTargetTrackIdx = tIdx;
+
                 TimelineProRepository.save(ev);
             }
         }
@@ -476,11 +708,28 @@ class TimelineProView {
 
     // ─── MOUSE UP ─────────────────────────────────────────────────────────────
     static _handleMouseUp() {
-        if (this.state.dragMode === 'event') {
+        if (this.state.dragMode === 'event-track' && this.state.dragEventId) {
+            // Appliquer le changement de piste
+            const ev = TimelineProRepository.getById(this.state.dragEventId);
+            if (ev && !ev.isLocked) {
+                const tracks = TimelineProRepository.getTracks().filter(t => !t.isHidden);
+                const tIdx   = this.state.dragTargetTrackIdx ?? 0;
+                const target = tracks[tIdx];
+                if (target && target.id !== ev.trackId) {
+                    ev.trackId = target.id;
+                    TimelineProRepository.save(ev);
+                    // Rafraîchir le panneau si ouvert
+                    if (this.state.selectedId === ev.id) TimelineProViewModel.openPanel(ev.id);
+                }
+            }
+            if (typeof saveProject === 'function') saveProject();
+        } else if (this.state.dragMode === 'resize') {
             if (typeof saveProject === 'function') saveProject();
         }
-        this.state.isDragging = false;
-        this.state.dragMode   = null;
+        this.state.isDragging        = false;
+        this.state.dragMode          = null;
+        this.state.dragTargetTrackIdx = null;
+        this.draw();
     }
 
     // ─── WHEEL ───────────────────────────────────────────────────────────────
@@ -509,6 +758,20 @@ class TimelineProView {
     }
     static _worldToScreen(t) { return t * this.state.zoom + this.state.offsetX; }
     static _screenToWorld(x) { return (x - this.state.offsetX) / this.state.zoom; }
+
+    /** Renvoie l'index de la piste visible à la position Y-écran demandée */
+    static _getTrackIdxAtY(ly) {
+        if (ly < this.RULER_H) return -1;
+        const layout = this._getPackedLayout();
+        const metrics = this._computeTrackMetrics(layout);
+        const tracks = TimelineProRepository.getTracks().filter(t => !t.isHidden);
+        
+        for (let i = 0; i < tracks.length; i++) {
+            const m = metrics.get(tracks[i].id);
+            if (m && ly >= m.y && ly < m.y + m.h) return i;
+        }
+        return tracks.length - 1; // Fallback à la dernière si dépassement bas
+    }
 
     /**
      * Zoom centré sur :
@@ -548,30 +811,72 @@ class TimelineProView {
     static _hitTest(lx, ly) {
         if (lx <= this.HEADER_W || ly < this.RULER_H) return null;
         const events = TimelineProRepository.getAll();
-        const tracks = TimelineProRepository.getTracks();
         const layout = this._getPackedLayout();
+        const metrics = this._computeTrackMetrics(layout);
 
         for (let i = events.length - 1; i >= 0; i--) {
             const ev  = events[i];
-            const tIdx = tracks.findIndex(t => t.id === ev.trackId);
-            if (tIdx < 0) continue;
+            const m = metrics.get(ev.trackId);
+            if (!m) continue;
 
-            const ty = this.RULER_H + tIdx * this.TRACK_H - this.state.scrollY;
-            if (ty > this.state.height || ty + this.TRACK_H < 0) continue;
+            const ty = m.y;
+            const th = m.h;
+            if (ty > this.state.height || ty + th < 0) continue;
 
             // Calcul de la sous-ligne
             const row    = layout.get(ev.id) || 0;
-            const maxRow = layout.trackMaxRows.get(ev.trackId) || 1;
-            const subH   = (this.TRACK_H - this.GUARD * 2) / maxRow;
+            const subH   = this.ROW_H;
             const iy     = ty + this.GUARD + row * subH;
 
             const sx = this._worldToScreen(ev.startDate);
 
             if (ev.endDate != null && ev.endDate !== ev.startDate) {
-                const sw = Math.max(8, this._worldToScreen(ev.endDate) - sx);
-                if (lx >= sx && lx <= sx + sw && ly >= iy && ly <= iy + subH) return ev;
+                const ex  = this._worldToScreen(ev.endDate);
+                const sw  = Math.max(8, ex - sx);
+                // Exclure la zone du handle resize (12px extrémité droite)
+                const interactW = Math.max(0, sw - 14);
+                if (lx >= sx && lx <= sx + interactW && ly >= iy && ly <= iy + subH) return ev;
             } else {
                 if (Math.hypot(lx - sx, ly - (iy + subH / 2)) <= 14) return ev;
+            }
+        }
+        return null;
+    }
+
+    // ─── HIT TEST RESIZE HANDLE ───────────────────────────────────────────────
+    /**
+     * Détecte si le curseur (lx, ly) est sur la poignée de resize (bord droit) d'une barre.
+     * Retourne l'événement ou null.
+     */
+    static _hitTestResize(lx, ly) {
+        if (lx <= this.HEADER_W || ly < this.RULER_H) return null;
+        const HANDLE_W = 14; // largeur de la zone sensible
+        const events = TimelineProRepository.getAll();
+        const layout = this._getPackedLayout();
+        const metrics = this._computeTrackMetrics(layout);
+
+        for (let i = events.length - 1; i >= 0; i--) {
+            const ev = events[i];
+            if (ev.endDate == null || ev.endDate === ev.startDate) continue; // points ignorés
+            
+            const m = metrics.get(ev.trackId);
+            if (!m) continue;
+
+            const ty = m.y;
+            const th = m.h;
+            if (ty > this.state.height || ty + th < 0) continue;
+
+            const row    = layout.get(ev.id) || 0;
+            const subH   = this.ROW_H;
+            const iy     = ty + this.GUARD + row * subH;
+
+            const sx = this._worldToScreen(ev.startDate);
+            const ex = this._worldToScreen(ev.endDate);
+            const sw = Math.max(8, ex - sx);
+
+            // Zone sensible : [ex - HANDLE_W, ex]
+            if (lx >= sx + sw - HANDLE_W && lx <= sx + sw + 4 && ly >= iy && ly <= iy + subH) {
+                return ev;
             }
         }
         return null;
@@ -583,7 +888,7 @@ class TimelineProView {
      */
     static _getPackedLayout() {
         const events = TimelineProRepository.getAll();
-        const tracks = TimelineProRepository.getTracks();
+        const tracks = TimelineProRepository.getTracks().filter(t => !t.isHidden);
         const layout = new Map();
         layout.trackMaxRows = new Map();
 
@@ -612,6 +917,25 @@ class TimelineProView {
         return layout;
     }
 
+    /**
+     * Calcule les métriques Y/H (position verticale + hauteur) de chaque piste visible.
+     * La hauteur d'une piste s'adapte au nombre de sous-lignes utilisées.
+     * @param {Map} layout - résultat de _getPackedLayout()
+     * @returns {Map<string, {y:number, h:number}>} keyed by trackId
+     */
+    static _computeTrackMetrics(layout) {
+        const tracks = TimelineProRepository.getTracks().filter(t => !t.isHidden);
+        const metrics = new Map();
+        let curY = this.RULER_H - this.state.scrollY;
+        tracks.forEach(tr => {
+            const maxRows = layout.trackMaxRows.get(tr.id) || 1;
+            const h = this.MIN_TRACK_H + (maxRows - 1) * this.ROW_H;
+            metrics.set(tr.id, { y: curY, h });
+            curY += h;
+        });
+        return metrics;
+    }
+
 
     // ═══════════════════════════════════════════════════════════════════════════
     //  DRAW
@@ -621,50 +945,75 @@ class TimelineProView {
         if (!ctx) return;
         const { width: W, height: H } = this.state;
 
-        // Calcul du layout une seule fois pour tout le cycle de rendu
-        const layout = this._getPackedLayout();
+        // Calcul du layout ET des métriques de hauteur une seule fois
+        const layout  = this._getPackedLayout();
+        const metrics = this._computeTrackMetrics(layout);
 
         // Background
         const p = this._p();
         ctx.fillStyle = p.canvasBg;
         ctx.fillRect(0, 0, W, H);
 
-        this._drawTrackBG(ctx, W, H);
+        this._drawTrackBG(ctx, W, H, metrics);
         this._drawBands(ctx, W, H);
         this._drawGrid(ctx, W, H);
         this._drawRuler(ctx, W);
-        this._drawTrackHeaders(ctx, H);
-        this._drawLinks(ctx, H, layout);        // ── liaisons Bezier
-        this._drawEvents(ctx, H, layout);
-        this._drawLinkPreview(ctx, H, layout);  // ── prévisualisation en cours
+        this._drawTrackHeaders(ctx, H, metrics);
+        this._drawLinks(ctx, H, layout, metrics);
+        this._drawEvents(ctx, H, layout, metrics);
+        this._drawLinkPreview(ctx, H, layout, metrics);
         this._drawCurrentTimeLine(ctx, H);
         this._clipHeader(ctx, W, H);
         this._drawBandLabels(ctx, W);    // libellés dans la règle — toujours au-dessus
     }
 
     // ─── TRACK BACKGROUNDS ────────────────────────────────────────────────────
-    static _drawTrackBG(ctx, W, H) {
+    static _drawTrackBG(ctx, W, H, metrics = null) {
+        if (!metrics) metrics = this._computeTrackMetrics(this._getPackedLayout());
         const p = this._p();
-        const tracks = TimelineProRepository.getTracks();
+        const tracks = TimelineProRepository.getTracks().filter(t => !t.isHidden);
+        let maxTyTh = this.RULER_H - this.state.scrollY;
+
         tracks.forEach((tr, i) => {
-            const ty = this.RULER_H + i * this.TRACK_H - this.state.scrollY;
-            if (ty + this.TRACK_H < this.RULER_H || ty > H) return;
+            const m = metrics.get(tr.id);
+            if (!m) return;
+            const ty = m.y;
+            const th = m.h;
+            maxTyTh = Math.max(maxTyTh, ty + th);
+
+            if (ty + th < this.RULER_H || ty > H) return;
 
             ctx.fillStyle = i % 2 === 0 ? p.trackEven : p.trackOdd;
-            ctx.fillRect(this.HEADER_W, ty, W - this.HEADER_W, this.TRACK_H);
+            ctx.fillRect(this.HEADER_W, ty, W - this.HEADER_W, th);
+
+            // ── Indicateur piste cible lors d'un drag cross-track ──
+            if (
+                this.state.dragMode === 'event-track' &&
+                this.state.dragTargetTrackIdx === i
+            ) {
+                ctx.fillStyle = 'rgba(100,160,255,0.13)';
+                ctx.fillRect(this.HEADER_W, ty, W - this.HEADER_W, th);
+                // Bordure supérieure accent
+                ctx.strokeStyle = 'rgba(100,160,255,0.6)';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(this.HEADER_W, ty);
+                ctx.lineTo(W, ty);
+                ctx.stroke();
+                ctx.lineWidth = 1;
+            }
 
             // Bottom separator
             ctx.strokeStyle = p.separator;
             ctx.lineWidth = 1;
             ctx.beginPath();
-            ctx.moveTo(this.HEADER_W, ty + this.TRACK_H);
-            ctx.lineTo(W, ty + this.TRACK_H);
+            ctx.moveTo(this.HEADER_W, ty + th);
+            ctx.lineTo(W, ty + th);
             ctx.stroke();
         });
 
         // Zone vide sous les pistes
-        const totalH = tracks.length * this.TRACK_H;
-        const emptyY = this.RULER_H + totalH - this.state.scrollY;
+        const emptyY = maxTyTh;
         if (emptyY < H) {
             ctx.fillStyle = p.canvasBg;
             ctx.fillRect(this.HEADER_W, emptyY, W - this.HEADER_W, H - emptyY);
@@ -853,10 +1202,11 @@ class TimelineProView {
     }
 
     // ─── TRACK HEADERS ────────────────────────────────────────────────────────
-    static _drawTrackHeaders(ctx, H) {
+    static _drawTrackHeaders(ctx, H, metrics = null) {
+        if (!metrics) metrics = this._computeTrackMetrics(this._getPackedLayout());
         const W = this.HEADER_W;
         const p = this._p();
-        const tracks = TimelineProRepository.getTracks();
+        const tracks = TimelineProRepository.getTracks().filter(t => !t.isHidden);
 
         // Header panel BG
         ctx.fillStyle = p.headerBg;
@@ -871,34 +1221,51 @@ class TimelineProView {
         ctx.stroke();
 
         tracks.forEach((tr, i) => {
-            const ty = this.RULER_H + i * this.TRACK_H - this.state.scrollY;
-            if (ty + this.TRACK_H < this.RULER_H || ty > H) return;
+            const m = metrics.get(tr.id);
+            if (!m) return;
+            const ty = m.y;
+            const th = m.h;
+
+            if (ty + th < this.RULER_H || ty > H) return;
 
             ctx.save();
             ctx.beginPath();
-            ctx.rect(0, Math.max(ty, this.RULER_H), W, Math.min(ty + this.TRACK_H, H) - Math.max(ty, this.RULER_H));
+            ctx.rect(0, Math.max(ty, this.RULER_H), W, Math.min(ty + th, H) - Math.max(ty, this.RULER_H));
             ctx.clip();
 
             const trColor = tr.color?.startsWith('#') ? tr.color : '#d4af37';
             ctx.fillStyle = trColor;
-            ctx.fillRect(0, ty, 3, this.TRACK_H);
+            ctx.fillRect(0, ty, 3, th);
 
             ctx.fillStyle    = p.headerTitle;
             ctx.font         = '600 12px Inter,system-ui,sans-serif';
             ctx.textAlign    = 'left';
             ctx.textBaseline = 'middle';
-            ctx.fillText(this._truncate(ctx, tr.title, W - 40), 14, ty + this.TRACK_H / 2 - 6);
+            ctx.fillText(this._truncate(ctx, tr.title, W - 40), 14, ty + th / 2 - 6);
 
             const count = TimelineProRepository.getAll().filter(e => e.trackId === tr.id).length;
             ctx.fillStyle = p.headerSub;
             ctx.font      = '400 10px Inter,system-ui,sans-serif';
-            ctx.fillText(count + ' événement' + (count > 1 ? 's' : ''), 14, ty + this.TRACK_H / 2 + 10);
+            ctx.fillText(count + ' événement' + (count > 1 ? 's' : ''), 14, ty + th / 2 + 10);
+
+            // ── Mise en évidence piste cible (drag cross-track) ──
+            if (this.state.dragMode === 'event-track' && this.state.dragTargetTrackIdx === i) {
+                const trColorRgb = trColor.startsWith('#')
+                    ? [parseInt(trColor.slice(1,3),16), parseInt(trColor.slice(3,5),16), parseInt(trColor.slice(5,7),16)]
+                    : [100,100,100];
+                ctx.fillStyle = `rgba(${trColorRgb[0]},${trColorRgb[1]},${trColorRgb[2]},0.18)`;
+                ctx.fillRect(0, ty, W, th);
+
+                // Bordure gauche épaisse
+                ctx.fillStyle = trColor;
+                ctx.fillRect(0, ty, 4, th);
+            }
 
             ctx.strokeStyle = p.separator;
             ctx.lineWidth   = 1;
             ctx.beginPath();
-            ctx.moveTo(0, ty + this.TRACK_H);
-            ctx.lineTo(W, ty + this.TRACK_H);
+            ctx.moveTo(0, ty + th);
+            ctx.lineTo(W, ty + th);
             ctx.stroke();
 
             ctx.restore();
@@ -906,23 +1273,23 @@ class TimelineProView {
     }
 
     // ─── EVENTS ───────────────────────────────────────────────────────────────
-    static _drawEvents(ctx, H, layout = null) {
+    static _drawEvents(ctx, H, layout = null, metrics = null) {
         const events = TimelineProRepository.getAll();
-        const tracks = TimelineProRepository.getTracks();
         const W = this.state.width;
         if (!layout) layout = this._getPackedLayout();
+        if (!metrics) metrics = this._computeTrackMetrics(layout);
 
         events.forEach(ev => {
-            const tIdx = tracks.findIndex(t => t.id === ev.trackId);
-            if (tIdx < 0) return;
+            const m = metrics.get(ev.trackId);
+            if (!m) return;
 
-            const ty   = this.RULER_H + tIdx * this.TRACK_H - this.state.scrollY;
-            if (ty + this.TRACK_H < this.RULER_H || ty > H) return;
+            const ty = m.y;
+            const th = m.h;
+            if (ty + th < this.RULER_H || ty > H) return;
 
             // Calcul de la sous-ligne
             const row    = layout.get(ev.id) || 0;
-            const maxRow = layout.trackMaxRows.get(ev.trackId) || 1;
-            const subH   = (this.TRACK_H - this.GUARD * 2) / maxRow;
+            const subH   = this.ROW_H;
             const iy     = ty + this.GUARD + row * subH;
 
             const sx    = this._worldToScreen(ev.startDate);
@@ -934,14 +1301,24 @@ class TimelineProView {
             const color     = ev.color?.startsWith('#') ? ev.color : '#d4af37';
             const textColor = ev.textColor?.startsWith('#') ? ev.textColor : '#ffffff';
 
+            // ── Filtre de recherche : griser les événements non-matchants ──
+            const ft = this.state.filterText;
+            let filterMatch = true;
+            if (ft) {
+                const title = (ev.title || '').toLowerCase();
+                const desc  = (ev.description || '').toLowerCase();
+                const tags  = (ev.tags || []).map(t => t.toLowerCase());
+                filterMatch = title.includes(ft) || desc.includes(ft) || tags.some(t => t.includes(ft));
+            }
+
             ctx.save();
-            ctx.globalAlpha = isDrag ? 0.65 : 1;
+            ctx.globalAlpha = isDrag ? 0.65 : (ft && !filterMatch ? 0.12 : 1);
 
             // ── CLIP à la zone de la piste ─────────────────────────────────
             // On laisse 1px au-dessus/dessous pour que la sélection glow soit
             // visible sans déborder sur la swimlane adjacente.
             const clipTop    = Math.max(this.RULER_H, ty);
-            const clipBottom = Math.min(H, ty + this.TRACK_H);
+            const clipBottom = Math.min(H, ty + th);
             ctx.beginPath();
             ctx.rect(this.HEADER_W, clipTop, W - this.HEADER_W, clipBottom - clipTop);
             ctx.clip();
@@ -982,7 +1359,7 @@ class TimelineProView {
                     ctx.textBaseline = 'middle';
                     ctx.shadowColor  = 'rgba(0,0,0,.4)';
                     ctx.shadowBlur   = 3;
-                    ctx.fillText(this._truncate(ctx, ev.title, bw - 20), sx + 10, by + bh / 2);
+                    this._fillTextMultiline(ctx, ev.title, sx + 10, by + bh / 2, bw - 20, 14);
                     ctx.shadowBlur = 0;
                 }
 
@@ -995,6 +1372,35 @@ class TimelineProView {
                         ctx.arc(tx, by + bh - 6, 3, 0, Math.PI * 2);
                         ctx.fill();
                     });
+                }
+
+                // ── Handle de resize (bord droit) ──
+                const isResizeHov = this.state.hoveredResizeId === ev.id || this.state.dragEventId === ev.id && this.state.dragMode === 'resize';
+                if (isResizeHov || isSel) {
+                    const hx = sx + bw - 1;
+                    // Ligne verticale + capsule
+                    ctx.save();
+                    ctx.fillStyle = isResizeHov ? '#fff' : 'rgba(255,255,255,0.65)';
+                    ctx.strokeStyle = color;
+                    ctx.lineWidth = 2;
+                    // Capsule
+                    const capH = Math.min(bh - 4, 28);
+                    const capW = 6;
+                    const capX = hx - capW / 2;
+                    const capY = by + bh / 2 - capH / 2;
+                    this._rrect(ctx, capX, capY, capW, capH, 3);
+                    ctx.fill();
+                    ctx.stroke();
+                    // Grip lines
+                    ctx.strokeStyle = isResizeHov ? color : 'rgba(255,255,255,0.5)';
+                    ctx.lineWidth = 1;
+                    [capY + capH * 0.35, capY + capH * 0.65].forEach(gy => {
+                        ctx.beginPath();
+                        ctx.moveTo(capX + 1.5, gy);
+                        ctx.lineTo(capX + capW - 1.5, gy);
+                        ctx.stroke();
+                    });
+                    ctx.restore();
                 }
 
             } else {
@@ -1024,14 +1430,39 @@ class TimelineProView {
                 ctx.arc(sx, cy, isSel ? 4.5 : 3.5, 0, Math.PI * 2);
                 ctx.fill();
 
-                // Label above
-                ctx.fillStyle    = isSel ? color : p.headerTitle;
+                // Label above (ou dessous si pas de place sous la règle)
+                // On temporairement désactive le clip pour que le texte puisse dépasser de la piste
+                ctx.restore(); ctx.save();
+                ctx.globalAlpha = isDrag ? 0.65 : 1;
+
+                // Clip global zone temporelle (pour ne pas déborder sur les en-têtes ou la règle)
+                ctx.beginPath();
+                ctx.rect(this.HEADER_W, this.RULER_H, W - this.HEADER_W, H - this.RULER_H);
+                ctx.clip();
+
+                const lines = String(ev.title).split('\n');
+                const lh    = 12; // hauteur de ligne
+                const th    = lines.length * lh;
+                const dist  = R + 5;
+                const roomAbove = (cy - dist) - this.RULER_H;
+                
+                let labelY   = cy - dist;
+                let baseline = 'bottom';
+                
+                // Si pas de place au-dessus (> règle), on met en-dessous
+                if (roomAbove < th) {
+                    labelY   = cy + dist;
+                    baseline = 'top';
+                }
+
+                ctx.fillStyle    = color;
                 ctx.font         = `${isSel ? 700 : 500} 11px Inter,system-ui,sans-serif`;
                 ctx.textAlign    = 'center';
-                ctx.textBaseline = 'bottom';
+                ctx.textBaseline = baseline;
                 ctx.shadowColor  = 'rgba(0,0,0,.3)';
                 ctx.shadowBlur   = 4;
-                ctx.fillText(this._truncate(ctx, ev.title, 150), sx, cy - R - 5);
+
+                this._fillTextMultiline(ctx, ev.title, sx, labelY, 150, lh);
                 ctx.shadowBlur = 0;
 
                 // Tags: tiny colored dots below label
@@ -1144,6 +1575,16 @@ class TimelineProView {
                 const name = prompt('Nouveau nom :', track.title);
                 if (name !== null) TimelineProViewModel.renameTrack(track.id, name);
             }
+        ));
+
+        // ── Visibilité ──
+        const eyeIcon = track.isHidden
+            ? '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>'
+            : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+        menu.appendChild(item(
+            eyeIcon,
+            track.isHidden ? 'Afficher la piste' : 'Masquer la piste',
+            () => TimelineProViewModel.toggleTrackVisibility(track.id)
         ));
 
         menu.appendChild(item(
@@ -1477,6 +1918,35 @@ class TimelineProView {
         return t + '…';
     }
 
+    /** 
+     * Dessine un texte sur plusieurs lignes si celui-ci contient des \n.
+     * Gère l'alignement vertical selon textBaseline.
+     */
+    static _fillTextMultiline(ctx, text, x, y, maxW, lineHeight = 13) {
+        if (!text) return;
+        const lines = String(text).split('\n');
+        const count = lines.length;
+        if (count === 1) {
+            ctx.fillText(this._truncate(ctx, lines[0], maxW), x, y);
+            return;
+        }
+
+        const oldBaseline = ctx.textBaseline;
+        ctx.textBaseline = 'top';
+
+        let startY = y;
+        if (oldBaseline === 'bottom') {
+            startY = y - count * lineHeight;
+        } else if (oldBaseline === 'middle') {
+            startY = y - (count * lineHeight) / 2;
+        }
+
+        lines.forEach((line, i) => {
+            ctx.fillText(this._truncate(ctx, line, maxW), x, startY + i * lineHeight);
+        });
+        ctx.textBaseline = oldBaseline;
+    }
+
     // ─── Public: refresh after external data change ────────────────────────────
     static refresh() { this.draw(); }
 
@@ -1512,17 +1982,17 @@ class TimelineProView {
      * Retourne le point d'attache central d'un événement (barre ou point) en px canvas.
      * @returns {{x:number, y:number}|null}
      */
-    static _eventCenter(ev, layout = null) {
-        const tracks = TimelineProRepository.getTracks();
-        const tIdx   = tracks.findIndex(t => t.id === ev.trackId);
-        if (tIdx < 0) return null;
-
+    static _eventCenter(ev, layout = null, metrics = null) {
         if (!layout) layout = this._getPackedLayout();
-        const row    = layout.get(ev.id) || 0;
-        const maxRow = layout.trackMaxRows.get(ev.trackId) || 1;
-        const subH   = (this.TRACK_H - this.GUARD * 2) / maxRow;
+        if (!metrics) metrics = this._computeTrackMetrics(layout);
 
-        const ty = this.RULER_H + tIdx * this.TRACK_H - this.state.scrollY;
+        const m = metrics.get(ev.trackId);
+        if (!m) return null;
+
+        const row    = layout.get(ev.id) || 0;
+        const subH   = this.ROW_H;
+        
+        const ty = m.y;
         const cy = ty + this.GUARD + (row + 0.5) * subH;
         const sx = this._worldToScreen(ev.startDate);
         if (ev.endDate != null && ev.endDate !== ev.startDate) {
@@ -1540,14 +2010,16 @@ class TimelineProView {
         const links  = TimelineProRepository.getLinks();
         const events = TimelineProRepository.getAll();
         const THRESH = 8;
+        const layout = this._getPackedLayout();
+        const metrics = this._computeTrackMetrics(layout);
 
         for (let i = links.length - 1; i >= 0; i--) {
             const lnk = links[i];
             const from = events.find(e => e.id === lnk.fromId);
             const to   = events.find(e => e.id === lnk.toId);
             if (!from || !to) continue;
-            const p1 = this._eventCenter(from, layout);
-            const p2 = this._eventCenter(to, layout);
+            const p1 = this._eventCenter(from, layout, metrics);
+            const p2 = this._eventCenter(to, layout, metrics);
             if (!p1 || !p2) continue;
 
             const curv = lnk.curvature ?? 80;
@@ -1568,7 +2040,10 @@ class TimelineProView {
     }
 
     /** Dessine toutes les liaisons */
-    static _drawLinks(ctx, H, layout = null) {
+    static _drawLinks(ctx, H, layout = null, metrics = null) {
+        if (!layout) layout = this._getPackedLayout();
+        if (!metrics) metrics = this._computeTrackMetrics(layout);
+        
         const links  = TimelineProRepository.getLinks();
         const events = TimelineProRepository.getAll();
 
@@ -1576,8 +2051,8 @@ class TimelineProView {
             const from = events.find(e => e.id === lnk.fromId);
             const to   = events.find(e => e.id === lnk.toId);
             if (!from || !to) return;
-            const p1 = this._eventCenter(from, layout);
-            const p2 = this._eventCenter(to, layout);
+            const p1 = this._eventCenter(from, layout, metrics);
+            const p2 = this._eventCenter(to, layout, metrics);
             if (!p1 || !p2) return;
 
             const isSel = this.state.selectedLinkId === lnk.id;
@@ -1587,12 +2062,15 @@ class TimelineProView {
     }
 
     /** Prévisualisation du lien en cours de création */
-    static _drawLinkPreview(ctx, H, layout = null) {
+    static _drawLinkPreview(ctx, H, layout = null, metrics = null) {
         if (!this.state.linkMode || !this.state.linkFromId) return;
+        if (!layout) layout = this._getPackedLayout();
+        if (!metrics) metrics = this._computeTrackMetrics(layout);
+        
         const events = TimelineProRepository.getAll();
         const from   = events.find(e => e.id === this.state.linkFromId);
         if (!from) return;
-        const p1 = this._eventCenter(from, layout);
+        const p1 = this._eventCenter(from, layout, metrics);
         if (!p1) return;
 
         // Pulsation : cercle autour de la source
@@ -1625,7 +2103,7 @@ class TimelineProView {
 
     /** Dessine une seule courbe de Bézier entre p1 et p2 */
     static _drawBezierLink(ctx, lnk, p1, p2, isSel, isHov) {
-        const color  = lnk.color?.startsWith('#') ? lnk.color : '#d4af37';
+        const color  = this._linkColor(lnk);  // couleur sémantique ou custom
         const width  = (lnk.width || 2) * (isSel ? 1.5 : 1);
         const curv   = lnk.curvature ?? 80;
 
@@ -1740,7 +2218,7 @@ class TimelineProView {
         ctx.textBaseline = 'middle';
         ctx.shadowColor = 'var(--bg-primary,#fff)';
         ctx.shadowBlur  = 4;
-        ctx.fillText(lnk.label, mx, my);
+        this._fillTextMultiline(ctx, lnk.label, mx, my, 200, 13);
         ctx.restore();
     }
 
