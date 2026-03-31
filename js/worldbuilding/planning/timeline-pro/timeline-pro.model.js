@@ -13,8 +13,8 @@ class TimelineProModel {
         this.content = data.content || ""; // Rich text
         
         // Dates (peuvent être numériques pour les univers fictifs ou ISO pour le réel)
-        this.startDate = data.startDate || 0; // Point de départ (nombre ou ISO)
-        this.endDate = data.endDate || null;  // Si null, c'est un événement Ponctuel (point), sinon une Période (barre)
+        this.startDate = (data.startDate !== undefined) ? data.startDate : 0; 
+        this.endDate   = (data.endDate !== undefined)   ? data.endDate   : null;  
         
         this.trackId = data.trackId || "default";
         this.color = data.color || "#d4af37";
@@ -31,6 +31,8 @@ class TimelineProModel {
         this.isLocked = data.isLocked || false;
         // Afficher une bande colorée sur toute la hauteur de la timeline
         this.showBand = data.showBand || false;
+        // Si true, l'événement est considéré comme une Ère/Âge de fond
+        this.isEpoch = data.isEpoch || false;
 
     }
 

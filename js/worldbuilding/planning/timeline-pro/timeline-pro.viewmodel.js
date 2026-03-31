@@ -45,11 +45,17 @@ class TimelineProViewModel {
     }
 
     static deleteEvent(id) {
+        const ids = TimelineProView.state.selectedIds.length > 0 ? [...TimelineProView.state.selectedIds] : [id];
+        if (ids.length > 1 && !confirm(`Supprimer ces ${ids.length} événements ?`)) return;
+
         TimelineProView._pushHistory();
-        TimelineProRepository.delete(id);
-        TimelineProRepository.deleteLinksForEvent(id);   // nettoyer les liens orphelins
-        TimelineProView.state.selectedId     = null;
-        TimelineProView.state.selectedLinkId = null;
+        ids.forEach(currentId => {
+            TimelineProRepository.delete(currentId);
+            TimelineProRepository.deleteLinksForEvent(currentId);
+        });
+        TimelineProView.state.selectedId      = null;
+        TimelineProView.state.selectedIds     = [];
+        TimelineProView.state.selectedLinkId  = null;
         this.closePanel();
         TimelineProView.draw();
         if (typeof saveProject === 'function') saveProject();
@@ -101,6 +107,31 @@ class TimelineProViewModel {
         this.openTracksPanel();
     }
 
+    static _updateTrackCharacters(id, selectEl) {
+        const tr = TimelineProRepository.getTracks().find(t => t.id === id);
+        if (!tr) return;
+        tr.characters = Array.from(selectEl.selectedOptions).map(o => o.value);
+        TimelineProRepository.saveTrack(tr);
+        TimelineProView.draw(); // au cas où l'héritage a un impact sur l'affichage
+        if (typeof saveProject === 'function') saveProject();
+    }
+
+    static _updateTrackWorld(id, worldId) {
+        const tr = TimelineProRepository.getTracks().find(t => t.id === id);
+        if (!tr) return;
+        tr.worldId = worldId || null;
+        TimelineProRepository.saveTrack(tr);
+        TimelineProView.draw(); // au cas où l'héritage a un impact sur l'affichage
+        if (typeof saveProject === 'function') saveProject();
+    }
+
+    static toggleTrackExpansion(id) {
+        const idx = TimelineProView.state.expandedTrackIds.indexOf(id);
+        if (idx === -1) TimelineProView.state.expandedTrackIds.push(id);
+        else TimelineProView.state.expandedTrackIds.splice(idx, 1);
+        this.openTracksPanel();
+    }
+
     // ═══════════════════════════════════════════════════════════════════════════
     //  PANEL (shared side panel)
     // ═══════════════════════════════════════════════════════════════════════════
@@ -133,7 +164,10 @@ class TimelineProViewModel {
 
   <!-- Header -->
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;">
-    <span style="font-weight:700;font-size:.95rem;color:var(--text-primary);">${Localization.t('timeline.pro.panel.edit_title')}</span>
+    <div style="display:flex;flex-direction:column;">
+      <span style="font-weight:700;font-size:.95rem;color:var(--text-primary);">${Localization.t('timeline.pro.panel.edit_title')}</span>
+      ${TimelineProView.state.selectedIds.length > 1 ? `<span style="font-size:.7rem;color:var(--primary-color);font-weight:600;">Multiple : ${TimelineProView.state.selectedIds.length} éléments sélectionnés</span>` : ''}
+    </div>
     <button id="tlp-p-close" style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:1.4rem;line-height:1;padding:.1rem .35rem;border-radius:4px;">×</button>
   </div>
 
@@ -172,6 +206,38 @@ class TimelineProViewModel {
       </select>
     </div>
 
+    <!-- Icon selection -->
+    <div ${ev.endDate != null && ev.endDate !== ev.startDate ? 'style="display:none;"' : ''}>
+      <label style="${this._labelStyle()}">Type d'événement</label>
+      <div style="display:grid; grid-template-columns: repeat(7, 1fr); gap:.4rem; margin-bottom:.5rem;">
+        ${[
+          {id:'pin', icon:'map-pin', label:'Événement'},
+          {id:'birth', icon:'baby', label:'Naissance'},
+          {id:'death', icon:'skull', label:'Mort'},
+          {id:'battle', icon:'swords', label:'Bataille'},
+          {id:'crown', icon:'crown', label:'Politique'},
+          {id:'feather', icon:'feather', label:'Découverte'},
+          {id:'mariage', icon:'heart', label:'Mariage'},
+          {id:'fire', icon:'flame', label:'Catastrophe'},
+          {id:'voyage', icon:'anchor', label:'Voyage'},
+          {id:'magic', icon:'sparkles', label:'Magie'},
+          {id:'cult', icon:'church', label:'Religion'},
+          {id:'build', icon:'construction', label:'Construction'},
+          {id:'science', icon:'microscope', label:'Science'},
+          {id:'flag', icon:'flag', label:'Majeur'}
+        ].map(item => `
+          <button onclick="document.getElementById('tlp-p-icon').value='${item.id}';TimelineProViewModel._applyField('${id}','icon','${item.id}')"
+                  title="${item.label}"
+                  style="width:36px;height:36px;border-radius:6px;border:1px solid ${ev.icon === item.id || (!ev.icon && item.id === 'pin') ? 'var(--primary-color)' : 'var(--border-color)'};
+                         background:${ev.icon === item.id || (!ev.icon && item.id === 'pin') ? 'rgba(var(--primary-color-rgb),.1)' : 'var(--bg-secondary)'};
+                         cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-primary);">
+            <i data-lucide="${item.icon}" style="width:18px;height:18px;"></i>
+          </button>
+        `).join('')}
+        <input type="hidden" id="tlp-p-icon" value="${ev.icon || 'pin'}">
+      </div>
+    </div>
+
     <!-- ── Design section ─────────────────────────────────────────── -->
     <div style="border-top:1px solid var(--border-color);padding-top:1rem;">
       <label style="${this._labelStyle()}">Design</label>
@@ -192,31 +258,41 @@ class TimelineProViewModel {
         </div>
       </div>
 
-      <!-- Colors row -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:.75rem;">
+      <!-- Colors -->
+      <div style="display:flex; flex-direction:column; gap:.8rem; margin-bottom:.8rem;">
+        
+        <!-- Background Color -->
         <div>
-          <div style="font-size:.75rem;color:var(--text-muted);margin-bottom:.4rem;">Couleur fond</div>
-          <div style="display:flex;align-items:center;gap:.5rem;">
-            <input id="tlp-p-color" type="color" value="${bgColor}"
-                   style="width:36px;height:32px;border:2px solid var(--border-color);border-radius:6px;cursor:pointer;background:none;padding:1px;flex-shrink:0;">
-            <div style="display:flex;gap:.3rem;flex-wrap:wrap;">
-              ${['#e74c3c','#e67e22','#f1c40f','#2ecc71','#3498db','#9b59b6','#d4af37','#1abc9c']
-                .map(c => `<div onclick="document.getElementById('tlp-p-color').value='${c}';TimelineProViewModel._applyField('${id}','color','${c}')"
-                                style="width:16px;height:16px;border-radius:50%;background:${c};cursor:pointer;border:1px solid rgba(0,0,0,.1);transition:transform .12s;"
-                                onmouseenter="this.style.transform='scale(1.25)'" onmouseleave="this.style.transform=''"></div>`).join('')}
+          <div style="font-size:.7rem;color:var(--text-muted);margin-bottom:.35rem;">Couleur de l'événement</div>
+          <div style="display:flex;gap:.35rem;flex-wrap:wrap;align-items:center;">
+            ${['#e74c3c','#e67e22','#f1c40f','#2ecc71','#3498db','#9b59b6','#d4af37','#1abc9c','#ecf0f1','#34495e']
+              .map(c => `
+              <div onclick="document.getElementById('tlp-p-color').value='${c}';TimelineProViewModel._applyField('${id}','color','${c}')"
+                   style="width:20px;height:20px;border-radius:50%;background:${c};cursor:pointer;
+                          border:2px solid ${bgColor === c ? 'var(--text-primary)' : 'rgba(0,0,0,.1)'};
+                          transition:transform .12s; padding: 2px; background-clip: content-box;"
+                   onmouseenter="this.style.transform='scale(1.15)'" onmouseleave="this.style.transform=''"></div>`).join('')}
+            <div style="position:relative;width:20px;height:20px;border-radius:50%;border:1px dashed var(--text-muted);display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;margin-left:.2rem;" title="Autre couleur...">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="3"><path d="M12 5v14M5 12h14"/></svg>
+              <input id="tlp-p-color" type="color" value="${bgColor}" style="position:absolute;opacity:0;cursor:pointer;width:100%;height:100%;">
             </div>
           </div>
         </div>
+
+        <!-- Text Color -->
         <div>
-          <div style="font-size:.75rem;color:var(--text-muted);margin-bottom:.4rem;">Couleur texte</div>
-          <div style="display:flex;align-items:center;gap:.5rem;">
-            <input id="tlp-p-textcolor" type="color" value="${txColor}"
-                   style="width:36px;height:32px;border:2px solid var(--border-color);border-radius:6px;cursor:pointer;background:none;padding:1px;flex-shrink:0;">
-            <div style="display:flex;gap:.3rem;flex-wrap:wrap;">
-              ${['#ffffff','#000000','#1a1a2e','#fffde7','#e3f2fd','#fce4ec']
-                .map(c => `<div onclick="document.getElementById('tlp-p-textcolor').value='${c}';TimelineProViewModel._applyField('${id}','textColor','${c}')"
-                                style="width:16px;height:16px;border-radius:50%;background:${c};cursor:pointer;border:1px solid rgba(0,0,0,.2);transition:transform .12s;"
-                                onmouseenter="this.style.transform='scale(1.25)'" onmouseleave="this.style.transform=''"></div>`).join('')}
+          <div style="font-size:.7rem;color:var(--text-muted);margin-bottom:.35rem;">Couleur du texte</div>
+          <div style="display:flex;gap:.35rem;flex-wrap:wrap;align-items:center;">
+            ${['#ffffff','#000000','#1a1a2e','#fffde7','#e3f2fd','#fce4ec']
+              .map(c => `
+              <div onclick="document.getElementById('tlp-p-textcolor').value='${c}';TimelineProViewModel._applyField('${id}','textColor','${c}')"
+                   style="width:16px;height:16px;border-radius:50%;background:${c};cursor:pointer;
+                          border:2px solid ${txColor === c ? 'var(--primary-color)' : 'rgba(0,0,0,.2)'};
+                          transition:transform .12s;"
+                   onmouseenter="this.style.transform='scale(1.15)'" onmouseleave="this.style.transform=''"></div>`).join('')}
+            <div style="position:relative;width:16px;height:16px;border-radius:50%;border:1px dashed var(--text-muted);display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;margin-left:.2rem;" title="Autre couleur...">
+              <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="3"><path d="M12 5v14M5 12h14"/></svg>
+              <input id="tlp-p-textcolor" type="color" value="${txColor}" style="position:absolute;opacity:0;cursor:pointer;width:100%;height:100%;">
             </div>
           </div>
         </div>
@@ -232,7 +308,7 @@ class TimelineProViewModel {
         <div style="font-size:.75rem;color:var(--text-muted);margin-bottom:.4rem;">Personnages impliqués</div>
         <select id="tlp-p-characters" multiple style="${this._inputStyle()}height:auto;min-height:70px;">
           ${(window.project?.characters || []).map(c => `
-            <option value="${c.id}" ${(ev.characters || []).includes(c.id) ? 'selected' : ''}>${this._esc(c.name || (c.firstName + ' ' + c.lastName).trim() || 'Sans nom')}</option>
+            <option value="${c.id}" ${(ev.characters || []).some(id => String(id) === String(c.id)) ? 'selected' : ''}>${this._esc(c.name || (c.firstName + ' ' + c.lastName).trim() || 'Sans nom')}</option>
           `).join('')}
         </select>
         <div style="font-size:.65rem;color:var(--text-muted);margin-top:.3rem;opacity:.7;">Maintenir Ctrl/Cmd pour sélection multiple</div>
@@ -244,7 +320,7 @@ class TimelineProViewModel {
         <select id="tlp-p-world" style="${this._inputStyle()}">
           <option value="">-- Aucun --</option>
           ${(window.project?.world || []).map(w => `
-            <option value="${w.id}" ${ev.worldId === w.id ? 'selected' : ''}>${this._esc(w.fields?.nom || 'Sans nom')}</option>
+            <option value="${w.id}" ${String(ev.worldId) === String(w.id) ? 'selected' : ''}>${this._esc(w.fields?.nom || 'Sans nom')}</option>
           `).join('')}
         </select>
       </div>
@@ -308,26 +384,48 @@ class TimelineProViewModel {
 
         // ── Bindings ──────────────────────────────────────────────────────────
         const update = (save = false) => {
-            const raw = TimelineProRepository.getById(id);
-            if (!raw) return;
-            raw.title       = document.getElementById('tlp-p-title').value;
-            const sVal      = document.getElementById('tlp-p-start').value;
-            const eVal      = document.getElementById('tlp-p-end').value;
-            raw.startDate   = TimelineProView._parseDate(sVal) ?? 0;
-            raw.endDate     = eVal === '' ? null : (TimelineProView._parseDate(eVal) ?? null);
-            raw.trackId     = document.getElementById('tlp-p-track').value;
-            raw.color       = document.getElementById('tlp-p-color').value;
-            raw.textColor   = document.getElementById('tlp-p-textcolor').value;
-            raw.description = document.getElementById('tlp-p-desc').value;
-            raw.isLocked    = document.getElementById('tlp-p-lock').checked;
-            raw.showBand    = document.getElementById('tlp-p-band')?.checked ?? false;
-
-            const charsSelect = document.getElementById('tlp-p-characters');
-            if (charsSelect) raw.characters = Array.from(charsSelect.selectedOptions).map(o => o.value);
+            const ids = TimelineProView.state.selectedIds.length > 0 ? TimelineProView.state.selectedIds : [id];
             
+            // On récupère les valeurs depuis le DOM une seule fois
+            const title       = document.getElementById('tlp-p-title').value;
+            const sVal        = document.getElementById('tlp-p-start').value;
+            const eVal        = document.getElementById('tlp-p-end').value;
+            const trackId     = document.getElementById('tlp-p-track').value;
+            const color       = document.getElementById('tlp-p-color').value;
+            const textColor   = document.getElementById('tlp-p-textcolor').value;
+            const description = document.getElementById('tlp-p-desc').value;
+            const isLocked    = document.getElementById('tlp-p-lock').checked;
+            const showBand    = document.getElementById('tlp-p-band')?.checked ?? false;
+            const isEpoch     = document.getElementById('tlp-p-epoch')?.checked ?? false;
+            const icon        = document.getElementById('tlp-p-icon')?.value || 'pin';
+            const charsSelect = document.getElementById('tlp-p-characters');
+            const characterIds = charsSelect ? Array.from(charsSelect.selectedOptions).map(o => o.value) : [];
             const worldSelect = document.getElementById('tlp-p-world');
-            if (worldSelect) raw.worldId = worldSelect.value || null;
-            TimelineProRepository.save(raw);
+            const worldId     = worldSelect ? (worldSelect.value || null) : null;
+
+            ids.forEach(currentId => {
+                const raw = TimelineProRepository.getById(currentId);
+                if (!raw) return;
+
+                // On ne change le titre/date/desc que si un seul est sélectionné OU si on veut vraiment forcer (danger)
+                // Pour l'instant, on applique tout en batch pour le flow "Mass Edit"
+                raw.title       = title;
+                raw.startDate   = TimelineProView._parseDate(sVal) ?? raw.startDate;
+                raw.endDate     = eVal === '' ? null : (TimelineProView._parseDate(eVal) ?? null);
+                raw.trackId     = trackId;
+                raw.color       = color;
+                raw.textColor   = textColor;
+                raw.description = description;
+                raw.isLocked    = isLocked;
+                raw.showBand    = showBand;
+                raw.isEpoch     = isEpoch;
+                raw.icon        = icon;
+                raw.characters  = characterIds;
+                raw.worldId     = worldId;
+
+                TimelineProRepository.save(raw);
+            });
+
             TimelineProView.draw();
             if (save && typeof saveProject === 'function') saveProject();
         };
@@ -388,30 +486,46 @@ class TimelineProViewModel {
         const dupBtn = document.getElementById('tlp-p-duplicate');
         dupBtn?.addEventListener('mouseenter', () => { dupBtn.style.background = 'var(--bg-tertiary,#eee)'; });
         dupBtn?.addEventListener('mouseleave', () => { dupBtn.style.background = 'var(--bg-secondary)'; });
+
+        // Initialize Lucide icons
+        if (typeof lucide !== 'undefined') lucide.createIcons();
     }
 
     // ── Helpers fields ────────────────────────────────────────────────────────
     static _applyField(id, field, value) {
-        const ev = TimelineProRepository.getById(id);
-        if (!ev) return;
-        ev[field] = value;
-        TimelineProRepository.save(ev);
+        const ids = TimelineProView.state.selectedIds.length > 0 ? TimelineProView.state.selectedIds : [id];
+        ids.forEach(currentId => {
+            const ev = TimelineProRepository.getById(currentId);
+            if (!ev) return;
+            ev[field] = value;
+            TimelineProRepository.save(ev);
+        });
         TimelineProView.draw();
         if (typeof saveProject === 'function') saveProject();
     }
 
     static _addTag(id, tag) {
-        const ev = TimelineProRepository.getById(id);
-        if (!ev) return;
-        if (!ev.tags.includes(tag)) { ev.tags.push(tag); TimelineProRepository.save(ev); TimelineProView.draw(); }
-        this.openPanel(id); // refresh tags display
+        const ids = TimelineProView.state.selectedIds.length > 0 ? TimelineProView.state.selectedIds : [id];
+        ids.forEach(currentId => {
+            const ev = TimelineProRepository.getById(currentId);
+            if (!ev) return;
+            if (!ev.tags.includes(tag)) {
+                ev.tags.push(tag);
+                TimelineProRepository.save(ev);
+            }
+        });
+        TimelineProView.draw();
+        this.openPanel(id); 
     }
 
     static _removeTag(id, tag) {
-        const ev = TimelineProRepository.getById(id);
-        if (!ev) return;
-        ev.tags = ev.tags.filter(t => t !== tag);
-        TimelineProRepository.save(ev);
+        const ids = TimelineProView.state.selectedIds.length > 0 ? TimelineProView.state.selectedIds : [id];
+        ids.forEach(currentId => {
+            const ev = TimelineProRepository.getById(currentId);
+            if (!ev) return;
+            ev.tags = ev.tags.filter(t => t !== tag);
+            TimelineProRepository.save(ev);
+        });
         TimelineProView.draw();
         this.openPanel(id);
     }
@@ -452,74 +566,81 @@ class TimelineProViewModel {
 
         panel.style.display = 'flex';
         panel.innerHTML = `
-<div style="padding:1.25rem;display:flex;flex-direction:column;gap:0;height:100%;">
+<div style="padding:1.25rem;display:flex;flex-direction:column;gap:0;height:100%;font-family:Inter,sans-serif;">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;">
-    <span style="font-weight:700;font-size:.95rem;color:var(--text-primary);">Gestion des pistes</span>
-    <button id="tlp-p-close" style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:1.4rem;line-height:1;padding:.1rem .35rem;border-radius:4px;">×</button>
+    <span style="font-weight:700;font-size:1rem;color:var(--text-primary);">Gestion des pistes</span>
+    <button id="tlp-p-close" style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:1.4rem;">×</button>
   </div>
 
-  <div id="tlp-tracks-list" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:.75rem;">
+  <div id="tlp-tracks-list" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:1rem;padding-right:.5rem;">
     ${tracks.map(tr => {
         const trColor = tr.color?.startsWith('#') ? tr.color : '#aaa';
+        const characters = tr.characters || [];
+        const worldId = tr.worldId || "";
+        const isExpanded = TimelineProView.state.expandedTrackIds.includes(tr.id);
+        
         return `
-      <div class="tlp-track-wrapper" data-track-id="${tr.id}" draggable="true" style="background:var(--bg-secondary);border-radius:10px;border:1px solid var(--border-color);overflow:hidden;transition:opacity .15s;">
-
-        <!-- Header row -->
-        <div style="display:flex;align-items:center;gap:.6rem;padding:.65rem .7rem .65rem .5rem;">
-          <!-- Grip / Drag handle -->
-          <div style="cursor:grab;color:var(--text-muted);opacity:.5;display:flex;align-items:center;justify-content:center;padding:.2rem;" title="Déplacer">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
+      <div class="tlp-track-wrapper" data-track-id="${tr.id}" draggable="true" style="background:var(--bg-secondary);border-radius:12px;border:1px solid var(--border-color);transition:box-shadow .2s;">
+        
+        <!-- ROW 1 : Header & CRUD -->
+        <div style="display:flex;align-items:center;gap:.75rem;padding:.75rem;">
+          <div style="cursor:grab;color:var(--text-muted);opacity:.5;" title="Déplacer">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
           </div>
-          <!-- Bouton visibilité -->
-          <button onclick="TimelineProViewModel.toggleTrackVisibility('${tr.id}')"
-                  title="${tr.isHidden ? 'Afficher la piste' : 'Masquer la piste'}"
-                  style="background:none;border:none;cursor:pointer;padding:.2rem;display:flex;align-items:center;color:${tr.isHidden ? 'var(--text-muted)' : 'var(--text-primary)'};opacity:${tr.isHidden ? '.45' : '.8'};transition:opacity .15s;"
-                  onmouseenter="this.style.opacity='1'" onmouseleave="this.style.opacity='${tr.isHidden ? '.45' : '.8'}'"
-          >${tr.isHidden ? eyeClosed : eyeOpen}</button>
-          <!-- Color swatch / picker trigger -->
-          <label title="Changer la couleur" style="cursor:pointer;flex-shrink:0;position:relative;">
-            <div style="width:14px;height:38px;border-radius:4px;background:${trColor};transition:opacity .15s;"
-                 onmouseenter="this.style.opacity='.7'" onmouseleave="this.style.opacity='1'"></div>
-            <input type="color" value="${trColor}"
-                   oninput="TimelineProViewModel._trackColorInput('${tr.id}', this.value, this.closest('.tlp-track-card'))"
-                   onchange="TimelineProViewModel._trackColorChange('${tr.id}', this.value)"
-                   style="position:absolute;opacity:0;width:0;height:0;top:0;left:0;pointer-events:none;">
+          
+          <button onclick="TimelineProViewModel.toggleTrackVisibility('${tr.id}')" 
+                  style="background:none;border:none;cursor:pointer;color:${tr.isHidden ? 'var(--text-muted)' : 'var(--primary-color)'};opacity:${tr.isHidden ? '.5' : '1'};">
+            ${tr.isHidden ? eyeClosed : eyeOpen}
+          </button>
+
+          <label style="cursor:pointer;position:relative;">
+            <div style="width:14px;height:24px;border-radius:4px;background:${trColor};"></div>
+            <input type="color" value="${trColor}" onchange="TimelineProViewModel._trackColorChange('${tr.id}', this.value)" style="position:absolute;opacity:0;inset:0;cursor:pointer;">
           </label>
-          <!-- Title -->
-          <input value="${this._esc(tr.title)}"
-                 onchange="TimelineProViewModel.renameTrack('${tr.id}',this.value)"
-                 style="flex:1;background:transparent;border:none;outline:none;font-size:.9rem;font-weight:600;color:var(--text-primary);">
-          ${tr.id !== 'default' ? `
-          <button onclick="TimelineProViewModel.deleteTrack('${tr.id}')"
-                  title="Supprimer la piste"
-                  style="background:none;border:none;cursor:pointer;color:var(--accent-red,#e74c3c);opacity:.6;padding:.2rem;transition:opacity .15s;"
-                  onmouseenter="this.style.opacity='1'" onmouseleave="this.style.opacity='.6'">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-          </button>` : ''}
+
+          <input value="${TimelineProViewModel._esc(tr.title)}" 
+                 onchange="TimelineProViewModel.renameTrack('${tr.id}', this.value)"
+                 style="flex:1;background:transparent;border:none;outline:none;font-weight:700;font-size:1rem;color:var(--text-primary);max-width:140px;">
+
+          <div style="display:flex;align-items:center;gap:.4rem;">
+            ${tr.id !== 'default' ? `
+            <button onclick="TimelineProViewModel.deleteTrack('${tr.id}')" style="background:none;border:none;cursor:pointer;color:var(--accent-red,#e74c3c);opacity:.7;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+            </button>` : ''}
+            
+            <button onclick="TimelineProViewModel.toggleTrackExpansion('${tr.id}')" style="background:none;border:none;cursor:pointer;color:var(--text-muted);transform:rotate(${isExpanded?'180':'0'}deg);transition:transform .2s;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+          </div>
         </div>
 
-        <!-- Color palette row -->
-        <div class="tlp-track-card" data-track-id="${tr.id}" style="display:flex;align-items:center;gap:.35rem;padding:.5rem .9rem .65rem;border-top:1px solid var(--border-color);flex-wrap:wrap;">
-          ${PALETTE.map(c => `
-            <div onclick="TimelineProViewModel._trackColorChange('${tr.id}','${c}')"
-                 title="${c}"
-                 style="width:18px;height:18px;border-radius:50%;background:${c};cursor:pointer;
-                        border:2px solid ${c === trColor ? '#fff' : 'transparent'};
-                        box-shadow:${c === trColor ? '0 0 0 2px '+c : 'none'};
-                        transition:transform .12s,box-shadow .12s;"
-                 onmouseenter="this.style.transform='scale(1.25)'" onmouseleave="this.style.transform=''">
-            </div>`).join('')}
-          <!-- Custom color picker -->
-          <label title="Couleur personnalisée" style="cursor:pointer;position:relative;margin-left:.1rem;">
-            <div style="width:18px;height:18px;border-radius:50%;border:2px dashed var(--text-muted);display:flex;align-items:center;justify-content:center;transition:transform .12s;"
-                 onmouseenter="this.style.transform='scale(1.25)'" onmouseleave="this.style.transform=''">
-              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--text-muted)"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            </div>
-            <input type="color" value="${trColor}"
-                   onchange="TimelineProViewModel._trackColorChange('${tr.id}', this.value)"
-                   style="position:absolute;opacity:0;width:100%;height:100%;top:0;left:0;cursor:pointer;">
-          </label>
+        ${isExpanded ? `
+        <!-- ROW 2 : Palette -->
+        <div style="display:flex;align-items:center;gap:.4rem;padding:.5rem .75rem;border-top:1px solid var(--border-color);flex-wrap:wrap;">
+          ${PALETTE.map(c => `<div onclick="TimelineProViewModel._trackColorChange('${tr.id}','${c}')" style="width:18px;height:18px;border-radius:50%;background:${c};cursor:pointer;border:2px solid ${c === trColor ? '#fff' : 'transparent'};"></div>`).join('')}
         </div>
+
+        <!-- ROW 3 : Linked Entities -->
+        <div style="padding:.75rem;border-top:1px dashed var(--border-color);background:rgba(255,255,255,0.03);display:flex;flex-direction:column;gap:.6rem;">
+          <div>
+            <label style="display:block;font-size:.65rem;text-transform:uppercase;font-weight:800;color:var(--text-muted);margin-bottom:.3rem;">Personnages par défaut</label>
+            <select onchange="TimelineProViewModel._updateTrackCharacters('${tr.id}', this)" multiple style="width:100%;height:80px;border-radius:6px;border:1px solid var(--border-color);background:var(--bg-primary);color:var(--text-primary);font-size:.75rem;padding:.3rem;">
+              ${(window.project?.characters || []).map(c => `
+                <option value="${c.id}" ${characters.map(String).includes(String(c.id)) ? 'selected' : ''}>${TimelineProViewModel._esc(c.name || (c.firstName + ' ' + c.lastName).trim() || 'Sans nom')}</option>
+              `).join('')}
+            </select>
+          </div>
+          <div>
+            <label style="display:block;font-size:.65rem;text-transform:uppercase;font-weight:800;color:var(--text-muted);margin-bottom:.3rem;">Lieu par défaut</label>
+            <select onchange="TimelineProViewModel._updateTrackWorld('${tr.id}', this.value)" style="width:100%;border-radius:6px;border:1px solid var(--border-color);background:var(--bg-primary);color:var(--text-primary);font-size:.75rem;padding:.4rem;">
+              <option value="">-- Aucun lieu --</option>
+              ${(window.project?.world || []).map(w => `
+                <option value="${w.id}" ${String(worldId) === String(w.id) ? 'selected' : ''}>${TimelineProViewModel._esc(w.fields?.nom || 'Sans nom')}</option>
+              `).join('')}
+            </select>
+          </div>
+        </div>` : ''}
+
       </div>`;
     }).join('')}
   </div>
@@ -580,9 +701,9 @@ class TimelineProViewModel {
     }
 
     /** Live preview de la couleur sans sauvegarder */
-    static _trackColorInput(id, color, card) {
+    static _trackColorInput(id, color, wrapper) {
         // Update swatch visually (live)
-        const swatch = card?.previousElementSibling?.querySelector('div[style*="border-radius:4px"]');
+        const swatch = wrapper?.querySelector('div[style*="border-radius:4px"]');
         if (swatch) swatch.style.background = color;
     }
 
