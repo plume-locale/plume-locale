@@ -51,69 +51,14 @@ class TimelineProView {
         expandedTrackIds: [], // Track which tracks are expanded in the UI
     };
 
-    // ─── Undo / Redo ─────────────────────────────────────────────────────────────
-    static _history    = [];   // snapshots JSON de project.timelinePro
-    static _historyIdx = -1;   // pointeur courant
-    static _MAX_HIST   = 60;   // profondeur max
-
-    /** Prend un snapshot de l’état courant (appelé avant chaque mutation) */
-    static _pushHistory() {
-        if (!project?.timelinePro) return;
-        // Tronquer les états futurs si on était en plein undo
-        this._history = this._history.slice(0, this._historyIdx + 1);
-        this._history.push(JSON.stringify(project.timelinePro));
-        if (this._history.length > this._MAX_HIST) this._history.shift();
-        this._historyIdx = this._history.length - 1;
-        this._refreshUndoButtons();
-    }
-
-    static _undo() {
-        if (this._historyIdx <= 0) return;
-        // Sauvegarder l’état actuel si on est au dernier enregistrement
-        if (this._historyIdx === this._history.length - 1) {
-            this._history.push(JSON.stringify(project.timelinePro));
-            this._historyIdx = this._history.length - 2;
-        } else {
-            this._historyIdx--;
-        }
-        this._applySnapshot(this._history[this._historyIdx]);
-    }
-
-    static _redo() {
-        if (this._historyIdx >= this._history.length - 1) return;
-        this._historyIdx++;
-        this._applySnapshot(this._history[this._historyIdx]);
-    }
-
-    static _applySnapshot(json) {
-        if (!json) return;
-        try {
-            project.timelinePro = JSON.parse(json);
-        } catch(e) { return; }
-        // Réinitialiser sélection
-        this.state.selectedId     = null;
-        this.state.selectedLinkId = null;
-        TimelineProViewModel.closePanel();
-        this.draw();
-        this._refreshUndoButtons();
-        if (typeof saveProject === 'function') saveProject();
-    }
-
-    static _refreshUndoButtons() {
-        const undoBtn = document.getElementById('tlp-undo');
-        const redoBtn = document.getElementById('tlp-redo');
-        if (undoBtn) undoBtn.style.opacity = this._historyIdx > 0 ? '1' : '0.35';
-        if (redoBtn) redoBtn.style.opacity = this._historyIdx < this._history.length - 1 ? '1' : '0.35';
-    }
-
     // ─── Couleur sémantique des liaisons ───────────────────────────────────────────────
     static LINK_TYPE_META = {
-        causal:      { label: 'Cause → Effet',    color: '#e67e22', icon: '⚡' },
-        temporal:    { label: 'Contemporain',     color: '#3498db', icon: '⧐'  },
-        triggers:    { label: 'Déclenche',        color: '#e74c3c', icon: '▶' },
-        parallel:    { label: 'Parallèle',        color: '#9b59b6', icon: '∥'  },
-        contradicts: { label: 'Contredit',        color: '#c0392b', icon: '✘'  },
-        custom:      { label: 'Personnalisé',     color: '#d4af37', icon: '○'  },
+        causal:      { get label() { return Localization.t('timeline.pro.link.causal'); },    color: '#e67e22', icon: '⚡' },
+        temporal:    { get label() { return Localization.t('timeline.pro.link.temporal'); },  color: '#3498db', icon: '⧐'  },
+        triggers:    { get label() { return Localization.t('timeline.pro.link.triggers'); },  color: '#e74c3c', icon: '▶' },
+        parallel:    { get label() { return Localization.t('timeline.pro.link.parallel'); },  color: '#9b59b6', icon: '∥'  },
+        contradicts: { get label() { return Localization.t('timeline.pro.link.contradicts'); }, color: '#c0392b', icon: '✘'  },
+        custom:      { get label() { return Localization.t('timeline.pro.link.custom'); },    color: '#d4af37', icon: '○'  },
     };
 
     /** Retourne la couleur effective d'un lien (couleur custom ou couleur du type) */
@@ -135,9 +80,7 @@ class TimelineProView {
         this.state.hoveredLinkId = null;
         this.state.selectedLinkId= null;
         this.state.filterText    = '';
-        // Vider l'historique undo/redo à chaque ouverture (nouveau contexte de projet)
-        this._history    = [];
-        this._historyIdx = -1;
+        this.state.filterText    = '';
         this._hideTooltip();
         if (this.state.ro) { this.state.ro.disconnect(); this.state.ro = null; }
         window.removeEventListener('mousemove',  this._onMouseMove);
@@ -162,40 +105,40 @@ class TimelineProView {
 
     <div style="width:1px;height:22px;background:var(--border-color);margin:0 .25rem;"></div>
 
-    <button id="tlp-track-manage" class="btn" title="Gérer les pistes" style="gap:.35rem;display:flex;align-items:center;padding:.45rem .8rem;font-size:.8rem;border-radius:6px;">
+    <button id="tlp-track-manage" class="btn" title="${Localization.t('timeline.pro.panel.tracks_title')}" style="gap:.35rem;display:flex;align-items:center;padding:.45rem .8rem;font-size:.8rem;border-radius:6px;">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-      Pistes
+      ${Localization.t('timeline.pro.btn.tracks')}
     </button>
 
     <div style="width:1px;height:22px;background:var(--border-color);margin:0 .25rem;"></div>
 
-    <button id="tlp-zoom-in"  class="btn" title="Zoom +" style="padding:.4rem .6rem;border-radius:6px;">
+    <button id="tlp-zoom-in"  class="btn" title="${Localization.t('timeline.pro.btn.zoom_in')}" style="padding:.4rem .6rem;border-radius:6px;">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="16.5" y1="16.5" x2="22" y2="22"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
     </button>
-    <button id="tlp-zoom-out" class="btn" title="Zoom -" style="padding:.4rem .6rem;border-radius:6px;">
+    <button id="tlp-zoom-out" class="btn" title="${Localization.t('timeline.pro.btn.zoom_out')}" style="padding:.4rem .6rem;border-radius:6px;">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="16.5" y1="16.5" x2="22" y2="22"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
     </button>
-    <button id="tlp-fit"      class="btn" title="Ajuster la vue" style="padding:.4rem .6rem;border-radius:6px;">
+    <button id="tlp-fit"      class="btn" title="${Localization.t('timeline.pro.btn.fit')}" style="padding:.4rem .6rem;border-radius:6px;">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
     </button>
 
     <div style="width:1px;height:22px;background:var(--border-color);margin:0 .25rem;"></div>
 
-    <button id="tlp-date-toggle" class="btn" title="Basculer mode calendrier / numérique"
+    <button id="tlp-date-toggle" class="btn" title="${Localization.t('timeline.pro.btn.date_toggle')}"
             style="gap:.35rem;display:flex;align-items:center;padding:.45rem .8rem;font-size:.8rem;border-radius:6px;">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-      <span id="tlp-date-label">Numérique</span>
+      <span id="tlp-date-label">${this.state.dateMode === 'calendar' ? Localization.t('timeline.pro.label.calendar') : Localization.t('timeline.pro.label.numeric')}</span>
     </button>
 
     <div style="width:1px;height:22px;background:var(--border-color);margin:0 .25rem;"></div>
 
-    <button id="tlp-link-mode" class="btn" title="Mode liaison : Shift+clic sur un événement pour relier"
+    <button id="tlp-link-mode" class="btn" title="${Localization.t('timeline.pro.btn.link_mode_title')}"
             style="gap:.35rem;display:flex;align-items:center;padding:.45rem .8rem;font-size:.8rem;border-radius:6px;transition:background .15s,color .15s;">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
         <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
       </svg>
-      Relier
+      ${Localization.t('timeline.pro.btn.link_mode')}
     </button>
 
     <div style="flex:1;"></div>
@@ -206,32 +149,20 @@ class TimelineProView {
            style="position:absolute;left:.55rem;color:var(--text-muted);pointer-events:none;">
         <circle cx="11" cy="11" r="8"/><line x1="16.5" y1="16.5" x2="22" y2="22"/>
       </svg>
-      <input id="tlp-filter" type="text" placeholder="Filtrer…" autocomplete="off"
+      <input id="tlp-filter" type="text" placeholder="${Localization.t('timeline.pro.filter.placeholder')}" autocomplete="off"
              style="padding:.4rem .4rem .4rem 1.8rem;border:1px solid var(--border-color);
                     border-radius:6px;background:var(--bg-secondary);color:var(--text-primary);
                     font-size:.8rem;width:140px;outline:none;transition:border-color .15s,width .2s;"
              onfocus="this.style.width='200px'" onblur="this.style.width='140px'">
-      <button id="tlp-filter-clear" title="Effacer" style="
+      <button id="tlp-filter-clear" title="${Localization.t('timeline.pro.filter.clear')}" style="
           position:absolute;right:.3rem;background:none;border:none;cursor:pointer;
           color:var(--text-muted);font-size:.9rem;line-height:1;padding:.1rem;display:none;">×</button>
     </div>
 
     <div style="width:1px;height:22px;background:var(--border-color);margin:0 .25rem;"></div>
 
-    <!-- ── Undo / Redo ── -->
-    <button id="tlp-undo" class="btn" title="Annuler (Ctrl+Z)" style="padding:.4rem .6rem;border-radius:6px;opacity:.35;">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/>
-      </svg>
-    </button>
-    <button id="tlp-redo" class="btn" title="Rétablir (Ctrl+Y)" style="padding:.4rem .6rem;border-radius:6px;opacity:.35;">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3L21 13"/>
-      </svg>
-    </button>
-
     <div id="tlp-hint" style="font-size:.75rem;color:var(--text-muted);opacity:.7;margin-left:.5rem;">
-      Double-clic sur une piste pour créer un événement
+      ${Localization.t('timeline.pro.hint.main')}
     </div>
   </div>
 
@@ -330,8 +261,6 @@ class TimelineProView {
             this._initCanvas();
             this._bindAll();
             this._fitView();
-            // Snapshot initial après le premier affichage
-            this._pushHistory();
             this.draw();
         });
     }
@@ -412,7 +341,7 @@ class TimelineProView {
         document.getElementById('tlp-date-toggle')?.addEventListener('click', () => {
             this.state.dateMode = this.state.dateMode === 'calendar' ? 'numeric' : 'calendar';
             const lbl = document.getElementById('tlp-date-label');
-            if (lbl) lbl.textContent = this.state.dateMode === 'calendar' ? 'Calendrier' : 'Numérique';
+            if (lbl) lbl.textContent = this.state.dateMode === 'calendar' ? Localization.t('timeline.pro.label.calendar') : Localization.t('timeline.pro.label.numeric');
             if (this.state.selectedId) TimelineProViewModel.openPanel(this.state.selectedId);
             this.draw();
         });
@@ -420,10 +349,6 @@ class TimelineProView {
         // Bouton mode liaison
         const linkBtn = document.getElementById('tlp-link-mode');
         linkBtn?.addEventListener('click', () => this._toggleLinkMode());
-
-        // Undo / Redo boutons
-        document.getElementById('tlp-undo')?.addEventListener('click', () => this._undo());
-        document.getElementById('tlp-redo')?.addEventListener('click', () => this._redo());
 
         // Filtre recherche
         const filterInput = document.getElementById('tlp-filter');
@@ -455,8 +380,9 @@ class TimelineProView {
     // ─── KEYBOARD ─────────────────────────────────────────────────────────────
     static _handleKeyDown(e) {
         // Ignorer si l'utilisateur tape dans un champ de saisie
-        const tag = document.activeElement?.tagName;
-        if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+        const active = document.activeElement;
+        const tag = active?.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || active?.isContentEditable) return;
 
         if (e.ctrlKey || e.metaKey) {
             if (e.key === 'z' || e.key === 'Z') {
@@ -471,10 +397,8 @@ class TimelineProView {
         // Supprimer l'élément sélectionné avec Delete / Backspace
         if (e.key === 'Delete' || e.key === 'Backspace') {
             if (this.state.selectedId) {
-                this._pushHistory();
                 TimelineProViewModel.deleteEvent(this.state.selectedId);
             } else if (this.state.selectedLinkId) {
-                this._pushHistory();
                 TimelineProViewModel.deleteLink(this.state.selectedLinkId);
             }
         }
@@ -510,7 +434,7 @@ class TimelineProView {
             if (hit && !this.state.linkMode) {
                 this._toggleLinkMode();
                 this.state.linkFromId = hit.id;
-                this._updateLinkHint("Cliquer sur l'événement cible pour créer la liaison");
+                this._updateLinkHint(Localization.t('timeline.pro.hint.link_target'));
                 this.draw();
                 e.preventDefault();
                 return;
@@ -523,7 +447,7 @@ class TimelineProView {
             if (hit) {
                 if (!this.state.linkFromId) {
                     this.state.linkFromId = hit.id;
-                    this._updateLinkHint("Cliquer sur l'événement cible pour créer la liaison");
+                    this._updateLinkHint(Localization.t('timeline.pro.hint.link_target'));
                 } else if (hit.id !== this.state.linkFromId) {
                     TimelineProViewModel.createLink(this.state.linkFromId, hit.id);
                     this.state.linkFromId = null;
@@ -531,7 +455,7 @@ class TimelineProView {
                 }
             } else {
                 this.state.linkFromId = null;
-                this._updateLinkHint("Cliquer sur un événement source pour commencer une liaison");
+                this._updateLinkHint(Localization.t('timeline.pro.hint.link_source'));
                 this.draw();
             }
             e.preventDefault();
@@ -2350,7 +2274,7 @@ class TimelineProView {
         ctx.fillStyle = this._p().headerTitle;
         ctx.font      = '600 13px Inter,sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText('TIMELINE PRO', this.HEADER_W/2, this.RULER_H/2);
+        ctx.fillText(Localization.t('nav.timeline_pro').toUpperCase(), this.HEADER_W/2, this.RULER_H/2);
     }
 
     /** Hit-test du "levier" de liaison rapide */
@@ -2510,7 +2434,7 @@ class TimelineProView {
                 ${descHtml}
                 ${tagsHtml}
                 ${entitiesHtml}
-                <div class="tlp-tip-hint" style="margin-top:6px">${!hasDesc && !entitiesHtml && !tagsHtml ? 'Cliquer pour voir & éditer' : 'Cliquer pour éditer'}</div>
+                <div class="tlp-tip-hint" style="margin-top:6px">${!hasDesc && !entitiesHtml && !tagsHtml ? Localization.t('timeline.pro.hint.edit_view') : Localization.t('timeline.pro.hint.edit')}</div>
             </div>
         `;
         tip.style.display = 'block';
@@ -2581,7 +2505,7 @@ class TimelineProView {
         });
         
         if (ages.length === 0) return '';
-        return ` (${ages.join(', ')}${ages.length === 1 ? ' an' : ' ans'})`;
+        return ` (${ages.join(', ')}${ages.length === 1 ? ' ' + Localization.t('timeline.pro.label.year') : ' ' + Localization.t('timeline.pro.label.years')})`;
     }
 
     static ICON_PATHS = {
