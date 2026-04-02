@@ -13,7 +13,10 @@ const MentionHelpViewModel = {
         activeElement: null,
         cursorPos: 0,
         triggerPos: 0,
-        savedRange: null
+        savedRange: null,
+        mode: 'suggestions',
+        activeSuggestionForAlias: null,
+        aliases: []
     },
 
     /**
@@ -82,28 +85,44 @@ const MentionHelpViewModel = {
 
     /**
      * Met à jour la liste des suggestions basées sur la recherche.
+     * La suggestion "Créer X" est toujours affichée en bas si query >= 2 chars.
      */
     updateSuggestions() {
-        // Contexte pour le scoring
         const context = {
             sceneId: typeof currentSceneId !== 'undefined' ? currentSceneId : null,
             presentIds: this.getPresentEntitiesInCurrentScene()
         };
 
-        this.state.suggestions = MentionHelpRepository.search(this.state.trigger, this.state.query, context);
+        const results = MentionHelpRepository.search(this.state.trigger, this.state.query, context);
 
-        if (this.state.suggestions.length > 0) {
+        // Ajouter la suggestion "Créer" en bas si la query est assez longue
+        const triggerConfig = MentionHelpModel.TRIGGERS[this.state.trigger];
+        const canCreate = triggerConfig && this.state.query.length >= 2;
+
+        if (canCreate) {
+            // Vérifier qu'il n'existe pas déjà un élément avec exactement ce nom
+            const exactMatch = results.some(s => s.name.toLowerCase() === this.state.query.toLowerCase());
+            if (!exactMatch) {
+                results.push({
+                    id: '__quickCreate__',
+                    name: this.state.query,
+                    type: triggerConfig.type,
+                    icon: 'plus-circle',
+                    description: Localization.t('mention.quick_create.desc', [Localization.t(triggerConfig.label)]),
+                    score: -1,
+                    __quickCreate: true
+                });
+            }
+        }
+
+        this.state.suggestions = results;
+
+        if (results.length > 0) {
             this.state.active = true;
             this.state.selectedIndex = 0;
-            MentionHelpView.render(this.state.suggestions, this.state.selectedIndex, this.state.activeElement);
+            MentionHelpView.render(results, this.state.selectedIndex, this.state.activeElement);
         } else {
-            // Option "Créer rapidement" si aucun résultat
-            if (this.state.query.length > 2) {
-                this.state.active = true;
-                MentionHelpView.renderQuickCreate(this.state.trigger, this.state.query, this.state.activeElement);
-            } else {
-                this.close();
-            }
+            this.close();
         }
     },
 
@@ -113,41 +132,94 @@ const MentionHelpViewModel = {
     handleKeyDown(e) {
         if (!this.state.active) return false;
 
+        const list = this.state.mode === 'aliases' ? this.state.aliases : this.state.suggestions;
+
         switch (e.key) {
             case 'ArrowDown':
                 e.preventDefault();
-                this.state.selectedIndex = (this.state.selectedIndex + 1) % this.state.suggestions.length;
-                MentionHelpView.updateSelection(this.state.selectedIndex);
+                this.state.selectedIndex = (this.state.selectedIndex + 1) % list.length;
+                if (this.state.mode === 'aliases') {
+                    MentionHelpView.updateAliasSelection(this.state.selectedIndex);
+                } else {
+                    MentionHelpView.updateSelection(this.state.selectedIndex);
+                }
                 return true;
             case 'ArrowUp':
                 e.preventDefault();
-                this.state.selectedIndex = (this.state.selectedIndex - 1 + this.state.suggestions.length) % this.state.suggestions.length;
-                MentionHelpView.updateSelection(this.state.selectedIndex);
+                this.state.selectedIndex = (this.state.selectedIndex - 1 + list.length) % list.length;
+                if (this.state.mode === 'aliases') {
+                    MentionHelpView.updateAliasSelection(this.state.selectedIndex);
+                } else {
+                    MentionHelpView.updateSelection(this.state.selectedIndex);
+                }
                 return true;
             case 'Enter':
             case 'Tab':
                 e.preventDefault();
-                if (this.state.suggestions[this.state.selectedIndex]) {
-                    this.selectSuggestion(this.state.suggestions[this.state.selectedIndex]);
-                } else if (this.state.query.length > 2) {
-                    this.performQuickCreate();
+                if (this.state.mode === 'aliases') {
+                    if (this.state.aliases[this.state.selectedIndex]) {
+                        this.selectAlias(this.state.aliases[this.state.selectedIndex]);
+                    }
+                } else {
+                    if (this.state.suggestions[this.state.selectedIndex]) {
+                        this.selectSuggestion(this.state.suggestions[this.state.selectedIndex]);
+                    } else if (this.state.query.length > 2) {
+                        this.performQuickCreate();
+                    }
                 }
                 return true;
             case 'Escape':
                 e.preventDefault();
-                this.close();
+                if (this.state.mode === 'aliases') {
+                    this.state.mode = 'suggestions';
+                    this.state.selectedIndex = 0;
+                    MentionHelpView.render(this.state.suggestions, this.state.selectedIndex, this.state.activeElement);
+                } else {
+                    this.close();
+                }
                 return true;
+            case 'Backspace':
+                if (this.state.mode === 'aliases') {
+                    e.preventDefault();
+                    this.state.mode = 'suggestions';
+                    this.state.selectedIndex = 0;
+                    MentionHelpView.render(this.state.suggestions, this.state.selectedIndex, this.state.activeElement);
+                    return true;
+                }
+                return false;
         }
         return false;
     },
 
     /**
      * Sélectionne une suggestion et l'insère dans l'élément actif.
+     * Détecte les suggestions "quick create" spéciales.
      */
     selectSuggestion(suggestion) {
         console.log("MentionHelp: Selecting suggestion", suggestion);
+
+        // Suggestion spéciale "Créer"
+        if (suggestion.__quickCreate) {
+            this.performQuickCreate();
+            return;
+        }
+
         const el = this.state.activeElement;
         if (!el) return;
+
+        // Choix de l'alias si personnage avec plusieurs alias
+        if (suggestion.type === 'character' && suggestion.originalItem) {
+            const aliases = MentionHelpModel.getCharacterAliases(suggestion.originalItem);
+            if (aliases && aliases.length > 1) {
+                this.state.mode = 'aliases';
+                this.state.activeSuggestionForAlias = suggestion;
+                this.state.aliases = aliases;
+                this.state.selectedIndex = 0;
+                MentionHelpView.renderAliases(aliases, this.state.selectedIndex, el, suggestion);
+                return;
+            }
+        }
+
         const name = suggestion.name;
 
         if (el.isContentEditable) {
@@ -160,12 +232,51 @@ const MentionHelpViewModel = {
     },
 
     /**
-     * Exécute la création rapide.
+     * Sélectionne un alias spécifique pour un personnage.
+     */
+    selectAlias(alias) {
+        const suggestion = this.state.activeSuggestionForAlias;
+        if (!suggestion) return;
+
+        const el = this.state.activeElement;
+        if (!el) return;
+
+        const name = alias.value;
+
+        if (el.isContentEditable) {
+            this.insertIntoContentEditable(el, name, suggestion);
+        } else {
+            this.insertIntoInput(el, name, suggestion);
+        }
+
+        this.close();
+    },
+
+    /**
+     * Crée rapidement une nouvelle entité depuis la mention en cours,
+     * l'insère comme mention dans l'éditeur, sauvegarde et ouvre la fiche en split.
      */
     performQuickCreate() {
         const newItem = MentionHelpRepository.quickCreate(this.state.trigger, this.state.query);
         if (newItem) {
-            this.selectSuggestion({ name: newItem.name || newItem.title });
+            // Extraction du nom compatible Atlas/Codex (fields.nom)
+            const name = (newItem.fields && newItem.fields.nom) ? newItem.fields.nom : (newItem.name || newItem.title || this.state.query);
+            const type = MentionHelpModel.TRIGGERS[this.state.trigger]?.type;
+
+            // 1. Insérer la mention dans l'éditeur
+            this.selectSuggestion({
+                name: name,
+                type: type,
+                id: newItem.id
+            });
+
+            // 2. Sauvegarder le projet
+            if (typeof saveProject === 'function') saveProject();
+
+            // 3. Ouvrir la fiche dans le panneau droit pour la compléter
+            if (typeof MentionHelpHandlers !== 'undefined' && type) {
+                setTimeout(() => MentionHelpHandlers.openMentionDetails(type, String(newItem.id)), 150);
+            }
         }
     },
 
@@ -264,6 +375,9 @@ const MentionHelpViewModel = {
     close() {
         this.state.active = false;
         this.state.suggestions = [];
+        this.state.mode = 'suggestions';
+        this.state.activeSuggestionForAlias = null;
+        this.state.aliases = [];
         MentionHelpView.hide();
     },
 

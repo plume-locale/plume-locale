@@ -13,9 +13,11 @@ window.LOCALE_FR = {
 
     // --- Mentions ---
     "mention.type.character": "Personnage",
+    "mention.alias.title": "Options d'insertion",
     "mention.type.world": "Élément d'univers",
     "mention.type.globalnote": "Note globale",
-    "mention.type.codex": "Codex / Note",
+    "mention.type.note": "Note de projet",
+    "mention.type.codex": "Codex",
     "mention.score.present": "Présent dans cette scène",
     "mention.quick_create.title": "Créer '{0}'",
     "mention.quick_create.desc": "Ajouter ce nouveau {0} à votre projet",

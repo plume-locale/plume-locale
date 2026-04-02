@@ -15,6 +15,8 @@ const MentionHelpView = {
             list = document.createElement('div');
             list.id = this.containerId;
             list.className = 'mention-help-popup';
+            // Empêche le blur de l'éditeur lors du clic sur la popup ou sa barre de défilement
+            list.onmousedown = (e) => e.preventDefault();
             document.body.appendChild(list);
             this.injectStyles();
         }
@@ -32,19 +34,25 @@ const MentionHelpView = {
         list.style.top = `${top}px`;
         list.style.display = 'block';
 
-        list.innerHTML = suggestions.map((s, index) => `
-            <div class="mention-help-item ${index === selectedIndex ? 'active' : ''}" 
+        list.innerHTML = suggestions.map((s, index) => {
+            const isCreate = s.__quickCreate === true;
+            const activeClass = index === selectedIndex ? 'active' : '';
+            const createClass = isCreate ? 'mention-help-item--create' : '';
+
+            return `
+            <div class="mention-help-item ${activeClass} ${createClass}" 
                  onmousedown="MentionHelpViewModel.selectSuggestion(MentionHelpViewModel.state.suggestions[${index}]); event.preventDefault();">
                 <div class="mention-help-icon">
                     ${s.avatar ? `<img src="${s.avatar}" class="mention-avatar">` : `<i data-lucide="${s.icon}"></i>`}
                 </div>
                 <div class="mention-help-info">
-                    <div class="mention-help-name">${s.name}</div>
+                    <div class="mention-help-name">${isCreate ? `<em>${Localization.t('mention.quick_create.title', [s.name])}</em>` : s.name}</div>
                     <div class="mention-help-desc">${s.description}</div>
                 </div>
-                ${s.score >= 100 ? `<div class="mention-help-badge" title="${Localization.t('mention.score.present')}"><i data-lucide="check-circle"></i></div>` : ''}
+                ${(!isCreate && s.score >= 100) ? `<div class="mention-help-badge" title="${Localization.t('mention.score.present')}"><i data-lucide="check-circle"></i></div>` : ''}
             </div>
-        `).join('');
+        `;
+        }).join('');
 
         if (typeof lucide !== 'undefined') lucide.createIcons();
     },
@@ -81,6 +89,58 @@ const MentionHelpView = {
         `;
 
         if (typeof lucide !== 'undefined') lucide.createIcons();
+    },
+
+    /**
+     * Affiche la liste des alias pour un personnage.
+     */
+    renderAliases(aliases, selectedIndex, activeElement, suggestion) {
+        let list = document.getElementById(this.containerId);
+        if (!list) return;
+
+        const rect = activeElement.getBoundingClientRect();
+        const popupHeight = Math.min(aliases.length * 45 + 40, 250);
+
+        let top = rect.top - popupHeight - 10;
+        if (top < 0) {
+            top = rect.bottom + 10;
+        }
+
+        list.style.left = `${rect.left}px`;
+        list.style.top = `${top}px`;
+        list.style.display = 'block';
+
+        const titleText = typeof Localization !== 'undefined' && Localization.t ? Localization.t('mention.alias.title') : 'Options d\'insertion';
+
+        list.innerHTML = `
+            <div style="padding: 8px 12px; font-size: 0.75rem; font-weight: bold; color: var(--text-secondary); border-bottom: 1px solid var(--border-color, #e0e0e0); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.02); margin-bottom: 4px;">
+                <span>${titleText}</span>
+                <span style="font-size: 0.65rem; opacity: 0.6;"><i data-lucide="corner-down-left" style="width:10px;height:10px;display:inline-block;margin-right:2px;vertical-align:middle;"></i> Retour (Backspace)</span>
+            </div>
+        ` + aliases.map((a, index) => {
+            const activeClass = index === selectedIndex ? 'active' : '';
+            return `
+            <div class="mention-help-item ${activeClass}" 
+                 onmousedown="MentionHelpViewModel.selectAlias(MentionHelpViewModel.state.aliases[${index}]); event.preventDefault();">
+                <div class="mention-help-icon">
+                    <i data-lucide="${a.icon || 'user'}"></i>
+                </div>
+                <div class="mention-help-info">
+                    <div class="mention-help-name">${a.value}</div>
+                    <div class="mention-help-desc">${a.label}</div>
+                </div>
+            </div>
+        `;
+        }).join('');
+
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    },
+
+    /**
+     * Met à jour l'alias sélectionné visuellement.
+     */
+    updateAliasSelection(selectedIndex) {
+        this.updateSelection(selectedIndex);
     },
 
     /**
@@ -130,7 +190,7 @@ const MentionHelpView = {
                 <div style="display: flex; flex-direction: column; gap: 6px;">
                     <div style="display: flex; gap: 10px;"><b>@@</b> <span>${Localization.t('mention.type.character')}</span></div>
                     <div style="display: flex; gap: 10px;"><b>##</b> <span>${Localization.t('mention.type.world')}</span></div>
-                    <div style="display: flex; gap: 10px;"><b>!!</b> <span>${Localization.t('mention.type.globalnote')}</span></div>
+                    <div style="display: flex; gap: 10px;"><b>!!</b> <span>${Localization.t('mention.type.note')}</span></div>
                     <div style="display: flex; gap: 10px;"><b>??</b> <span>${Localization.t('mention.type.codex')}</span></div>
                 </div>
                 <div style="margin-top: 10px; font-size: 0.75rem; opacity: 0.7; border-top: 1px solid var(--border-color); padding-top: 6px;">
@@ -263,6 +323,54 @@ const MentionHelpView = {
             .mention-help-badge i {
                 width: 14px;
                 height: 14px;
+            }
+
+            /* Item "Créer rapidement" */
+            .mention-help-item--create {
+                border-top: 1px dashed var(--border-color, #e0e0e0);
+                margin-top: 4px;
+                padding-top: 10px;
+            }
+
+            .mention-help-item--create .mention-help-icon {
+                background: rgba(var(--accent-rgb, 255,140,66), 0.12);
+            }
+
+            .mention-help-item--create .mention-help-icon i {
+                color: var(--accent-color, #ff8c42);
+            }
+
+            .mention-help-item--create .mention-help-name em {
+                font-style: italic;
+                font-weight: 600;
+                color: var(--accent-color, #ff8c42);
+            }
+
+            .mention-help-item--create.active .mention-help-name em {
+                color: white;
+            }
+
+            .mention-help-item--create.active .mention-help-icon {
+                background: rgba(255,255,255,0.2);
+            }
+
+            .mention-help-item--create.active .mention-help-icon i {
+                color: white;
+            }
+
+            /* Custom Scrollbar */
+            .mention-help-popup::-webkit-scrollbar {
+                width: 6px;
+            }
+            .mention-help-popup::-webkit-scrollbar-track {
+                background: transparent;
+            }
+            .mention-help-popup::-webkit-scrollbar-thumb {
+                background: rgba(0,0,0,0.1);
+                border-radius: 10px;
+            }
+            .mention-help-popup:hover::-webkit-scrollbar-thumb {
+                background: rgba(0,0,0,0.2);
             }
 
             /* Styles pour les mentions insérées dans l'éditeur - Style "Texte Simple" */
