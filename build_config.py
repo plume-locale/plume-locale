@@ -432,6 +432,7 @@ JS_ORDER = [
     'js/features/editor/narrative-overview/narrative-overview.repository.js',
     'js/features/editor/narrative-overview/narrative-overview.viewmodel.js',
     'js/features/editor/narrative-overview/narrative-overview.view.js',
+    'js/features/editor/narrative-overview/narrative-overview.timeline.js',
     'js/features/editor/narrative-overview/narrative-overview.handlers.js',
     'js/features/editor/narrative-overview/narrative-overview.main.js',
     # Magic Importer
