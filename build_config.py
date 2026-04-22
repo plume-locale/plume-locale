@@ -154,6 +154,9 @@ JS_ORDER = [
     'js/features/tools/colorpalette/color-palette.view.js',
     'js/features/tools/colorpalette/color-palette.handlers.js',
     'js/features/tools/colorpalette/color-palette.main.js',
+    'js/features/tools/emotion-wheel/emotion-wheel.data.js',
+    'js/features/tools/emotion-wheel/emotion-wheel.view.js',
+    'js/features/tools/emotion-wheel/emotion-wheel.main.js',
     # Mobile Menu refactored files
     'js/core/ui/mobile-menu/mobile-menu.model.js',
     'js/core/ui/mobile-menu/mobile-menu.repository.js',
