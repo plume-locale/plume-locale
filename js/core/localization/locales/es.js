@@ -120,13 +120,21 @@ window.LOCALE_ES = {
     "emotion.lexicon.fear.label": "MIEDO",
     "emotion.lexicon.surprise.label": "SORPRESA",
 
-    // --- Emotion Explorer : Léxico (palabras) ---
+    // --- Emotion Explorer : Léxico (palabras — lista plana, retrocompat) ---
     "emotion.lexicon.joy.words": "[\"FELIZ\",\"INTERESADO\",\"ORGULLOSO\",\"ACEPTADO\",\"FUERTE\",\"PACÍFICO\",\"ÍNTIMO\",\"OPTIMISMO\",\"INSPIRADO\",\"ABIERTO\",\"TRAVIESO\",\"SENSIBLE\",\"OPTIMISTA\",\"AMOROSO\",\"PROVOCATIVO\",\"VALIENTE\",\"REALIZADO\",\"RESPETADO\",\"IMPORTANTE\",\"CURIOSO\",\"DIVERTIDO\",\"EXTÁTICO\",\"LIBERADO\",\"CONFIADO\",\"ENÉRGICO\",\"ÁVIDO\"]",
     "emotion.lexicon.sadness.words": "[\"ABANDONO\",\"DESESPERACIÓN\",\"DEPRIMIDO\",\"SOLITARIO\",\"ABURRIDO\",\"CULPABLE\",\"AVERGONZADO\",\"IGNORADO\",\"RETRAÍDO\",\"IMPOTENTE\",\"VULNERABLE\",\"SIN VALOR\",\"VACÍO\",\"AISLADO\",\"APÁTICO\",\"INDIFERENTE\"]",
     "emotion.lexicon.disgust.words": "[\"DESAPROBACIÓN\",\"DECEPCIONADO\",\"HORRIBLE\",\"AVERSIÓN\",\"JUZGADO\",\"REPUGNANTE\",\"INDIGNADO\",\"DISGUSTADO\",\"DETESTABLE\",\"VACILANTE\"]",
     "emotion.lexicon.anger.words": "[\"FRUSTRADO\",\"DISTANTE\",\"CRÍTICO\",\"AGRESIVO\",\"ENOJADO\",\"ODIOSO\",\"IRRITADO\",\"SOSPECHOSO\",\"ESCÉPTICO\",\"SARCÁSTICO\",\"PROVOCADOR\",\"HOSTIL\",\"ENFURECIDO\",\"FURIOSO\",\"DESAFIANTE\",\"AMARGO\"]",
     "emotion.lexicon.fear.words": "[\"HERIDO\",\"AMENAZADO\",\"HUMILLADO\",\"RECHAZADO\",\"SUMISO\",\"INSEGURO\",\"ANSIOSO\",\"ASUSTADO\",\"TEMEROSO\",\"ATERRORIZADO\",\"ABRUMADO\",\"PREOCUPADO\",\"INÚTIL\",\"INFERIOR\",\"SIN VALOR\",\"INSIGNIFICANTE\",\"INADECUADO\",\"EXCLUIDO\",\"IRRESPETADO\",\"RIDICULIZADO\",\"AVERGONZADO\",\"DEVASTADO\",\"CELOSO\"]",
     "emotion.lexicon.surprise.words": "[\"CONFUSO\",\"ASOMBRADO\",\"EMOCIONADO\",\"IMPACTADO\",\"CONSTERNADO\",\"DESILUSIONADO\",\"PERPLEJO\",\"ATURDIDO\",\"ASUSTADO\",\"ÁVIDO\",\"ENÉRGICO\"]",
+
+    // --- Emotion Explorer : Léxico (grupos jerárquicos — anillo intermedio → palabras del anillo exterior) ---
+    "emotion.lexicon.joy.groups": "[{\"label\":\"FELIZ\",\"words\":[\"EXTÁTICO\",\"LIBERADO\"]},{\"label\":\"INTERESADO\",\"words\":[\"CURIOSO\",\"DIVERTIDO\"]},{\"label\":\"ORGULLOSO\",\"words\":[\"REALIZADO\",\"ÁVIDO\"]},{\"label\":\"ACEPTADO\",\"words\":[\"RESPETADO\",\"IMPORTANTE\"]},{\"label\":\"FUERTE\",\"words\":[\"VALIENTE\",\"CONFIADO\"]},{\"label\":\"PACÍFICO\",\"words\":[\"OPTIMISMO\",\"ÍNTIMO\"]},{\"label\":\"OPTIMISTA\",\"words\":[\"INSPIRADO\",\"ABIERTO\"]},{\"label\":\"AMOROSO\",\"words\":[\"TRAVIESO\",\"SENSIBLE\"]}]",
+    "emotion.lexicon.sadness.groups": "[{\"label\":\"CULPABLE\",\"words\":[\"AVERGONZADO\",\"RETRAÍDO\"]},{\"label\":\"ABANDONO\",\"words\":[\"IGNORADO\",\"AISLADO\"]},{\"label\":\"DESESPERACIÓN\",\"words\":[\"IMPOTENTE\",\"VULNERABLE\"]},{\"label\":\"DEPRIMIDO\",\"words\":[\"SIN VALOR\",\"VACÍO\"]},{\"label\":\"SOLITARIO\",\"words\":[\"APÁTICO\",\"INDIFERENTE\"]},{\"label\":\"ABURRIDO\",\"words\":[\"RETRAÍDO\",\"AISLADO\"]}]",
+    "emotion.lexicon.disgust.groups": "[{\"label\":\"DESAPROBACIÓN\",\"words\":[\"JUZGADO\",\"REPUGNANTE\"]},{\"label\":\"DECEPCIONADO\",\"words\":[\"HORRIBLE\",\"AVERSIÓN\"]},{\"label\":\"INDIGNADO\",\"words\":[\"DISGUSTADO\",\"DETESTABLE\"]}]",
+    "emotion.lexicon.anger.groups": "[{\"label\":\"FRUSTRADO\",\"words\":[\"CRÍTICO\",\"AGRESIVO\"]},{\"label\":\"ENOJADO\",\"words\":[\"ODIOSO\",\"DISTANTE\"]},{\"label\":\"IRRITADO\",\"words\":[\"SOSPECHOSO\",\"ESCÉPTICO\"]},{\"label\":\"SARCÁSTICO\",\"words\":[\"PROVOCADOR\",\"HOSTIL\"]},{\"label\":\"ENFURECIDO\",\"words\":[\"FURIOSO\",\"DESAFIANTE\"]},{\"label\":\"AMARGO\",\"words\":[\"DESAFIANTE\",\"AMARGO\"]}]",
+    "emotion.lexicon.fear.groups": "[{\"label\":\"HERIDO\",\"words\":[\"AMENAZADO\",\"HUMILLADO\"]},{\"label\":\"RECHAZADO\",\"words\":[\"SUMISO\",\"INSEGURO\"]},{\"label\":\"ANSIOSO\",\"words\":[\"ASUSTADO\",\"PREOCUPADO\"]},{\"label\":\"TEMEROSO\",\"words\":[\"ATERRORIZADO\",\"ABRUMADO\"]},{\"label\":\"INÚTIL\",\"words\":[\"INFERIOR\",\"SIN VALOR\"]},{\"label\":\"INSIGNIFICANTE\",\"words\":[\"INADECUADO\",\"EXCLUIDO\"]},{\"label\":\"IRRESPETADO\",\"words\":[\"RIDICULIZADO\",\"AVERGONZADO\"]}]",
+    "emotion.lexicon.surprise.groups": "[{\"label\":\"CONFUSO\",\"words\":[\"PERPLEJO\",\"ATURDIDO\"]},{\"label\":\"EMOCIONADO\",\"words\":[\"ÁVIDO\",\"ENÉRGICO\"]},{\"label\":\"IMPACTADO\",\"words\":[\"CONSTERNADO\",\"ASOMBRADO\"]}]",
 
     // --- Emotion Explorer : Lenguaje Corporal ---
     "emotion.body.0.category": "Anticipación",

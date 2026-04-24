@@ -116,13 +116,21 @@ window.LOCALE_FR = {
     "emotion.lexicon.fear.label": "PEUR",
     "emotion.lexicon.surprise.label": "SURPRISE",
 
-    // --- Emotion Explorer : Lexique (mots) ---
+    // --- Emotion Explorer : Lexique (mots — liste plate, rétrocompat) ---
     "emotion.lexicon.joy.words": "[\"HEUREUX\",\"INTÉRESSÉ\",\"FIER\",\"ACCEPTÉ\",\"FORT\",\"PAISIBLE\",\"INTIME\",\"OPTIMISME\",\"INSPIRÉ\",\"OUVERT\",\"ESPIÈGLE\",\"SENSIBLE\",\"OPTIMISTE\",\"AIMANT\",\"PROVOCANT\",\"COURAGEUX\",\"ACCOMPLI\",\"RESPECTÉ\",\"IMPORTANT\",\"CURIEUX\",\"AMUSÉ\",\"EXTASIÉ\",\"LIBÉRÉ\",\"CONFIANT\",\"ÉNERGIQUE\",\"AVIDE\"]",
     "emotion.lexicon.sadness.words": "[\"ABANDON\",\"DÉSESPOIR\",\"DÉPRESSION\",\"SOLITUDE\",\"ENNUI\",\"CULPABILITÉ\",\"FAUTIF\",\"HONTEUX\",\"IGNORÉ\",\"REPLIÉ\",\"IMPUISSANT\",\"VULNÉRABLE\",\"MINABLE\",\"VIDE\",\"ABANDONNÉ\",\"ISOLÉ\",\"AMORPHE\",\"INDIFFÉRENT\"]",
     "emotion.lexicon.disgust.words": "[\"DÉSAPPROBATION\",\"DÉCEPTION\",\"TERRIBLE\",\"ÉVITEMENT\",\"JUGÉ\",\"AVERSION\",\"RÉPUGNANT\",\"RÉVOLTÉ\",\"DÉGOÛTÉ\",\"DÉTESTABLE\",\"HÉSITANT\"]",
     "emotion.lexicon.anger.words": "[\"FRUSTRÉ\",\"DISTANT\",\"CRITIQUE\",\"AGRESSIF\",\"EN COLÈRE\",\"HAINEUX\",\"MÉCONTENT\",\"IRRITÉ\",\"RETIRÉ\",\"SUSPECT\",\"SCEPTIQUE\",\"SARCASTIQUE\",\"PROVOCATEUR\",\"HOSTILE\",\"ENRAGÉ\",\"FURIEUX\",\"DÉFIANT\",\"AMER\"]",
     "emotion.lexicon.fear.words": "[\"BLESSÉ\",\"MENACÉ\",\"HUMILIÉ\",\"REJETÉ\",\"DOCILE\",\"INSÉCURE\",\"ANXIEUX\",\"APEURÉ\",\"CRAINTIF\",\"TERRIFIÉ\",\"ACCABLÉ\",\"PRÉOCCUPÉ\",\"INCAPABLE\",\"INFÉRIEUR\",\"SANS VALEUR\",\"INSIGNIFIANT\",\"INADÉQUAT\",\"EXCLUS\",\"NON RESPECTÉ\",\"RIDICULISÉ\",\"EMBARRASSÉ\",\"DÉVASTÉ\",\"JALOUX\"]",
     "emotion.lexicon.surprise.words": "[\"CONFUS\",\"ÉTONNÉ\",\"EXCITÉ\",\"CHOQUÉ\",\"CONSTERNÉ\",\"DÉSILLUSIONNÉ\",\"PERPLEXE\",\"ABASOURDI\",\"EFFRAYÉ\",\"AVIDE\",\"ÉNERGIQUE\"]",
+
+    // --- Emotion Explorer : Lexique (groupes hiérarchiques — cercle médian → mots du cercle externe) ---
+    "emotion.lexicon.joy.groups": "[{\"label\":\"HEUREUX\",\"words\":[\"EXTASIÉ\",\"LIBÉRÉ\"]},{\"label\":\"INTÉRESSÉ\",\"words\":[\"CURIEUX\",\"AMUSÉ\"]},{\"label\":\"FIER\",\"words\":[\"ACCOMPLI\",\"AVIDE\"]},{\"label\":\"ACCEPTÉ\",\"words\":[\"RESPECTÉ\",\"IMPORTANT\"]},{\"label\":\"FORT\",\"words\":[\"COURAGEUX\",\"CONFIANT\"]},{\"label\":\"PAISIBLE\",\"words\":[\"OPTIMISME\",\"INTIME\"]},{\"label\":\"OPTIMISTE\",\"words\":[\"INSPIRÉ\",\"OUVERT\"]},{\"label\":\"AIMANT\",\"words\":[\"ESPIÈGLE\",\"SENSIBLE\"]}]",
+    "emotion.lexicon.sadness.groups": "[{\"label\":\"CULPABILITÉ\",\"words\":[\"FAUTIF\",\"HONTEUX\"]},{\"label\":\"ABANDON\",\"words\":[\"IGNORÉ\",\"REPLIÉ\"]},{\"label\":\"DÉSESPOIR\",\"words\":[\"IMPUISSANT\",\"VULNÉRABLE\"]},{\"label\":\"DÉPRESSION\",\"words\":[\"MINABLE\",\"VIDE\"]},{\"label\":\"SOLITUDE\",\"words\":[\"ABANDONNÉ\",\"ISOLÉ\"]},{\"label\":\"ENNUI\",\"words\":[\"AMORPHE\",\"INDIFFÉRENT\"]}]",
+    "emotion.lexicon.disgust.groups": "[{\"label\":\"DÉSAPPROBATION\",\"words\":[\"JUGÉ\",\"RÉPUGNANT\"]},{\"label\":\"DÉCEPTION\",\"words\":[\"TERRIBLE\",\"ÉVITEMENT\"]},{\"label\":\"AVERSION\",\"words\":[\"RÉVOLTÉ\",\"DÉTESTABLE\"]}]",
+    "emotion.lexicon.anger.groups": "[{\"label\":\"FRUSTRÉ\",\"words\":[\"CRITIQUE\",\"AGRESSIF\"]},{\"label\":\"EN COLÈRE\",\"words\":[\"HAINEUX\",\"MÉCONTENT\"]},{\"label\":\"IRRITÉ\",\"words\":[\"DISTANT\",\"RETIRÉ\"]},{\"label\":\"SUSPECT\",\"words\":[\"SCEPTIQUE\",\"SARCASTIQUE\"]},{\"label\":\"PROVOCATEUR\",\"words\":[\"HOSTILE\",\"ENRAGÉ\"]},{\"label\":\"FURIEUX\",\"words\":[\"DÉFIANT\",\"AMER\"]}]",
+    "emotion.lexicon.fear.groups": "[{\"label\":\"BLESSÉ\",\"words\":[\"MENACÉ\",\"HUMILIÉ\"]},{\"label\":\"REJETÉ\",\"words\":[\"DOCILE\",\"INSÉCURE\"]},{\"label\":\"ANXIEUX\",\"words\":[\"APEURÉ\",\"PRÉOCCUPÉ\"]},{\"label\":\"CRAINTIF\",\"words\":[\"TERRIFIÉ\",\"ACCABLÉ\"]},{\"label\":\"INCAPABLE\",\"words\":[\"INFÉRIEUR\",\"SANS VALEUR\"]},{\"label\":\"INSIGNIFIANT\",\"words\":[\"INADÉQUAT\",\"EXCLUS\"]},{\"label\":\"NON RESPECTÉ\",\"words\":[\"RIDICULISÉ\",\"EMBARRASSÉ\"]}]",
+    "emotion.lexicon.surprise.groups": "[{\"label\":\"CONFUS\",\"words\":[\"PERPLEXE\",\"ABASOURDI\"]},{\"label\":\"EXCITÉ\",\"words\":[\"AVIDE\",\"ÉNERGIQUE\"]},{\"label\":\"CHOQUÉ\",\"words\":[\"CONSTERNÉ\",\"ÉTONNÉ\"]}]",
 
     // --- Emotion Explorer : Langage Corporel (catégories & signaux, indexés) ---
     "emotion.body.0.category": "Anticipation",

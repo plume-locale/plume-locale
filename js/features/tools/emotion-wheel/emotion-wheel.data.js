@@ -25,7 +25,8 @@ const EmotionWheelData = {
             id:    w.id,
             color: w.color,
             label: t(`emotion.lexicon.${w.id}.label`),
-            words: this._parseList(t(`emotion.lexicon.${w.id}.words`))
+            words: this._parseList(t(`emotion.lexicon.${w.id}.words`)),
+            groups: this._parseList(t(`emotion.lexicon.${w.id}.groups`))
         }));
 
         const bodyLanguage = this.bodyDefs.map((b, i) => ({

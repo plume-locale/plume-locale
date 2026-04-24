@@ -339,6 +339,41 @@ const EmotionWheelView = {
                 display: flex;
                 justify-content: center;
             }
+
+            /* Emotion Groups (hierarchical 3-level wheel display) */
+            .emotion-group {
+                margin-bottom: 16px;
+            }
+            .emotion-group-header {
+                margin-bottom: 8px;
+            }
+            .emotion-group-label {
+                display: inline-block;
+                padding: 5px 14px;
+                border-radius: 8px;
+                font-weight: 700;
+                font-size: 0.85rem;
+                letter-spacing: 0.05em;
+                cursor: pointer;
+                transition: all 0.2s;
+                font-family: 'Outfit', sans-serif;
+            }
+            .emotion-group-label:hover {
+                filter: brightness(0.9);
+                transform: translateX(2px);
+            }
+            .emotion-group-words {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+                padding-left: 16px;
+                margin-top: 6px;
+            }
+            .signal-item-sub {
+                font-size: 0.85rem;
+                background: #f8f9fa;
+                opacity: 0.9;
+            }
         `;
         document.head.appendChild(style);
     },
@@ -401,48 +436,82 @@ const EmotionWheelView = {
 
     renderLexicon(grid, query) {
         grid.style.display = 'block'; 
-        let wordsToShow = [];
-        let categoryTitle = "";
-        let categoryColor = "#f9812a";
-
         const data = EmotionWheelData.getData();
 
         if (query) {
-            categoryTitle = `Résultats pour "${this.searchQuery}"`;
+            // Mode recherche : liste plate tous groupes confondus
+            let wordsToShow = [];
+            const categoryTitle = `Résultats pour "${this.searchQuery}"`;
             data.wedges.forEach(wedge => {
                 wedge.words.forEach(word => {
                     if (word.toLowerCase().includes(query)) {
-                        wordsToShow.push({ word, category: Localization.t('emotion.lexicon.' + wedge.id + '.label'), color: wedge.color });
+                        wordsToShow.push({ word, color: wedge.color });
                     }
                 });
             });
+            grid.innerHTML = `
+                <div class="body-language-card" style="border-color: #f9812a">
+                    <h3 style="color: #f9812a"><i data-lucide="search"></i> ${categoryTitle}</h3>
+                    <div class="signal-list">
+                        ${wordsToShow.map(item => `
+                            <div class="signal-item"
+                                 onmouseenter="this.style.borderColor='${item.color}'"
+                                 onmouseleave="this.style.borderColor='transparent'"
+                                 onclick="EmotionWheelView.onSelectWord('${item.word}')">
+                                ${item.word}
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>`;
         } else {
+            // Mode catégorie : affichage hiérarchique (groupes)
             const category = data.wedges.find(w => w.id === this.currentCategory) || data.wedges[0];
-            if (category) {
-                categoryTitle = Localization.t('emotion.lexicon.' + category.id + '.label');
-                categoryColor = category.color;
-                category.words.forEach(word => {
-                    wordsToShow.push({ word, category: categoryTitle, color: category.color });
-                });
-            }
-        }
+            const color = category.color;
+            const groups = Array.isArray(category.groups) && category.groups.length > 0 ? category.groups : null;
 
-        grid.innerHTML = `
-            <div class="body-language-card" style="border-color: ${categoryColor}">
-                <h3 style="color: ${categoryColor}"><i data-lucide="${this.getIconForCategory(this.currentCategory)}"></i> ${categoryTitle}</h3>
-                <div class="signal-list">
-                    ${wordsToShow.map(item => `
-                        <div class="signal-item" 
-                             style="border-color: transparent"
-                             onmouseenter="this.style.borderColor='${item.color}'"
-                             onmouseleave="this.style.borderColor='transparent'"
-                             onclick="EmotionWheelView.onSelectWord('${item.word}')">
-                            ${item.word}
+            let contentHtml = '';
+            if (groups) {
+                contentHtml = groups.map(group => `
+                    <div class="emotion-group">
+                        <div class="emotion-group-header">
+                            <span class="emotion-group-label"
+                                  style="background: ${color}22; border-left: 3px solid ${color}; color: ${color}"
+                                  onclick="EmotionWheelView.onSelectWord('${group.label}')">
+                                ${group.label}
+                            </span>
                         </div>
-                    `).join('')}
-                </div>
-            </div>
-        `;
+                        <div class="emotion-group-words">
+                            ${(group.words || []).map(word => `
+                                <div class="signal-item signal-item-sub"
+                                     onmouseenter="this.style.borderColor='${color}'"
+                                     onmouseleave="this.style.borderColor='transparent'"
+                                     onclick="EmotionWheelView.onSelectWord('${word}')">
+                                    ${word}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                // Fallback : liste plate
+                contentHtml = `<div class="signal-list">${category.words.map(word => `
+                    <div class="signal-item"
+                         onmouseenter="this.style.borderColor='${color}'"
+                         onmouseleave="this.style.borderColor='transparent'"
+                         onclick="EmotionWheelView.onSelectWord('${word}')">
+                        ${word}
+                    </div>`).join('')}</div>`;
+            }
+
+            grid.innerHTML = `
+                <div class="body-language-card" style="border-color: ${color}">
+                    <h3 style="color: ${color}">
+                        <i data-lucide="${this.getIconForCategory(this.currentCategory)}"></i>
+                        ${Localization.t('emotion.lexicon.' + category.id + '.label')}
+                    </h3>
+                    ${contentHtml}
+                </div>`;
+        }
         
         if (typeof lucide !== 'undefined') lucide.createIcons();
     },
