@@ -400,6 +400,13 @@ JS_ORDER = [
     'js/features/analysis/word-repetition/word-repetition.view.js',
     'js/features/analysis/word-repetition/word-repetition.handlers.js',
     'js/features/analysis/word-repetition/word-repetition.main.js',
+    # Stylistic Analysis
+    'js/features/analysis/stylistic-analysis/stylistic-analysis.data.js',
+    'js/features/analysis/stylistic-analysis/stylistic-analysis.model.js',
+    'js/features/analysis/stylistic-analysis/stylistic-analysis.viewmodel.js',
+    'js/features/analysis/stylistic-analysis/stylistic-analysis.view.js',
+    'js/features/analysis/stylistic-analysis/stylistic-analysis.handlers.js',
+    'js/features/analysis/stylistic-analysis/stylistic-analysis.main.js',
     # Product tour
     'js/features/tools/product-tour/product-tour.model.js',
     'js/features/tools/product-tour/product-tour.data.js',
