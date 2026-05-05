@@ -7,7 +7,7 @@ const StylisticAnalysisViewModel = {
         sentiment: null,
         connectors: null,
         isAnalyzing: false,
-        currentStyleId: 'hybrid',
+        currentStyleId: localStorage.getItem('plume_stylistic_style') || 'fiction',
         highlightMode: null, // 'positive', 'negative', 'both' or null
         stopOnClose: localStorage.getItem('plume_stylistic_stop_on_close') !== 'false' // default to true
     },
@@ -87,6 +87,7 @@ const StylisticAnalysisViewModel = {
 
     setStyle(styleId) {
         this.state.currentStyleId = styleId;
+        localStorage.setItem('plume_stylistic_style', styleId);
     },
     
     clearState() {
