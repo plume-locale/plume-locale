@@ -1482,13 +1482,27 @@ function restoreTreeState() {
 // --- UTILITAIRES UI GLOBAUX ---
 
 function closeModal(modalId) {
-    document.getElementById(modalId)?.classList.remove('active');
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.classList.remove('active');
+        modal.style.display = '';
+    }
 }
 
 function openModal(modalId) {
     const modal = document.getElementById(modalId);
     if (!modal) return;
     modal.classList.add('active');
+
+    // Ajout d'un listener pour fermer si on clique sur le backdrop (le conteneur .modal lui-même)
+    if (!modal.dataset.backdropListener) {
+        modal.addEventListener('click', function (e) {
+            if (e.target === modal) {
+                closeModal(modalId);
+            }
+        });
+        modal.dataset.backdropListener = "true";
+    }
 }
 
 

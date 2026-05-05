@@ -104,6 +104,12 @@ const StylisticAnalysis = {
         if (savedWidth) {
             sidebar.style.width = savedWidth + 'px';
         }
+    },
+
+    stopAnalysis() {
+        if (typeof StylisticAnalysisHandlers !== 'undefined') {
+            StylisticAnalysisHandlers._clearAllHighlights();
+        }
     }
 };
 
@@ -112,4 +118,5 @@ window.StylisticAnalysis = StylisticAnalysis;
 window.toggleStylisticAnalysisPanel = function() { StylisticAnalysis.togglePanel(); };
 window.showStylisticAnalysisPanel = function() { StylisticAnalysis.showPanel(); };
 window.hideStylisticAnalysisPanel = function() { StylisticAnalysis.hidePanel(); };
+window.stopStylisticAnalysis = function() { StylisticAnalysis.stopAnalysis(); };
 
