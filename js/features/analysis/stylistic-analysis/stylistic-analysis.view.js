@@ -59,9 +59,14 @@ const StylisticAnalysisView = {
                             <i data-lucide="sparkles" style="color: var(--accent-gold); width: 18px; height: 18px;"></i> 
                             ${Localization.t('stylistic.title') || 'Analyse Stylistique'}
                         </h3>
-                        <button class="btn btn-icon" onclick="StylisticAnalysisHandlers.onRefresh()" title="${Localization.t('tool.refresh') || 'Rafraîchir'}">
-                            <i data-lucide="refresh-cw" style="width: 16px; height: 16px;"></i>
-                        </button>
+                        <div style="display: flex; gap: 0.25rem;">
+                            <button class="btn btn-icon" onclick="StylisticAnalysisHandlers._clearAllHighlights()" title="${Localization.t('stylistic.btn_clear') || 'Effacer les surlignages'}">
+                                <i data-lucide="eraser" style="width: 16px; height: 16px;"></i>
+                            </button>
+                            <button class="btn btn-icon" onclick="StylisticAnalysisHandlers.onRefresh()" title="${Localization.t('tool.refresh') || 'Rafraîchir'}">
+                                <i data-lucide="refresh-cw" style="width: 16px; height: 16px;"></i>
+                            </button>
+                        </div>
                     </div>
 
                     ${sentimentHtml}
@@ -69,6 +74,15 @@ const StylisticAnalysisView = {
                     <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 2rem 0;" />
                     
                     ${connectorsHtml}
+
+                    <div style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border-color); display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; color: var(--text-muted);">
+                        <input type="checkbox" id="stylisticStopOnClose" ${state.stopOnClose ? 'checked' : ''} 
+                               onchange="StylisticAnalysisHandlers.onToggleStopOnClose(this.checked)"
+                               style="cursor: pointer;" />
+                        <label for="stylisticStopOnClose" style="cursor: pointer;">
+                            ${Localization.t('stylistic.stop_on_close') || 'Arrêter l\'analyse en fermant la fenêtre'}
+                        </label>
+                    </div>
                     
                 </div>
             `;

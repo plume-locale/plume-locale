@@ -36,6 +36,12 @@ const StylisticAnalysisHandlers = {
         }
     },
 
+    onToggleStopOnClose(value) {
+        if (typeof StylisticAnalysisViewModel !== 'undefined') {
+            StylisticAnalysisViewModel.setStopOnClose(value);
+        }
+    },
+
     /**
      * Surligne un mot dans l'éditeur et scroll vers lui
      * @param {string} word - Mot à surligner

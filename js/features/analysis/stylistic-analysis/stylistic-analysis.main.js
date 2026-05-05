@@ -41,6 +41,13 @@ const StylisticAnalysis = {
 
         sidebar.classList.add('hidden');
         if (btn) btn.classList.remove('active');
+
+        // Nettoyer les surlignages si demandé
+        if (typeof StylisticAnalysisViewModel !== 'undefined' && 
+            StylisticAnalysisViewModel.getState().stopOnClose && 
+            typeof StylisticAnalysisHandlers !== 'undefined') {
+            StylisticAnalysisHandlers._clearAllHighlights();
+        }
     },
 
     // S'assurer que l'analyse est rafraîchie si le panneau est ouvert

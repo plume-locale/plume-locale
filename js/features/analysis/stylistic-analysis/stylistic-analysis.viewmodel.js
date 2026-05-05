@@ -7,7 +7,8 @@ const StylisticAnalysisViewModel = {
         sentiment: null,
         connectors: null,
         isAnalyzing: false,
-        currentStyleId: 'hybrid'
+        currentStyleId: 'hybrid',
+        stopOnClose: localStorage.getItem('plume_stylistic_stop_on_close') !== 'false' // default to true
     },
 
     /**
@@ -91,5 +92,10 @@ const StylisticAnalysisViewModel = {
         this.state.sentiment = null;
         this.state.connectors = null;
         this.state.isAnalyzing = false;
+    },
+
+    setStopOnClose(value) {
+        this.state.stopOnClose = value;
+        localStorage.setItem('plume_stylistic_stop_on_close', value);
     }
 };
