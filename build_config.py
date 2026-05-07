@@ -39,6 +39,7 @@ CSS_ORDER = [
     'structure-blocks.css',
     'narrative-overview.css',
     'import-scrivener.css',
+    'reserve.css',
 ]
 
 # Mapping des fichiers locaux vers leurs équivalents CDN pour la version LIVE
@@ -330,6 +331,12 @@ JS_ORDER = [
     'js/features/front-matter/front-matter.viewmodel.js',
     'js/features/front-matter/front-matter.view.js',
     'js/features/front-matter/front-matter.main.js',
+    # Reserve Module
+    'js/features/tools/reserve/reserve.model.js',
+    'js/features/tools/reserve/reserve.repository.js',
+    'js/features/tools/reserve/reserve.viewmodel.js',
+    'js/features/tools/reserve/reserve.view.js',
+    'js/features/tools/reserve/reserve.handlers.js',
     # Sidebar View Module
     'js/core/ui/sidebar-view/sidebar-view.model.js',
     'js/core/ui/sidebar-view/sidebar-view.repository.js',

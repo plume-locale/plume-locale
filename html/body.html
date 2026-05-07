@@ -239,6 +239,10 @@
                 <!-- Customisation Menu (Rappel: le menu doit pouvoir apparaitre et être lisible) -->
                 <div class="activity-bar-customization-slot" id="activityBarCustomization"></div>
                 <div class="activity-bar-footer">
+                    <div class="activity-bar-version app-version-display" 
+                         onclick="openTab('changelog', {}, { forceNew: false })"
+                         title="Voir les nouveautés"
+                         data-i18n-title="header.changelog"></div>
                     <div class="activity-bar-nav-item" onclick="InterfaceCustomizerViewModel.startEditing()"
                         id="headerInterfaceBtn" title="Personnaliser l'interface" data-tooltip="Personnaliser">
                         <i data-lucide="settings-2"></i>
@@ -369,6 +373,9 @@
                     <div class="database-list" id="frontMatterList" style="display: none">
                         <!-- Front Matter elements will be dynamically inserted here -->
                     </div>
+                    <div class="database-list" id="reserveList" style="display: none">
+                        <!-- Reserve items will be dynamically inserted here -->
+                    </div>
                     <div class="database-list" id="charactersList" style="display: none">
                         <!-- Characters will be dynamically inserted here -->
                     </div>
@@ -441,6 +448,13 @@
             </div>
             <!-- Vertical Tools Sidebar -->
             <div class="tools-sidebar" id="toolsSidebar">
+                <button class="tool-btn" onclick="ReserveHandlers.toggleSidebar()" id="toolReserveBtn"
+                    title="La Réserve" data-tooltip="La Réserve"
+                    data-shortcut="Alt+G" style="color: var(--accent-gold); background: rgba(212, 175, 55, 0.1);">
+                    <i data-lucide="inbox"></i>
+                    <span class="tool-kbd">Alt+G</span>
+                </button>
+                <div class="tool-separator"></div>
                 <button class="tool-btn" onclick="toggleVersionsSidebar()" id="toolVersionsBtn"
                     title="Versions de scène" data-i18n-title="tools.versions" data-tooltip="Versions"
                     data-i18n-tooltip="tools.versions" data-shortcut="Alt+V">
@@ -580,6 +594,23 @@
                 </div>
                 <div class="sidebar-plot-list" id="investigationSidebarList">
                     <!-- Investigation cards will be inserted here -->
+                </div>
+            </div>
+            <!-- Sidebar Reserve (Right Side) -->
+            <div class="sidebar-plot hidden" id="sidebarReserve">
+                <div class="sidebar-plot-header">
+                    <div class="sidebar-plot-title">
+                        <h3 data-i18n="reserve.title"><i data-lucide="archive"
+                                style="width: 16px; height: 16px; vertical-align: middle; margin-right: 6px"></i>La Réserve</h3>
+                        <button class="sidebar-plot-toggle" onclick="ReserveHandlers.toggleSidebar()" title="Masquer"
+                            data-i18n-title="btn.hide">
+                            <i data-lucide="x" style="width: 14px; height: 14px"></i>
+                        </button>
+                    </div>
+                    <div class="sidebar-plot-scene" id="reserveSidebarStatus">Prêt à restaurer</div>
+                </div>
+                <div class="sidebar-plot-list" id="reserveSidebarList" style="padding: 10px;">
+                    <!-- Reserve items will be inserted here -->
                 </div>
             </div>
             <!-- Annotations Panel -->
@@ -2479,6 +2510,11 @@
                 <button class="floating-btn-mini" onmousedown="event.preventDefault()"
                     onclick="formatText('insertHorizontalRule')" title="Ligne horizontale"
                     data-i18n-title="floating.title.horizontal_rule" data-i18n="floating.label.line">Ligne</button>
+                <button class="floating-btn-mini" onmousedown="event.preventDefault()"
+                    onclick="ReserveHandlers.onBurySelection()" title="Mettre en réserve"
+                    data-i18n-title="reserve.title.bury">
+                    <i data-lucide="archive" style="width: 16px; height: 16px; color: var(--accent-gold);"></i>
+                </button>
             </div>
         </div>
         <!-- Keyboard Shortcuts Summary Modal -->

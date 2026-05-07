@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """
 Script de déploiement vers /live
 Copie tous les fichiers nécessaires listés dans build_config.py vers le répertoire /live
@@ -131,6 +131,8 @@ def get_all_files_to_deploy():
                 processed_js.add(filename)
     
     files.append('html/index.html')
+    files.append('html/index-translations.js')
+
     
     return files
 
@@ -145,8 +147,9 @@ def get_dest_path(file_path):
         return 'index.html'
 
     # Landing page translations -> directly in /live
-    if file_path == 'js/index-translations.js':
+    if file_path == 'html/index-translations.js':
         return 'index-translations.js'
+
 
     # CSS -> live/css/filename.css (flattened)
     if file_path.endswith('.css'):
