@@ -54,6 +54,14 @@ window.LOCALE_DE = {
     "reserve.restore": "Wiederherstellen",
     "reserve.error_no_editor": "Fehler: Text im Haupteditor auswählen",
     "reserve.error_no_restore_editor": "Fehler: Kein Editor geöffnet",
+    "reserve.title_placeholder": "Titel des Ausschnitts...",
+    "reserve.comment_label": "Kommentar / Notizen",
+    "reserve.comment_placeholder": "Notiz hinzufügen...",
+    "reserve.tags_label": "Tags",
+    "reserve.tags_placeholder": "Tag1, Tag2...",
+    "reserve.tags_hint": "Tags durch Kommas trennen",
+    "reserve.updated": "Änderungen gespeichert",
+    "reserve.untitled": "Unbenannter Ausschnitt",
 
     // Types
 
@@ -3450,6 +3458,28 @@ window.LOCALE_DE = {
     "stats.days_off": "Freie Tage",
     "stats.words_remaining_per_day": "Wörter / Tag",
     "stats.history_chart": "Fortschritt über Zeitraum",
+    "stats.heatmap.title": "Schreibgewohnheiten",
+    "stats.heatmap.yearly": "Jahresaktivität",
+    "stats.heatmap.monthly": "Monate",
+    "stats.heatmap.weekly": "Wochen",
+    // Streak
+    "stats.streak.title": "Schreibserie",
+    "stats.streak.days": "aufeinanderfolgende Tage",
+    "stats.streak.best": "Rekord",
+    "stats.streak.active": "Serie läuft — weitermachen!",
+    "stats.streak.inactive": "Heute schreiben, um die Serie fortzusetzen",
+    "stats.streak.hint": "Ziel: mindestens {0} Wörter/Tag schreiben",
+    "stats.streak.current": "{0} aufeinanderfolgende Schreibtag(e)",
+    // NaNoWriMo
+    "stats.nano.title": "50.000-Wörter-Challenge",
+    "stats.nano.enable": "Aktivieren",
+    "stats.nano.description": "Starte eine intensive Schreib-Challenge: 50.000 Wörter in 30 Tagen. Aktiviere den Modus, um deinen Fortschritt zu verfolgen.",
+    "stats.nano.on_track": "Im Zeitplan",
+    "stats.nano.behind": "Im Rückstand",
+    "stats.nano.words_per_day": "Wörter/Tag erforderlich",
+    "stats.nano.days_left": "Tage verbleibend",
+    "stats.nano.start_date": "Startdatum der Challenge",
+
     "globalnotes.sidebar.add_item": "ZUM BOARD HINZUFÜGEN",
     "preview.title": "Druckvorschau",
     "preview.scope": "Umfang",

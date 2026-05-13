@@ -22,6 +22,9 @@ const ReserveView = {
             .reserve-pin-btn.active { color: var(--accent-gold); background: rgba(212, 175, 55, 0.15); opacity: 1 !important; }
             
             .reserve-modal-close:hover { background: rgba(255, 0, 0, 0.1) !important; color: var(--accent-red) !important; transform: rotate(90deg); }
+            
+            .reserve-tag { font-size: 0.7rem; padding: 2px 8px; border-radius: 12px; background: rgba(212, 175, 55, 0.1); color: var(--accent-gold); border: 1px solid rgba(212, 175, 55, 0.2); }
+            .reserve-comment-snippet { font-size: 0.8rem; color: var(--text-muted); font-style: italic; border-left: 2px solid var(--border-color); padding-left: 8px; margin-top: 8px; }
         `;
         document.head.appendChild(style);
     },
@@ -45,7 +48,13 @@ const ReserveView = {
             const query = (ReserveHandlers._searchQuery || '').toLowerCase();
             
             const items = allItems.filter(item => {
-                const text = (item.content + (item.sourceSceneTitle || '')).toLowerCase();
+                const text = (
+                    (item.content || '') + 
+                    (item.title || '') + 
+                    (item.comment || '') + 
+                    (item.tags || []).join(' ') + 
+                    (item.sourceSceneTitle || '')
+                ).toLowerCase();
                 return text.includes(query);
             });
 
@@ -199,7 +208,7 @@ const ReserveView = {
         const isPinned = item.pinned || false;
         
         return `
-            <div class="reserve-card ${isPinned ? 'pinned' : ''}" id="reserve-main-card-${item.id}" onclick="ReserveHandlers.openModal('${item.id}')" style="position: relative; border-radius: 14px; padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; overflow: hidden;">
+            <div class="reserve-card ${isPinned ? 'pinned' : ''}" id="reserve-main-card-${item.id}" onclick="ReserveHandlers.openModal('${item.id}')" style="position: relative; border-radius: 14px; padding: 1.5rem; display: flex; flex-direction: column; gap: 0.8rem; overflow: hidden; min-height: 250px;">
                 
                 <button class="reserve-pin-btn ${isPinned ? 'active' : ''}" 
                         onclick="event.stopPropagation(); ReserveHandlers.onTogglePin('${item.id}')" 
@@ -207,26 +216,41 @@ const ReserveView = {
                     <i data-lucide="${isPinned ? 'pin' : 'pin'}" style="width: 16px; height: 16px; transform: ${isPinned ? 'rotate(0deg)' : 'rotate(45deg)'}"></i>
                 </button>
 
-                <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; padding-right: 2.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--border-color); padding-bottom: 0.8rem; padding-right: 2.5rem;">
                     <div>
-                        <div style="font-size: 0.85rem; font-weight: 700; color: var(--accent-gold); margin-bottom: 0.4rem; display: flex; align-items: center; gap: 6px;">
-                            <i data-lucide="map-pin" style="width:14px; height:14px;"></i>
+                        <div style="font-size: 1.05rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.3rem;">
+                            ${item.title || (Localization.t('reserve.untitled') || 'Extrait sans titre')}
+                        </div>
+                        <div style="font-size: 0.75rem; font-weight: 600; color: var(--accent-gold); margin-bottom: 0.3rem; display: flex; align-items: center; gap: 6px;">
+                            <i data-lucide="map-pin" style="width:12px; height:12px;"></i>
                             <span>${context}</span>
                         </div>
-                        <div style="font-size: 0.75rem; color: var(--text-muted); display: flex; gap: 1rem; align-items: center;">
-                            <span style="display: flex; align-items: center; gap: 4px;"><i data-lucide="calendar" style="width:12px; height:12px;"></i> ${new Date(item.createdAt).toLocaleDateString()}</span>
-                            <span style="display: flex; align-items: center; gap: 4px;"><i data-lucide="type" style="width:12px; height:12px;"></i> ${item.wordCount} mots</span>
+                        <div style="font-size: 0.7rem; color: var(--text-muted); display: flex; gap: 0.8rem; align-items: center;">
+                            <span style="display: flex; align-items: center; gap: 4px;"><i data-lucide="calendar" style="width:10px; height:10px;"></i> ${new Date(item.createdAt).toLocaleDateString()}</span>
+                            <span style="display: flex; align-items: center; gap: 4px;"><i data-lucide="type" style="width:10px; height:10px;"></i> ${item.wordCount}</span>
                         </div>
                     </div>
                 </div>
                 
-                <div class="reserve-content-preview" style="font-size: 1rem; color: var(--text-primary); line-height: 1.65; display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical; overflow: hidden; font-style: italic; opacity: 0.9;">
+                <div class="reserve-content-preview" style="font-size: 0.95rem; color: var(--text-primary); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; font-style: italic; opacity: 0.85;">
                     ${this._stripHtml(item.content)}
                 </div>
+
+                ${item.comment ? `
+                    <div class="reserve-comment-snippet" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                        ${item.comment}
+                    </div>
+                ` : ''}
+
+                ${item.tags && item.tags.length > 0 ? `
+                    <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px;">
+                        ${item.tags.map(tag => `<span class="reserve-tag">${tag}</span>`).join('')}
+                    </div>
+                ` : ''}
                 
-                <div class="reserve-card-hover" style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, var(--bg-secondary) 20%, transparent 100%); height: 60px; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 0.8rem; opacity: 0; transition: opacity 0.3s ease;">
-                    <span style="font-size: 0.85rem; color: var(--accent-gold); font-weight: 700; display: flex; align-items: center; gap: 6px; background: var(--bg-primary); padding: 0.4rem 1rem; border-radius: 20px; border: 1px solid var(--accent-gold);">
-                        <i data-lucide="maximize-2" style="width:14px; height:14px;"></i>
+                <div class="reserve-card-hover" style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, var(--bg-secondary) 40%, transparent 100%); height: 80px; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 1rem; opacity: 0; transition: opacity 0.3s ease; pointer-events: none;">
+                    <span style="font-size: 0.8rem; color: var(--accent-gold); font-weight: 700; display: flex; align-items: center; gap: 6px; background: var(--bg-primary); padding: 0.4rem 1rem; border-radius: 20px; border: 1px solid var(--accent-gold);">
+                        <i data-lucide="maximize-2" style="width:12px; height:12px;"></i>
                         ${Localization.t('reserve.read_more')}
                     </span>
                 </div>

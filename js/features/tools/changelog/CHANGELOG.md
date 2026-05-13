@@ -1,3 +1,16 @@
+# 1.1.6 - Module "La Réserve" (Kill Your Darlings)
+**Date :** 11 mai 2026
+**Type :** majeur
+
+## ✨ Nouveautés
+
+- **Création du module "La Réserve"** : Un espace dédié pour archiver vos extraits de texte plutôt que de les supprimer. Idéal pour pratiquer le "Kill Your Darlings" en toute sérénité.
+- **Organisation avancée** : Chaque extrait peut désormais être doté d'un **titre**, d'un **commentaire** (notes de contexte) et de **tags** personnalisés.
+- **Lecture et Édition** : Une interface dédiée permet de relire vos extraits en plein écran et de modifier leurs métadonnées à tout moment.
+- **Recherche Puissante** : Filtrez instantanément votre réserve par contenu, titre, note ou tag pour retrouver l'idée parfaite.
+- **Accès Rapide** : Épinglez vos extraits favoris pour les garder sous les yeux dans le panneau latéral.
+- **Restauration en un clic** : Réintégrez n'importe quel extrait directement dans votre texte actuel à la position du curseur.
+
 # 1.1.5 - Analyse stylistique et ton émotionnel
 
 **Date :** 05 mai 2026

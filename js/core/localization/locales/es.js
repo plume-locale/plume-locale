@@ -55,6 +55,14 @@ window.LOCALE_ES = {
     "reserve.restore": "Restaurar",
     "reserve.error_no_editor": "Error: Seleccione texto en el editor principal",
     "reserve.error_no_restore_editor": "Error: No hay editor abierto",
+    "reserve.title_placeholder": "Título del extracto...",
+    "reserve.comment_label": "Comentario / Notas",
+    "reserve.comment_placeholder": "Añadir una nota...",
+    "reserve.tags_label": "Etiquetas",
+    "reserve.tags_placeholder": "Etiqueta1, Etiqueta2...",
+    "reserve.tags_hint": "Separe las etiquetas con comas",
+    "reserve.updated": "Cambios guardados",
+    "reserve.untitled": "Extracto sin título",
 
     // Types
 
@@ -3439,6 +3447,28 @@ window.LOCALE_ES = {
     "stats.days_off": "Días libres",
     "stats.words_remaining_per_day": "palabras / día",
     "stats.history_chart": "Progreso en el periodo",
+    "stats.heatmap.title": "Hábitos de escritura",
+    "stats.heatmap.yearly": "Actividad anual",
+    "stats.heatmap.monthly": "Meses",
+    "stats.heatmap.weekly": "Semanas",
+    // Streak
+    "stats.streak.title": "Racha de Escritura",
+    "stats.streak.days": "días consecutivos",
+    "stats.streak.best": "Récord",
+    "stats.streak.active": "¡Racha activa — sigue así!",
+    "stats.streak.inactive": "Escribe hoy para mantener tu racha",
+    "stats.streak.hint": "Meta: escribir al menos {0} palabras/día",
+    "stats.streak.current": "{0} día(s) consecutivo(s) de escritura",
+    // NaNoWriMo
+    "stats.nano.title": "Reto de 50,000 Palabras",
+    "stats.nano.enable": "Activar",
+    "stats.nano.description": "Afronta un intenso reto de escritura: 50,000 palabras en 30 días. Activa el modo para seguir tu progreso.",
+    "stats.nano.on_track": "En el buen camino",
+    "stats.nano.behind": "Por detrás",
+    "stats.nano.words_per_day": "palabras/día necesarias",
+    "stats.nano.days_left": "días restantes",
+    "stats.nano.start_date": "Fecha de inicio del reto",
+
     "globalnotes.sidebar.add_item": "AÑADIR AL TABLERO",
     "preview.title": "Vista previa de impresión",
     "preview.scope": "Alcance",

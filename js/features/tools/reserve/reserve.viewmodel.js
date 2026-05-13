@@ -95,6 +95,22 @@ const ReserveViewModel = {
         return success;
     },
 
+    /**
+     * Updates an item's data
+     */
+    async updateItem(id, data) {
+        const itemIndex = this.state.items.findIndex(i => i.id === id);
+        if (itemIndex === -1) return false;
+
+        const updatedItem = { ...this.state.items[itemIndex], ...data };
+        const success = await ReserveRepository.save(updatedItem);
+        
+        if (success) {
+            this.state.items[itemIndex] = updatedItem;
+        }
+        return success;
+    },
+
     getItems() {
         return this.state.items;
     }
