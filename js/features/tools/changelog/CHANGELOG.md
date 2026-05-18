@@ -1,3 +1,15 @@
+# 1.1.7 - Refonte du module de statistiques
+
+**Date :** 13 mai 2026
+**Type :** minor
+
+## ✨ Nouveautés
+
+- **Heatmap des statistiques** : Ajout d'une vue "Heatmap" (carte de chaleur) annuelle et hebdomadaire pour suivre votre régularité d'écriture.
+- **Série d'écriture** : Suivez votre série d'écriture actuelle (streak) et maintenez votre cadence quotidienne.
+- **Challenge des 50 000 mots** : Participez au défi d'écriture et suivez votre progression vers l'objectif ultime des 50 000 mots.
+- **Internationalisation** : Localisation de la vue Heatmap des statistiques dans les 4 langues (Français, Anglais, Espagnol, Allemand).
+
 # 1.1.6 - Module "La Réserve" (Kill Your Darlings)
 **Date :** 11 mai 2026
 **Type :** majeur
